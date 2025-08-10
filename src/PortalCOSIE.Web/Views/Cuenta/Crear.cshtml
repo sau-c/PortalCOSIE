@@ -1,0 +1,58 @@
+﻿@model PortalCOSIE.Application.DTO.Cuenta.CrearCuentaDTO
+@{
+    ViewData["Title"] = "Crear cuenta";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<div class="card p-4 shadow-lg border-0" style="max-width: 400px;">
+    <div class="card-body">
+        <div class="container text-center">
+            <h2>Crear cuenta</h2>
+            <p class="text-muted">Ingresa tus datos</p>
+        </div>
+
+        <form asp-action="Crear" novalidate method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                        <input asp-for="Correo" class="form-control" type="email" placeholder="Correo" />
+                    </div>
+                    <span asp-validation-for="Correo" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                        <input asp-for="Contrasena" class="form-control" placeholder="Contraseña" />
+                    </div>
+                    <span asp-validation-for="Contrasena" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                        <input asp-for="ConfirmarContrasena" class="form-control" placeholder="Confirmar contraseña" />
+                    </div>
+                    <span asp-validation-for="ConfirmarContrasena" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary shadow-sm w-100">
+                    Crear
+                </button>
+            </div>
+
+            <div class="form-text text-center mt-2">
+                ¿Ya tienes una cuenta? <a asp-action="Ingresar">Ingresa aquí</a>
+            </div>
+        </form>
+
+    </div>
+</div>

@@ -1,0 +1,130 @@
+﻿using Microsoft.Extensions.Configuration;
+using PortalCOSIE.Application;
+using System.Net;
+using System.Net.Mail;
+
+namespace PortalCOSIE.Infrastructure.Data.Email
+{
+    public static class HtmlTemplates
+    {
+        public static string ConfirmarCorreoHtml(string url)
+        {
+            return $@"
+            <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
+                <table role=""presentation"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"">
+                    <tr>
+                    <td align=""center"" style=""padding: 40px 0;"">
+                        <table width=""600"" cellpadding=""0"" cellspacing=""0"" style=""background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 40px;"">
+                        <tr>
+                            <td align=""center"" style=""padding-bottom: 20px;"">
+                            <h1 style=""margin: 0; font-size: 24px; color: #333333;"">Confirma tu cuenta</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style=""color: #555555; font-size: 16px; line-height: 1.5;"">
+                            <p style=""margin-bottom: 20px;"">
+                                Para completar tu registro, por favor confirma tu correo electrónico haciendo clic en el siguiente botón:
+                            </p>
+                            <p style=""text-align: center; margin: 30px 0;"">
+                                <a href='{url}' style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                                Confirmar cuenta
+                                </a>
+                            </p>
+                            <p style=""margin-top: 30px; color: #888888; font-size: 14px;"">
+                                Si no creaste una cuenta, puedes ignorar este correo.
+                            </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style=""padding-top: 30px; text-align: center; font-size: 12px; color: #aaaaaa;"">
+                            © {DateTime.Now.Year} - Portal COSIE.
+                            </td>
+                        </tr>
+                        </table>
+                    </td>
+                    </tr>
+                </table>
+            </body>";
+        }
+
+        public static string RecuperarContrasenaHtml(string url)
+        {
+            return $@"
+            <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
+                <table role=""presentation"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"">
+                <tr>
+                    <td align=""center"" style=""padding: 40px 0;"">
+                    <table width=""600"" cellpadding=""0"" cellspacing=""0"" style=""background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 40px;"">
+                        <tr>
+                        <td align=""center"" style=""padding-bottom: 20px;"">
+                            <h1 style=""margin: 0; font-size: 24px; color: #333333;"">Restablece tu contraseña</h1>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td style=""color: #555555; font-size: 16px; line-height: 1.5;"">
+                            <p style=""margin-bottom: 20px;"">
+                            Hemos recibido una solicitud para restablecer tu contraseña. Si realizaste esta solicitud, haz clic en el botón de abajo para continuar:
+                            </p>
+                            <p style=""text-align: center; margin: 30px 0;"">
+                            <a href='{url}' style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                                Restablecer contraseña
+                            </a>
+                            </p>
+                            <p style=""margin-top: 30px; color: #888888; font-size: 14px;"">
+                            Si no solicitaste este cambio, puedes ignorar este correo. Tu contraseña actual permanecerá sin cambios.
+                            </p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td style=""padding-top: 30px; text-align: center; font-size: 12px; color: #aaaaaa;"">
+                            © {DateTime.Now.Year} - Portal COSIE.
+                        </td>
+                        </tr>
+                    </table>
+                    </td>
+                </tr>
+                </table>
+            </body>";
+        }
+
+        public static string ContrasenaCambiadaHtml(string url)
+        {
+            return $@"
+            <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
+                <table role=""presentation"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"">
+                <tr>
+                    <td align=""center"" style=""padding: 40px 0;"">
+                    <table width=""600"" cellpadding=""0"" cellspacing=""0"" style=""background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 40px;"">
+                        <tr>
+                        <td align=""center"" style=""padding-bottom: 20px;"">
+                            <h1 style=""margin: 0; font-size: 24px; color: #333333;"">Tu contraseña ha sido cambiada con éxito</h1>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td style=""color: #555555; font-size: 16px; line-height: 1.5;"">
+                            <p style=""margin-bottom: 20px;"">
+                                Queremos informarte que la contraseña de tu cuenta fue cambiada recientemente. Si fuiste tú quien realizó este cambio, no necesitas hacer nada más. Si no reconoces esta actividad, por favor restablece tu contraseña de inmediato.
+                            </p>
+                            <p style=""text-align: center; margin: 30px 0;"">
+                            <a href='{url}' style=""display: inline-block; background-color: #FF0000; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                                Recuperar contraseña
+                            </a>
+                            </p>
+                            <p style=""margin-top: 30px; color: #888888; font-size: 14px;"">
+                            Por seguridad, nunca compartas tu contraseña con nadie.
+                            </p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td style=""padding-top: 30px; text-align: center; font-size: 12px; color: #aaaaaa;"">
+                            © {DateTime.Now.Year} - Portal COSIE.
+                        </td>
+                        </tr>
+                    </table>
+                    </td>
+                </tr>
+                </table>
+            </body>";
+        }
+    }
+}

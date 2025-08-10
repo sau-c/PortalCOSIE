@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Crear tramite";
+}
+
+<div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="mb-0 fw-bold py-2">Crear tramite</h6>
+        </div>
+        <div>
+            @* <a asp-action="Crear" class="btn btn-primary btn-sm shadow-sm">
+                <i class="fas fa-plus me-2"></i>Nuevo
+            </a> *@
+        </div>
+    </div>
+
+    <div class="card-body overflow-auto" style="height: calc(100vh - 164px);">
+        <form asp-action="SubirDocumentos" asp-controller="Documentos" enctype="multipart/form-data" method="post">
+            <div class="mb-3">
+                <label for="archivo1" class="form-label">Documento probatorio</label>
+                <input type="file" class="form-control" id="archivo1" name="archivo1" accept=".pdf" />
+            </div>
+            <div class="mb-3">
+                <label for="archivo2" class="form-label">Documento 2 (PDF)</label>
+                <input type="file" class="form-control" id="archivo2" name="archivo2" accept=".pdf" />
+            </div>
+            <div class="mb-3">
+                <label for="archivo3" class="form-label">Documento 3 (PDF)</label>
+                <input type="file" class="form-control" id="archivo3" name="archivo3" accept=".pdf" />
+            </div>
+            <div class="mb-3">
+                <label for="archivo4" class="form-label">Documento 4 (PDF)</label>
+                <input type="file" class="form-control" id="archivo4" name="archivo4" accept=".pdf" />
+            </div>
+            <div class="mb-3">
+                <label for="archivo5" class="form-label">Documento 5 (PDF)</label>
+                <input type="file" class="form-control" id="archivo5" name="archivo5" accept=".pdf" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Subir documentos</button>
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

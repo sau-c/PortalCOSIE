@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+        </div>
+    </div>
+
+    <div class="card-body p-4 overflow-auto" style="height: calc(100vh - 164px);">
+        <!-- Notificación 1 -->
+        <div class="alert alert-info d-flex align-items-start mb-3">
+            <div class="me-3">
+                <i class="fas fa-circle-info fa-lg text-info"></i>
+            </div>
+            <div>
+                <strong>Actualización disponible</strong>
+                <p class="mb-0">Se ha publicado una nueva versión del sistema. Reinicia para aplicar cambios.</p>
+                <small class="text-muted">Hace 2 horas</small>
+            </div>
+        </div>
+
+        <!-- Notificación 2 -->
+        <div class="alert alert-warning d-flex align-items-start mb-3">
+            <div class="me-3">
+                <i class="fas fa-triangle-exclamation fa-lg text-warning"></i>
+            </div>
+            <div>
+                <strong>Espacio en disco bajo</strong>
+                <p class="mb-0">Queda menos del 10% de espacio en el servidor principal.</p>
+                <small class="text-muted">Hace 30 minutos</small>
+            </div>
+        </div>
+
+        <!-- Notificación 3 -->
+        <div class="alert alert-success d-flex align-items-start mb-3">
+            <div class="me-3">
+                <i class="fas fa-circle-check fa-lg text-success"></i>
+            </div>
+            <div>
+                <strong>Respaldo completado</strong>
+                <p class="mb-0">El respaldo diario se completó exitosamente.</p>
+                <small class="text-muted">Hoy a las 6:00 AM</small>
+            </div>
+        </div>
+
+        <!-- Notificación 4 -->
+        <div class="alert alert-danger d-flex align-items-start mb-3">
+            <div class="me-3">
+                <i class="fas fa-circle-xmark fa-lg text-danger"></i>
+            </div>
+            <div>
+                <strong>Error en el módulo X</strong>
+                <p class="mb-0">No se pudo procesar la operación. Verifica los logs del sistema.</p>
+                <small class="text-muted">Hace 10 minutos</small>
+            </div>
+        </div>
+
+
+    </div>
+</div>

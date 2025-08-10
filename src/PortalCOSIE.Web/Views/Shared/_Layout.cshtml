@@ -1,0 +1,222 @@
+﻿@{
+    var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Portal COSIE</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PortalCOSIE.Web.styles.css" asp-append-version="true" />
+
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+
+    <!--ChartJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header class="navbar navbar-expand-sm navbar-dark bg-dark shadow-sm fixed-top">
+        <div class="container-fluid px-3">
+            <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse"
+                    style="padding: 0.5rem; font-size: 0.9rem;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand d-flex align-items-center gap-3" href="/">
+                <img src="~/img/logo.png" width="40" class="logo-img" alt="Logo COSIE">
+                <div class="brand-text">
+                    <div class="main-title"><strong>UPIITA COSIE</strong></div>
+                    <div class="subtitle">Portal de apoyo</div>
+                </div>
+            </a>
+
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <!-- Botón de notificaciones -->
+                <div class="dropdown">
+                    <button class="border-0 rounded-3 px-2 py-1" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            3
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                        <li><h6 class="dropdown-header">Notificaciones</h6></li>
+                        <li><a class="dropdown-item" href="#">Nueva solicitud recibida</a></li>
+                        <li><a class="dropdown-item" href="#">Cambio en estado de trámite</a></li>
+                        <li><a class="dropdown-item" href="#">Mensaje del administrador</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center" href="#">Ver todas</a></li>
+                    </ul>
+                </div>
+
+                <!-- Botón de usuario -->
+                <div class="dropdown">
+                    <button class="dropdown-toggle border-0 rounded-3 px-2 py-1" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-circle-user"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><h6 class="dropdown-header">@User?.Identity?.Name</h6></li>
+                        <li><a class="dropdown-item" href="@Url.Action("MisDatos", "Cuenta")"><i class="fas fa-id-badge me-2"></i>Mis datos</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form id="logoutForm" asp-controller="Cuenta" asp-action="Salir" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="dropdown-item">
+                                    <i class="fas fa-sign-out me-2"></i>Cerrar sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="accordion" id="accordionSidebar">
+            <!-- Dashboard -->
+            <div class="accordion-item bg-transparent border-0">
+                <a href="@Url.Action("Index", "Dashboard")" class="nav-link text-white">
+                    <i class="fas fa-chart-pie"></i>
+                    <span class="nav-link-text">Dashboard</span>
+                </a>
+            </div>
+
+            <!-- Trámites -->
+            <div class="accordion-item bg-transparent border-0">
+                <h2 class="accordion-header" id="headingTramites">
+                    <button class="accordion-button collapsed shadow-none" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseTramites"
+                            aria-expanded="false" aria-controls="collapseTramites">
+                        <i class="fas fa-folder"></i>
+                        <span class="nav-link-text">Gestión de trámites</span>
+                    </button>
+                </h2>
+                <div id="collapseTramites" class="accordion-collapse collapse" aria-labelledby="headingTramites"
+                     data-bs-parent="#accordionSidebar">
+                    <div class="accordion-body">
+                        <a href="@Url.Action("Index", "Tramite")" class="nav-link text-white">
+                            <i class="fas fa-search"></i>
+                            <span class="nav-link-text">Mis Trámites</span>
+                        </a>
+                        <a href="@Url.Action("Crear", "Tramite")" class="nav-link text-white">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="nav-link-text">Crear</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usuarios -->
+            <div class="accordion-item bg-transparent border-0">
+                <h2 class="accordion-header" id="headingUsuarios">
+                    <button class="accordion-button collapsed shadow-none" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseUsuarios"
+                            aria-expanded="false" aria-controls="collapseUsuarios">
+                        <i class="fas fa-users"></i>
+                        <span class="nav-link-text">Autorización y autenticación</span>
+                    </button>
+                </h2>
+                <div id="collapseUsuarios" class="accordion-collapse collapse" aria-labelledby="headingUsuarios"
+                     data-bs-parent="#accordionSidebar">
+                    <div class="accordion-body">
+                        <a href="@Url.Action("Index", "Usuario")" class="nav-link text-white">
+                            <i class="fas fa-user-lock"></i>
+                            <span class="nav-link-text">Usuarios</span>
+                        </a>
+                        <a href="@Url.Action("Index", "Rol")" class="nav-link text-white">
+                            <i class="fas fa-mask"></i>
+                            <span class="nav-link-text">Roles</span>
+                        </a>
+                        <a href="@Url.Action("Index", "Permiso")" class="nav-link text-white">
+                            <i class="fas fa-id-card"></i>
+                            <span class="nav-link-text">Permisos</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón para colapsar/expandir sidebar (siempre visible) -->
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <main>
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="text-center text-muted small py-1">
+        &copy; 2025 - Portal COSIE @("v" + version)
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Verificar estado del sidebar en localStorage
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                $('#sidebar').addClass('sidebar-collapsed');
+            }
+
+            // Manejar el clic en el botón de toggle
+            $('#sidebarToggle').click(function() {
+                $('#sidebar').toggleClass('sidebar-collapsed');
+
+                // Guardar estado en localStorage
+                const isNowCollapsed = $('#sidebar').hasClass('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', isNowCollapsed);
+            });
+
+            // Manejar el sidebar en móviles
+            $('[data-bs-target="#sidebarCollapse"]').click(function() {
+                $('#sidebar').toggleClass('active');
+            });
+
+            // Cerrar sidebar al hacer clic en un enlace (solo móviles)
+            if (window.innerWidth < 768) {
+                $('.sidebar a.nav-link').click(function() {
+                    $('#sidebar').removeClass('active');
+                });
+            }
+
+            // Ajustar tooltips para la versión colapsada
+            $('.sidebar-collapsed .nav-link, .sidebar-collapsed .accordion-button').tooltip({
+                placement: 'right',
+                trigger: 'hover',
+                container: 'body'
+            });
+            
+            $('[title]:not([title=""])').tooltip();
+        });
+
+        // Ajustar tooltips cuando cambia el estado del sidebar (No sirven)
+        $(document).on('click', '#sidebarToggle', function() {
+            if ($('#sidebar').hasClass('sidebar-collapsed')) {
+                $('.sidebar .nav-link, .sidebar .accordion-button').tooltip('enable');
+            } else {
+                $('.sidebar .nav-link, .sidebar .accordion-button').tooltip('disable');
+            }
+        });
+    </script>
+
+    @* DataTables *@
+    <link href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css" rel="stylesheet" />
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

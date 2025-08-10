@@ -1,0 +1,82 @@
+﻿@using PortalCOSIE.Application.DTO.Cuenta
+@model RegistrarDTO
+@{
+    ViewData["Title"] = "Registrar cuenta";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<div class="card p-4 shadow-lg border-0" style="max-width: 500px;">
+    <div class="card-body">
+        <div class="container text-center">
+            <h2>Registrar</h2>
+            <p class="text-muted">Completa tus datos</p>
+        </div>
+
+        <form asp-action="Registrar" novalidate method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="row mb-3">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <input asp-for="Nombre" class="form-control" type="text" placeholder="Nombre" />
+                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <input asp-for="ApellidoPaterno" class="form-control" type="text" placeholder="Apellido materno" />
+                    <span asp-validation-for="ApellidoPaterno" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <input asp-for="ApellidoMaterno" class="form-control" type="text" placeholder="Apellido materno" />
+                    <span asp-validation-for="ApellidoMaterno" class="text-danger small"></span>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <input asp-for="NumeroBoleta" class="form-control" type="number" placeholder="No. de boleta" />
+                    <span asp-validation-for="NumeroBoleta" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
+                        <select asp-for="CarreraId" class="form-select" required>
+                            <option value="" disabled selected hidden>- Carrera -</option>
+                            <option value="1">Mecatrónica</option>
+                            <option value="2">Telemática</option>
+                            <option value="3">Biónica</option>
+                            <option value="4">Energia</option>
+                            <option value="5">ISISA</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="CarreraId" class="text-danger small"></span>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <input asp-for="FechaIngreso" class="form-control" type="date" placeholder="DD/MM/AAAA" />
+                    <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
+                        <select asp-for="PlanEstudioId" class="form-select" required>
+                            <option value="" disabled selected hidden>- Plan de estudio -</option>
+                            <option value="1">1998</option>
+                            <option value="2">2009</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="PlanEstudioId" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary shadow-sm w-100">
+                    Registrar
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>

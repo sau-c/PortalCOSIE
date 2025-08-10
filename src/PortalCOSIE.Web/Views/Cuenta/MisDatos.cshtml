@@ -1,0 +1,102 @@
+﻿@model PortalCOSIE.Application.DTO.Cuenta.AlumnoDTO
+@{
+    ViewData["Title"] = "Mis datos";
+}
+
+<div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+        </div>
+    </div>
+
+    <div class="card-body p-4 overflow-auto" style="height: calc(100vh - 164px);">
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between mb-1">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-circle-user text-primary fs-1 me-3"></i>
+                <div>
+                    <h4 class="mb-0 fw-semibold">@Model.Nombre @Model.ApellidoPaterno @Model.ApellidoMaterno</h4>
+                    <small class="text-muted">@User?.Identity?.Name</small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border-start border-4 border-success ps-3 h-100">
+                    <h6 class="text-success fw-bold mb-3">
+                        <i class="fas fa-graduation-cap me-1"></i> Información Académica
+                    </h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>Fecha ingreso:</strong> @Model.FechaIngreso</li>
+                        <li><strong>Numero de boleta:</strong> @Model.NumeroBoleta</li>
+                        <li><strong>Carrera:</strong> @Model.Carrera</li>
+                        <li><strong>Plan de estudios:</strong> @Model.PlanEstudio</li>
+                    </ul>
+                </div>
+            </div>
+            @* <button class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-pencil-square me-1"></i> Editar datos
+                </button> *@
+        </div>
+
+        <!-- Historial Académico -->
+        <div class="mt-5">
+            <h6 class="fw-bold mb-3"><i class="bi bi-journal-text me-2 text-secondary"></i>Historial Académico</h6>
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Materia</th>
+                        <th>Semestre</th>
+                        <th>Calificación</th>
+                        <th>Estatus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Redes de Computadoras</td>
+                        <td>6º</td>
+                        <td>9.0</td>
+                        <td><span class="badge bg-success">Aprobada</span></td>
+                    </tr>
+                    <tr>
+                        <td>Matemáticas Discretas</td>
+                        <td>3º</td>
+                        <td>7.8</td>
+                        <td><span class="badge bg-success">Aprobada</span></td>
+                    </tr>
+                    <tr>
+                        <td>Programación Web</td>
+                        <td>7º</td>
+                        <td>8.5</td>
+                        <td><span class="badge bg-success">Aprobada</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Documentos -->
+        <div class="mt-5">
+            <h6 class="fw-bold mb-3"><i class="bi bi-folder-check me-2 text-secondary"></i>Documentos Digitales</h6>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Constancia de estudios
+                    <a href="#" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-download me-1"></i> Descargar
+                    </a>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Historial académico completo
+                    <a href="#" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-download me-1"></i> Descargar
+                    </a>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Identificación oficial
+                    <a href="#" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-download me-1"></i> Descargar
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>

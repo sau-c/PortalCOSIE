@@ -1,0 +1,97 @@
+﻿@model PortalCOSIE.Application.DTO.Cuenta.AlumnoDTO
+@{
+    ViewData["Title"] = "Editar usuario: " + Model.Nombre + Model.ApellidoPaterno + Model.ApellidoMaterno;
+}
+
+<div class="card shadow">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-plus me-2"></i>Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body overflow-auto" style="height: calc(100vh - 164px);">
+        
+    </div>
+</div>
+
+<!-- Modal de eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="deleteForm" asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Esta acción no se puede deshacer. Todos los datos asociados al usuario serán eliminados permanentemente.
+                    </div>
+
+                    <div class="mb-3">
+                        <p>¿Está seguro de eliminar el siguiente usuario?</p>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <strong>Nombre:</strong> <span id="modalUserName"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Correo:</strong> <span id="modalUserEmail"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Rol:</strong> <span id="modalUserRole"></span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <input type="hidden" id="modalUserId" name="id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-2"></i>Confirmar eliminación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Configuración de DataTable
+            $('#tblUsuarios').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
+                },
+                paging: false,
+                scrollCollapse: true, //Si hay poco contenido -> no scrollY
+                scrollY: '50vh', //Scroll dinamico
+                //scrollX: true //Scroll dinamico
+            });
+
+            // Manejo del modal de eliminación
+            $('#deleteModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var userId = button.data('user-id');
+                var userName = button.data('user-name');
+                var userEmail = button.data('user-email');
+                var userRole = button.data('user-role');
+
+                var modal = $(this);
+                modal.find('#modalUserId').val(userId);
+                modal.find('#modalUserName').text(userName);
+                modal.find('#modalUserEmail').text(userEmail);
+                modal.find('#modalUserRole').text(userRole);
+            });
+        });
+    </script>
+}
