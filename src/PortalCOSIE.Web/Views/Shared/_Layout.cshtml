@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Portal COSIE</title>
+    <title>@ViewData["Title"] - UPIITA COSIE</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PortalCOSIE.Web.styles.css" asp-append-version="true" />
@@ -37,7 +37,7 @@
 
             <div class="ms-auto d-flex align-items-center gap-3">
                 <!-- Botón de notificaciones -->
-                <div class="dropdown">
+                @* <div class="dropdown">
                     <button class="border-0 rounded-3 px-2 py-1" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-bell"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -52,7 +52,7 @@
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-center" href="#">Ver todas</a></li>
                     </ul>
-                </div>
+                </div>*@
 
                 <!-- Botón de usuario -->
                 <div class="dropdown">
@@ -126,9 +126,13 @@
                 <div id="collapseUsuarios" class="accordion-collapse collapse" aria-labelledby="headingUsuarios"
                      data-bs-parent="#accordionSidebar">
                     <div class="accordion-body">
-                        <a href="@Url.Action("Index", "Usuario")" class="nav-link text-white">
+                        <a href="@Url.Action("Index", "Personal")" class="nav-link text-white">
                             <i class="fas fa-user-lock"></i>
-                            <span class="nav-link-text">Usuarios</span>
+                            <span class="nav-link-text">Personal</span>
+                        </a>
+                        <a href="@Url.Action("Index", "Alumno")" class="nav-link text-white">
+                            <i class="fas fa-user-lock"></i>
+                            <span class="nav-link-text">Alumnos</span>
                         </a>
                         <a href="@Url.Action("Index", "Rol")" class="nav-link text-white">
                             <i class="fas fa-mask"></i>
@@ -157,7 +161,7 @@
     </div>
 
     <footer class="text-center text-muted small py-1">
-        &copy; 2025 - Portal COSIE @("v" + version)
+        &copy; 2025 - UPIITA COSIE @("v" + version)
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

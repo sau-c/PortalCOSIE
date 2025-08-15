@@ -1,4 +1,4 @@
-﻿@model PortalCOSIE.Application.DTO.Cuenta.AlumnoDTO
+﻿@model PortalCOSIE.Application.DTO.Usuario.AlumnoDTO
 @{
     ViewData["Title"] = "Mis datos";
 }
@@ -23,13 +23,13 @@
             <div class="col-md-6">
                 <div class="border-start border-4 border-success ps-3 h-100">
                     <h6 class="text-success fw-bold mb-3">
-                        <i class="fas fa-graduation-cap me-1"></i> Información Académica
+                        <i class="fas fa-graduation-cap me-2"></i>Información Académica
                     </h6>
                     <ul class="list-unstyled mb-0">
                         <li><strong>Fecha ingreso:</strong> @Model.FechaIngreso</li>
                         <li><strong>Numero de boleta:</strong> @Model.NumeroBoleta</li>
-                        <li><strong>Carrera:</strong> @Model.Carrera</li>
-                        <li><strong>Plan de estudios:</strong> @Model.PlanEstudio</li>
+                        <li><strong>Carrera:</strong> @Model.CarreraNombre</li>
+                        <li><strong>Plan de estudios:</strong> @Model.PlanEstudioNombre</li>
                     </ul>
                 </div>
             </div>

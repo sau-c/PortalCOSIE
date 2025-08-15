@@ -1,0 +1,89 @@
+﻿@model PortalCOSIE.Application.DTO.Usuario.AlumnoDTO
+@{
+    ViewData["Title"] = "Editar alumno";
+}
+
+<div class="card shadow">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
+        <form asp-action="Editar" method="post">
+            <h5 class="text-primary"><i class="fas fa-user-circle me-2"></i>Datos personales</h5>
+            <div class="row mb-4">
+                <input type="hidden" asp-for=@Model.IdentityUserId />
+                <div class="col-lg-2 col-md-4">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="@Model.Nombre">
+                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                </div>
+
+                <div class="col-lg-2 col-md-4">
+                    <label for="apellidoPaterno" class="form-label">Apellido paterno:</label>
+                    <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" value="@Model.ApellidoPaterno" required>
+                    <span asp-validation-for="ApellidoPaterno" class="text-danger small"></span>
+                </div>
+
+                <div class="col-lg-2 col-md-4">
+                    <label for="apellidoMaterno" class="form-label">Apellido materno:</label>
+                    <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" value="@Model.ApellidoMaterno" required>
+                    <span asp-validation-for="ApellidoMaterno" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <h5 class="text-primary"><i class="fas fa-graduation-cap me-2"></i>Datos académicos</h5>
+            <div class="row mb-4">
+                <div class="col-lg-2">
+                    <label asp-for="NumeroBoleta" class="form-label">No. de boleta:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-id-card"></i>
+                        </span>
+                        <input asp-for="NumeroBoleta" type="text" class="form-control" required
+                               placeholder="Ej. 2020640595"
+                               maxlength="10"
+                               pattern="\d*"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    </div>
+                    <span asp-validation-for="NumeroBoleta" class="text-danger small"></span>
+                </div>
+                <div class="col-lg-2">
+                    <label asp-for="CarreraId" class="form-label">Carrera:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-university"></i>
+                        </span>
+                        <select asp-for="CarreraId" asp-items="ViewBag.Carreras" class="form-select" required></select>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <label class="form-label">Fecha de ingreso:</label>
+                    <input type="date" class="form-control" id="fechaIngreso" name="fechaIngreso" value="@Model.FechaIngreso.ToString("yyyy-MM-dd")" required>
+                    <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
+                </div>
+                <div class="col-lg-2">
+                    <label asp-for="PlanEstudioId" class="form-label">Plan de estudio:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-book"></i>
+                        </span>
+                        <select asp-for="PlanEstudioId" asp-items="ViewBag.PlanesEstudio" class="form-select" required></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>

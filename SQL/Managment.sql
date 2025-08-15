@@ -26,7 +26,8 @@ select * from AspNetUsers
 --DELETE FROM AspNetUsers
 --DELETE FROM AspNetRoles
 --DELETE FROM AspNetUserRoles
---DELETE FROM Usuario
+--DELETE FROM Usuario 
+--DELETE FROM Alumno
 
 --UPDATE AspNetUsers
 --SET UserName = 'hola'

@@ -9,6 +9,7 @@ using PortalCOSIE.Infrastructure.Data;
 using PortalCOSIE.Infrastructure.Data.Email;
 using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.Repositories;
+using PortalCOSIE.Application.Services;
 
 namespace PortalCOSIE.Infrastructure.IoC
 {
@@ -26,14 +27,18 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
+            services.AddScoped<ICatalogoService, CatalogoService>();
 
-            //Servicios de Dominio
+            //Servicios
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<ITramiteService, TramiteService>();
 
-            //Repositorios de Dominio
+            //Repositorios
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IGenericRepo<Usuario>, GenericRepo<Usuario>>();
             services.AddScoped<IGenericRepo<Alumno>, GenericRepo<Alumno>>();
+            services.AddScoped<IGenericRepo<Carrera>, GenericRepo<Carrera>>();
+            services.AddScoped<IGenericRepo<PlanEstudio>, GenericRepo<PlanEstudio>>();
             services.AddScoped<IGenericRepo<Tramite>, GenericRepo<Tramite>>();
 
             return services;

@@ -11,32 +11,16 @@ namespace PortalCOSIE.Domain.Interfaces
     /// <typeparam name="T">El tipo de entidad gestionada por el repositorio. Debe ser un tipo de referencia.</typeparam>
     public interface IGenericRepo<T> where T : class
     {
-        /// <summary>
-        /// Devuelve todas las entidades del tipo <typeparamref name="T"/>.
-        /// </summary>
-        /// <returns></returns>
-        IQueryable<T> GetAll();
-        /// <summary>
-        /// Devuelve una entidad que cumple con el predicado especificado.
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        //T? Get(Expression<Func<T, bool>> predicate);
-        ///// <summary>
-        ///// Devuelve una lista de entidades que cumplen con el predicado especificado.
-        ///// </summary>
-        ///// <param name="predicate"></param>
-        ///// <returns></returns>
-        //IQueryable<T> GetList(Expression<Func<T, bool>> predicate);
-        /// <summary>
-        /// Devulve una entidad por su identificador.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        T? GetById(int id);
-        void Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
-        void Save();
+        Task<T> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> AddAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task DeleteAsync(T entity);
+
+        // Para eager loading
+        IQueryable<T> Query();
+        //Task<T> GetByIdWithIncludeAsync(int id, params Expression<Func<T, object>>[] includes);
+        Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes);
+        Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes);
     }
 }

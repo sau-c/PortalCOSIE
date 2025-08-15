@@ -7,7 +7,8 @@ namespace PortalCOSIE.Application.Interfaces
     public interface IUsuarioService
     {
         Usuario? BuscarUsuarioPorIdentityId(string id);
-        AlumnoDTO? BuscarAlumnoPorId(string id);
-        Result<string> RegistrarAlumno(RegistrarDTO dto, string userId);
+        Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId);
+        Task<AlumnoDTO?> BuscarAlumno(string id);
+        Task<Result<string>> EditarAlumno(AlumnoDTO dto);
     }
 }

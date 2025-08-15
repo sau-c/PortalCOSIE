@@ -1,49 +1,30 @@
 using PortalCOSIE.Application.DTO.Cuenta;
+using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities;
 using PortalCOSIE.Domain.Interfaces;
+
 
 namespace PortalCOSIE.Application
 {
     public class UsuarioService : IUsuarioService
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepo<Usuario> _usuarioRepository;
-        private readonly IGenericRepo<Alumno> _alumnoRepository;
 
-        public UsuarioService(IGenericRepo<Usuario> usuarioRepository, IGenericRepo<Alumno> alumnoRepository)
+        public UsuarioService(IUnitOfWork unitOfWork, IGenericRepo<Usuario> usuarioRepository)
         {
+            _unitOfWork = unitOfWork;
             _usuarioRepository = usuarioRepository;
-            _alumnoRepository = alumnoRepository;
         }
 
         public Usuario? BuscarUsuarioPorIdentityId(string id)
         {
-            return _usuarioRepository.GetAll().Where(u => u.IdentityUserId == id).FirstOrDefault();
+            return _usuarioRepository.Query().Where(u => u.IdentityUserId == id).FirstOrDefault();
             //return _usuarioRepository.Get(u=>u.IdentityUserId == id);
         }
-        public AlumnoDTO? BuscarAlumnoPorId(string id)
-        {
-            //var testQuery = _usuarioRepository.Get(u => u.Alumno != null && u.IdentityUserId == id);
-            var query = from usuario in _usuarioRepository.GetAll()
-                        join alumno in _alumnoRepository.GetAll()
-                        on usuario.Id equals alumno.Id into alumnoJoin
-                        from alumno in alumnoJoin.DefaultIfEmpty() // Left join
-                        where usuario.IdentityUserId == id
-                        select new AlumnoDTO
-                        {
-                            Nombre = usuario.Nombre,
-                            ApellidoPaterno = usuario.ApellidoPaterno,
-                            ApellidoMaterno = usuario.ApellidoMaterno,
-
-                            // Datos del alumno (si existe)
-                            NumeroBoleta = alumno != null ? alumno.NumeroBoleta : "Dato no encontrado",
-                            Carrera = alumno != null ? alumno.Carrera.Nombre : "Dato no encontrado",
-                            FechaIngreso = alumno != null ? alumno.FechaIngreso.Date : default(DateTime),
-                            PlanEstudio = alumno != null ? alumno.PlanEstudio.Nombre : "Dato no encontrado"
-                        };
-            return query.FirstOrDefault();
-        }
-        public Result<string> RegistrarAlumno(RegistrarDTO dto, string userId)
+        
+        public async Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId)
         {
             var usuario = new Usuario
             {
@@ -53,9 +34,8 @@ namespace PortalCOSIE.Application
                 ApellidoMaterno = dto.ApellidoMaterno
             };
 
-            _usuarioRepository.Add(usuario);
-            _usuarioRepository.Save();
-
+            await _unitOfWork.GenericRepo<Usuario>().AddAsync(usuario);
+            await _unitOfWork.CompleteAsync();
             var alumno = new Alumno
             {
                 Id = usuario.Id,
@@ -64,9 +44,77 @@ namespace PortalCOSIE.Application
                 CarreraId = dto.CarreraId,
                 PlanEstudioId = dto.PlanEstudioId
             };
-            _alumnoRepository.Add(alumno);
-            _alumnoRepository.Save();
+            await _unitOfWork.GenericRepo<Alumno>().AddAsync(alumno);
+            await _unitOfWork.CompleteAsync();
             return Result<string>.Success(alumno.NumeroBoleta);
+        }
+
+        public async Task<AlumnoDTO?> BuscarAlumno(string id)
+        {
+            var usuario = await _usuarioRepository.GetFirstOrDefaultAsync(
+                u => u.IdentityUserId == id,
+                u => u.Alumno,
+                u => u.Alumno.Carrera,
+                u => u.Alumno.PlanEstudio
+                );
+
+            return new AlumnoDTO
+            {
+                IdentityUserId = id,
+                Nombre = usuario.Nombre,
+                ApellidoPaterno = usuario.ApellidoPaterno,
+                ApellidoMaterno = usuario.ApellidoMaterno,
+                NumeroBoleta = usuario.Alumno.NumeroBoleta,
+                FechaIngreso = usuario.Alumno.FechaIngreso,
+                CarreraId = usuario.Alumno.CarreraId,
+                CarreraNombre = usuario.Alumno.Carrera?.Nombre,
+                PlanEstudioId = usuario.Alumno.PlanEstudioId,
+                PlanEstudioNombre = usuario.Alumno.PlanEstudio?.Nombre
+            };
+        }
+
+        public async Task<Result<string>> EditarAlumno(AlumnoDTO dto)
+        {
+            // 1. Validar que el DTO tenga el IdentityUserId
+            if (string.IsNullOrEmpty(dto.IdentityUserId))
+                return Result<string>.Failure("Se requiere el IdentityUserId");
+
+            // 2. Obtener datos existentes
+            var usuario = await _unitOfWork.GenericRepo<Usuario>()
+                .GetFirstOrDefaultAsync(
+                    u => u.IdentityUserId == dto.IdentityUserId,
+                    u => u.Alumno);
+
+            if (usuario == null)
+                return Result<string>.Failure("Usuario no encontrado");
+
+            if (usuario.Alumno == null)
+                return Result<string>.Failure("Registro de alumno no encontrado");
+
+            // 3. Actualizar solo los campos modificados (patch update)
+            usuario.Nombre = dto.Nombre ?? usuario.Nombre;
+            usuario.ApellidoPaterno = dto.ApellidoPaterno ?? usuario.ApellidoPaterno;
+            usuario.ApellidoMaterno = dto.ApellidoMaterno ?? usuario.ApellidoMaterno;
+
+            // 4. Actualizar datos del alumno
+            var alumno = usuario.Alumno;
+            alumno.NumeroBoleta = dto.NumeroBoleta ?? alumno.NumeroBoleta;
+            alumno.CarreraId = dto.CarreraId ?? alumno.CarreraId;
+            alumno.PlanEstudioId = dto.PlanEstudioId ?? alumno.PlanEstudioId;
+
+            // Solo actualizar fecha si es diferente a default
+            if (dto.FechaIngreso != default)
+            {
+                alumno.FechaIngreso = dto.FechaIngreso;
+            }
+
+            // 4. Persistir cambios
+            await _unitOfWork.GenericRepo<Usuario>().UpdateAsync(usuario);
+            var cambios = await _unitOfWork.CompleteAsync();
+
+            return cambios > 0
+                ? Result<string>.Success("Usuario actualizado con éxito")
+                : Result<string>.Failure("No se detectaron cambios para guardar");
         }
     }
 }

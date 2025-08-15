@@ -17,38 +17,60 @@ namespace PortalCOSIE.Infrastructure.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public IQueryable<T> GetAll()
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _dbSet.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await _dbSet.ToListAsync();
+        }
+
+        public IQueryable<T> Query()
         {
             return _dbSet.AsQueryable();
         }
 
-        public T? GetById(int id)
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
         {
-            return _dbSet.Find(id);
+            var query = _dbSet.AsQueryable();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync(filter);
         }
-        //public T? Get(Expression<Func<T, bool>> predicate)
-        //{
-        //    return _dbSet.FirstOrDefault(predicate);
-        //}
-        //public IEnumerable<T> GetList(Expression<Func<T, bool>> predicate)
-        //{
-        //    return _dbSet.Where<T>(predicate).ToList();
-        //}
-        public void Add(T entity)
+
+
+        public async Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
         {
-            _dbSet.Add(entity);
+            var query = _dbSet.AsQueryable();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.ToListAsync();
         }
-        public void Update(T entity)
+
+        public async Task<T> AddAsync(T entity)
         {
-            _dbSet.Update(entity);
+            await _dbSet.AddAsync(entity);
+            return entity;
         }
-        public void Delete(T entity)
+
+        public async Task UpdateAsync(T entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public async Task DeleteAsync(T entity)
         {
             _dbSet.Remove(entity);
-        }
-        public void Save()
-        {
-            _context.SaveChanges();
         }
     }
 }

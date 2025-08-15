@@ -10,10 +10,9 @@ namespace PortalCOSIE.Application.Interfaces
         Task<Result<string>> ConfirmarCorreoAsync(string correo, string token);
         Task<Result<string>> RecuperarContrasenaAsync(CorreoDTO dto);
         Task<Result<string>> RestablecerContrasenaAsync(RestablecerDTO dto);
-        Task<IEnumerable<UsuarioDTO>> ListarUsuarios();
-        Task<Result<string>> EliminarUsuario(string id);
-        Task<Result<string>> EditarUsuario(UsuarioDTO dto);
         Task<IEnumerable<RolConClaimsDTO>> ListarRoles();
+        Task<Result<string>> EliminarUsuario(string id);
+        Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos();
         //Task<Result<IEnumerable<RolConClaimsDTO>>> ListarRoles();
     }
 }

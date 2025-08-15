@@ -1,9 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+}
+
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Portal COSIE</title>
+    <title>@ViewData["Title"] - UPIITA COSIE</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
     <link rel="stylesheet" href="~/PortalCOSIE.Web.styles.css" asp-append-version="true" />
@@ -45,7 +49,7 @@
 
     <!-- Footer fijo al fondo -->
     <footer class="text-center py-3">
-        <p class="mb-0">© @DateTime.Now.Year - PortalCOSIE</p>
+        <p class="mb-0">© @DateTime.Now.Year - UPIITA COSIE @("v" + version)</p>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

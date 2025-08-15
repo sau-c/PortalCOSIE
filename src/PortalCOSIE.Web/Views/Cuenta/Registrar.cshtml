@@ -1,5 +1,4 @@
-﻿@using PortalCOSIE.Application.DTO.Cuenta
-@model RegistrarDTO
+﻿@model PortalCOSIE.Application.DTO.Cuenta.RegistrarDTO
 @{
     ViewData["Title"] = "Registrar cuenta";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
@@ -31,7 +30,12 @@
                     <span asp-validation-for="ApellidoMaterno" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input asp-for="NumeroBoleta" class="form-control" type="number" placeholder="No. de boleta" />
+                    <input asp-for="NumeroBoleta" type="text" class="form-control" required
+                           placeholder="No. de boleta"
+                           maxlength="10"
+                           pattern="\d{0,9}"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                           />
                     <span asp-validation-for="NumeroBoleta" class="text-danger small"></span>
                 </div>
             </div>
@@ -40,19 +44,22 @@
                 <div class="col-lg-6 col-md-6 col-sm-6">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
-                        <select asp-for="CarreraId" class="form-select" required>
-                            <option value="" disabled selected hidden>- Carrera -</option>
-                            <option value="1">Mecatrónica</option>
-                            <option value="2">Telemática</option>
-                            <option value="3">Biónica</option>
-                            <option value="4">Energia</option>
-                            <option value="5">ISISA</option>
+                        <select asp-for="CarreraId" asp-items="ViewBag.Carreras" class="form-select" required>
+                            <option value="">- Carrera -</option>
                         </select>
                     </div>
                     <span asp-validation-for="CarreraId" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input asp-for="FechaIngreso" class="form-control" type="date" placeholder="DD/MM/AAAA" />
+                    <input class="form-control"
+                           id="fechaInput"
+                           placeholder="Fecha ingreso"
+                           onfocus="this.type='date'"
+                           onblur="if(!this.value) this.type='text'"
+                           type="text"
+                           name="FechaIngreso"
+                           asp-for="FechaIngreso" />
+
                     <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
                 </div>
             </div>
@@ -61,10 +68,8 @@
                 <div class="col-lg-6 col-md-6 col-sm-6">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
-                        <select asp-for="PlanEstudioId" class="form-select" required>
-                            <option value="" disabled selected hidden>- Plan de estudio -</option>
-                            <option value="1">1998</option>
-                            <option value="2">2009</option>
+                        <select asp-for="PlanEstudioId" asp-items="ViewBag.PlanesEstudio" class="form-select" required>
+                            <option value="">- Plan de estudio -</option>
                         </select>
                     </div>
                     <span asp-validation-for="PlanEstudioId" class="text-danger small"></span>

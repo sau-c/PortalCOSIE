@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Services;
 using System.Security.Claims;
 
 namespace PortalCOSIE.Web.Controllers
@@ -11,12 +13,14 @@ namespace PortalCOSIE.Web.Controllers
         private readonly IAuthService _authService;
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
+        private readonly ICatalogoService _catalogoService;
 
-        public CuentaController(IAuthService authService, ISecurityService securityService, IUsuarioService usuarioService)
+        public CuentaController(IAuthService authService, ISecurityService securityService, IUsuarioService usuarioService, ICatalogoService catalogoService)
         {
             _authService = authService;
             _securityService = securityService;
             _usuarioService = usuarioService;
+            _catalogoService = catalogoService;
         }
 
         [HttpGet]
@@ -115,14 +119,15 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Registrar()
+        public async Task<IActionResult> Registrar()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null)
             {
                 return RedirectToAction("Index", "Home");
             }
+            ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+            ViewBag.PlanesEstudio = new SelectList(await _catalogoService.ListarPlanesEstudioAsync(), "Id", "Nombre");
             return View();
         }
 
@@ -135,6 +140,8 @@ namespace PortalCOSIE.Web.Controllers
 
             if (!ModelState.IsValid)
             {
+                ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+                ViewBag.PlanesEstudio = new SelectList(await _catalogoService.ListarPlanesEstudioAsync(), "Id", "Nombre");
                 return View(dto);
             }
 
@@ -143,7 +150,7 @@ namespace PortalCOSIE.Web.Controllers
                 ModelState.AddModelError(string.Empty, "No es posible registrar este usuario");
             }
 
-            var result = _usuarioService.RegistrarAlumno(dto, userId);
+            var result = await _usuarioService.RegistrarAlumno(dto, userId);
 
             if (!result.Succeeded)
             {
@@ -218,10 +225,10 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult MisDatos()
+        public async Task<IActionResult> MisDatos()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var alumno = _usuarioService.BuscarAlumnoPorId(userId);
+            var alumno = await _usuarioService.BuscarAlumno(userId);
             if (alumno == null)
             {
                 return RedirectToAction("Index", "Home");

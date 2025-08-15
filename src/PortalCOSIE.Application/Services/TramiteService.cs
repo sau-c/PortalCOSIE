@@ -15,32 +15,29 @@ namespace PortalCOSIE.Application
             _tramiteRepository = tramiteRepository;
         }
 
-        public IEnumerable<Tramite> ListarTodos()
+        public async Task<IEnumerable<Tramite>> ListarTodos()
         {
-            return _tramiteRepository.GetAll();
+            return await _tramiteRepository.GetAllAsync();
         }
-        public Tramite? BuscarPorId(int id)
+        public async Task<Tramite?> BuscarPorId(int id)
         {
-            return _tramiteRepository.GetById(id);
-        }
-
-        public void Crear(Tramite tramite)
-        {
-            _tramiteRepository.Add(tramite);
-            _tramiteRepository.Save();
+            return await _tramiteRepository.GetByIdAsync(id);
         }
 
-        public void Actualizar(Tramite tramite)
+        public async Task<Tramite> Crear(Tramite tramite)
         {
-            _tramiteRepository.Update(tramite);
-            _tramiteRepository.Save();
+            return await _tramiteRepository.AddAsync(tramite);
         }
 
-        public void Eliminar(int id)
+        public async Task Actualizar(Tramite tramite)
         {
-            var tramite = _tramiteRepository.GetById(id);
-            _tramiteRepository.Delete(tramite);
-            _tramiteRepository.Save();
+            await _tramiteRepository.UpdateAsync(tramite);
+        }
+
+        public async Task Eliminar(int id)
+        {
+            var tramite = await _tramiteRepository.GetByIdAsync(id);
+            await _tramiteRepository.DeleteAsync(tramite);
         }
     }
 }
