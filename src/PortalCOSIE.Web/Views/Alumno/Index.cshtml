@@ -3,6 +3,78 @@
     ViewData["Title"] = "Gestión de alumnos";
 }
 
+<style>
+    .editable-cell {
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .editable-email:hover {
+        color: #0d6efd;
+    }
+
+    .editable-role:hover .badge {
+        box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+        transition: all 0.2s;
+    }
+
+    .badge-role {
+        transition: all 0.2s;
+    }
+
+    /*    .role-selector-container {
+                                border-radius: 8px;
+                                overflow: hidden;
+                                border: 1px solid #dee2e6;
+                            }
+
+                            .role-option {
+                                padding: 1rem;
+                                transition: all 0.3s ease;
+                                border-bottom: 1px solid #dee2e6;
+                            }
+
+                                .role-option:last-child {
+                                    border-bottom: none;
+                                }
+
+                                .role-option:hover {
+                                    background-color: #f8f9fa;
+                                    cursor: pointer;
+                                }
+
+                                .role-option.active {
+                                    background-color: #f0f7ff;
+                                }
+
+                            .role-content {
+                                display: flex;
+                                align-items: center;
+                                gap: 1rem;
+                            }
+
+                            .role-icon {
+                                font-size: 1.5rem;
+                                width: 40px;
+                                text-align: center;
+                            }
+
+                            .role-info {
+                                flex-grow: 1;
+                            }
+
+                            .role-title {
+                                font-weight: 600;
+                                margin-bottom: 0.25rem;
+                            }
+
+                            .form-switch .form-check-input {
+                                width: 3em;
+                                height: 1.5em;
+                                margin-left: 0;
+                            } */
+</style>
+
 <div class="card shadow">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
@@ -15,7 +87,7 @@
 
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
         <div class="table-responsive">
-            <table id="tblAlumnos" class="table table-striped table-bordered table-hover w-100">
+            <table id="tblAlumnos" class="table table-striped table-bordered w-100">
                 <thead class="table-secondary">
                     <tr>
                         <th>No. Boleta</th>
@@ -41,53 +113,41 @@
                             <td>@alumno.Carrera</td>
                             <td>@alumno.PlanEstudio</td>
                             <td>@alumno.FechaIngreso.ToString("yyyy-MM-dd")</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">@alumno.Correo</span>
-                                    <button type="button"
-                                            class="btn btn-sm btn-link p-0 text-primary"
-                                            title="Editar correo"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editEmailModal"
-                                            data-user-id="@alumno.IdentityUserId"
-                                            data-user-email="@alumno.Correo">
-                                        <i class="fas fa-edit fa-sm"></i>
-                                    </button>
-                                </div>
+                            <td class="editable-cell editable-email"
+                                title="Editar"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editEmailModal"
+                                data-user-id="@alumno.IdentityUserId"
+                                data-user-email="@alumno.Correo">
+                                @alumno.Correo
                             </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="badge @(alumno.Rol == "Inactivo" ? "bg-danger" : "bg-success") me-2">
-                                        @alumno.Rol
-                                    </span>
-                                    <button type="button"
-                                            class="btn btn-sm btn-link p-0 text-info"
-                                            title="Editar rol"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editRoleModal"
-                                            data-user-id="@alumno.IdentityUserId"
-                                            data-user-role="@alumno.Rol">
-                                        <i class="fas fa-edit fa-sm"></i>
-                                    </button>
-                                </div>
+                            <td class="text-center editable-cell editable-role"
+                                title="Editar"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editRoleModal"
+                                data-user-id="@alumno.IdentityUserId"
+                                data-user-role="@alumno.Rol">
+                                <span class="badge @(alumno.Rol == null ? "bg-danger" : "bg-success") badge-role">
+                                    @(alumno.Rol == null ? "Sin rol" : alumno.Rol)
+                                </span>
                             </td>
                             <td class="text-end">
-                                <div class="btn-group" role="group">
-                                    <a asp-action="Editar" asp-route-id="@alumno.IdentityUserId" class="btn btn-sm btn-outline-primary" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-danger"
-                                            title="Eliminar"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#deleteModal"
-                                            data-user-id="@alumno.IdentityUserId"
-                                            data-user-name="@alumno.Nombre @alumno.ApellidoPaterno @alumno.ApellidoMaterno"
-                                            data-user-email="@alumno.Correo"
-                                            data-user-boleta="@alumno.NumeroBoleta">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
+
+                                <a asp-action="Editar" asp-route-id="@alumno.IdentityUserId" class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Eliminar"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-user-id="@alumno.IdentityUserId"
+                                        data-user-name="@alumno.Nombre @alumno.ApellidoPaterno @alumno.ApellidoMaterno"
+                                        data-user-email="@alumno.Correo"
+                                        data-user-boleta="@alumno.NumeroBoleta">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+
                             </td>
                         </tr>
                     }
@@ -96,9 +156,8 @@
         </div>
     </div>
 </div>
-
 <!-- Modal de eliminación -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="deleteForm" asp-action="Eliminar" method="post">
@@ -144,7 +203,7 @@
 </div>
 
 <!-- Modal para editar correo -->
-<div class="modal fade" id="editEmailModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="editEmailModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="editEmailForm" asp-action="ActualizarCorreo" method="post">
@@ -175,39 +234,28 @@
 </div>
 
 <!-- Modal para editar rol -->
-<div class="modal fade" id="editRoleModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="editRoleModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="editRoleForm" asp-action="ActualizarRol" method="post">
                 @Html.AntiForgeryToken()
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title">Actualizar rol del usuario</h5>
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">Actualizar rol</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Seleccione el rol</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="role" id="roleAlumno" value="Alumno" checked>
-                            <label class="form-check-label" for="roleAlumno">
-                                Alumno
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="role" id="roleInactivo" value="Inactivo">
-                            <label class="form-check-label" for="roleInactivo">
-                                Inactivo (quitar rol)
-                            </label>
-                        </div>
+                        <label class="form-label fw-bold">Esta por activar este alumno, esta seguro?</label>
                     </div>
+                    <input type="hidden" id="isInRole" name="activar" value="false">
                     <input type="hidden" id="roleUserId" name="userId" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn btn-info">
-                        <i class="fas fa-save me-2"></i>Actualizar rol
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save me-2"></i>Guardar cambios
                     </button>
                 </div>
             </form>
@@ -245,22 +293,7 @@
                 modal.find('#emailUserId').val(button.data('user-id'));
                 modal.find('#emailInput').val(button.data('user-email'));
             });
-
-            // Manejo del modal de edición de rol
-            $('#editRoleModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var modal = $(this);
-                modal.find('#roleUserId').val(button.data('user-id'));
-
-                // Establecer el radio button según el rol actual
-                var currentRole = button.data('user-role');
-                if (currentRole === 'Inactivo') {
-                    modal.find('#roleInactivo').prop('checked', true);
-                } else {
-                    modal.find('#roleAlumno').prop('checked', true);
-                }
-            });
-
+            
             // Validación del formulario de correo
             $('#editEmailForm').on('submit', function() {
                 var email = $('#emailInput').val();
@@ -269,6 +302,14 @@
                     return false;
                 }
                 return true;
+            });
+
+            // Configurar el modal al mostrarse
+            $('#editRoleModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                
+                $('#roleUserId').val(button.data('user-id'));
+                $('#activar').val(button.data('user-rol') === "Alumno");
             });
         });
     </script>

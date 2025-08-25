@@ -201,8 +201,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             return Result<string>.Success("Usuario eliminado con éxito");
         }
 
-        ///---------------------------------------------
-
         public async Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos()
         {
             var usuarios = await _usuarioRepository.GetAllWithIncludeAsync(
@@ -219,7 +217,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 if (identityUser == null) continue;
 
                 var roles = await _userManager.GetRolesAsync(identityUser);
-                var rol = roles.FirstOrDefault() ?? "Inactivo";
 
                 alumnosDTO.Add(new AlumnoConIdentityDTO
                 {
@@ -232,11 +229,47 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                     PlanEstudio = usuario.Alumno.PlanEstudio.Nombre,
                     FechaIngreso = usuario.Alumno?.FechaIngreso ?? DateTime.MinValue,
                     Correo = identityUser.Email,
-                    Rol = rol
+                    Rol = roles.FirstOrDefault()
                 });
             }
 
             return alumnosDTO;
+        }
+
+        public async Task<Result<string>> ToggleRol(string userId, bool activar)
+        {
+            // Validaciones básicas
+            if (string.IsNullOrEmpty(userId))
+                return Result<string>.Failure("Se requiere ID de usuario");
+
+            // Obtener usuario
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<string>.Failure("Usuario no encontrado");
+
+            // Verificar si ya tiene el rol
+            bool tieneRol = await _userManager.IsInRoleAsync(user, "Alumno");
+
+            // Alternar rol
+            IdentityResult result;
+
+            if (tieneRol && !activar)
+            {
+                result = await _userManager.RemoveFromRoleAsync(user, "Alumno");
+            }
+            else
+            {
+                // Limpiar otros roles primero
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Count > 0)
+                    await _userManager.RemoveFromRolesAsync(user, roles);
+
+                result = await _userManager.AddToRoleAsync(user, "Alumno");
+            }
+
+            return result.Succeeded
+                ? Result<string>.Success($"Rol Alumno {(tieneRol ? "removido" : "asignado")} correctamente")
+                : Result<string>.Failure($"Error: {string.Join(", ", result.Errors.Select(e => e.Description))}");
         }
 
     }

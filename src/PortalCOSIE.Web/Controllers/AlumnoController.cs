@@ -64,6 +64,15 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> ActualizarRol(string userId, bool activar)
+        {
+            var result = await _securityService.ToggleRol(userId, activar);
+            return RedirectToAction("Index", result);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Eliminar(string id)
         {
             var result = await _securityService.EliminarUsuario(id);
