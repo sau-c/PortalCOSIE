@@ -19,7 +19,7 @@
                     <span asp-validation-for="Nombre" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input asp-for="ApellidoPaterno" class="form-control" type="text" placeholder="Apellido materno" />
+                    <input asp-for="ApellidoPaterno" class="form-control" type="text" placeholder="Apellido paterno" />
                     <span asp-validation-for="ApellidoPaterno" class="text-danger small"></span>
                 </div>
             </div>
@@ -61,18 +61,6 @@
                            asp-for="FechaIngreso" />
 
                     <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-lg-6 col-md-6 col-sm-6">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
-                        <select asp-for="PlanEstudioId" asp-items="ViewBag.PlanesEstudio" class="form-select" required>
-                            <option value="">- Plan de estudio -</option>
-                        </select>
-                    </div>
-                    <span asp-validation-for="PlanEstudioId" class="text-danger small"></span>
                 </div>
             </div>
 

@@ -31,9 +31,6 @@ namespace PortalCOSIE.Application.DTO.Usuario
         [Required(ErrorMessage = "Campo obligatorio.")]
         public string Carrera { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
-        public string PlanEstudio { get; set; }
-
         //Separacion de identity
 
         [Required(ErrorMessage = "Campo obligatorio.")]

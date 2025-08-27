@@ -23,17 +23,9 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
             builder.Property(a => a.CarreraId)
                 .IsRequired();
 
-            builder.Property(a => a.PlanEstudioId)
-                .IsRequired();
-
             builder.HasOne(a => a.Carrera)
                 .WithMany()
                 .HasForeignKey(a => a.CarreraId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(a => a.PlanEstudio)
-                .WithMany()
-                .HasForeignKey(a => a.PlanEstudioId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

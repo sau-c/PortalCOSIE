@@ -41,8 +41,7 @@ namespace PortalCOSIE.Application
                 Id = usuario.Id,
                 NumeroBoleta = dto.NumeroBoleta,
                 FechaIngreso = dto.FechaIngreso,
-                CarreraId = dto.CarreraId,
-                PlanEstudioId = dto.PlanEstudioId
+                CarreraId = dto.CarreraId
             };
             await _unitOfWork.GenericRepo<Alumno>().AddAsync(alumno);
             await _unitOfWork.CompleteAsync();
@@ -54,8 +53,7 @@ namespace PortalCOSIE.Application
             var usuario = await _usuarioRepository.GetFirstOrDefaultAsync(
                 u => u.IdentityUserId == id,
                 u => u.Alumno,
-                u => u.Alumno.Carrera,
-                u => u.Alumno.PlanEstudio
+                u => u.Alumno.Carrera
                 );
 
             return new AlumnoDTO
@@ -67,9 +65,7 @@ namespace PortalCOSIE.Application
                 NumeroBoleta = usuario.Alumno.NumeroBoleta,
                 FechaIngreso = usuario.Alumno.FechaIngreso,
                 CarreraId = usuario.Alumno.CarreraId,
-                CarreraNombre = usuario.Alumno.Carrera?.Nombre,
-                PlanEstudioId = usuario.Alumno.PlanEstudioId,
-                PlanEstudioNombre = usuario.Alumno.PlanEstudio?.Nombre
+                CarreraNombre = usuario.Alumno.Carrera?.Nombre
             };
         }
 
@@ -100,7 +96,6 @@ namespace PortalCOSIE.Application
             var alumno = usuario.Alumno;
             alumno.NumeroBoleta = dto.NumeroBoleta ?? alumno.NumeroBoleta;
             alumno.CarreraId = dto.CarreraId ?? alumno.CarreraId;
-            alumno.PlanEstudioId = dto.PlanEstudioId ?? alumno.PlanEstudioId;
 
             // Solo actualizar fecha si es diferente a default
             if (dto.FechaIngreso != default)

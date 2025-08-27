@@ -127,7 +127,6 @@ namespace PortalCOSIE.Web.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-            ViewBag.PlanesEstudio = new SelectList(await _catalogoService.ListarPlanesEstudioAsync(), "Id", "Nombre");
             return View();
         }
 
@@ -141,7 +140,6 @@ namespace PortalCOSIE.Web.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-                ViewBag.PlanesEstudio = new SelectList(await _catalogoService.ListarPlanesEstudioAsync(), "Id", "Nombre");
                 return View(dto);
             }
 

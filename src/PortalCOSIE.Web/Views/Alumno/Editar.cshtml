@@ -67,15 +67,6 @@
                     <input type="date" class="form-control" id="fechaIngreso" name="fechaIngreso" value="@Model.FechaIngreso.ToString("yyyy-MM-dd")" required>
                     <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
                 </div>
-                <div class="col-lg-2">
-                    <label asp-for="PlanEstudioId" class="form-label">Plan de estudio:</label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-book"></i>
-                        </span>
-                        <select asp-for="PlanEstudioId" asp-items="ViewBag.PlanesEstudio" class="form-select" required></select>
-                    </div>
-                </div>
             </div>
 
             <div class="text-end">

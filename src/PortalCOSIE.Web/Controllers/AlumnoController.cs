@@ -32,7 +32,6 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Editar(string id)
         {
             ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-            ViewBag.PlanesEstudio = new SelectList(await _catalogoService.ListarPlanesEstudioAsync(), "Id", "Nombre");
             return View(await _usuarioService.BuscarAlumno(id));
         }
 
@@ -44,7 +43,6 @@ namespace PortalCOSIE.Web.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-                ViewBag.PlanesEstudio = new SelectList(await _catalogoService.ListarPlanesEstudioAsync(), "Id", "Nombre");
                 
                 return View(dto);
             }

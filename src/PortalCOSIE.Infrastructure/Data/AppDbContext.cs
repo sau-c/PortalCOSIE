@@ -17,7 +17,6 @@ namespace PortalCOSIE.Infrastructure.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Alumno> Alumnos { get; set; }
         public DbSet<Carrera> Carreras { get; set; }
-        public DbSet<PlanEstudio> PlanesEstudio { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
         public DbSet<Documento> Documentos { get; set; }
         public DbSet<Personal> Personales { get; set; }
@@ -28,6 +27,8 @@ namespace PortalCOSIE.Infrastructure.Data
 
             var identityUsers = new List<IdentityUser>();
             var usuarios = new List<Usuario>();
+            var alumnos = new List<Alumno>();
+            var random = new Random();
 
             for (int i = 0; i < 20; i++)
             {
@@ -52,10 +53,19 @@ namespace PortalCOSIE.Infrastructure.Data
                     ApellidoPaterno = $"ApellidoPaterno{i}",
                     ApellidoMaterno = $"ApellidoMaterno{i}"
                 });
+
+                alumnos.Add(new Alumno
+                {
+                    NumeroBoleta = $"202064050{i}",
+                    CarreraId = random.Next(1, 5),
+                    FechaIngreso = DateTime.UtcNow
+                });
+
             }
 
             modelBuilder.Entity<IdentityUser>().HasData(identityUsers);
             modelBuilder.Entity<Usuario>().HasData(usuarios);
+            modelBuilder.Entity<Alumno>().HasData(alumnos);
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }

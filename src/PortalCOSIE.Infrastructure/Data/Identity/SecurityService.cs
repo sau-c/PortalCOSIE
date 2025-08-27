@@ -205,8 +205,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         {
             var usuarios = await _usuarioRepository.GetAllWithIncludeAsync(
                 u => u.Alumno,
-                u => u.Alumno.Carrera,
-                u => u.Alumno.PlanEstudio
+                u => u.Alumno.Carrera
                 );
 
             var alumnosDTO = new List<AlumnoConIdentityDTO>();
@@ -226,7 +225,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                     ApellidoPaterno = usuario.ApellidoPaterno,
                     ApellidoMaterno = usuario.ApellidoMaterno,
                     Carrera = usuario.Alumno.Carrera.Nombre,
-                    PlanEstudio = usuario.Alumno.PlanEstudio.Nombre,
                     FechaIngreso = usuario.Alumno?.FechaIngreso ?? DateTime.MinValue,
                     Correo = identityUser.Email,
                     Rol = roles.FirstOrDefault()
