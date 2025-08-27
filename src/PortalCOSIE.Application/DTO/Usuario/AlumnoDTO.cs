@@ -30,6 +30,7 @@ namespace PortalCOSIE.Application.DTO.Usuario
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         public int? CarreraId { get; set; }
+
         public string? CarreraNombre { get; set; }
     }
 }

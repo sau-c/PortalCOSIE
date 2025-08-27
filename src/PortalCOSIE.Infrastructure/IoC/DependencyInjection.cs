@@ -10,6 +10,7 @@ using PortalCOSIE.Infrastructure.Data.Email;
 using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.Repositories;
 using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Interfaces.Common;
 
 namespace PortalCOSIE.Infrastructure.IoC
 {

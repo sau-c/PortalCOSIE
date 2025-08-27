@@ -30,6 +30,5 @@ namespace PortalCOSIE.Application.DTO.Cuenta
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         public int? CarreraId { get; set; }
-
     }
 }

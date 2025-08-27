@@ -9,6 +9,10 @@ namespace PortalCOSIE.Application.DTO.Cuenta
         public string Correo { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
+        [RegularExpression(@"^\d{1,10}$", ErrorMessage = "Ingrese solo números.")]
+        public string Celular { get; set; }
+
+        [Required(ErrorMessage = "Campo obligatorio.")]
         [DataType(DataType.Password)]
         public string Contrasena { get; set; }
 

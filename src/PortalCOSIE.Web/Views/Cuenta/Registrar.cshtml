@@ -34,8 +34,7 @@
                            placeholder="No. de boleta"
                            maxlength="10"
                            pattern="\d{0,9}"
-                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
-                           />
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                     <span asp-validation-for="NumeroBoleta" class="text-danger small"></span>
                 </div>
             </div>
@@ -61,6 +60,19 @@
                            asp-for="FechaIngreso" />
 
                     <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                        <input asp-for="Celular" type="text" class="form-control" required
+                               placeholder="No. de boleta"
+                               pattern="\d{0,9}"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    </div>
+                    <span asp-validation-for="Celular" class="text-danger small"></span>
                 </div>
             </div>
 

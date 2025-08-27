@@ -30,42 +30,43 @@ namespace PortalCOSIE.Infrastructure.Data
             var alumnos = new List<Alumno>();
             var random = new Random();
 
-            for (int i = 0; i < 20; i++)
-            {
-                identityUsers.Add(new IdentityUser
-                {
-                    Id = $"00000000-0000-0000-0000-00000000000{i + 1}",
-                    UserName = $"correo{i}@gmail.com",
-                    NormalizedUserName = $"CORREO{i}@GMAIL.COM",
-                    Email = $"correo{i}@gmail.com",
-                    NormalizedEmail = $"CORREO{i}@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = "AQAAAAIAAYagAAAAEEFsRVgAvdDEsT2uuQ2Jt59XwO2oGIKQoqpJboUjJRIe6LjN1aSqtor4Jo1ioVdWYg==", // Usa un hash real
-                    SecurityStamp = $"00000000-0000-0000-0000-00000000000{i + 1}",
-                    ConcurrencyStamp = $"00000000-0000-0000-0000-00000000000{i + 1}"
-                });
+            //for (int i = 0; i < 20; i++)
+            //{
+            //    identityUsers.Add(new IdentityUser
+            //    {
+            //        Id = $"00000000-0000-0000-0000-00000000000{i + 1}",
+            //        UserName = $"correo{i}@gmail.com",
+            //        NormalizedUserName = $"CORREO{i}@GMAIL.COM",
+            //        Email = $"correo{i}@gmail.com",
+            //        NormalizedEmail = $"CORREO{i}@GMAIL.COM",
+            //        EmailConfirmed = true,
+            //        PasswordHash = "AQAAAAIAAYagAAAAEEFsRVgAvdDEsT2uuQ2Jt59XwO2oGIKQoqpJboUjJRIe6LjN1aSqtor4Jo1ioVdWYg==", // Usa un hash real
+            //        SecurityStamp = $"00000000-0000-0000-0000-00000000000{i + 1}",
+            //        ConcurrencyStamp = $"00000000-0000-0000-0000-00000000000{i + 1}"
+            //    });
 
-                usuarios.Add(new Usuario
-                {
-                    Id = (i + 1),
-                    IdentityUserId = identityUsers[i].Id,
-                    Nombre = $"Nombre{i}",
-                    ApellidoPaterno = $"ApellidoPaterno{i}",
-                    ApellidoMaterno = $"ApellidoMaterno{i}"
-                });
+            //    usuarios.Add(new Usuario
+            //    {
+            //        Id = (i + 1),
+            //        IdentityUserId = identityUsers[i].Id,
+            //        Nombre = $"Nombre{i}",
+            //        ApellidoPaterno = $"ApellidoPaterno{i}",
+            //        ApellidoMaterno = $"ApellidoMaterno{i}"
+            //    });
 
-                alumnos.Add(new Alumno
-                {
-                    NumeroBoleta = $"202064050{i}",
-                    CarreraId = random.Next(1, 5),
-                    FechaIngreso = DateTime.UtcNow
-                });
+            //    alumnos.Add(new Alumno
+            //    {
+            //        Id = (i+1),
+            //        NumeroBoleta = $"202064050{i}",
+            //        CarreraId = random.Next(1, 5),
+            //        FechaIngreso = DateTime.UtcNow
+            //    });
 
-            }
+            //}
 
-            modelBuilder.Entity<IdentityUser>().HasData(identityUsers);
-            modelBuilder.Entity<Usuario>().HasData(usuarios);
-            modelBuilder.Entity<Alumno>().HasData(alumnos);
+            //modelBuilder.Entity<IdentityUser>().HasData(identityUsers);
+            //modelBuilder.Entity<Usuario>().HasData(usuarios);
+            //modelBuilder.Entity<Alumno>().HasData(alumnos);
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }

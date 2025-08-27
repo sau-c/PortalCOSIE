@@ -1,0 +1,173 @@
+﻿@{
+    ViewData["Title"] = "Dictamen interno (CTE)";
+    var periodos = new[] { "2026/1", "2025/2", "2025/1", "2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2" };
+}
+
+<div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-2"></i>Volver
+        </a>
+    </div>
+
+    <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
+        <form asp-action="SolicitarCTE" asp-controller="Tramite" enctype="multipart/form-data" method="post">
+
+            <!-- === DATOS GENERALES === -->
+            <fieldset class="border rounded p-3 mb-3">
+                <legend class="float-none w-auto px-2 text-primary fs-5">
+                    <i class="fas fa-user-edit me-2"></i>Datos generales del solicitante
+                </legend>
+
+                <div class="row align-items-center">
+                    <div class="col-lg-10">
+                        <label for="txtSituacion" class="form-label">
+                            <i class="fas fa-info-circle me-1 text-muted"></i>Escriba claramente su situación:
+                        </label>
+                        <textarea class="form-control" id="txtSituacion" name="txtSituacion" rows="3"></textarea>
+                    </div>
+
+                    <div class="col-lg-2 text-center mt-3 mt-lg-0">
+                        <label for="chkAnterior" class="form-label d-block">
+                            <i class="fas fa-history me-1 text-muted"></i>Dictámenes anteriores
+                        </label>
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" id="chkAnterior" name="chkAnterior">
+                            <label class="form-check-label" for="chkAnterior">Sí</label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- === UNIDADES REPROBADAS === -->
+            <fieldset class="border rounded p-3 mb-3">
+                <legend class="float-none w-auto px-2 text-primary fs-5">
+                    <i class="fas fa-book-open me-2"></i>Unidades de aprendizaje reprobadas
+                </legend>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-center" id="tabla-unidades">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Unidad reprobada</th>
+                                <th>Semestre</th>
+                                <th>Cuándo cursó</th>
+                                <th>Cuándo recursó</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="btn btn-success mt-2" id="agregarFila">
+                    <i class="fas fa-plus me-2"></i>Agregar
+                </button>
+
+                <!-- Template para clonar -->
+                <template id="filaTemplate">
+                    <tr>
+                        <td>
+                            <select class="form-select" name="unidad[]">
+                                <option value="">Seleccione...</option>
+                                <option>Matemáticas</option>
+                                <option>Física</option>
+                                <option>Programación</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select" name="semestre[]">
+                                <option value="">Seleccione...</option>
+                                @for (int i = 1; i <= 10; i++)
+                                {
+                                    <option>@i°</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select" name="periodoCursado[]">
+                                <option value="">Seleccione...</option>
+                                @foreach (var p in periodos)
+                                {
+                                    <option>@p</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select" name="periodoRecursado[]">
+                                <option value="">Seleccione...</option>
+                                @foreach (var p in periodos)
+                                {
+                                    <option>@p</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm eliminarFila" title="Eliminar fila">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </template>
+            </fieldset>
+
+            <!-- === DOCUMENTOS === -->
+            <fieldset class="border rounded p-3 mb-4">
+                <legend class="float-none w-auto px-2 text-primary fs-5">
+                    <i class="fas fa-file-upload me-2"></i>Documentos
+                </legend>
+
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label for="fileMotivos" class="form-label">
+                            <i class="fas fa-file-alt me-1 text-muted"></i>Carta exposición de motivos
+                        </label>
+                        <input type="file" class="form-control" id="fileMotivos" name="fileMotivos" accept=".pdf" />
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="fileEvidencias" class="form-label">
+                            <i class="fas fa-clipboard-check me-1 text-muted"></i>Evidencias
+                        </label>
+                        <input type="file" class="form-control" id="fileEvidencias" name="fileEvidencias" accept=".pdf" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label for="fileIdentificacion" class="form-label">
+                            <i class="fas fa-id-card me-1 text-muted"></i>Identificación
+                        </label>
+                        <input type="file" class="form-control" id="fileIdentificacion" name="fileIdentificacion" accept=".pdf" />
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- BOTÓN FINAL -->
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane me-2"></i>Solicitar trámite
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const $tabla = $('#tabla-unidades tbody');
+            const template = $('#filaTemplate')[0].content;
+
+            $('#agregarFila').on('click', function () {
+                const $nuevaFila = $(document.importNode(template, true));
+                $tabla.append($nuevaFila);
+            });
+
+            $tabla.on('click', '.eliminarFila', function () {
+                $(this).closest('tr').remove();
+            });
+        });
+    </script>
+}
+

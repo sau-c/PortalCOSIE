@@ -1,16 +1,19 @@
 ﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Tramite>
 @{
-    ViewData["Title"] = "Mis tramites";
+    ViewData["Title"] = "Tramites";
 }
 
 <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
-            <h6 class="mb-0 fw-bold py-2">Mis tramites</h6>
+            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
         </div>
         <div>
-            <a asp-action="Crear" class="btn btn-primary btn-sm shadow-sm">
-                <i class="fas fa-plus me-2"></i>Nuevo
+            <a asp-action="SolicitarCTE" class="btn btn-primary btn-sm shadow-sm">
+                <i class="fas fa-plus me-2"></i>Solicitar interno (CTE)
+            </a>
+            <a asp-action="SolicitarCGC" class="btn btn-warning btn-sm shadow-sm">
+                <i class="fas fa-plus me-2"></i>Solicitar externo (CGC)
             </a>
         </div>
     </div>
