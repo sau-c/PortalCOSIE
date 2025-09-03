@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PortalCOSIE.Application;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Application.Interfaces.Common;
-using PortalCOSIE.Domain.Entities;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -12,23 +9,31 @@ namespace PortalCOSIE.Web.Controllers
     public class TramiteController : Controller
     {
         private readonly ITramiteService _tramiteService;
-        public TramiteController(ITramiteService tramiteService)
+        private readonly ICatalogoService _catalogoService;
+
+        public TramiteController(ITramiteService tramiteService, ICatalogoService catalogoService)
         {
             _tramiteService = tramiteService;
+            _catalogoService = catalogoService;
         }
 
         [HttpGet]
+        [Authorize(Roles = "Alumno")]
         public async Task<IActionResult> Index()
         {
             return View(await _tramiteService.ListarTodos());
         }
 
         [HttpGet]
-        public IActionResult SolicitarCTE() {
+        [Authorize(Roles = "Alumno")]
+        public async Task<IActionResult> SolicitarCTE()
+        {
+            ViewBag.Unidades = new SelectList(await _catalogoService.ListarUnidadesAprendizajeAsync(), "Id", "Nombre", "Semestre");
             return View();
         }
 
         [HttpGet]
+        [Authorize(Roles = "Alumno")]
         public IActionResult SolicitarCGC()
         {
             return View();

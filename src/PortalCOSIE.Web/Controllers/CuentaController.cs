@@ -122,7 +122,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Registrar()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null)
+            if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null || User.IsInRole("Administrador"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -135,15 +135,14 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Registrar(RegistrarDTO dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (!ModelState.IsValid)
             {
                 ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
                 return View(dto);
             }
 
-            if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null || User.IsInRole("Administrador"))
             {
                 ModelState.AddModelError(string.Empty, "No es posible registrar este usuario");
             }

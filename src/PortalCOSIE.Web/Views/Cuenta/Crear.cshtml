@@ -26,6 +26,20 @@
             <div class="row mb-3">
                 <div class="col">
                     <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                        <input asp-for="Celular" class="form-control" type="tel" required
+                               placeholder="Celular"
+                               maxlength="10"
+                               pattern="\d{0,9}"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    </div>
+                    <span asp-validation-for="Celular" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-lock"></i></span>
                         <input asp-for="Contrasena" class="form-control" placeholder="Contraseña" />
                     </div>

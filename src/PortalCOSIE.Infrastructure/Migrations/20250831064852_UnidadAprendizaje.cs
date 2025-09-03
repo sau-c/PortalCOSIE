@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Correccion : Migration
+    public partial class UnidadAprendizaje : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -195,6 +195,27 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UnidadAprendizaje",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CarreraId = table.Column<int>(type: "int", nullable: false),
+                    Semestre = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UnidadAprendizaje", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UnidadAprendizaje_Carrera_CarreraId",
+                        column: x => x.CarreraId,
+                        principalTable: "Carrera",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Alumno",
                 columns: table => new
                 {
@@ -299,6 +320,16 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     { 5, "Carrera centrada en la optimización de procesos.", "ISISA" }
                 });
 
+            migrationBuilder.InsertData(
+                table: "UnidadAprendizaje",
+                columns: new[] { "Id", "CarreraId", "Nombre", "Semestre" },
+                values: new object[,]
+                {
+                    { 1, 1, "Calculo diferencial e integral", 1 },
+                    { 2, 1, "Calculo vectorial", 2 },
+                    { 3, 1, "Senales y sistemas", 8 }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Alumno_CarreraId",
                 table: "Alumno",
@@ -365,6 +396,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 column: "PersonalId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UnidadAprendizaje_CarreraId",
+                table: "UnidadAprendizaje",
+                column: "CarreraId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Usuario_IdentityUserId",
                 table: "Usuario",
                 column: "IdentityUserId");
@@ -390,6 +426,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Documento");
+
+            migrationBuilder.DropTable(
+                name: "UnidadAprendizaje");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

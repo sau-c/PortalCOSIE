@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Gestión de alumnos";
 }
-
 <style>
     .editable-cell {
         cursor: pointer;
@@ -13,66 +12,20 @@
         color: #0d6efd;
     }
 
-    .editable-role:hover .badge {
-        box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
-        transition: all 0.2s;
+    .toggle-role-btn:hover .badge {
+        transform: scale(1.05);
+        transition: transform 0.2s ease;
+    }
+
+    .toggle-role-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+        border-radius: 4px;
     }
 
     .badge-role {
         transition: all 0.2s;
     }
-
-    /*    .role-selector-container {
-                                border-radius: 8px;
-                                overflow: hidden;
-                                border: 1px solid #dee2e6;
-                            }
-
-                            .role-option {
-                                padding: 1rem;
-                                transition: all 0.3s ease;
-                                border-bottom: 1px solid #dee2e6;
-                            }
-
-                                .role-option:last-child {
-                                    border-bottom: none;
-                                }
-
-                                .role-option:hover {
-                                    background-color: #f8f9fa;
-                                    cursor: pointer;
-                                }
-
-                                .role-option.active {
-                                    background-color: #f0f7ff;
-                                }
-
-                            .role-content {
-                                display: flex;
-                                align-items: center;
-                                gap: 1rem;
-                            }
-
-                            .role-icon {
-                                font-size: 1.5rem;
-                                width: 40px;
-                                text-align: center;
-                            }
-
-                            .role-info {
-                                flex-grow: 1;
-                            }
-
-                            .role-title {
-                                font-weight: 600;
-                                margin-bottom: 0.25rem;
-                            }
-
-                            .form-switch .form-check-input {
-                                width: 3em;
-                                height: 1.5em;
-                                margin-left: 0;
-                            } */
 </style>
 
 <div class="card shadow">
@@ -84,7 +37,6 @@
             </a>
         </div>
     </div>
-
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
         <div class="table-responsive">
             <table id="tblAlumnos" class="table table-striped table-bordered w-100">
@@ -97,6 +49,7 @@
                         <th>Carrera</th>
                         <th>Fecha ingreso</th>
                         <th>Correo</th>
+                        <th>Celular</th>
                         <th>Rol</th>
                         <th class="text-end">Acciones</th>
                     </tr>
@@ -119,18 +72,29 @@
                                 data-user-email="@alumno.Correo">
                                 @alumno.Correo
                             </td>
-                            <td class="text-center editable-cell editable-role"
+                            <td class="editable-cell editable-email"
                                 title="Editar"
                                 data-bs-toggle="modal"
-                                data-bs-target="#editRoleModal"
+                                data-bs-target="#editPhoneModal"
                                 data-user-id="@alumno.IdentityUserId"
-                                data-user-role="@alumno.Rol">
-                                <span class="badge @(alumno.Rol == null ? "bg-danger" : "bg-success") badge-role">
-                                    @(alumno.Rol == null ? "Sin rol" : alumno.Rol)
-                                </span>
+                                data-user-phone="@alumno.Celular">
+                                @alumno.Celular
                             </td>
-                            <td class="text-end">
-
+                            <td class="text-center">
+                                <button type="button"
+                                        class="btn btn-link p-0 border-0 bg-transparent toggle-role-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#toggleRoleModal"
+                                        data-user-id="@alumno.IdentityUserId"
+                                        data-current-role="@(alumno.Rol ?? "Inactivo")"
+                                        data-role-type="Alumno"
+                                        title="Cambiar estado">
+                                    <span class="badge @(string.IsNullOrEmpty(alumno.Rol) ? "bg-danger" : "bg-success") badge-role">
+                                        @(string.IsNullOrEmpty(alumno.Rol) ? "Inactivo" : alumno.Rol)
+                                    </span>
+                                </button>
+                            </td>
+                            <td class="text-center">
                                 <a asp-action="Editar" asp-route-id="@alumno.IdentityUserId" class="btn btn-sm btn-outline-primary" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -145,7 +109,6 @@
                                         data-user-boleta="@alumno.NumeroBoleta">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
-
                             </td>
                         </tr>
                     }
@@ -154,6 +117,7 @@
         </div>
     </div>
 </div>
+
 <!-- Modal de eliminación -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -169,7 +133,6 @@
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         Esta acción no se puede deshacer. Todos los datos asociados al usuario serán eliminados permanentemente.
                     </div>
-
                     <div class="mb-3">
                         <p>¿Está seguro de eliminar el siguiente alumno?</p>
                         <ul class="list-group">
@@ -184,7 +147,6 @@
                             </li>
                         </ul>
                     </div>
-
                     <input type="hidden" id="modalUserId" name="id" />
                 </div>
                 <div class="modal-footer">
@@ -231,29 +193,63 @@
     </div>
 </div>
 
-<!-- Modal para editar rol -->
-<div class="modal fade" id="editRoleModal" tabindex="-1">
+<!-- Modal para editar celular -->
+<div class="modal fade" id="editPhoneModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="editRoleForm" asp-action="ActualizarRol" method="post">
+            <form id="editPhoneForm" asp-action="ActualizarCelular" method="post">
                 @Html.AntiForgeryToken()
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title">Actualizar rol</h5>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Actualizar celular</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Esta por activar este alumno, esta seguro?</label>
+                        <label for="phoneInput" class="form-label">Nuevo celular</label>
+                        <input type="tel" class="form-control" id="phoneInput" name="celular" required>
+                        <div class="form-text">El usuario recibirá un correo para confirmar el cambio</div>
                     </div>
-                    <input type="hidden" id="isInRole" name="activar" value="false">
-                    <input type="hidden" id="roleUserId" name="userId" />
+                    <input type="hidden" id="phoneUserId" name="userId" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn btn-warning">
+                    <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-2"></i>Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Toggle de Rol (NUEVO) -->
+<div class="modal fade" id="toggleRoleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="toggleRoleForm" asp-action="ActualizarRol" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header" id="modalHeader">
+                    <h5 class="modal-title">
+                        <i id="modalIcon" class="me-2"></i>
+                        <span id="modalTitle">Cambiar Estado</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <div id="modalMessage" class="alert" role="alert"></div>
+                    </div>
+                    <input type="hidden" id="userId" name="userId" />
+                    <input type="hidden" id="rol" name="rol" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" id="confirmButton" class="btn">
+                        <i class="fas fa-check me-2"></i>Confirmar
                     </button>
                 </div>
             </form>
@@ -291,7 +287,15 @@
                 modal.find('#emailUserId').val(button.data('user-id'));
                 modal.find('#emailInput').val(button.data('user-email'));
             });
-            
+
+            // Manejo del modal de edición de celular
+            $('#editPhoneModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var modal = $(this);
+                modal.find('#phoneUserId').val(button.data('user-id'));
+                modal.find('#phoneInput').val(button.data('user-phone'));
+            });
+
             // Validación del formulario de correo
             $('#editEmailForm').on('submit', function() {
                 var email = $('#emailInput').val();
@@ -302,12 +306,59 @@
                 return true;
             });
 
-            // Configurar el modal al mostrarse
-            $('#editRoleModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                
-                $('#roleUserId').val(button.data('user-id'));
-                $('#activar').val(button.data('user-rol') === "Alumno");
+            // Validación del formulario de celular
+            $('#editPhoneForm').on('submit', function() {
+                var phone = $('#phoneInput').val();
+                if (!phone) {
+                    alert('Por favor ingrese un número de celular válido');
+                    return false;
+                }
+                return true;
+            });
+
+            // ========== NUEVO: Modal para Toggle de Rol ==========
+            $('#toggleRoleModal').on('show.bs.modal', function (event) {
+                const button = $(event.relatedTarget);
+                const userId = button.data('user-id');
+                const currentRole = button.data('current-role');
+                const roleType = button.data('role-type'); // "Alumno"
+
+                // Configurar campos ocultos
+                $('#userId').val(userId);
+                $('#rol').val(roleType);
+
+                // Configurar contenido del modal según el estado actual
+                const isActive = currentRole !== 'Inactivo';
+
+                if (isActive) {
+                    // Usuario está activo, se va a desactivar
+                    $('#modalHeader').removeClass('bg-success').addClass('bg-warning text-dark');
+                    $('#modalIcon').removeClass().addClass('fas fa-user-slash');
+                    $('#modalTitle').text('Desactivar Usuario');
+                    $('#modalMessage')
+                        .removeClass('alert-success')
+                        .addClass('alert-warning')
+                        .html(`<strong>¿Desactivar usuario?</strong><br>
+                               El usuario perderá el rol de "<strong>${roleType}</strong>" y su acceso al sistema será revocado.`);
+                    $('#confirmButton')
+                        .removeClass('btn-success')
+                        .addClass('btn-warning')
+                        .html('<i class="fas fa-user-slash me-2"></i>Desactivar');
+                } else {
+                    // Usuario está inactivo, se va a activar
+                    $('#modalHeader').removeClass('bg-warning text-dark').addClass('bg-success text-white');
+                    $('#modalIcon').removeClass().addClass('fas fa-user-check');
+                    $('#modalTitle').text('Activar Usuario');
+                    $('#modalMessage')
+                        .removeClass('alert-warning')
+                        .addClass('alert-success')
+                        .html(`<strong>¿Activar usuario?</strong><br>
+                               El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema.`);
+                    $('#confirmButton')
+                        .removeClass('btn-warning')
+                        .addClass('btn-success')
+                        .html('<i class="fas fa-user-check me-2"></i>Activar');
+                }
             });
         });
     </script>

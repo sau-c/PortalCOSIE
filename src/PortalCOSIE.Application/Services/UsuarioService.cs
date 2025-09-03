@@ -56,6 +56,9 @@ namespace PortalCOSIE.Application
                 u => u.Alumno.Carrera
                 );
 
+            if (usuario == null)
+                return null;
+
             return new AlumnoDTO
             {
                 IdentityUserId = id,

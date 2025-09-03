@@ -4,5 +4,7 @@
     {
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
+
+        public virtual ICollection<UnidadAprendizaje> UnidadesAprendizaje { get; set; } = new List<UnidadAprendizaje>();
     }
 }

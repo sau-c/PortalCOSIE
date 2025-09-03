@@ -10,7 +10,6 @@ using PortalCOSIE.Infrastructure.Data.Email;
 using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.Repositories;
 using PortalCOSIE.Application.Services;
-using PortalCOSIE.Application.Interfaces.Common;
 
 namespace PortalCOSIE.Infrastructure.IoC
 {
@@ -40,6 +39,7 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IGenericRepo<Alumno>, GenericRepo<Alumno>>();
             services.AddScoped<IGenericRepo<Carrera>, GenericRepo<Carrera>>();
             services.AddScoped<IGenericRepo<Tramite>, GenericRepo<Tramite>>();
+            services.AddScoped<IGenericRepo<UnidadAprendizaje>, GenericRepo<UnidadAprendizaje>>();
 
             return services;
         }

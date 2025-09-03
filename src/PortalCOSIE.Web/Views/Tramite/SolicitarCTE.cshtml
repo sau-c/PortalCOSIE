@@ -1,4 +1,5 @@
-﻿@{
+﻿@model PortalCOSIE.Application.DTO.Tramite.SolicitarCteDTO
+@{
     ViewData["Title"] = "Dictamen interno (CTE)";
     var periodos = new[] { "2026/1", "2025/2", "2025/1", "2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2" };
 }
@@ -43,7 +44,7 @@
             <!-- === UNIDADES REPROBADAS === -->
             <fieldset class="border rounded p-3 mb-3">
                 <legend class="float-none w-auto px-2 text-primary fs-5">
-                    <i class="fas fa-book-open me-2"></i>Unidades de aprendizaje reprobadas
+                    <i class="fas fa-book me-2"></i>Unidades de aprendizaje reprobadas
                 </legend>
 
                 <div class="table-responsive">
@@ -69,12 +70,16 @@
                 <template id="filaTemplate">
                     <tr>
                         <td>
-                            <select class="form-select" name="unidad[]">
+                            @* <select class="form-select" name="unidad[]">
                                 <option value="">Seleccione...</option>
                                 <option>Matemáticas</option>
                                 <option>Física</option>
                                 <option>Programación</option>
+                            </select> *@
+                            <select asp-for="UnidadesAprendizaje" asp-items="ViewBag.Unidades" class="form-select" required>
+                                <option value="">Seleccione...</option>
                             </select>
+                            <span asp-validation-for="UnidadesAprendizaje" class="text-danger small"></span>
                         </td>
                         <td>
                             <select class="form-select" name="semestre[]">
@@ -142,6 +147,13 @@
                     </div>
                 </div>
             </fieldset>
+
+            <p class="text-muted">
+                <i>
+                    Que enterado bajo protesta de decir la verdad que lo asentado en esta solicitud y sus anexos son
+                    verdad, y que conozco las sanciones reglamentarias a que me hago acreedor en caso de incurrir en alguna falta.
+                </i>
+            </p>
 
             <!-- BOTÓN FINAL -->
             <div class="text-end">

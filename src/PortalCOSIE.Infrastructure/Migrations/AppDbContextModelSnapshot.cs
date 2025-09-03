@@ -372,6 +372,55 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.ToTable("Tramite", (string)null);
                 });
 
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.UnidadAprendizaje", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CarreraId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Semestre")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarreraId");
+
+                    b.ToTable("UnidadAprendizaje", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CarreraId = 1,
+                            Nombre = "Calculo diferencial e integral",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CarreraId = 1,
+                            Nombre = "Calculo vectorial",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CarreraId = 1,
+                            Nombre = "Senales y sistemas",
+                            Semestre = 8
+                        });
+                });
+
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -517,6 +566,17 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Navigation("Personal");
                 });
 
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.UnidadAprendizaje", b =>
+                {
+                    b.HasOne("PortalCOSIE.Domain.Entities.Carrera", "Carrera")
+                        .WithMany("UnidadesAprendizaje")
+                        .HasForeignKey("CarreraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Carrera");
+                });
+
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Usuario", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
@@ -524,6 +584,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .HasForeignKey("IdentityUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Carrera", b =>
+                {
+                    b.Navigation("UnidadesAprendizaje");
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Usuario", b =>
