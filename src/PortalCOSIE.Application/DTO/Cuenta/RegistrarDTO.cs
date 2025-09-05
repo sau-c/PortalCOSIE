@@ -25,8 +25,7 @@ namespace PortalCOSIE.Application.DTO.Cuenta
         public string NumeroBoleta { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
-        [DataType(DataType.Date)]
-        public DateTime FechaIngreso { get; set; }
+        public string PeriodoIngreso { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         public int? CarreraId { get; set; }

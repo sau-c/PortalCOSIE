@@ -14,5 +14,6 @@ namespace PortalCOSIE.Application.Interfaces
         Task<Result<string>> ToggleRol(string userId, string rol);
         Task<IEnumerable<RolConClaimsDTO>> ListarRoles();
         Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos();
+        Task<IEnumerable<PersonalConIdentityDTO>> ListarPersonal();
     }
 }

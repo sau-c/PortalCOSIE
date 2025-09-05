@@ -40,7 +40,7 @@ namespace PortalCOSIE.Application
             {
                 Id = usuario.Id,
                 NumeroBoleta = dto.NumeroBoleta,
-                FechaIngreso = dto.FechaIngreso,
+                PeriodoIngreso = dto.PeriodoIngreso,
                 CarreraId = dto.CarreraId
             };
             await _unitOfWork.GenericRepo<Alumno>().AddAsync(alumno);
@@ -66,7 +66,7 @@ namespace PortalCOSIE.Application
                 ApellidoPaterno = usuario.ApellidoPaterno,
                 ApellidoMaterno = usuario.ApellidoMaterno,
                 NumeroBoleta = usuario.Alumno.NumeroBoleta,
-                FechaIngreso = usuario.Alumno.FechaIngreso,
+                PeriodoIngreso = usuario.Alumno.PeriodoIngreso,
                 CarreraId = usuario.Alumno.CarreraId,
                 CarreraNombre = usuario.Alumno.Carrera?.Nombre
             };
@@ -101,9 +101,9 @@ namespace PortalCOSIE.Application
             alumno.CarreraId = dto.CarreraId ?? alumno.CarreraId;
 
             // Solo actualizar fecha si es diferente a default
-            if (dto.FechaIngreso != default)
+            if (dto.PeriodoIngreso != default)
             {
-                alumno.FechaIngreso = dto.FechaIngreso;
+                alumno.PeriodoIngreso = dto.PeriodoIngreso;
             }
 
             // 4. Persistir cambios
@@ -113,6 +113,24 @@ namespace PortalCOSIE.Application
             return cambios > 0
                 ? Result<string>.Success("Usuario actualizado con éxito")
                 : Result<string>.Failure("No se detectaron cambios para guardar");
+        }
+
+        public async Task<PersonalDTO?> BuscarPersonal(string id)
+        {
+            var personal = await _usuarioRepository.GetFirstOrDefaultAsync(
+                u => u.IdentityUserId == id
+                );
+
+            if (personal == null)
+                return null;
+
+            return new PersonalDTO
+            {
+                IdentityUserId = id,
+                Nombre = personal.Nombre,
+                ApellidoPaterno = personal.ApellidoPaterno,
+                ApellidoMaterno = personal.ApellidoMaterno
+            };
         }
     }
 }

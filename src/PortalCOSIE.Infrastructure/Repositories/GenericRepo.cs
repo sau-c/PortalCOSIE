@@ -44,19 +44,6 @@ namespace PortalCOSIE.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(filter);
         }
 
-
-        public async Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
-        {
-            var query = _dbSet.AsQueryable();
-
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-
-            return await query.ToListAsync();
-        }
-
         public async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);

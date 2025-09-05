@@ -21,8 +21,7 @@ namespace PortalCOSIE.Application.DTO.Usuario
         public string ApellidoMaterno { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
-        [DataType(DataType.Date, ErrorMessage = "Formato de fecha inválido")]
-        public DateTime FechaIngreso { get; set; }
+        public string PeriodoIngreso { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         [StringLength(10, ErrorMessage = "Máximo 10 numeros")]

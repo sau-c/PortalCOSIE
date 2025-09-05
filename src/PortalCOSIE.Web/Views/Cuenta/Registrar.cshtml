@@ -50,15 +50,9 @@
                     <span asp-validation-for="CarreraId" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input class="form-control"
-                           id="fechaInput"
-                           placeholder="Fecha ingreso"
-                           onfocus="this.type='date'"
-                           onblur="if(!this.value) this.type='text'"
-                           type="text"
-                           name="FechaIngreso"
-                           asp-for="FechaIngreso" />
-                    <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
+                    <input asp-for="PeriodoIngreso" type="text" class="form-control" placeholder="Periodo ingreso"/>
+                    @* <select asp-for="PeriodoIngreso" asp-items="ViewBag.Periodos" class="form-select" required></select> *@
+                    <span asp-validation-for="PeriodoIngreso" class="text-danger small"></span>
                 </div>
             </div>
 

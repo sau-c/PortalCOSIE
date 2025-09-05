@@ -19,8 +19,6 @@ namespace PortalCOSIE.Domain.Interfaces
 
         // Para eager loading
         IQueryable<T> Query();
-        //Task<T> GetByIdWithIncludeAsync(int id, params Expression<Func<T, object>>[] includes);
         Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes);
-        Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes);
     }
 }

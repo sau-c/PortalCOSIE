@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UnidadAprendizaje : Migration
+    public partial class CorreccionJeanny : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -221,7 +221,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
                     NumeroBoleta = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PeriodoIngreso = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CarreraId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

@@ -24,15 +24,28 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index()
         {
-            return View(await _securityService.ListarAlumnos());
+            return View(await _securityService.ListarPersonal());
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult Crear()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult Crear(PersonalConIdentityDTO dto)
+        {
+            return Redirect("Index");
         }
 
         [HttpGet]
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Editar(string id)
         {
-            ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-            return View(await _usuarioService.BuscarAlumno(id));
+            return View(await _usuarioService.BuscarPersonal(id));
         }
 
         [HttpPost]

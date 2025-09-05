@@ -228,13 +228,14 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<int>("CarreraId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("FechaIngreso")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("NumeroBoleta")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PeriodoIngreso")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

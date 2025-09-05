@@ -3,7 +3,7 @@
     public class Alumno : BaseEntity
     {
         public string NumeroBoleta { get; set; }
-        public DateTime FechaIngreso { get; set; }
+        public string PeriodoIngreso { get; set; }
         public int? CarreraId { get; set; }
         
         public virtual Carrera Carrera { get; set; }

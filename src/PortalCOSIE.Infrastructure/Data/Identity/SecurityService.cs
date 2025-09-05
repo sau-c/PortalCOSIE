@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Rol;
@@ -175,10 +176,11 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         }
         public async Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos()
         {
-            var usuarios = await _usuarioRepository.GetAllWithIncludeAsync(
-                u => u.Alumno,
-                u => u.Alumno.Carrera
-                );
+            var usuarios = await _usuarioRepository.Query()
+                .Where(u => u.Alumno != null)
+                .Include(u => u.Alumno)
+                .Include(u => u.Alumno.Carrera)
+                .ToListAsync();
 
             var alumnosDTO = new List<AlumnoConIdentityDTO>();
 
@@ -197,7 +199,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                     ApellidoPaterno = usuario.ApellidoPaterno,
                     ApellidoMaterno = usuario.ApellidoMaterno,
                     Carrera = usuario.Alumno.Carrera.Nombre,
-                    FechaIngreso = usuario.Alumno?.FechaIngreso ?? DateTime.MinValue,
+                    PeriodoIngreso = usuario.Alumno.PeriodoIngreso,
                     Correo = identityUser.Email,
                     Celular = identityUser.PhoneNumber,
                     Rol = roles.FirstOrDefault()
@@ -285,6 +287,35 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             }
 
             return rolesData;
+        }
+        public async Task<IEnumerable<PersonalConIdentityDTO>> ListarPersonal()
+        {
+            var usuarios = await _usuarioRepository.Query()
+                .Where(u => u.Personal != null)
+                .Include(u => u.Personal)
+                .ToListAsync();
+
+            var personalDTO = new List<PersonalConIdentityDTO>();
+
+            foreach (var usuario in usuarios)
+            {
+                var identityUser = await _userManager.FindByIdAsync(usuario.IdentityUserId);
+                if (identityUser == null) continue;
+
+                var roles = await _userManager.GetRolesAsync(identityUser);
+
+                personalDTO.Add(new PersonalConIdentityDTO
+                {
+                    IdentityUserId = identityUser.Id,
+                    Nombre = usuario.Nombre,
+                    ApellidoPaterno = usuario.ApellidoPaterno,
+                    ApellidoMaterno = usuario.ApellidoMaterno,
+                    Correo = identityUser.Email,
+                    Rol = roles.FirstOrDefault()
+                });
+            }
+
+            return personalDTO;
         }
     }
 }

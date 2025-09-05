@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Data;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250831064852_UnidadAprendizaje")]
-    partial class UnidadAprendizaje
+    [Migration("20250903220342_CorreccionJeanny")]
+    partial class CorreccionJeanny
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -231,13 +231,14 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<int>("CarreraId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("FechaIngreso")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("NumeroBoleta")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PeriodoIngreso")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

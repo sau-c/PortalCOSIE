@@ -17,7 +17,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
             builder.HasIndex(a => a.NumeroBoleta)
                 .IsUnique();
 
-            builder.Property(a => a.FechaIngreso)
+            builder.Property(a => a.PeriodoIngreso)
                 .IsRequired();
 
             builder.Property(a => a.CarreraId)

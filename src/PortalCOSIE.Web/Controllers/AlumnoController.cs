@@ -43,7 +43,6 @@ namespace PortalCOSIE.Web.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-                
                 return View(dto);
             }
             var result = await _usuarioService.EditarAlumno(dto);

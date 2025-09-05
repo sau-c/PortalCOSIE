@@ -21,21 +21,21 @@
                 </legend>
                 <div class="row mb-4">
                     <input type="hidden" asp-for=@Model.IdentityUserId />
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-3 col-md-4">
                         <label for="nombre" class="form-label">Nombre:</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" value="@Model.Nombre">
+                        <input asp-for="Nombre" type="text" class="form-control" value="@Model.Nombre" required>
                         <span asp-validation-for="Nombre" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-3 col-md-4">
                         <label for="apellidoPaterno" class="form-label">Apellido paterno:</label>
-                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" value="@Model.ApellidoPaterno" required>
+                        <input asp-for="ApellidoPaterno" type="text" class="form-control" value="@Model.ApellidoPaterno" required>
                         <span asp-validation-for="ApellidoPaterno" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-3 col-md-4">
                         <label for="apellidoMaterno" class="form-label">Apellido materno:</label>
-                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" value="@Model.ApellidoMaterno" required>
+                        <input asp-for="ApellidoMaterno" type="text" class="form-control" value="@Model.ApellidoMaterno" required>
                         <span asp-validation-for="ApellidoMaterno" class="text-danger small"></span>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                     <i class="fas fa-graduation-cap me-2"></i>Datos académicos
                 </legend>
                 <div class="row mb-4">
-                    <div class="col-lg-2">
+                    <div class="col-lg-3">
                         <label asp-for="NumeroBoleta" class="form-label">No. de boleta:</label>
                         <div class="input-group">
                             <span class="input-group-text">
@@ -61,7 +61,7 @@
                         </div>
                         <span asp-validation-for="NumeroBoleta" class="text-danger small"></span>
                     </div>
-                    <div class="col-lg-2">
+                    <div class="col-lg-3">
                         <label asp-for="CarreraId" class="form-label">Carrera:</label>
                         <div class="input-group">
                             <span class="input-group-text">
@@ -70,10 +70,11 @@
                             <select asp-for="CarreraId" asp-items="ViewBag.Carreras" class="form-select" required></select>
                         </div>
                     </div>
-                    <div class="col-lg-2">
-                        <label class="form-label">Fecha de ingreso:</label>
-                        <input type="date" class="form-control" id="fechaIngreso" name="fechaIngreso" value="@Model.FechaIngreso.ToString("yyyy-MM-dd")" required>
-                        <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
+                    <div class="col-lg-3">
+                        <label class="form-label">Periodo de ingreso:</label>
+                        <input asp-for="PeriodoIngreso" type="text" class="form-control" value="@Model.PeriodoIngreso" required >
+                        @* <select asp-for="PeriodoIngreso" asp-items="ViewBag.Periodos" class="form-select" required></select> *@
+                        <span asp-validation-for="PeriodoIngreso" class="text-danger small"></span>
                     </div>
                 </div>
             </fieldset>

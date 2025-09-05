@@ -9,6 +9,7 @@ namespace PortalCOSIE.Application.Interfaces
         Usuario? BuscarUsuarioPorIdentityId(string id);
         Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId);
         Task<AlumnoDTO?> BuscarAlumno(string id);
+        Task<PersonalDTO?> BuscarPersonal(string id);
         Task<Result<string>> EditarAlumno(AlumnoDTO dto);
     }
 }
