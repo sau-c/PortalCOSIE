@@ -32,6 +32,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Editar(string id)
         {
             ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+            ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
             return View(await _usuarioService.BuscarAlumno(id));
         }
 

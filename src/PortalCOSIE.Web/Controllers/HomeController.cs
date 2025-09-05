@@ -17,6 +17,7 @@ namespace PortalCOSIE.Web.Controllers
         }
         [HttpGet]
         public IActionResult Index()
+        
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

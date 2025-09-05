@@ -14,15 +14,12 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(c => c.Descripcion)
-                .HasMaxLength(250);
-
             builder.HasData(
-                new Carrera { Id = 1, Nombre = "Mecatrónica", Descripcion = "Carrera centrada en la optimización de procesos tecnologicos e industriales." },
-                new Carrera { Id = 2, Nombre = "Telemática", Descripcion = "Carrera enfocada en el desarrollo de telecomunicaciones y sistemas computacionales." },
-                new Carrera { Id = 3, Nombre = "Biónica", Descripcion = "Carrera centrada en la optimización de procesos." },
-                new Carrera { Id = 4, Nombre = "Energía", Descripcion = "Carrera centrada en la optimización de procesos." },
-                new Carrera { Id = 5, Nombre = "ISISA", Descripcion = "Carrera centrada en la optimización de procesos." }
+                new Carrera { Id = 1, Nombre = "Mecatrónica"},
+                new Carrera { Id = 2, Nombre = "Telemática"},
+                new Carrera { Id = 3, Nombre = "Biónica"},
+                new Carrera { Id = 4, Nombre = "Energía"},
+                new Carrera { Id = 5, Nombre = "ISISA"}
             );
         }
     }

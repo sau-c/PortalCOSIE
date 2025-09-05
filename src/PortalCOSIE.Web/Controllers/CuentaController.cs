@@ -122,11 +122,12 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Registrar()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null || User.IsInRole("Administrador"))
+            if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null || User.IsInRole("Administrador, Personal"))
             {
                 return RedirectToAction("Index", "Home");
             }
             ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+            ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
             return View();
         }
 

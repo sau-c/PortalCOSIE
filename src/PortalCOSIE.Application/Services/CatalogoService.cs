@@ -21,6 +21,20 @@ namespace PortalCOSIE.Application.Services
             return carreras.Select(c => new Carrera { Id = c.Id, Nombre = c.Nombre });
         }
 
+        public IEnumerable<object> ListarPeriodos()
+        {
+            var periodos = new List<object>();
+            int periodoActual = DateTime.Now.Year + 1;
+            
+            for (int año = 2010; año <= periodoActual; año++)
+            {
+                periodos.Add(new { Id = $"{año}1", Periodo = $"{año}/1" });
+                periodos.Add(new { Id = $"{año}2", Periodo = $"{año}/2" });
+            }
+
+            return periodos;
+        }
+
         public async Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAprendizajeAsync()
         {
             var unidades = await _unidadRepository.GetAllAsync();

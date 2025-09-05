@@ -18,7 +18,7 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Alumno")]
+        [Authorize(Roles = "Administrador, Personal, Alumno")]
         public async Task<IActionResult> Index()
         {
             return View(await _tramiteService.ListarTodos());
@@ -28,7 +28,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Alumno")]
         public async Task<IActionResult> SolicitarCTE()
         {
-            ViewBag.Unidades = new SelectList(await _catalogoService.ListarUnidadesAprendizajeAsync(), "Id", "Nombre", "Semestre");
+            ViewBag.Unidades = new SelectList(await _catalogoService.ListarUnidadesAprendizajeAsync(), "Id", "Nombre");
             return View();
         }
 

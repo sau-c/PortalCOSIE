@@ -90,15 +90,15 @@
 
             <!-- Trámites -->
             <div class="accordion-item bg-transparent border-0">
-                <h2 class="accordion-header" id="headingTramites">
+                <h2 class="accordion-header" id="headingGestion">
                     <button class="accordion-button collapsed shadow-none" type="button"
                             data-bs-toggle="collapse" data-bs-target="#collapseTramites"
                             aria-expanded="false" aria-controls="collapseTramites">
                         <i class="fas fa-folder"></i>
-                        <span class="nav-link-text">Gestión de trámites</span>
+                        <span class="nav-link-text">Gestión documental</span>
                     </button>
                 </h2>
-                <div id="collapseTramites" class="accordion-collapse collapse" aria-labelledby="headingTramites"
+                <div id="collapseTramites" class="accordion-collapse collapse" aria-labelledby="headingGestion"
                      data-bs-parent="#accordionSidebar">
                     <div class="accordion-body">
                         <a href="@Url.Action("Index", "Tramite")" class="nav-link text-white">
@@ -116,6 +116,34 @@
                     </div>
                 </div>
             </div>
+
+            @* <div class="accordion-item bg-transparent border-0">
+                <h2 class="accordion-header" id="headingSeguimiento">
+                    <button class="accordion-button collapsed shadow-none" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseTramites"
+                            aria-expanded="false" aria-controls="collapseTramites">
+                        <i class="fas fa-folder"></i>
+                        <span class="nav-link-text">Seguimiento</span>
+                    </button>
+                </h2>
+                <div id="collapseTramites" class="accordion-collapse collapse" aria-labelledby="headingSeguimiento"
+                     data-bs-parent="#accordionSidebar">
+                    <div class="accordion-body">
+                        <a href="@Url.Action("Index", "Tramite")" class="nav-link text-white">
+                            <i class="fas fa-search"></i>
+                            <span class="nav-link-text">Trámites</span>
+                        </a>
+                        <a href="@Url.Action("SolicitarCTE", "Tramite")" class="nav-link text-white">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="nav-link-text">Dictamen interno (CTE)</span>
+                        </a>
+                        <a href="@Url.Action("SolicitarCGC", "Tramite")" class="nav-link text-white">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="nav-link-text">Dictamen externo (CGC)</span>
+                        </a>
+                    </div>
+                </div>
+            </div> *@
 
             <!-- Usuarios -->
             <div class="accordion-item bg-transparent border-0">

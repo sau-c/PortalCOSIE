@@ -20,7 +20,7 @@ namespace PortalCOSIE.Application.DTO.Cuenta
         public string ApellidoMaterno { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
-        [StringLength(10, ErrorMessage = "Máximo 10 numeros")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Ingrese solo 10 numeros")]
         [RegularExpression(@"^\d{1,10}$", ErrorMessage = "Ingrese solo números.")]
         public string NumeroBoleta { get; set; }
 

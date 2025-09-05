@@ -72,8 +72,9 @@
                     </div>
                     <div class="col-lg-3">
                         <label class="form-label">Periodo de ingreso:</label>
-                        <input asp-for="PeriodoIngreso" type="text" class="form-control" value="@Model.PeriodoIngreso" required >
-                        @* <select asp-for="PeriodoIngreso" asp-items="ViewBag.Periodos" class="form-select" required></select> *@
+                        <select asp-for="PeriodoIngreso" asp-items="ViewBag.Periodos" class="form-select" required>
+                            <option value="">- Periodo ingreso -</option>
+                        </select>
                         <span asp-validation-for="PeriodoIngreso" class="text-danger small"></span>
                     </div>
                 </div>

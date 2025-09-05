@@ -50,8 +50,9 @@
                     <span asp-validation-for="CarreraId" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input asp-for="PeriodoIngreso" type="text" class="form-control" placeholder="Periodo ingreso"/>
-                    @* <select asp-for="PeriodoIngreso" asp-items="ViewBag.Periodos" class="form-select" required></select> *@
+                    <select asp-for="PeriodoIngreso" asp-items="ViewBag.Periodos" class="form-select" required>
+                        <option value="">- Periodo ingreso -</option>
+                    </select>
                     <span asp-validation-for="PeriodoIngreso" class="text-danger small"></span>
                 </div>
             </div>

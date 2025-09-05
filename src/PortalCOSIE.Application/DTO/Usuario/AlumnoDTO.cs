@@ -24,7 +24,7 @@ namespace PortalCOSIE.Application.DTO.Usuario
         public string PeriodoIngreso { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
-        [StringLength(10, ErrorMessage = "Máximo 10 numeros")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Ingrese solo 10 numeros")]
         public string NumeroBoleta { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
