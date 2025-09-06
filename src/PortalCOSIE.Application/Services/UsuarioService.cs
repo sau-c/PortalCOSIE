@@ -23,9 +23,18 @@ namespace PortalCOSIE.Application
             return _usuarioRepository.Query().Where(u => u.IdentityUserId == id).FirstOrDefault();
             //return _usuarioRepository.Get(u=>u.IdentityUserId == id);
         }
-        
+
         public async Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId)
         {
+            var alumnoPorBoleta = _usuarioRepository.Query().Where(
+                u => u.Alumno.NumeroBoleta == dto.NumeroBoleta
+                ).FirstOrDefault();
+
+            if (alumnoPorBoleta != null)
+            {
+                return Result<string>.Failure("El número de boleta ya existe");
+            }
+
             var usuario = new Usuario
             {
                 IdentityUserId = userId,
@@ -74,6 +83,16 @@ namespace PortalCOSIE.Application
 
         public async Task<Result<string>> EditarAlumno(AlumnoDTO dto)
         {
+            var alumnoPorBoleta = _usuarioRepository.Query().Where(
+                u => u.Alumno.NumeroBoleta == dto.NumeroBoleta
+                && u.IdentityUserId != dto.IdentityUserId
+                ).FirstOrDefault();
+
+            if (alumnoPorBoleta != null)
+            {
+                return Result<string>.Failure("El número de boleta ya existe");
+            }
+
             // 1. Validar que el DTO tenga el IdentityUserId
             if (string.IsNullOrEmpty(dto.IdentityUserId))
                 return Result<string>.Failure("Se requiere el IdentityUserId");
@@ -99,12 +118,7 @@ namespace PortalCOSIE.Application
             var alumno = usuario.Alumno;
             alumno.NumeroBoleta = dto.NumeroBoleta ?? alumno.NumeroBoleta;
             alumno.CarreraId = dto.CarreraId ?? alumno.CarreraId;
-
-            // Solo actualizar fecha si es diferente a default
-            if (dto.PeriodoIngreso != default)
-            {
-                alumno.PeriodoIngreso = dto.PeriodoIngreso;
-            }
+            alumno.PeriodoIngreso = dto.PeriodoIngreso;
 
             // 4. Persistir cambios
             await _unitOfWork.GenericRepo<Usuario>().UpdateAsync(usuario);

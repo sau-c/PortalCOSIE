@@ -139,6 +139,7 @@ namespace PortalCOSIE.Web.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+                ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
                 return View(dto);
             }
 
@@ -155,6 +156,8 @@ namespace PortalCOSIE.Web.Controllers
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error);
+                    ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+                    ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
                 }
                 return View(dto);
             }

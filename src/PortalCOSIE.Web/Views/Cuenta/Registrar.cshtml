@@ -50,9 +50,12 @@
                     <span asp-validation-for="CarreraId" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <select asp-for="PeriodoIngreso" asp-items="ViewBag.Periodos" class="form-select" required>
-                        <option value="">- Periodo ingreso -</option>
-                    </select>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                        <select asp-for="PeriodoIngreso" asp-items="ViewBag.Periodos" class="form-select" required>
+                            <option value="">- Periodo ingreso -</option>
+                        </select>
+                    </div>
                     <span asp-validation-for="PeriodoIngreso" class="text-danger small"></span>
                 </div>
             </div>

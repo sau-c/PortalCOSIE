@@ -44,14 +44,17 @@ namespace PortalCOSIE.Web.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+                ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
                 return View(dto);
             }
             var result = await _usuarioService.EditarAlumno(dto);
-            
+
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
                 {
+                    ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+                    ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
                     ModelState.AddModelError(string.Empty, error);
                 }
                 return View(dto);
