@@ -94,7 +94,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             var user = await _userManager.FindByEmailAsync(dto.Correo);
 
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-                return Result<string>.Failure("No se puede restablecer la contraseña. Verifica que el correo sea correcto y esté confirmado.");
+                return Result<string>.Failure("No se puede recuperar la contraseña. Verifica que el correo sea correcto y esté confirmado.");
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);

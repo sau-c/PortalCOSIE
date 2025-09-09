@@ -21,7 +21,7 @@
                                 Para completar tu registro, por favor confirma tu correo electrónico haciendo clic en el siguiente botón:
                             </p>
                             <p style=""text-align: center; margin: 30px 0;"">
-                                <a href=""https://localhost:7276/Cuenta/Confirmar?correo='{correo}'&token='{encodedToken}'"" style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                                <a href=""https://localhost:7276/Cuenta/Confirmar?correo={correo}&token={encodedToken}"" style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
                                 Confirmar cuenta
                                 </a>
                             </p>
@@ -61,7 +61,7 @@
                             Hemos recibido una solicitud para restablecer tu contraseña. Si realizaste esta solicitud, haz clic en el botón de abajo para continuar:
                             </p>
                             <p style=""text-align: center; margin: 30px 0;"">
-                            <a href=""https://localhost:7276/Cuenta/Restablecer?correo='{correo}'&token='{encodedToken}'"" style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                            <a href=""https://localhost:7276/Cuenta/Restablecer?correo={correo}&token={encodedToken}"" style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
                                 Restablecer contraseña
                             </a>
                             </p>
