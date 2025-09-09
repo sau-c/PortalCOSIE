@@ -1,13 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using PortalCOSIE.Application;
-using System.Net;
-using System.Net.Mail;
-
-namespace PortalCOSIE.Infrastructure.Data.Email
+﻿namespace PortalCOSIE.Infrastructure.Data.Email
 {
     public static class HtmlTemplates
     {
-        public static string ConfirmarCorreoHtml(string url)
+        public static string ConfirmarCorreoHtml(string correo, string encodedToken)
         {
             return $@"
             <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
@@ -26,7 +21,7 @@ namespace PortalCOSIE.Infrastructure.Data.Email
                                 Para completar tu registro, por favor confirma tu correo electrónico haciendo clic en el siguiente botón:
                             </p>
                             <p style=""text-align: center; margin: 30px 0;"">
-                                <a href='{url}' style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                                <a href=""https://localhost:7276/Cuenta/Confirmar?correo='{correo}'&token='{encodedToken}'"" style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
                                 Confirmar cuenta
                                 </a>
                             </p>
@@ -47,7 +42,7 @@ namespace PortalCOSIE.Infrastructure.Data.Email
             </body>";
         }
 
-        public static string RecuperarContrasenaHtml(string url)
+        public static string RecuperarContrasenaHtml(string correo, string encodedToken)
         {
             return $@"
             <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
@@ -66,7 +61,7 @@ namespace PortalCOSIE.Infrastructure.Data.Email
                             Hemos recibido una solicitud para restablecer tu contraseña. Si realizaste esta solicitud, haz clic en el botón de abajo para continuar:
                             </p>
                             <p style=""text-align: center; margin: 30px 0;"">
-                            <a href='{url}' style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                            <a href=""https://localhost:7276/Cuenta/Restablecer?correo='{correo}'&token='{encodedToken}'"" style=""display: inline-block; background-color: #1d72b8; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
                                 Restablecer contraseña
                             </a>
                             </p>
@@ -87,7 +82,7 @@ namespace PortalCOSIE.Infrastructure.Data.Email
             </body>";
         }
 
-        public static string ContrasenaCambiadaHtml(string url)
+        public static string ContrasenaRestablecidaHtml()
         {
             return $@"
             <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
@@ -106,7 +101,7 @@ namespace PortalCOSIE.Infrastructure.Data.Email
                                 Queremos informarte que la contraseña de tu cuenta fue cambiada recientemente. Si fuiste tú quien realizó este cambio, no necesitas hacer nada más. Si no reconoces esta actividad, por favor restablece tu contraseña de inmediato.
                             </p>
                             <p style=""text-align: center; margin: 30px 0;"">
-                            <a href='{url}' style=""display: inline-block; background-color: #FF0000; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                            <a href=""https://localhost:7276/Cuenta/Recuperar"" style=""display: inline-block; background-color: #FF0000; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
                                 Recuperar contraseña
                             </a>
                             </p>

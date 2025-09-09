@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
@@ -11,7 +10,6 @@ using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Infrastructure.Data.Email;
 using System.Data;
 using System.Net;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PortalCOSIE.Infrastructure.Data.Identity
 {
@@ -21,20 +19,17 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IGenericRepo<Usuario> _usuarioRepository;
         private readonly IEmailSender _emailSender;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IGenericRepo<Usuario> usuarioRepository,
-            IEmailSender emailSender,
-            IHttpContextAccessor httpContextAccessor)
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _usuarioRepository = usuarioRepository;
             _emailSender = emailSender;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto)
@@ -56,13 +51,10 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
 
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext == null)
-                return Result<string>.Failure("No se pudo determinar el origen del contexto HTTP");
-            var dominio = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
-            var url = $"{dominio}/Cuenta/Confirmar?correo={dto.Correo}&token={encodedToken}";
-
-            var correo = await _emailSender.SendEmailAsync(dto.Correo, "Confirma tu cuenta", HtmlTemplates.ConfirmarCorreoHtml(url));
+            var correo = await _emailSender.SendEmailAsync(
+                dto.Correo,
+                "Confirma tu cuenta",
+                HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken));
 
             if (!correo.Succeeded)
             {
@@ -107,18 +99,10 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
 
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext == null)
-                return Result<string>.Failure("No se pudo determinar el origen del contexto HTTP");
-
-            var dominio = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
-
-            var url = $"{dominio}/Cuenta/Restablecer?correo={dto.Correo}&token={encodedToken}";
-
             var envio = await _emailSender.SendEmailAsync(
                 dto.Correo,
-                "Restablece tu contraseña",
-                HtmlTemplates.RecuperarContrasenaHtml(url)
+                "Recupera tu contraseña",
+                HtmlTemplates.RecuperarContrasenaHtml(dto.Correo, encodedToken)
             );
 
             if (!envio.Succeeded)
@@ -140,18 +124,10 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 return Result<string>.Failure(errors);
             }
 
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext == null)
-                return Result<string>.Failure("No se pudo determinar el origen del contexto HTTP");
-
-            var dominio = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
-
-            var url = $"{dominio}/Cuenta/Recuperar";
-
             var envio = await _emailSender.SendEmailAsync(
                 dto.Correo,
-                "Tu contraseña ha sido cambiada con éxito",
-                HtmlTemplates.ContrasenaCambiadaHtml(url)
+                "Contraseña restablecida con éxito",
+                HtmlTemplates.ContrasenaRestablecidaHtml()
             );
 
             if (!envio.Succeeded)
