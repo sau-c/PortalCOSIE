@@ -1,0 +1,201 @@
+@startchen
+title Diagrama Entidad-Relación PortalCOSIE\n Portal de apoyo
+
+' === ENTIDADES PRINCIPALES ===
+
+entity "AspNetUsers" as ASPNETUSERS {
+  Id <<key>>
+  UserName
+  NormalizedUserName
+  Email
+  NormalizedEmail
+  EmailConfirmed
+  PasswordHash
+  SecurityStamp
+  ConcurrencyStamp
+  PhoneNumber
+  PhoneNumberConfirmed
+  TwoFactorEnabled
+  LockoutEnd
+  LockoutEnabled
+  AccessFailedCount
+}
+
+entity "AspNetRoles" as ASPNETROLES {
+  Id <<key>>
+  Name
+  NormalizedName
+  ConcurrencyStamp
+}
+
+entity "Usuario" as USUARIO {
+  Id <<key>>
+  IdentityUserId
+  Nombre
+  ApellidoPaterno
+  ApellidoMaterno
+}
+
+entity "Carrera" as CARRERA {
+  Id <<key>>
+  Nombre
+}
+
+entity "Alumno" as ALUMNO <<weak>> {
+  Id <<key>>
+  NumeroBoleta
+  PeriodoIngreso
+  CarreraId
+}
+
+entity "Personal" as PERSONAL <<weak>> {
+  Id <<key>>
+  IdPersonal
+}
+
+entity "UnidadAprendizaje" as UNIDADAPRENDIZAJE {
+  Id <<key>>
+  Nombre
+  CarreraId
+  Semestre
+}
+
+entity "Tramite" as TRAMITE {
+  Id <<key>>
+  AlumnoId
+  PersonalId
+  FechaSolicitud
+  FechaConclusion
+}
+
+entity "Documento" as DOCUMENTO {
+  Id <<key>>
+  Nombre
+  Comentario
+  TramiteId
+}
+
+' === ENTIDADES INTERMEDIAS (DÉBILES) ===
+
+entity "AspNetUserRoles" as ASPNETUSERROLES <<weak>> {
+  UserId <<key>>
+  RoleId <<key>>
+}
+
+entity "AspNetUserTokens" as ASPNETUSERTOKENS <<weak>> {
+  UserId <<key>>
+  LoginProvider <<key>>
+  Name <<key>>
+  Value
+}
+
+entity "AspNetUserClaims" as ASPNETUSERCLAIMS <<weak>> {
+  Id <<key>>
+  UserId
+  ClaimType
+  ClaimValue
+}
+
+entity "AspNetUserLogins" as ASPNETUSERLOGINS <<weak>> {
+  LoginProvider <<key>>
+  ProviderKey <<key>>
+  ProviderDisplayName
+  UserId
+}
+
+entity "AspNetRoleClaims" as ASPNETROLECLAIMS <<weak>> {
+  Id <<key>>
+  RoleId
+  ClaimType
+  ClaimValue
+}
+
+' === RELACIONES ===
+
+relationship "AUTENTICA" as AUTENTICA {
+}
+
+relationship "ES_ALUMNO" as ES_ALUMNO <<identifying>> {
+}
+
+relationship "ES_PERSONAL" as ES_PERSONAL <<identifying>> {
+}
+
+relationship "PERTENECE_A" as PERTENECE_A {
+}
+
+relationship "INCLUYE" as INCLUYE {
+}
+
+relationship "SOLICITA" as SOLICITA {
+}
+
+relationship "ATIENDE" as ATIENDE {
+}
+
+relationship "GENERA" as GENERA {
+}
+
+relationship "TIENE_ROL" as TIENE_ROL <<identifying>> {
+}
+
+relationship "POSEE_TOKEN" as POSEE_TOKEN <<identifying>> {
+}
+
+relationship "TIENE_CLAIM" as TIENE_CLAIM <<identifying>> {
+}
+
+relationship "TIENE_LOGIN" as TIENE_LOGIN <<identifying>> {
+}
+
+relationship "ROL_CLAIM" as ROL_CLAIM <<identifying>> {
+}
+
+' === CONEXIONES ORGANIZADAS ===
+
+' Grupo 1: Sistema de Autenticación (vertical)
+ASPNETUSERS -1- AUTENTICA
+AUTENTICA -1- USUARIO
+
+ASPNETUSERS -1- TIENE_ROL
+TIENE_ROL =N= ASPNETUSERROLES
+ASPNETUSERROLES =N= TIENE_ROL
+TIENE_ROL -1- ASPNETROLES
+
+ASPNETUSERS -1- POSEE_TOKEN
+POSEE_TOKEN =N= ASPNETUSERTOKENS
+
+ASPNETUSERS -1- TIENE_CLAIM
+TIENE_CLAIM =N= ASPNETUSERCLAIMS
+
+ASPNETUSERS -1- TIENE_LOGIN
+TIENE_LOGIN =N= ASPNETUSERLOGINS
+
+ASPNETROLES -1- ROL_CLAIM
+ROL_CLAIM =N= ASPNETROLECLAIMS
+
+' Grupo 2: Especialización de Usuario (vertical)
+USUARIO =1= ES_ALUMNO
+ES_ALUMNO -1- ALUMNO
+
+USUARIO =1= ES_PERSONAL
+ES_PERSONAL -1- PERSONAL
+
+' Grupo 3: Relaciones Académicas (vertical)
+CARRERA -1- PERTENECE_A
+PERTENECE_A -N- ALUMNO
+
+CARRERA -1- INCLUYE
+INCLUYE -N- UNIDADAPRENDIZAJE
+
+' Grupo 4: Gestión de Trámites (vertical)
+ALUMNO -1- SOLICITA
+SOLICITA -N- TRAMITE
+
+PERSONAL -1- ATIENDE
+ATIENDE -N- TRAMITE
+
+TRAMITE -1- GENERA
+GENERA -N- DOCUMENTO
+
+@endchen

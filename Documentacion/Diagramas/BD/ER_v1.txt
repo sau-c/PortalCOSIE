@@ -1,0 +1,141 @@
+@startchen
+!theme plain
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 50
+skinparam minlen 2
+skinparam entityFontSize 9
+skinparam relationshipFontSize 8
+
+title PortalCOSIE - Diagrama ER \nPortal de apoyo
+
+' === ENTIDADES CORE DEL NEGOCIO ===
+entity "Usuario" as USUARIO {
+  Id <<key>>
+  IdentityUserId
+  Nombre
+  ApellidoPaterno
+  ApellidoMaterno
+}
+
+entity "Carrera" as CARRERA {
+  Id <<key>>
+  Nombre
+}
+
+entity "Alumno" as ALUMNO <<weak>> {
+  Id <<key>>
+  NumeroBoleta
+  PeriodoIngreso
+  CarreraId
+}
+
+entity "Personal" as PERSONAL <<weak>> {
+  Id <<key>>
+  IdPersonal
+}
+
+entity "Tramite" as TRAMITE {
+  Id <<key>>
+  AlumnoId
+  PersonalId
+  FechaSolicitud
+  FechaConclusion
+}
+
+entity "Documento" as DOCUMENTO {
+  Id <<key>>
+  Nombre
+  Comentario
+  TramiteId
+}
+
+entity "UnidadAprendizaje" as UNIDAD {
+  Id <<key>>
+  Nombre
+  CarreraId
+  Semestre
+}
+
+' === ENTIDADES ASP.NET IDENTITY (SIMPLIFICADAS) ===
+entity "AspNetUsers" as USERS {
+  Id <<key>>
+  UserName
+  Email
+  PasswordHash
+}
+
+entity "AspNetRoles" as ROLES {
+  Id <<key>>
+  Name
+}
+
+entity "AspNetUserRoles" as USERROLES <<weak>> {
+  UserId <<key>>
+  RoleId <<key>>
+}
+
+' === RELACIONES PRINCIPALES ===
+relationship "AUTENTICA" as R1 {
+}
+
+relationship "ES_ALUMNO" as R2 <<identifying>> {
+}
+
+relationship "ES_PERSONAL" as R3 <<identifying>> {
+}
+
+relationship "ESTUDIA" as R4 {
+}
+
+relationship "INCLUYE" as R5 {
+}
+
+relationship "SOLICITA" as R6 {
+}
+
+relationship "ATIENDE" as R7 {
+}
+
+relationship "GENERA" as R8 {
+}
+
+relationship "ASIGNA" as R9 <<identifying>> {
+}
+
+' === CONEXIONES OPTIMIZADAS PARA CARTA ===
+
+' Fila 1: Autenticación (horizontal)
+USERS -1- R1
+R1 -1- USUARIO
+
+USERS -1- R9
+R9 =N= USERROLES
+USERROLES =N= R9
+R9 -1- ROLES
+
+' Fila 2: Especialización (vertical compacta)
+USUARIO =1= R2
+R2 -1- ALUMNO
+
+USUARIO =1= R3  
+R3 -1- PERSONAL
+
+' Fila 3: Relaciones académicas (horizontal)
+CARRERA -1- R4
+R4 -N- ALUMNO
+
+CARRERA -1- R5
+R5 -N- UNIDAD
+
+' Fila 4: Trámites (flujo vertical)
+ALUMNO -1- R6
+R6 -N- TRAMITE
+
+PERSONAL -1- R7
+R7 -N- TRAMITE
+
+TRAMITE -1- R8
+R8 -N- DOCUMENTO
+
+@endchen

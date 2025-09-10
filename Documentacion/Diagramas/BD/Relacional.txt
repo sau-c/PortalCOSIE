@@ -1,0 +1,146 @@
+@startuml
+!define table(x) entity x << (T,#FFAAAA) >>
+!define primary_key(x) <b><color:red>#x</color></b>
+!define foreign_key(x) <color:blue>#x</color>
+
+hide circle
+hide empty members
+
+table(AspNetUsers) {
+    primary_key(Id) : nvarchar(450)
+    --
+    UserName : nvarchar(256)
+    NormalizedUserName : nvarchar(256)
+    Email : nvarchar(256)
+    NormalizedEmail : nvarchar(256)
+    EmailConfirmed : bit
+    PasswordHash : nvarchar(max)
+    SecurityStamp : nvarchar(max)
+    ConcurrencyStamp : nvarchar(max)
+    PhoneNumber : nvarchar(max)
+    PhoneNumberConfirmed : bit
+    TwoFactorEnabled : bit
+    LockoutEnd : datetimeoffset
+    LockoutEnabled : bit
+    AccessFailedCount : int
+}
+
+table(AspNetRoles) {
+    primary_key(Id) : nvarchar(450)
+    --
+    Name : nvarchar(256)
+    NormalizedName : nvarchar(256)
+    ConcurrencyStamp : nvarchar(max)
+}
+
+table(AspNetUserRoles) {
+    primary_key(UserId) : nvarchar(450)
+    primary_key(RoleId) : nvarchar(450)
+}
+
+table(AspNetUserTokens) {
+    primary_key(UserId) : nvarchar(450)
+    primary_key(LoginProvider) : nvarchar(450)
+    primary_key(Name) : nvarchar(450)
+    --
+    Value : nvarchar(max)
+}
+
+table(AspNetRoleClaims) {
+    primary_key(Id) : int
+    --
+    foreign_key(RoleId) : nvarchar(450)
+    ClaimType : nvarchar(max)
+    ClaimValue : nvarchar(max)
+}
+
+table(AspNetUserClaims) {
+    primary_key(Id) : int
+    --
+    foreign_key(UserId) : nvarchar(450)
+    ClaimType : nvarchar(max)
+    ClaimValue : nvarchar(max)
+}
+
+table(AspNetUserLogins) {
+    primary_key(LoginProvider) : nvarchar(450)
+    primary_key(ProviderKey) : nvarchar(450)
+    --
+    ProviderDisplayName : nvarchar(max)
+    foreign_key(UserId) : nvarchar(450)
+}
+
+table(Usuario) {
+    primary_key(Id) : int
+    --
+    foreign_key(IdentityUserId) : nvarchar(450)
+    Nombre : nvarchar(100)
+    ApellidoPaterno : nvarchar(100)
+    ApellidoMaterno : nvarchar(100)
+}
+
+table(Carrera) {
+    primary_key(Id) : int
+    --
+    Nombre : nvarchar(100)
+}
+
+table(UnidadAprendizaje) {
+    primary_key(Id) : int
+    --
+    Nombre : nvarchar(100)
+    foreign_key(CarreraId) : int
+    Semestre : int
+}
+
+table(Alumno) {
+    primary_key(Id) : int
+    --
+    foreign_key(Id) : int
+    NumeroBoleta : nvarchar(20)
+    PeriodoIngreso : nvarchar(max)
+    foreign_key(CarreraId) : int
+}
+
+table(Personal) {
+    primary_key(Id) : int
+    --
+    foreign_key(Id) : int
+    IdPersonal : nvarchar(max)
+}
+
+table(Tramite) {
+    primary_key(Id) : int
+    --
+    foreign_key(AlumnoId) : int
+    foreign_key(PersonalId) : int
+    FechaSolicitud : datetime2
+    FechaConclusion : datetime2
+}
+
+table(Documento) {
+    primary_key(Id) : int
+    --
+    Nombre : nvarchar(200)
+    Comentario : nvarchar(200)
+    foreign_key(TramiteId) : int
+}
+
+' Relaciones
+AspNetUserRoles }|--|| AspNetUsers : UserId
+AspNetUserRoles }|--|| AspNetRoles : RoleId
+AspNetUserTokens }|--|| AspNetUsers : UserId
+AspNetRoleClaims }|--|| AspNetRoles : RoleId
+AspNetUserClaims }|--|| AspNetUsers : UserId
+AspNetUserLogins }|--|| AspNetUsers : UserId
+
+Usuario }|--|| AspNetUsers : IdentityUserId
+Alumno }|--|| Usuario : Id
+Personal }|--|| Usuario : Id
+UnidadAprendizaje }|--|| Carrera : CarreraId
+Alumno }|--|| Carrera : CarreraId
+Tramite }|--|| Alumno : AlumnoId
+Tramite }|--|| Personal : PersonalId
+Documento }|--|| Tramite : TramiteId
+
+@enduml
