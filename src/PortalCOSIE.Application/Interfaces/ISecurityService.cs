@@ -12,6 +12,7 @@ namespace PortalCOSIE.Application.Interfaces
         Task<Result<string>> RestablecerContrasenaAsync(RestablecerDTO dto);
         Task<Result<string>> EliminarUsuario(string id);
         Task<Result<string>> ToggleRol(string userId, string rol);
+        Task<Result<string>> ActualizarCorreoAsync(string userId, string correo);
         Task<IEnumerable<RolConClaimsDTO>> ListarRoles();
         Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos();
         Task<IEnumerable<PersonalConIdentityDTO>> ListarPersonal();

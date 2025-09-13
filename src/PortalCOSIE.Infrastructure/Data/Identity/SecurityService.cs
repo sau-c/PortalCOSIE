@@ -135,6 +135,29 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
 
             return Result<string>.Success("Contraseña restablecida con éxito.");
         }
+        public async Task<Result<string>> ActualizarCorreoAsync(string userId, string correo)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(correo))
+                return Result<string>.Failure("Se requieren ID de usuario y nuevo correo");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<string>.Failure("Usuario no encontrado");
+            
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, correo);
+            var result = await _userManager.ChangeEmailAsync(user, correo, token);
+            if (!result.Succeeded)
+                return Result<string>.Failure($"Error al actualizar correo: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            
+            // Opcional: Actualizar UserName si es igual al correo
+            if (user.UserName == user.Email)
+            {
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, correo);
+                if (!setUserNameResult.Succeeded)
+                    return Result<string>.Failure($"Error al actualizar nombre de usuario: {string.Join(", ", setUserNameResult.Errors.Select(e => e.Description))}");
+            }
+            return Result<string>.Success("Correo actualizado con éxito");
+        }
         public async Task<Result<string>> EliminarUsuario(string id)
         {
             // 1. Validaciones de entrada
@@ -149,40 +172,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             if (!result.Succeeded)
                 return Result<string>.Failure($"Error al eliminar usuario: {result.Errors}");
             return Result<string>.Success("Usuario eliminado con éxito");
-        }
-        public async Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos()
-        {
-            var usuarios = await _usuarioRepository.Query()
-                .Where(u => u.Alumno != null)
-                .Include(u => u.Alumno)
-                .Include(u => u.Alumno.Carrera)
-                .ToListAsync();
-
-            var alumnosDTO = new List<AlumnoConIdentityDTO>();
-
-            foreach (var usuario in usuarios)
-            {
-                var identityUser = await _userManager.FindByIdAsync(usuario.IdentityUserId);
-                if (identityUser == null) continue;
-
-                var roles = await _userManager.GetRolesAsync(identityUser);
-
-                alumnosDTO.Add(new AlumnoConIdentityDTO
-                {
-                    IdentityUserId = identityUser.Id,
-                    NumeroBoleta = usuario.Alumno?.NumeroBoleta ?? "N/A",
-                    Nombre = usuario.Nombre,
-                    ApellidoPaterno = usuario.ApellidoPaterno,
-                    ApellidoMaterno = usuario.ApellidoMaterno,
-                    Carrera = usuario.Alumno.Carrera.Nombre,
-                    PeriodoIngreso = usuario.Alumno.PeriodoIngreso,
-                    Correo = identityUser.Email,
-                    Celular = identityUser.PhoneNumber,
-                    Rol = roles.FirstOrDefault()
-                });
-            }
-
-            return alumnosDTO;
         }
         public async Task<Result<string>> ToggleRol(string userId, string rol)
         {
@@ -240,6 +229,40 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                     : Result<string>.Failure($"Error al asignar rol: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             }
 
+        }
+        public async Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos()
+        {
+            var usuarios = await _usuarioRepository.Query()
+                .Where(u => u.Alumno != null)
+                .Include(u => u.Alumno)
+                .Include(u => u.Alumno.Carrera)
+                .ToListAsync();
+
+            var alumnosDTO = new List<AlumnoConIdentityDTO>();
+
+            foreach (var usuario in usuarios)
+            {
+                var identityUser = await _userManager.FindByIdAsync(usuario.IdentityUserId);
+                if (identityUser == null) continue;
+
+                var roles = await _userManager.GetRolesAsync(identityUser);
+
+                alumnosDTO.Add(new AlumnoConIdentityDTO
+                {
+                    IdentityUserId = identityUser.Id,
+                    NumeroBoleta = usuario.Alumno?.NumeroBoleta ?? "N/A",
+                    Nombre = usuario.Nombre,
+                    ApellidoPaterno = usuario.ApellidoPaterno,
+                    ApellidoMaterno = usuario.ApellidoMaterno,
+                    Carrera = usuario.Alumno.Carrera.Nombre,
+                    PeriodoIngreso = usuario.Alumno.PeriodoIngreso,
+                    Correo = identityUser.Email,
+                    Celular = identityUser.PhoneNumber,
+                    Rol = roles.FirstOrDefault()
+                });
+            }
+
+            return alumnosDTO;
         }
         public async Task<IEnumerable<RolConClaimsDTO>> ListarRoles()
         {
