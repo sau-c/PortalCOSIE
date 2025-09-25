@@ -20,5 +20,12 @@ namespace PortalCOSIE.Web.Controllers
         {
             return View(await _catalogoService.ListarCarrerasAsync());
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> UnidadAprendizaje(int carreraId)
+        {
+            return View(await _catalogoService.ListarUnidadesAprendizajeAsync(carreraId));
+        }
     }
 }

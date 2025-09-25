@@ -35,10 +35,10 @@ namespace PortalCOSIE.Application.Services
             return periodos;
         }
 
-        public async Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAprendizajeAsync()
+        public async Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAprendizajeAsync(int carreraId)
         {
             var unidades = await _unidadRepository.GetAllAsync();
-            return unidades.Select(c => new UnidadAprendizaje { Id = c.Id, Nombre = c.Nombre, Semestre = c.Semestre });
+            return unidades;
         }
     }
 }

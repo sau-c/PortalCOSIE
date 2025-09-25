@@ -39,7 +39,7 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IGenericRepo<Alumno>, GenericRepo<Alumno>>();
             services.AddScoped<IGenericRepo<Carrera>, GenericRepo<Carrera>>();
             services.AddScoped<IGenericRepo<Tramite>, GenericRepo<Tramite>>();
-            services.AddScoped<IGenericRepo<UnidadAprendizaje>, GenericRepo<UnidadAprendizaje>>();
+            services.AddScoped<IGenericRepo<UnidadAprendizaje>, UnidadAprendizajeRepo>();
 
             return services;
         }
