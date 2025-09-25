@@ -145,6 +145,31 @@
                 </div>
             </div> *@
 
+            <!-- CATALOGOS -->
+            <div class="accordion-item bg-transparent border-0">
+                <h2 class="accordion-header" id="headingCatalogos">
+                    <button class="accordion-button collapsed shadow-none" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseCatalogos"
+                            aria-expanded="false" aria-controls="collapseCatalogos">
+                        <i class="fas fa-list"></i>
+                        <span class="nav-link-text">Catalogos</span>
+                    </button>
+                </h2>
+                <div id="collapseCatalogos" class="accordion-collapse collapse" aria-labelledby="headingCatalogos"
+                     data-bs-parent="#accordionSidebar">
+                    <div class="accordion-body">
+                        <a href="@Url.Action("Index", "Carrera")" class="nav-link text-white">
+                            <i class="fas fa-list"></i>
+                            <span class="nav-link-text">Carreras</span>
+                        </a>
+                        <a href="@Url.Action("Index", "Periodos")" class="nav-link text-white">
+                            <i class="fas fa-list"></i>
+                            <span class="nav-link-text">Periodos</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Usuarios -->
             <div class="accordion-item bg-transparent border-0">
                 <h2 class="accordion-header" id="headingUsuarios">

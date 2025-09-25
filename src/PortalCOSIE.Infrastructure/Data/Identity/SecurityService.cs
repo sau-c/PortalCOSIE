@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
-using PortalCOSIE.Application.DTO.Rol;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities;
@@ -263,29 +262,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             }
 
             return alumnosDTO;
-        }
-        public async Task<IEnumerable<RolConClaimsDTO>> ListarRoles()
-        {
-            var roles = _roleManager.Roles.ToList();
-            var rolesData = new List<RolConClaimsDTO>();
-
-            foreach (var role in roles)
-            {
-                var claims = await _roleManager.GetClaimsAsync(role);
-                rolesData.Add(new RolConClaimsDTO
-                {
-                    Id = role.Id,
-                    Nombre = role.Name
-                    //,
-                    //Claims = claims.Select(c => new ClaimViewModel
-                    //{
-                    //    Type = c.Type,
-                    //    Value = c.Value
-                    //}).ToList()
-                });
-            }
-
-            return rolesData;
         }
         public async Task<IEnumerable<PersonalConIdentityDTO>> ListarPersonal()
         {
