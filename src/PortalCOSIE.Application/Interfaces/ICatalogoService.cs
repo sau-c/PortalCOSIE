@@ -6,6 +6,6 @@ namespace PortalCOSIE.Application.Interfaces
     {
         Task<IEnumerable<Carrera>> ListarCarrerasAsync();
         IEnumerable<object> ListarPeriodos();
-        Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAprendizajeAsync(int id);
+        Task<IEnumerable<UnidadAprendizaje?>> ListarUnidadesAprendizajeAsync(int id);
     }
 }

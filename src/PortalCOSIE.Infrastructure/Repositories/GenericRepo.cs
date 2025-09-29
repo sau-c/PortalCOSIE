@@ -59,5 +59,17 @@ namespace PortalCOSIE.Infrastructure.Repositories
         {
             _dbSet.Remove(entity);
         }
+
+        public async Task<IEnumerable<T?>> GetListAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        {
+            var query = _dbSet.AsQueryable();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.Where(predicate).AsNoTracking().ToListAsync();
+        }
     }
 }

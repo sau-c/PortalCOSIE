@@ -23,9 +23,9 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> UnidadAprendizaje(int carreraId)
+        public async Task<IActionResult> UnidadAprendizaje(int id)
         {
-            return View(await _catalogoService.ListarUnidadesAprendizajeAsync(carreraId));
+            return View(await _catalogoService.ListarUnidadesAprendizajeAsync(id));
         }
     }
 }

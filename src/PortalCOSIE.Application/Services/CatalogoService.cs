@@ -1,6 +1,7 @@
 ﻿using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities;
 using PortalCOSIE.Domain.Interfaces;
+using System.Linq;
 
 namespace PortalCOSIE.Application.Services
 {
@@ -35,9 +36,10 @@ namespace PortalCOSIE.Application.Services
             return periodos;
         }
 
-        public async Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAprendizajeAsync(int carreraId)
+        public async Task<IEnumerable<UnidadAprendizaje?>> ListarUnidadesAprendizajeAsync(int carreraId)
         {
-            var unidades = await _unidadRepository.GetAllAsync();
+            var unidades =  await _unidadRepository.GetListAsync(u => u.CarreraId == carreraId);
+
             return unidades;
         }
     }
