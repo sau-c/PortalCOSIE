@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Data;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250905171522_CrearDB")]
-    partial class CrearDB
+    [Migration("20251001171824_NuevaBD")]
+    partial class NuevaBD
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -395,23 +395,541 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CarreraId = 1,
-                            Nombre = "Calculo diferencial e integral",
+                            CarreraId = 2,
+                            Nombre = "Programación",
                             Semestre = 1
                         },
                         new
                         {
                             Id = 2,
-                            CarreraId = 1,
-                            Nombre = "Calculo vectorial",
-                            Semestre = 2
+                            CarreraId = 2,
+                            Nombre = "Análisis y diseño de sistemas",
+                            Semestre = 1
                         },
                         new
                         {
                             Id = 3,
-                            CarreraId = 1,
-                            Nombre = "Senales y sistemas",
-                            Semestre = 8
+                            CarreraId = 2,
+                            Nombre = "Estructura de datos",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CarreraId = 2,
+                            Nombre = "Administración de sistemas operativos",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CarreraId = 2,
+                            Nombre = "Diseño digital",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CarreraId = 2,
+                            Nombre = "Arquitectura de computadoras",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CarreraId = 2,
+                            Nombre = "Fundamentos de física",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CarreraId = 2,
+                            Nombre = "Ecuaciones diferenciales",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CarreraId = 2,
+                            Nombre = "Probabilidad",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CarreraId = 2,
+                            Nombre = "Cálculo diferencial e integral",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CarreraId = 2,
+                            Nombre = "Variable compleja",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CarreraId = 2,
+                            Nombre = "Álgebra lineal",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CarreraId = 2,
+                            Nombre = "Electromagnetismo",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CarreraId = 2,
+                            Nombre = "Cálculo multivariable",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CarreraId = 2,
+                            Nombre = "Administración organizacional",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CarreraId = 2,
+                            Nombre = "Ética, profesión y sociedad",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CarreraId = 2,
+                            Nombre = "Comunicación oral y escrita",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CarreraId = 2,
+                            Nombre = "Inglés I",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CarreraId = 2,
+                            Nombre = "Inglés II",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CarreraId = 2,
+                            Nombre = "Programación estructurada",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CarreraId = 2,
+                            Nombre = "Sociedad, ciencia y tecnología",
+                            Semestre = 1
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CarreraId = 2,
+                            Nombre = "Señales y sistemas",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CarreraId = 2,
+                            Nombre = "Propagación de ondas electromagnéticas",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CarreraId = 2,
+                            Nombre = "Electrónica",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CarreraId = 2,
+                            Nombre = "Teoría de los circuitos",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CarreraId = 2,
+                            Nombre = "Teoría de la información",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CarreraId = 2,
+                            Nombre = "Teoría de las comunicaciones",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CarreraId = 2,
+                            Nombre = "Comunicaciones digitales",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CarreraId = 2,
+                            Nombre = "Procesamiento digital de señales",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CarreraId = 2,
+                            Nombre = "Telefonía",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CarreraId = 2,
+                            Nombre = "Sistemas celulares",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CarreraId = 2,
+                            Nombre = "Protocolos de Internet",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CarreraId = 2,
+                            Nombre = "Sistemas distribuidos",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CarreraId = 2,
+                            Nombre = "Ingeniería web",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CarreraId = 2,
+                            Nombre = "Programación avanzada",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CarreraId = 2,
+                            Nombre = "Bases de datos",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CarreraId = 2,
+                            Nombre = "Transmisión de datos",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CarreraId = 2,
+                            Nombre = "Información financiera e ingeniería económica",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CarreraId = 2,
+                            Nombre = "Optativa I",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CarreraId = 2,
+                            Nombre = "Inglés III",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CarreraId = 2,
+                            Nombre = "Métodos numéricos",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CarreraId = 2,
+                            Nombre = "Electrónica para comunicaciones",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CarreraId = 2,
+                            Nombre = "Óptica",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CarreraId = 2,
+                            Nombre = "Desarrollo sustentable",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CarreraId = 2,
+                            Nombre = "Economía para ingenieros",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CarreraId = 2,
+                            Nombre = "Inglés IV",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CarreraId = 2,
+                            Nombre = "Redes inalámbricas",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CarreraId = 2,
+                            Nombre = "Redes neuronales",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 49,
+                            CarreraId = 2,
+                            Nombre = "Lógica difusa",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 50,
+                            CarreraId = 2,
+                            Nombre = "Sistemas de información geográfica",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 51,
+                            CarreraId = 2,
+                            Nombre = "Programación de dispositivos móviles",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 52,
+                            CarreraId = 2,
+                            Nombre = "Normatividad en telecomunicaciones e informática",
+                            Semestre = 2
+                        },
+                        new
+                        {
+                            Id = 53,
+                            CarreraId = 2,
+                            Nombre = "Redes inteligentes",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 54,
+                            CarreraId = 2,
+                            Nombre = "Líneas de transmisión y antenas",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 55,
+                            CarreraId = 2,
+                            Nombre = "Seguridad en redes",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 56,
+                            CarreraId = 2,
+                            Nombre = "Multimedia",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 57,
+                            CarreraId = 2,
+                            Nombre = "Bases de datos distribuidas",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 58,
+                            CarreraId = 2,
+                            Nombre = "Metodología de la investigación",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 59,
+                            CarreraId = 2,
+                            Nombre = "Administración de proyectos",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 60,
+                            CarreraId = 2,
+                            Nombre = "Liderazgo y emprendedores",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 61,
+                            CarreraId = 2,
+                            Nombre = "Criptografía",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 62,
+                            CarreraId = 2,
+                            Nombre = "Microondas",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 63,
+                            CarreraId = 2,
+                            Nombre = "Procesamiento de imágenes",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 64,
+                            CarreraId = 2,
+                            Nombre = "Televisión digital",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 65,
+                            CarreraId = 2,
+                            Nombre = "Sistemas de calidad",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 66,
+                            CarreraId = 2,
+                            Nombre = "Procesamiento de voz",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 67,
+                            CarreraId = 2,
+                            Nombre = "Filtrado avanzado",
+                            Semestre = 3
+                        },
+                        new
+                        {
+                            Id = 68,
+                            CarreraId = 2,
+                            Nombre = "Proyecto terminal I",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 69,
+                            CarreraId = 2,
+                            Nombre = "Proyecto terminal II",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 70,
+                            CarreraId = 2,
+                            Nombre = "Redes de telecomunicaciones",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 71,
+                            CarreraId = 2,
+                            Nombre = "Aplicaciones distribuidas",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 72,
+                            CarreraId = 2,
+                            Nombre = "Dispositivos programables",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 73,
+                            CarreraId = 2,
+                            Nombre = "Servicio social",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 74,
+                            CarreraId = 2,
+                            Nombre = "Electiva I",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 75,
+                            CarreraId = 2,
+                            Nombre = "Electiva II",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 76,
+                            CarreraId = 2,
+                            Nombre = "Electiva III",
+                            Semestre = 4
+                        },
+                        new
+                        {
+                            Id = 77,
+                            CarreraId = 2,
+                            Nombre = "Electiva IV",
+                            Semestre = 4
                         });
                 });
 
