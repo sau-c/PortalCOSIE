@@ -29,9 +29,17 @@
                             <td>@carrera.Id</td>
                             <td>@carrera.Nombre</td>
                             <td class="text-center">
-                                <a asp-action="Editar" asp-route-id="@carrera.Nombre" class="btn btn-sm btn-outline-primary" title="Editar">
-                                    <i class="fas fa-edit"></i>
+                                <a asp-action="Editar" asp-route-id="@carrera.Nombre" class="btn btn-sm btn-outline-secondary" title="Ver unidades de aprendizaje">
+                                    <i class="fas fa-list"></i>
                                 </a>
+                                <button type="button"
+                                        class="btn btn-outline-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editCarreraModal"
+                                        data-carrera-id="@carrera.Id"
+                                        data-carrera-name="@carrera.Nombre">
+                                    <i class="fas fa-edit"></i>
+                                </button>
                                 <button type="button"
                                         class="btn btn-sm btn-outline-danger"
                                         title="Eliminar"
@@ -81,7 +89,39 @@
     </div>
 </div>
 
-<!-- Modal de eliminación corregido -->
+<!-- Modal para editar carrera CORREGIDO -->
+<div class="modal fade" id="editCarreraModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="editCarreraForm" asp-action="Editar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="editCarreraId" name="id" />
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Editar Carrera</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editCarreraNombre" class="form-label fw-bold">Nombre de la Carrera</label>
+                        <input type="text" class="form-control" id="editCarreraNombre" name="nombre" required
+                               placeholder="Ingrese el nombre de la carrera" maxlength="100">
+                        <div class="form-text">Máximo 100 caracteres</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de eliminación -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -135,6 +175,18 @@
                 scrollY: '50vh'
             });
 
+            // Manejo del modal de edición de carrera CORREGIDO
+            $('#editCarreraModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var carreraId = button.data('carrera-id');
+                var carreraName = button.data('carrera-name');
+
+                var modal = $(this);
+                modal.find('#editCarreraId').val(carreraId);
+                modal.find('#editCarreraNombre').val(carreraName);
+                modal.find('#editCarreraNombre').focus().select();
+            });
+
             // Manejo del modal de eliminación
             $('#deleteModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
@@ -167,6 +219,27 @@
                     e.preventDefault();
                     alert('El nombre no puede exceder los 100 caracteres');
                     $('#carreraNombre').focus();
+                    return false;
+                }
+
+                return true;
+            });
+
+            // Validación del formulario de edición
+            $('#editCarreraForm').on('submit', function(e) {
+                var nombre = $('#editCarreraNombre').val().trim();
+
+                if (!nombre) {
+                    e.preventDefault();
+                    alert('Por favor ingrese el nombre de la carrera');
+                    $('#editCarreraNombre').focus();
+                    return false;
+                }
+
+                if (nombre.length > 100) {
+                    e.preventDefault();
+                    alert('El nombre no puede exceder los 100 caracteres');
+                    $('#editCarreraNombre').focus();
                     return false;
                 }
 

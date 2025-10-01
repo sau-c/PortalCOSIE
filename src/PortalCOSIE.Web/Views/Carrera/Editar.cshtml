@@ -1,7 +1,7 @@
 ﻿@model PortalCOSIE.Domain.Entities.Carrera
 @using PortalCOSIE.Domain.Enums
 @{
-    ViewData["Title"] = "Gestión de " + @Model.Nombre;
+    ViewData["Title"] = "Unidades de Aprendizaje de " + @Model.Nombre;
     var semestres = Enum.GetValues(typeof(Semestre)).Cast<Semestre>();
 }
 
@@ -10,11 +10,8 @@
         <div class="d-flex justify-content-between align-items-center">
             <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
             <div>
-                <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editCarreraModal">
-                    <i class="fas fa-edit me-2"></i>Editar Carrera
-                </button>
                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createModal">
-                    <i class="fas fa-plus me-2"></i>Crear Unidad
+                    <i class="fas fa-plus me-2"></i>Crear unidad
                 </button>
             </div>
         </div>
@@ -63,38 +60,6 @@
                     }
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para editar carrera -->
-<div class="modal fade" id="editCarreraModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form id="editCarreraForm" asp-action="EditarCarrera" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.Id" />
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Editar Carrera</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="carreraNombre" class="form-label fw-bold">Nombre de la Carrera</label>
-                        <input type="text" class="form-control" id="carreraNombre" name="nombre" required
-                               value="@Model.Nombre" placeholder="Ingrese el nombre de la carrera" maxlength="100">
-                        <div class="form-text">Máximo 100 caracteres</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Guardar Cambios
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -148,12 +113,12 @@
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="editUnidadId" name="id" />
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Editar Unidad de Aprendizaje</h5>
+                    <h5 class="modal-title">Editar unidad de aprendizaje</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="editUnidadNombre" class="form-label fw-bold">Nombre de la Unidad</label>
+                        <label for="editUnidadNombre" class="form-label fw-bold">Nombre de la unidad</label>
                         <input type="text" class="form-control" id="editUnidadNombre" name="nombre" required
                                placeholder="Ingrese el nombre de la unidad" maxlength="100">
                     </div>
@@ -173,7 +138,7 @@
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                        <i class="fas fa-save me-2"></i>Guardar cambios
                     </button>
                 </div>
             </form>
@@ -238,11 +203,6 @@
                 scrollY: '50vh'
             });
 
-            // Manejo del modal de edición de carrera
-            $('#editCarreraModal').on('show.bs.modal', function () {
-                $('#carreraNombre').focus().select();
-            });
-
             // Manejo del modal de edición de unidad
             $('#editModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
@@ -272,27 +232,6 @@
             // Limpiar formulario de creación cuando se cierra el modal
             $('#createModal').on('hidden.bs.modal', function () {
                 $('#createForm')[0].reset();
-            });
-
-            // Validación del formulario de edición de carrera
-            $('#editCarreraForm').on('submit', function(e) {
-                var nombre = $('#carreraNombre').val().trim();
-
-                if (!nombre) {
-                    e.preventDefault();
-                    alert('Por favor ingrese el nombre de la carrera');
-                    $('#carreraNombre').focus();
-                    return false;
-                }
-
-                if (nombre.length > 100) {
-                    e.preventDefault();
-                    alert('El nombre no puede exceder los 100 caracteres');
-                    $('#carreraNombre').focus();
-                    return false;
-                }
-
-                return true;
             });
 
             // Validación del formulario de creación de unidad

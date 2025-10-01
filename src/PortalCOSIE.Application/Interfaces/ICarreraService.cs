@@ -5,10 +5,11 @@ namespace PortalCOSIE.Application.Interfaces
     public interface ICarreraService
     {
         Task<IEnumerable<Carrera>> ListarCarrerasAsync();
-        IEnumerable<object> ListarPeriodos();
+        Task EditarCarreraAsync(int id, string nombre);
         Task<Carrera?> ListarCarreraConUnidadesAsync(string carrera);
         Task<IEnumerable<Carrera?>> ListarUnidadesAsync(string carrera);
         Task EliminarUnidad(int id);
+        IEnumerable<object> ListarPeriodos();
 
     }
 }

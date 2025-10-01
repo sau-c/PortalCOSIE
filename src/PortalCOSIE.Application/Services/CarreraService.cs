@@ -67,5 +67,11 @@ namespace PortalCOSIE.Application.Services
 
             return periodos;
         }
+
+        public async Task EditarCarreraAsync(int id, string nombre)
+        {
+            await _unitOfWork.GenericRepo<Carrera>().UpdateAsync(new Carrera { Id = id, Nombre = nombre });
+            await _unitOfWork.CompleteAsync();
+        }
     }
 }
