@@ -13,14 +13,14 @@ namespace PortalCOSIE.Web.Controllers
         private readonly IAuthService _authService;
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
-        private readonly ICatalogoService _catalogoService;
+        private readonly ICarreraService _carreraService;
 
-        public CuentaController(IAuthService authService, ISecurityService securityService, IUsuarioService usuarioService, ICatalogoService catalogoService)
+        public CuentaController(IAuthService authService, ISecurityService securityService, IUsuarioService usuarioService, ICarreraService catalogoService)
         {
             _authService = authService;
             _securityService = securityService;
             _usuarioService = usuarioService;
-            _catalogoService = catalogoService;
+            _carreraService = catalogoService;
         }
 
         [HttpGet]
@@ -126,8 +126,8 @@ namespace PortalCOSIE.Web.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-            ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
+            ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
+            ViewBag.Periodos = new SelectList(_carreraService.ListarPeriodos(), "Id", "Periodo");
             return View();
         }
 
@@ -138,8 +138,8 @@ namespace PortalCOSIE.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-                ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
+                ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
+                ViewBag.Periodos = new SelectList(_carreraService.ListarPeriodos(), "Id", "Periodo");
                 return View(dto);
             }
 
@@ -156,8 +156,8 @@ namespace PortalCOSIE.Web.Controllers
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error);
-                    ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
-                    ViewBag.Periodos = new SelectList(_catalogoService.ListarPeriodos(), "Id", "Periodo");
+                    ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
+                    ViewBag.Periodos = new SelectList(_carreraService.ListarPeriodos(), "Id", "Periodo");
                 }
                 return View(dto);
             }

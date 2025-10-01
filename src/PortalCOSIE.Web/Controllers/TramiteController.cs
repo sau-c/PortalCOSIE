@@ -9,12 +9,12 @@ namespace PortalCOSIE.Web.Controllers
     public class TramiteController : Controller
     {
         private readonly ITramiteService _tramiteService;
-        private readonly ICatalogoService _catalogoService;
+        private readonly ICarreraService _carreraService;
 
-        public TramiteController(ITramiteService tramiteService, ICatalogoService catalogoService)
+        public TramiteController(ITramiteService tramiteService, ICarreraService catalogoService)
         {
             _tramiteService = tramiteService;
-            _catalogoService = catalogoService;
+            _carreraService = catalogoService;
         }
 
         [HttpGet]
@@ -26,9 +26,9 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Alumno")]
-        public async Task<IActionResult> SolicitarCTE(int carreraId)
+        public async Task<IActionResult> SolicitarCTE(string carrera)
         {
-            ViewBag.Unidades = new SelectList(await _catalogoService.ListarUnidadesAprendizajeAsync(carreraId), "Id", "Nombre");
+            ViewBag.Unidades = new SelectList(await _carreraService.ListarUnidadesAsync(carrera), "Id", "Nombre");
             return View();
         }
 

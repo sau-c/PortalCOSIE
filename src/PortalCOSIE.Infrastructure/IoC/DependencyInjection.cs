@@ -27,7 +27,7 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
-            services.AddScoped<ICatalogoService, CatalogoService>();
+            services.AddScoped<ICarreraService, CarreraService>();
 
             //Servicios
             services.AddScoped<IUsuarioService, UsuarioService>();

@@ -1,31 +1,50 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Domain.Entities;
 
 namespace PortalCOSIE.Web.Controllers
 {
     [Authorize]
     public class CarreraController : Controller
     {
-        private readonly ICatalogoService _catalogoService;
+        private readonly ICarreraService _carreraService;
 
-        public CarreraController(ICatalogoService catalogoService)
+        public CarreraController(ICarreraService catalogoService)
         {
-            _catalogoService = catalogoService;
+            _carreraService = catalogoService;
         }
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Index()
         {
-            return View(await _catalogoService.ListarCarrerasAsync());
+            return View(await _carreraService.ListarCarrerasAsync());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public IActionResult Crear(Carrera carrera)
+        {
+            //_carreraService.CrearCarrera(carrera);
+            return View();
         }
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> UnidadAprendizaje(int id)
+        public async Task<IActionResult> Editar(string id)
         {
-            return View(await _catalogoService.ListarUnidadesAprendizajeAsync(id));
+            return View(await _carreraService.ListarCarreraConUnidadesAsync(id));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> EliminarUnidad(int id)
+        {
+            await _carreraService.EliminarUnidad(id);
+            return Redirect("Index");
         }
     }
 }

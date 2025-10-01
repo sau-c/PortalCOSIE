@@ -11,13 +11,13 @@ namespace PortalCOSIE.Web.Controllers
     {
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
-        private readonly ICatalogoService _catalogoService;
+        private readonly ICarreraService _carreraService;
 
-        public PersonalController(ISecurityService securityService, IUsuarioService usuarioService, ICatalogoService catalogoService)
+        public PersonalController(ISecurityService securityService, IUsuarioService usuarioService, ICarreraService catalogoService)
         {
             _securityService = securityService;
             _usuarioService = usuarioService;
-            _catalogoService = catalogoService;
+            _carreraService = catalogoService;
         }
 
         [HttpGet]
@@ -55,7 +55,7 @@ namespace PortalCOSIE.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Carreras = new SelectList(await _catalogoService.ListarCarrerasAsync(), "Id", "Nombre");
+                ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
                 
                 return View(dto);
             }

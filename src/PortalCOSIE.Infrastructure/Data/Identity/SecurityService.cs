@@ -15,18 +15,15 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
     public class SecurityService : ISecurityService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IGenericRepo<Usuario> _usuarioRepository;
         private readonly IEmailSender _emailSender;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager,
             IGenericRepo<Usuario> usuarioRepository,
             IEmailSender emailSender)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _usuarioRepository = usuarioRepository;
             _emailSender = emailSender;
         }
