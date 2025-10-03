@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Domain.Entities;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -38,5 +39,24 @@ namespace PortalCOSIE.Web.Controllers
         {
             return View();
         }
+
+
+        [HttpGet]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> Estados()
+        {
+            return View(await _tramiteService.ListarEstados());
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrador, Personal")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Estados(TramiteEstado tramiteEstado)
+        {
+            await _tramiteService.CrearEstado(tramiteEstado);
+            return Redirect("Estados");
+        }
+
+
     }
 }

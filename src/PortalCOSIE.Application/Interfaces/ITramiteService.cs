@@ -9,5 +9,12 @@ namespace PortalCOSIE.Application.Interfaces
         Task<Tramite> Crear(Tramite tramite);
         Task Actualizar(Tramite tramite);
         Task Eliminar(int id);
+
+        //TramiteEstado CRUD
+        Task<IEnumerable<TramiteEstado>> ListarEstados();
+        Task EliminarEstado(int id);
+        Task EditarEstado(TramiteEstado tramiteEstado);
+        Task CrearEstado(TramiteEstado tramiteEstado);
+
     }
 }

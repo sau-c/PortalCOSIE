@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class NuevaBD : Migration
+    public partial class CorreccionEstados : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,6 +63,32 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Carrera", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DocumentoEstado",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DocumentoEstado", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TramiteEstado",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TramiteEstado", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -264,10 +290,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    EstadoId = table.Column<int>(type: "int", nullable: false),
                     AlumnoId = table.Column<int>(type: "int", nullable: false),
                     PersonalId = table.Column<int>(type: "int", nullable: false),
                     FechaSolicitud = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaConclusion = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    FechaConclusion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TramiteEstadoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -284,6 +312,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         principalTable: "Personal",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Tramite_TramiteEstado_TramiteEstadoId",
+                        column: x => x.TramiteEstadoId,
+                        principalTable: "TramiteEstado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -293,12 +327,19 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Comentario = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    TramiteId = table.Column<int>(type: "int", nullable: false)
+                    Observaciones = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    TramiteId = table.Column<int>(type: "int", nullable: false),
+                    DocumentoEstadoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Documento", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Documento_DocumentoEstado_DocumentoEstadoId",
+                        column: x => x.DocumentoEstadoId,
+                        principalTable: "DocumentoEstado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Documento_Tramite_TramiteId",
                         column: x => x.TramiteId,
@@ -454,6 +495,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Documento_DocumentoEstadoId",
+                table: "Documento",
+                column: "DocumentoEstadoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Documento_TramiteId",
                 table: "Documento",
                 column: "TramiteId");
@@ -467,6 +513,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "IX_Tramite_PersonalId",
                 table: "Tramite",
                 column: "PersonalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tramite_TramiteEstadoId",
+                table: "Tramite",
+                column: "TramiteEstadoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UnidadAprendizaje_CarreraId",
@@ -507,6 +558,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "DocumentoEstado");
+
+            migrationBuilder.DropTable(
                 name: "Tramite");
 
             migrationBuilder.DropTable(
@@ -514,6 +568,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Personal");
+
+            migrationBuilder.DropTable(
+                name: "TramiteEstado");
 
             migrationBuilder.DropTable(
                 name: "Carrera");

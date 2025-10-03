@@ -4,17 +4,14 @@ using PortalCOSIE.Domain.Entities;
 
 namespace PortalCOSIE.Infrastructure.Data.Configurations
 {
-    public class DocumentoConfiguration : IEntityTypeConfiguration<Documento>
+    public class DocumentoEstadoConfiguration : IEntityTypeConfiguration<DocumentoEstado>
     {
-        public void Configure(EntityTypeBuilder<Documento> builder)
+        public void Configure(EntityTypeBuilder<DocumentoEstado> builder)
         {
-            builder.ToTable("Documento");
+            builder.ToTable("DocumentoEstado");
 
             builder.Property(d => d.Nombre)
                 .IsRequired()
-                .HasMaxLength(200);
-
-            builder.Property(d => d.Observaciones)
                 .HasMaxLength(200);
         }
     }
