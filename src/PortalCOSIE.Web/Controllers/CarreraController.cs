@@ -25,10 +25,10 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public IActionResult Crear(Carrera carrera)
+        public IActionResult Crear(string nombre)
         {
-            //_carreraService.CrearCarrera(carrera);
-            return View();
+            _carreraService.CrearCarreraAsync(nombre);
+            return Redirect("Index");
         }
 
         [HttpGet]
@@ -44,6 +44,15 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Editar(int id, string Nombre)
         {
             await _carreraService.EditarCarreraAsync(id, Nombre);
+            return Redirect("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            await _carreraService.EliminarCarrrera(id);
             return Redirect("Index");
         }
 

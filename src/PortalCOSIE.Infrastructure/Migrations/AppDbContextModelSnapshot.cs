@@ -300,6 +300,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Blob")
+                        .HasColumnType("int");
+
                     b.Property<int>("DocumentoEstadoId")
                         .HasColumnType("int");
 

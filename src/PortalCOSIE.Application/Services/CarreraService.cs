@@ -73,5 +73,21 @@ namespace PortalCOSIE.Application.Services
             await _unitOfWork.GenericRepo<Carrera>().UpdateAsync(new Carrera { Id = id, Nombre = nombre });
             await _unitOfWork.CompleteAsync();
         }
+
+        public async Task CrearCarreraAsync(string nombre)
+        {
+            await _unitOfWork.GenericRepo<Carrera>().AddAsync(new Carrera { Nombre = nombre });
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task EliminarCarrrera(int id)
+        {
+            var carrera = await _carreraRepository.GetByIdAsync(id);
+            if (carrera != null)
+            {
+                await _unitOfWork.GenericRepo<Carrera>().DeleteAsync(carrera);
+                await _unitOfWork.CompleteAsync();
+            }
+        }
     }
 }

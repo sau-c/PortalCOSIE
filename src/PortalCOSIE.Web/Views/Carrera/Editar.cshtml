@@ -1,7 +1,7 @@
 ﻿@model PortalCOSIE.Domain.Entities.Carrera
 @using PortalCOSIE.Domain.Enums
 @{
-    ViewData["Title"] = "Unidades de Aprendizaje de " + @Model.Nombre;
+    ViewData["Title"] = "Unidades de aprendizaje de " + @Model.Nombre;
     var semestres = Enum.GetValues(typeof(Semestre)).Cast<Semestre>();
 }
 

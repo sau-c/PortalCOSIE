@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CorreccionEstados : Migration
+    public partial class CrearDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -329,7 +329,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Observaciones = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     TramiteId = table.Column<int>(type: "int", nullable: false),
-                    DocumentoEstadoId = table.Column<int>(type: "int", nullable: false)
+                    DocumentoEstadoId = table.Column<int>(type: "int", nullable: false),
+                    Blob = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -55,16 +55,15 @@ namespace PortalCOSIE.Application
             await _unitOfWork.GenericRepo<TramiteEstado>().AddAsync(tramiteEstado);
             await _unitOfWork.CompleteAsync();
         }
-
         public async Task EditarEstado(TramiteEstado tramiteEstado)
         {
             await _tramiteEstadoRepository.UpdateAsync(tramiteEstado);
         }
-
         public async Task EliminarEstado(int id)
         {
             var estado = await _tramiteEstadoRepository.GetByIdAsync(id);
-            await _tramiteEstadoRepository.DeleteAsync(estado);
+            await _unitOfWork.GenericRepo<TramiteEstado>().DeleteAsync(estado);
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Data;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251003221301_CorreccionEstados")]
-    partial class CorreccionEstados
+    [Migration("20251009200224_CrearDB")]
+    partial class CrearDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -302,6 +302,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Blob")
+                        .HasColumnType("int");
 
                     b.Property<int>("DocumentoEstadoId")
                         .HasColumnType("int");

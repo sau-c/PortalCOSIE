@@ -40,7 +40,7 @@ namespace PortalCOSIE.Web.Controllers
             return View();
         }
 
-
+        // Catalogo
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Estados()
@@ -57,6 +57,14 @@ namespace PortalCOSIE.Web.Controllers
             return Redirect("Estados");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> EliminarEstado(int id)
+        {
+            await _tramiteService.EliminarEstado(id);
+            return Redirect("Estados");
+        }
 
     }
 }
