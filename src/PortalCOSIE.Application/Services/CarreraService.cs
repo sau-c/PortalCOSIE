@@ -20,8 +20,7 @@ namespace PortalCOSIE.Application.Services
 
         public async Task<IEnumerable<Carrera>> ListarCarrerasAsync()
         {
-            var carreras = await _carreraRepository.GetAllAsync();
-            return carreras.Select(c => new Carrera { Id = c.Id, Nombre = c.Nombre });
+            return await _carreraRepository.GetAllAsync();
         }
 
         public async Task<Carrera?> ListarCarreraConUnidadesAsync(string carrera)
@@ -67,18 +66,24 @@ namespace PortalCOSIE.Application.Services
 
             return periodos;
         }
+        public async Task CrearCarreraAsync(string nombre)
+        {
+            await _unitOfWork.GenericRepo<Carrera>().AddAsync(new Carrera(nombre));
+            await _unitOfWork.CompleteAsync();
+        }
 
         public async Task EditarCarreraAsync(int id, string nombre)
         {
-            await _unitOfWork.GenericRepo<Carrera>().UpdateAsync(new Carrera { Id = id, Nombre = nombre });
+            var carrera = await _carreraRepository.GetByIdAsync(id);
+
+            if (carrera == null)
+                throw new Exception("Carrera no encontrada");
+
+            carrera.SetNombre(nombre);
+            await _unitOfWork.GenericRepo<Carrera>().UpdateAsync(carrera);
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task CrearCarreraAsync(string nombre)
-        {
-            await _unitOfWork.GenericRepo<Carrera>().AddAsync(new Carrera { Nombre = nombre });
-            await _unitOfWork.CompleteAsync();
-        }
 
         public async Task EliminarCarrrera(int id)
         {

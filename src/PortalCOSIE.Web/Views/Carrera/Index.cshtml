@@ -13,6 +13,8 @@
         </div>
     </div>
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
         <div class="table-responsive w-auto">
             <table id="tblCarreras" class="table table-striped table-bordered">
                 <thead class="table-secondary">
@@ -71,7 +73,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="carreraNombre" class="form-label fw-bold">Nombre de la Carrera</label>
-                        <input type="text" class="form-control" id="carreraNombre" name="nombre" required
+                        <input type="text" class="form-control" id="carreraNombre" name="nombre" @* required *@
                                placeholder="Ingrese el nombre de la carrera" maxlength="100">
                         <div class="form-text">Máximo 100 caracteres</div>
                     </div>
@@ -208,12 +210,12 @@
             $('#createForm').on('submit', function(e) {
                 var nombre = $('#carreraNombre').val().trim();
 
-                if (!nombre) {
-                    e.preventDefault();
-                    alert('Por favor ingrese el nombre de la carrera');
-                    $('#carreraNombre').focus();
-                    return false;
-                }
+                // if (!nombre) {
+                //     e.preventDefault();
+                //     alert('Por favor ingrese el nombre de la carrera');
+                //     $('#carreraNombre').focus();
+                //     return false;
+                // }
 
                 if (nombre.length > 100) {
                     e.preventDefault();

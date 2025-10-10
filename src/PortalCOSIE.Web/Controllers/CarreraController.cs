@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Domain;
 using PortalCOSIE.Domain.Entities;
 
 namespace PortalCOSIE.Web.Controllers
@@ -25,10 +26,18 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public IActionResult Crear(string nombre)
+        public async Task<IActionResult> Crear(string nombre)
         {
-            _carreraService.CrearCarreraAsync(nombre);
-            return Redirect("Index");
+            try
+            {
+                await _carreraService.CrearCarreraAsync(nombre);
+                return RedirectToAction("Index");
+            }
+            catch (DomainException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpGet]

@@ -15,11 +15,11 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
                 .HasMaxLength(100);
 
             builder.HasData(
-                new Carrera { Id = 1, Nombre = "Mecatrónica"},
-                new Carrera { Id = 2, Nombre = "Telemática"},
-                new Carrera { Id = 3, Nombre = "Biónica"},
-                new Carrera { Id = 4, Nombre = "Energía"},
-                new Carrera { Id = 5, Nombre = "ISISA"}
+                new Carrera("Mecatrónica") { Id = 1 },
+                new Carrera("Telemática") { Id = 2 },
+                new Carrera("Biónica") { Id = 3 },
+                new Carrera("Energía") { Id = 4 },
+                new Carrera("ISISA") { Id = 5 }
             );
         }
     }
