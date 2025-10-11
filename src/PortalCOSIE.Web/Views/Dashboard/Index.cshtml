@@ -124,6 +124,23 @@
 
     <!-- Gráficos Principales -->
     <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="chart-card card shadow h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold py-2">Solicitud CTE por carrera</h6>
+                    <select class="form-select form-select-sm w-auto">
+                        <option>Últimos 6 meses</option>
+                        <option>Últimos 3 meses</option>
+                        <option>Este año</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-lg-8">
             <div class="chart-card card shadow h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -142,27 +159,14 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-4">
-            <div class="chart-card card shadow h-100">
-                <div class="card-header">
-                    <h6 class="mb-0 fw-bold py-2">Distribución por Tipo</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="typeChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Documentos Recientes -->
-    @* <div class="row mt-4">
+    <div class="row mt-4">
         <div class="col-12">
             <div class="chart-card card shadow">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0 fw-bold py-2">Documentos Recientes</h6>
+                    <h6 class="mb-0 fw-bold py-2">Documentos recientes</h6>
                     <a href="#" class="btn btn-sm btn-outline-primary">Ver Todos</a>
                 </div>
                 <div class="card-body">
@@ -207,7 +211,7 @@
                 </div>
             </div>
         </div>
-    </div> *@
+    </div>
 </div>
 
 @section Scripts {
@@ -256,14 +260,15 @@
             typeChart = new Chart(document.getElementById('typeChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Certificados', 'Registros', 'Justificantes', 'Otros'],
+                    labels: ['Mecatronica', 'Telematica', 'Bionica', 'Energia', 'ISISA'],
                     datasets: [{
-                        data: [35, 25, 20, 20],
+                        data: [35, 45, 20, 30, 10],
                         backgroundColor: [
-                            'rgba(90, 18, 54, 0.8)',
-                            'rgba(255, 107, 53, 0.8)',
-                            'rgba(114, 24, 69, 0.8)',
-                            'rgba(108, 117, 125, 0.8)'
+                            '#5A1236',
+                            '#85CB33',
+                            '#FF6B35',
+                            '#FFC107',
+                            '#1391FF'
                         ],
                         borderWidth: 0
                     }]
@@ -274,9 +279,22 @@
                     plugins: {
                         legend: {
                             position: 'bottom'
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            },
+                            formatter: (value, context) => {
+                                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                const percentage = (value / total * 100).toFixed(1) + '%';
+                                return percentage;
+                            }
                         }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
 

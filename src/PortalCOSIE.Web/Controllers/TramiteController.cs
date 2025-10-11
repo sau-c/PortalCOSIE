@@ -26,7 +26,7 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Alumno")]
+        [Authorize(Roles = "Administrador, Alumno")]
         public async Task<IActionResult> SolicitarCTE(string carrera)
         {
             ViewBag.Unidades = new SelectList(await _carreraService.ListarUnidadesAsync(carrera), "Id", "Nombre");

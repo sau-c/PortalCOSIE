@@ -90,7 +90,7 @@
 <div class="modal fade" id="editEstadoModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="editEstadoForm" asp-action="Editar" method="post">
+            <form id="editEstadoForm" asp-action="EditarEstado" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="editEstadoId" name="id" />
                 <div class="modal-header bg-primary text-white">
@@ -125,7 +125,7 @@
             <form id="deleteForm" asp-action="EliminarEstado" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Confirmar eliminación</h5>
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -169,7 +169,7 @@
                 },
                 paging: false,
                 scrollCollapse: true,
-                scrollY: '50vh'
+                scrollY: '35vh'
             });
 
             // Manejo del modal de edición de estado CORREGIDO
