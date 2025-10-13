@@ -196,10 +196,14 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             {
                 // Si tiene el rol, lo removemos (pasa a "Inactivo")
                 result = await _userManager.RemoveFromRoleAsync(user, rol);
+                
+                if (!result.Succeeded)
+                {
+                    return Result<string>.Failure($"Error al desactivar usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
 
-                return result.Succeeded
-                    ? Result<string>.Success("Usuario marcado como Inactivo correctamente")
-                    : Result<string>.Failure($"Error al desactivar usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                await _emailSender.SendEmailAsync(user.Email, "Acceso restringido", HtmlTemplates.RestringirAccesoHtml(rol));
+                return Result<string>.Success("Usuario marcado como Inactivo correctamente");
             }
             else
             {
@@ -220,9 +224,14 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 // Asignar el nuevo rol
                 result = await _userManager.AddToRoleAsync(user, rol);
 
-                return result.Succeeded
-                    ? Result<string>.Success($"Rol {rol} asignado correctamente")
-                    : Result<string>.Failure($"Error al asignar rol: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                if (!result.Succeeded)
+                {
+                    return Result<string>.Failure($"Error al asignar rol: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+
+                await _emailSender.SendEmailAsync(user.Email, "Acceso activado", HtmlTemplates.ActivarAccesoHtml(rol));
+                return Result<string>.Success($"Rol {rol} asignado correctamente");
+
             }
 
         }

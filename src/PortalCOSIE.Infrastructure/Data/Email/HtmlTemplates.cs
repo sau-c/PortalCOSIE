@@ -121,5 +121,78 @@
                 </table>
             </body>";
         }
+
+        public static string RestringirAccesoHtml(string rol)
+        {
+            return $@"
+            <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
+                <table role=""presentation"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"">
+                    <tr>
+                    <td align=""center"" style=""padding: 40px 0;"">
+                        <table width=""600"" cellpadding=""0"" cellspacing=""0"" style=""background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 40px;"">
+                        <tr>
+                            <td align=""center"" style=""padding-bottom: 20px;"">
+                            <h1 style=""margin: 0; font-size: 24px; color: #d32f2f;"">Restringimos su acceso como <strong>{rol}</strong></h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style=""color: #555555; font-size: 16px; line-height: 1.5;"">
+                            <p style=""margin-bottom: 20px;"">
+                                Hemos detectado actividad inusual en su cuenta y por medidas de seguridad hemos aplicado restricciones temporales.
+                            </p>
+                    
+                            <p style=""margin-top: 30px; color: #888888; font-size: 14px;"">
+                                Si considera que esto es un error, por favor responda a este correo inmediatamente.
+                            </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style=""text-align: center; font-size: 12px; color: #aaaaaa;"">
+                            © {DateTime.Now.Year} - Portal COSIE.
+                            </td>
+                        </tr>
+                        </table>
+                    </td>
+                    </tr>
+                </table>
+            </body>";
+        }
+
+        public static string ActivarAccesoHtml(string rol)
+        {
+            return $@"
+            <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
+                <table role=""presentation"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"">
+                    <tr>
+                    <td align=""center"" style=""padding: 40px 0;"">
+                        <table width=""600"" cellpadding=""0"" cellspacing=""0"" style=""background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 40px;"">
+                        <tr>
+                            <td align=""center"" style=""padding-bottom: 20px;"">
+                            <h1 style=""margin: 0; font-size: 24px; color: #2e7d32;"">¡Bienvenido!</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style=""color: #555555; font-size: 16px; line-height: 1.5;"">
+                            <p style=""margin-bottom: 20px; text-align: center;"">
+                                Su cuenta ha sido activada exitosamente como <strong>{rol}</strong>, ya puedes hacer uso de la plataforma.
+                            </p>
+                            <p style=""text-align: center; margin: 30px 0;"">
+                                <a href=""https://localhost:7276/Cuenta/Ingresar"" style=""display: inline-block; background-color: #2e7d32; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;"">
+                                Iniciar sesión
+                                </a>
+                            </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style=""text-align: center; font-size: 12px; color: #aaaaaa;"">
+                            © {DateTime.Now.Year} - Portal COSIE.
+                            </td>
+                        </tr>
+                        </table>
+                    </td>
+                    </tr>
+                </table>
+            </body>";
+        }
     }
 }
