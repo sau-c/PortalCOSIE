@@ -36,3 +36,40 @@ select * from AspNetUsers
 --UPDATE Alumno
 --SET CarreraId = 2
 --WHERE Email = 'saulcaz01@gmail.com'
+
+
+--%%%%%%%%%%%%%%%%%%%%%%%%
+--%%%% ELIMINAR TABLAS %%%
+--%%%%%%%%%%%%%%%%%%%%%%%%
+DROP TABLE dbo.Documento
+GO
+DROP TABLE dbo.DocumentoEstado
+GO
+DROP TABLE dbo.Tramite
+GO
+DROP TABLE dbo.TramiteEstado
+GO
+DROP TABLE dbo.Personal
+GO
+DROP TABLE dbo.Alumno
+GO
+DROP TABLE dbo.Usuario
+GO
+DROP TABLE dbo.UnidadAprendizaje
+GO
+DROP TABLE dbo.Carrera
+GO
+DROP TABLE dbo.AspNetUserClaims
+GO
+DROP TABLE dbo.AspNetUserTokens
+GO
+DROP TABLE dbo.AspNetUserLogins
+GO
+DROP TABLE dbo.AspNetRoleClaims
+GO
+DROP TABLE dbo.AspNetUserRoles
+GO
+DROP TABLE dbo.AspNetRoles
+GO
+DROP TABLE dbo.AspNetUsers
+GO

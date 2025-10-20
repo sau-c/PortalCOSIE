@@ -1,5 +1,53 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model PortalCOSIE.Application.DTO.Usuario.PersonalDTO
 @{
+    ViewData["Title"] = "Crear personal";
 }
+
+<div class="card shadow">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
+        <form asp-action="Crear" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <fieldset class="border rounded p-3 mb-3">
+                <legend class="float-none w-auto px-2 text-primary fs-5">
+                    <i class="fas fa-user-circle me-2"></i>Datos personales
+                </legend>
+                <div class="row mb-4">
+                    <input type="hidden" asp-for=@Model.IdentityUserId />
+                    <div class="col-lg-3 col-md-4">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input asp-for="Nombre" type="text" class="form-control" value="@Model.Nombre" required>
+                        <span asp-validation-for="Nombre" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-lg-3 col-md-4">
+                        <label for="apellidoPaterno" class="form-label">Apellido paterno:</label>
+                        <input asp-for="ApellidoPaterno" type="text" class="form-control" value="@Model.ApellidoPaterno" required>
+                        <span asp-validation-for="ApellidoPaterno" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-lg-3 col-md-4">
+                        <label for="apellidoMaterno" class="form-label">Apellido materno:</label>
+                        <input asp-for="ApellidoMaterno" type="text" class="form-control" value="@Model.ApellidoMaterno" required>
+                        <span asp-validation-for="ApellidoMaterno" class="text-danger small"></span>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>

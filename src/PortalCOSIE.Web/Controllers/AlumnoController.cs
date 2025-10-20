@@ -59,7 +59,7 @@ namespace PortalCOSIE.Web.Controllers
                 }
                 return View(dto);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -68,7 +68,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> ActualizarRol(string userId, string rol)
         {
             var result = await _securityService.ToggleRol(userId, rol);
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -77,7 +77,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> ActualizarCorreo(string userId, string correo)
         {
             var result = await _securityService.ActualizarCorreoAsync(userId, correo);
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -86,7 +86,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Eliminar(string id)
         {
             var result = await _securityService.EliminarUsuario(id);
-            return RedirectToAction("Index", result);
+            return RedirectToAction(nameof(Index), result);
         }
 
     }

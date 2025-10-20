@@ -16,5 +16,16 @@ namespace PortalCOSIE.Application.Interfaces
         Task EditarEstado(TramiteEstado tramiteEstado);
         Task CrearEstado(TramiteEstado tramiteEstado);
 
+        //DocumentoEstado CRUD
+        Task<IEnumerable<DocumentoEstado>> ListarEstadosDocumento();
+        Task EliminarEstadoDocumento(int id);
+        Task EditarEstadoDocumento(DocumentoEstado documentoEstado);
+        Task CrearEstadoDocumento(DocumentoEstado documentoEstado);
+
+        //DocumentoEstado CRUD
+        Task<IEnumerable<TipoTramite>> ListarTipoTramite();
+        Task EliminarTipoTramite(int id);
+        Task EditarTipoTramite(TipoTramite tipoTramite);
+        Task CrearTipoTramite(TipoTramite tipoTramite);
     }
 }

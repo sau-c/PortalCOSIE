@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 
@@ -36,9 +37,29 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public IActionResult Crear(PersonalConIdentityDTO dto)
+        public async Task<IActionResult> Crear(PersonalDTO dto)
         {
-            return Redirect("Index");
+            if (!ModelState.IsValid)
+            {
+                return View(dto);
+            }
+
+            var result = await _securityService.CrearUsuarioAsync(new CrearCuentaDTO());
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+                return View(dto);
+            }
+            else
+            {
+                TempData["Message"] = result.Value;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -69,7 +90,7 @@ namespace PortalCOSIE.Web.Controllers
                 }
                 return View(dto);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -78,7 +99,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Eliminar(string id)
         {
             var result = await _securityService.EliminarUsuario(id);
-            return RedirectToAction("Index", result);
+            return RedirectToAction(nameof(Index), result);
         }
 
     }

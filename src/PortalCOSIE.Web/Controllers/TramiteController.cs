@@ -33,37 +33,11 @@ namespace PortalCOSIE.Web.Controllers
             return View();
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Alumno")]
-        public IActionResult SolicitarCGC()
+        [HttpPost]
+        [Authorize(Roles = "Administrador, Alumno")]
+        public IActionResult SolicitarCTE(int id, string ContenidoSolicitud)
         {
             return View();
-        }
-
-        // Catalogo
-        [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Estados()
-        {
-            return View(await _tramiteService.ListarEstados());
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Administrador, Personal")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Estados(TramiteEstado tramiteEstado)
-        {
-            await _tramiteService.CrearEstado(tramiteEstado);
-            return Redirect("Estados");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> EliminarEstado(int id)
-        {
-            await _tramiteService.EliminarEstado(id);
-            return Redirect("Estados");
         }
 
     }

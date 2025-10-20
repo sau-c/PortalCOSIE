@@ -1,0 +1,140 @@
+﻿@model IEnumerable<PortalCOSIE.Domain.Entities.TipoTramite>
+
+<div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+    <table id="tblTipo" class="table table-striped table-bordered w-100">
+        <thead class="table-secondary">
+            <tr class="small">
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="small">
+                    <td>@item.Id</td>
+                    <td>@item.Nombre</td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editEstadoModal"
+                                data-estado-id="@item.Id"
+                                data-estado-name="@item.Nombre">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                title="Eliminar"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                                data-estado-id="@item.Id"
+                                data-estado-name="@item.Nombre">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Configuración de DataTable
+        $('#tblTipo').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
+            },
+            searching: false,
+            paging: false,
+            scrollCollapse: true,
+            scrollY: '35vh',
+            columnDefs:
+            [
+                {
+                    targets: 0,
+                    width: "1%"
+                },
+                {
+                    targets: 2,
+                    width: "90px",
+                    className: "text-center",
+                    orderable: false
+                }
+            ]
+        });
+
+        // Manejo del modal de edición de estado CORREGIDO
+        $('#editEstadoModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var estadoId = button.data('estado-id');
+            var estadoName = button.data('estado-name');
+
+            var modal = $(this);
+            modal.find('#editEstadoId').val(estadoId);
+            modal.find('#editEstadoNombre').val(estadoName);
+            modal.find('#editEstadoNombre').focus().select();
+        });
+
+        // Manejo del modal de eliminación
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var estadoId = button.data('estado-id');
+            var estadoName = button.data('estado-name');
+
+            var modal = $(this);
+            modal.find('#modalEstadoId').text(estadoId);
+            modal.find('#modalEstadoName').text(estadoName);
+            modal.find('#modalEstadoIdInput').val(estadoId);
+        });
+
+        // Limpiar formulario de creación cuando se cierra el modal
+        $('#createModal').on('hidden.bs.modal', function () {
+            $('#createForm')[0].reset();
+        });
+
+        // Validación del formulario de creación
+        $('#createForm').on('submit', function(e) {
+            var nombre = $('#estadoNombre').val().trim();
+
+            if (!nombre) {
+                e.preventDefault();
+                alert('Por favor ingrese el nombre del estado');
+                $('#estadoNombre').focus();
+                return false;
+            }
+
+            if (nombre.length > 100) {
+                e.preventDefault();
+                alert('El nombre no puede exceder los 100 caracteres');
+                $('#estadoNombre').focus();
+                return false;
+            }
+
+            return true;
+        });
+
+        // Validación del formulario de edición
+        $('#editEstadoForm').on('submit', function(e) {
+            var nombre = $('#editEstadoNombre').val().trim();
+
+            if (!nombre) {
+                e.preventDefault();
+                alert('Por favor ingrese el nombre del estado');
+                $('#editEstadoNombre').focus();
+                return false;
+            }
+
+            if (nombre.length > 100) {
+                e.preventDefault();
+                alert('El nombre no puede exceder los 100 caracteres');
+                $('#editEstadoNombre').focus();
+                return false;
+            }
+
+            return true;
+        });
+    });
+</script>

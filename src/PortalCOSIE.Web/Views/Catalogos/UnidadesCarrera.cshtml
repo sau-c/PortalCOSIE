@@ -10,8 +10,11 @@
         <div class="d-flex justify-content-between align-items-center">
             <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
             <div>
+                <a href="@Url.Action("Index", "Carrera")" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createModal">
-                    <i class="fas fa-plus me-2"></i>Crear unidad
+                    <i class="fas fa-plus me-2"></i>Crear
                 </button>
             </div>
         </div>
@@ -20,21 +23,21 @@
         <div class="table-responsive">
             <table id="tblUnidades" class="table table-striped table-bordered">
                 <thead class="table-secondary">
-                    <tr>
+                    <tr class="small">
                         <th>Id</th>
                         <th>Nombre</th>
                         <th>Semestre</th>
-                        <th class="text-center">Acciones</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var unidad in Model.UnidadesAprendizaje)
                     {
-                        <tr>
+                        <tr class="small">
                             <td>@unidad.Id</td>
                             <td>@unidad.Nombre</td>
                             <td>@unidad.Semestre</td>
-                            <td class="text-center">
+                            <td>
                                 <button type="button"
                                         class="btn btn-sm btn-outline-primary"
                                         title="Editar"
@@ -200,7 +203,19 @@
                 },
                 paging: false,
                 scrollCollapse: true,
-                scrollY: '50vh'
+                scrollY: '50vh',
+                columnDefs:
+                [
+                    {
+                        targets: 0,
+                        width: "1%"
+                    },
+                    {
+                        targets: 3,
+                        width: "90px",
+                        orderable: false
+                    }
+                ]
             });
 
             // Manejo del modal de edición de unidad

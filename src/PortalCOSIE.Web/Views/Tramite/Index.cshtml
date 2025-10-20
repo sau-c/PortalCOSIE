@@ -10,10 +10,7 @@
         </div>
         <div>
             <a asp-action="SolicitarCTE" class="btn btn-primary btn-sm shadow-sm">
-                <i class="fas fa-plus me-2"></i>Solicitar interno (CTE)
-            </a>
-            <a asp-action="SolicitarCGC" class="btn btn-warning btn-sm shadow-sm">
-                <i class="fas fa-plus me-2"></i>Solicitar externo (CGC)
+                <i class="fas fa-plus me-2"></i>Nuevo
             </a>
         </div>
     </div>
@@ -23,18 +20,24 @@
 
             <table id="tblTramites" class="table table-bordered shadow display compact">
                 <thead class="table-secondary">
-                    <tr>
-                        <th>@Html.DisplayNameFor(model => model.FechaSolicitud)</th>
-                        <th>@Html.DisplayNameFor(model => model.FechaConclusion)</th>
-                        <th colspan="2"></th>
+                    <tr class="small">
+                        <th>Id</th>
+                        <th>Fecha solicitud</th>
+                        <th>Personal revisor</th>
+                        <th>Estado</th>
+                        <th>Fecha conclusion</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
 
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>@Html.DisplayFor(modelItem => item.FechaSolicitud)</td>
-                        <td>@Html.DisplayFor(modelItem => item.FechaConclusion)</td>
+                    <tr class="small">
+                        <td>@item.Id</td>
+                        <td>@item.FechaSolicitud</td>
+                        <td>@item.PersonalId</td>
+                        <td>@item.EstadoId</td>
+                        <td>@item.FechaConclusion</td>
                         <td>
                             <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-sm btn-primary d-inline-block">
                                 <i class="fas fa-edit"></i>
@@ -63,7 +66,32 @@
                 paging: false,
                 scrollCollapse: true, //Si hay poco contenido -> no scrollY
                 scrollY: '50vh', //Scroll dinamico
-                //scrollX: true //Scroll dinamico
+                columnDefs:
+                [
+                    {
+                        targets: 0,
+                        width: "1%"
+                    },
+                    {
+                        targets: 1,
+                        width: "1%"
+                    },
+                    {
+                        targets: 3,
+                        width: "1%"
+                    },
+                    {
+                        targets: 4,
+                        width: "1%",
+                        orderable: false
+                    },
+                    {
+                        targets: 5,
+                        width: "90px",
+                        className: "text-center",
+                        orderable: false
+                    }
+                ]
             });
         });
     </script>

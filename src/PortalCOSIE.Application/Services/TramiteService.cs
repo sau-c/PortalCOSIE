@@ -10,15 +10,21 @@ namespace PortalCOSIE.Application
     {
         private readonly IGenericRepo<Tramite> _tramiteRepository;
         private readonly IGenericRepo<TramiteEstado> _tramiteEstadoRepository;
+        private readonly IGenericRepo<TipoTramite> _tipoTramiteRepository;
+        private readonly IGenericRepo<DocumentoEstado> _documentoEstadoRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public TramiteService(
             IGenericRepo<Tramite> tramiteRepository,
             IGenericRepo<TramiteEstado> tramiteEstadoRepository,
+            IGenericRepo<TipoTramite> tipoTramiteRepository,
+            IGenericRepo<DocumentoEstado> documentoEstadoRepository,
             IUnitOfWork unitOfWork)
         {
             _tramiteRepository = tramiteRepository;
             _tramiteEstadoRepository = tramiteEstadoRepository;
+            _tipoTramiteRepository = tipoTramiteRepository;
+            _documentoEstadoRepository = documentoEstadoRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -45,7 +51,7 @@ namespace PortalCOSIE.Application
         }
 
 
-        //TramitEstado CRUD
+        //TramiteEstado CRUD
         public async Task<IEnumerable<TramiteEstado>> ListarEstados()
         {
             return await _tramiteEstadoRepository.GetAllAsync();
@@ -63,6 +69,48 @@ namespace PortalCOSIE.Application
         {
             var estado = await _tramiteEstadoRepository.GetByIdAsync(id);
             await _unitOfWork.GenericRepo<TramiteEstado>().DeleteAsync(estado);
+            await _unitOfWork.CompleteAsync();
+        }
+
+        //DocumentoEstado CRUD
+        public async Task<IEnumerable<DocumentoEstado>> ListarEstadosDocumento()
+        {
+            return await _documentoEstadoRepository.GetAllAsync();
+        }
+        public async Task EliminarEstadoDocumento(int id)
+        {
+            var estado = await _documentoEstadoRepository.GetByIdAsync(id);
+            await _unitOfWork.GenericRepo<DocumentoEstado>().DeleteAsync(estado);
+            await _unitOfWork.CompleteAsync();
+        }
+        public async Task EditarEstadoDocumento(DocumentoEstado documentoEstado)
+        {
+            await _documentoEstadoRepository.UpdateAsync(documentoEstado);
+        }
+        public async Task CrearEstadoDocumento(DocumentoEstado documentoEstado)
+        {
+            await _unitOfWork.GenericRepo<DocumentoEstado>().AddAsync(documentoEstado);
+            await _unitOfWork.CompleteAsync();
+        }
+
+        //TipoTramite CRUD
+        public async Task<IEnumerable<TipoTramite>> ListarTipoTramite()
+        {
+            return await _tipoTramiteRepository.GetAllAsync();
+        }
+        public async Task EliminarTipoTramite(int id)
+        {
+            var estado = await _tipoTramiteRepository.GetByIdAsync(id);
+            await _unitOfWork.GenericRepo<TipoTramite>().DeleteAsync(estado);
+            await _unitOfWork.CompleteAsync();
+        }
+        public async Task EditarTipoTramite(TipoTramite tipoTramite)
+        {
+            await _tipoTramiteRepository.UpdateAsync(tipoTramite);
+        }
+        public async Task CrearTipoTramite(TipoTramite tipoTramite)
+        {
+            await _unitOfWork.GenericRepo<TipoTramite>().AddAsync(tipoTramite);
             await _unitOfWork.CompleteAsync();
         }
     }

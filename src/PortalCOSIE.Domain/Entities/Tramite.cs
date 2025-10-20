@@ -6,6 +6,7 @@ namespace PortalCOSIE.Domain.Entities
         public int EstadoId { get; set; }
         public int AlumnoId { get; set; }
         public int PersonalId { get; set; }
+        public int TipoTramiteId { get; set; }
         public DateTime FechaSolicitud { get; set; }
         public DateTime FechaConclusion { get; set; }
 

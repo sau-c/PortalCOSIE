@@ -56,8 +56,7 @@ namespace PortalCOSIE.Web.Controllers
             {
                 TempData["Message"] = result.Value;
             }
-
-            return View("Ingresar");
+            return RedirectToAction(nameof(Ingresar));
         }
 
         [HttpGet]
@@ -81,8 +80,7 @@ namespace PortalCOSIE.Web.Controllers
             {
                 TempData["Message"] = result.Value;
             }
-
-            return View("Ingresar");
+            return RedirectToAction(nameof(Ingresar));
         }
 
         [HttpGet]
@@ -190,7 +188,7 @@ namespace PortalCOSIE.Web.Controllers
                 return View(dto);
             }
             TempData["Message"] = result.Value;
-            return View("Ingresar");
+            return RedirectToAction(nameof(Ingresar));
         }
 
         [HttpGet]
@@ -221,7 +219,7 @@ namespace PortalCOSIE.Web.Controllers
                 }
                 return View(dto);
             }
-            return RedirectToAction("Ingresar");
+            return RedirectToAction(nameof(Ingresar));
         }
 
         [HttpGet]

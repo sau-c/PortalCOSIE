@@ -14,12 +14,13 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
             builder.Property(t => t.Nombre)
                 .IsRequired();
 
-            //builder.HasData(
-            //    new TramiteEstado (){ Id = 1, Nombre = "Solicitado" },
-            //    new TramiteEstado (){ Id = 2, Nombre = "En revision" },
-            //    new TramiteEstado (){ Id = 3, Nombre = "Documentos erroneos" },
-            //    new TramiteEstado (){ Id = 4, Nombre = "Concluido" }
-            //    );
+            builder.HasData(
+                new TramiteEstado() { Id = 1, Nombre = "Solicitado" },
+                new TramiteEstado() { Id = 2, Nombre = "En revision" },
+                new TramiteEstado() { Id = 3, Nombre = "Documentos pendientes" },
+                new TramiteEstado() { Id = 4, Nombre = "Concluido" },
+                new TramiteEstado() { Id = 5, Nombre = "Cacelado" }
+                );
         }
     }
 }

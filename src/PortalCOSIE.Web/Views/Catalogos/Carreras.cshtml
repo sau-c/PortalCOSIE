@@ -18,19 +18,19 @@
         <div class="table-responsive w-auto">
             <table id="tblCarreras" class="table table-striped table-bordered">
                 <thead class="table-secondary">
-                    <tr>
+                    <tr class="small">
                         <th>Id</th>
                         <th>Nombre</th>
-                        <th class="text-center">Acciones</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var carrera in Model)
                     {
-                        <tr>
+                        <tr class="small">
                             <td>@carrera.Id</td>
                             <td>@carrera.Nombre</td>
-                            <td class="text-center">
+                            <td>
                                 <a asp-action="Editar" asp-route-id="@carrera.Nombre" class="btn btn-sm btn-outline-secondary" title="Ver unidades de aprendizaje">
                                     <i class="fas fa-list"></i>
                                 </a>
@@ -174,7 +174,19 @@
                 },
                 paging: false,
                 scrollCollapse: true,
-                scrollY: '50vh'
+                scrollY: '50vh',
+                columnDefs: [
+                    {
+                        targets: 0,
+                        width: "1%"
+                    },
+                    {
+                        targets: 2,
+                        width: "130px",
+                        className: "text-center",
+                        orderable: false
+                    }
+                ]
             });
 
             // Manejo del modal de edición de carrera CORREGIDO
