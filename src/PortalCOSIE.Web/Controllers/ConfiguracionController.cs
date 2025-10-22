@@ -12,17 +12,14 @@ namespace PortalCOSIE.Web.Controllers
     {
         private readonly ICatalogoService _catalogoService;
         private readonly ICarreraService _carreraService;
-        private readonly IUnitOfWork _unitOfWork;
 
         public ConfiguracionController(
             ICarreraService catalogoService,
-            ICatalogoService tramiteService,
-            IUnitOfWork unitOfWork
+            ICatalogoService tramiteService
             )
         {
             _carreraService = catalogoService;
             _catalogoService = tramiteService;
-            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
