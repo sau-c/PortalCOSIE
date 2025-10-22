@@ -1,0 +1,76 @@
+﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Carrera>
+
+<div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+    <table id="tblCarreras" class="table table-hover table-bordered">
+        <thead class="table-secondary">
+            <tr class="small">
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var carrera in Model)
+            {
+                <tr class="small">
+                    <td>@carrera.Id</td>
+                    <td>@carrera.Nombre</td>
+                    <td>
+                        <a asp-action="Editar" asp-route-id="@carrera.Nombre" class="btn btn-sm btn-outline-secondary" title="Ver unidades de aprendizaje">
+                            <i class="fas fa-list"></i>
+                        </a>
+
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary generic-edit"
+                                title="Editar"
+                                data-title="Editar carrera"
+                                data-action="@Url.Action("EditarCarrera", "Configuracion")"
+                                data-id="@carrera.Id"
+                                data-nombre="@carrera.Nombre"
+                                data-placeholder="Nombre de la carrera"
+                                data-icon="fas fa-graduation-cap">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger generic-delete"
+                                title="Desactivar"
+                                data-action="@Url.Action("DesactivarCarrera", "Configuracion")"
+                                data-id="@carrera.Id"
+                                data-name="@carrera.Nombre"
+                                data-entity="carrera">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        // Configuración de DataTable
+        $('#tblCarreras').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
+            },
+            searching: false,
+            paging: false,
+            scrollCollapse: true,
+            scrollY: '50vh',
+            columnDefs: [
+                {
+                    targets: 0,
+                    width: "1%"
+                },
+                {
+                    targets: 2,
+                    width: "130px",
+                    className: "text-center",
+                    orderable: false
+                }
+            ]
+        });
+    });
+</script>

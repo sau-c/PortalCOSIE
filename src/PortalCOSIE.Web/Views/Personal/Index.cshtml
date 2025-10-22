@@ -39,7 +39,7 @@
     </div>
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
         <div class="table-responsive">
-            <table id="tblPersonal" class="table table-striped table-bordered w-100">
+            <table id="tblPersonal" class="table table-hover table-bordered">
                 <thead class="table-secondary">
                     <tr class="small">
                         <th>Nombre</th>
@@ -85,13 +85,13 @@
                                 </a>
                                 <button type="button"
                                         class="btn btn-sm btn-outline-danger"
-                                        title="Eliminar"
+                                        title="Desactivar"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal"
+                                        data-bs-target="#desactivarModal"
                                         data-user-id="@personal.IdentityUserId"
                                         data-user-name="@personal.Nombre @personal.ApellidoPaterno @personal.ApellidoMaterno"
                                         data-user-email="@personal.Correo" >
-                                    <i class="fas fa-trash-alt"></i>
+                                    <i class="fas fa-ban"></i>
                                 </button>
                             </td>
                         </tr>
@@ -103,7 +103,7 @@
 </div>
 
 <!-- Modal de eliminación -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal fade" id="desactivarModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="deleteForm" asp-action="Eliminar" method="post">

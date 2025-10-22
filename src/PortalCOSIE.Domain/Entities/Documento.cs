@@ -8,7 +8,7 @@
         public int DocumentoEstadoId { get; set; }
         public int Blob { get; set; }
 
-        public virtual DocumentoEstado DocumentoEstado { get; set; }
+        public virtual EstadoDocumento EstadoDocumento { get; set; }
         public virtual Tramite Tramite { get; set; }
     }
 }

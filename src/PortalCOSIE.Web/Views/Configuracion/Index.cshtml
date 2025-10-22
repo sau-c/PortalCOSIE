@@ -1,0 +1,276 @@
+﻿@{
+    ViewData["Title"] = "Configuración del sistema";
+}
+
+<div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+        </div>
+    </div>
+
+    <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs" id="configTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active"
+                        data-bs-toggle="tab"
+                        data-bs-target="#periodos"
+                        data-action="@Url.Action("Periodos", "Configuracion")"
+                        type="button">
+                    <i class="fas fa-calendar-alt me-2"></i>Periodos
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#carreras"
+                        data-action="@Url.Action("Carreras", "Configuracion")"
+                        type="button">
+                    <i class="fas fa-graduation-cap me-2"></i>Carreras
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#tipo"
+                        data-action="@Url.Action("Tipo", "Configuracion")"
+                        type="button">
+                    <i class="fas fa-tasks me-2"></i>Tipo de trámite
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#estadoTramite"
+                        data-action="@Url.Action("Estados", "Configuracion")"
+                        type="button">
+                    <i class="fas fa-clipboard-check me-2"></i>Estado de trámite
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#estadoDocumento"
+                        data-action="@Url.Action("EstadosDocumento", "Configuracion")"
+                        type="button">
+                    <i class="fas fa-file-alt me-2"></i>Estado de documento
+                </button>
+            </li>
+        </ul>
+
+        <!-- Contenedores de contenido -->
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="periodos"></div>
+            <div class="tab-pane fade" id="carreras"></div>
+            <div class="tab-pane fade" id="tipo"></div>
+            <div class="tab-pane fade" id="estadoTramite"></div>
+            <div class="tab-pane fade" id="estadoDocumento"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Genérico para Crear/Editar -->
+<div class="modal fade" id="genericModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="genericForm" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="genericId" name="id" />
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="genericModalTitle">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="genericNombre" class="form-label fw-semibold">
+                            <i class="fas fa-tag me-1"></i>Nombre
+                        </label>
+                        <input type="text" class="form-control" id="genericNombre" name="nombre" required
+                               placeholder="Ingrese el nombre" maxlength="100">
+                        <div class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>Máximo 100 caracteres
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Genérico para Desactivar -->
+<div class="modal fade" id="deleteGenericModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="deleteGenericForm" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteGenericModalTitle">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmar desactivación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning border-warning mb-3">
+                        <div class="d-flex">
+                            <i class="fas fa-exclamation-circle fa-2x me-3 text-warning"></i>
+                            <div>
+                                <h6 class="alert-heading mb-2">¡Advertencia!</h6>
+                                <p id="deleteGenericAlertMessage" class="mb-0"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-semibold mb-2">¿Está seguro de desactivar el siguiente registro?</p>
+                        <div class="card border-danger">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-4"><strong class="text-muted">ID:</strong></div>
+                                    <div class="col-8"><span id="deleteGenericId" class="fw-bold text-danger"></span></div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4"><strong class="text-muted">Nombre:</strong></div>
+                                    <div class="col-8"><span id="deleteGenericName" class="fw-bold text-danger"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="deleteGenericIdInput" name="id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i><span>Desactivar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Modal Genérico Crear/Editar
+        const openGenericModal = (options) => {
+            const config = {
+                title: 'Editar',
+                action: '',
+                id: '',
+                nombre: '',
+                placeholder: 'Ingrese el nombre',
+                icon: 'fas fa-edit',
+                ...options
+            };
+
+            $('#genericModalTitle').html(`<i class="${config.icon} me-2"></i>${config.title}`);
+            $('#genericForm').attr('action', config.action);
+            $('#genericId').val(config.id);
+            $('#genericNombre').val(config.nombre).attr('placeholder', config.placeholder);
+
+            $('#genericModal').modal('show');
+            $('#genericNombre').focus().select();
+        };
+
+        // Modal Genérico Desactivar
+        const openDeleteModal = (options) => {
+            const config = {
+                title: 'Confirmar desactivación',
+                action: '',
+                id: '',
+                name: '',
+                entityName: 'elemento',
+                alertMessage: 'Esta acción no se puede deshacer. El elemento y todos sus datos asociados serán eliminados permanentemente.',
+                ...options
+            };
+
+            $('#deleteGenericModalTitle').html(`<i class="fas fa-exclamation-triangle me-2"></i>${config.title}`);
+            $('#deleteGenericForm').attr('action', config.action);
+            $('#deleteGenericAlertMessage').text(config.alertMessage);
+            $('#deleteGenericId').text(config.id);
+            $('#deleteGenericName').text(config.name);
+            $('#deleteGenericIdInput').val(config.id);
+
+            $('#deleteGenericModal').modal('show');
+        };
+
+        // Event Handlers
+        $(document)
+            .on('submit', '#genericForm', function(e) {
+                const nombre = $('#genericNombre').val().trim();
+                if (!nombre || nombre.length > 100) {
+                    e.preventDefault();
+                    alert(!nombre ? 'Por favor ingrese el nombre' : 'El nombre no puede exceder los 100 caracteres');
+                    $('#genericNombre').focus();
+                    return false;
+                }
+                return true;
+            })
+            .on('click', '.generic-edit', function() {
+                const $btn = $(this);
+                openGenericModal({
+                    title: $btn.data('title'),
+                    action: $btn.data('action'),
+                    id: $btn.data('id'),
+                    nombre: $btn.data('nombre'),
+                    placeholder: $btn.data('placeholder'),
+                    icon: $btn.data('icon')
+                });
+            })
+            .on('click', '.generic-delete', function() {
+                const $btn = $(this);
+                const entity = $btn.data('entity') || 'elemento';
+
+                openDeleteModal({
+                    title: `Desactivar ${entity}`,
+                    action: $btn.data('action'),
+                    id: $btn.data('id'),
+                    name: $btn.data('name'),
+                    entityName: entity,
+                    question: `¿Está seguro de desactivar ${entity}?`,
+                    alertMessage: `Esta acción no se puede deshacer. El ${entity} y todos sus datos asociados serán eliminados permanentemente.`
+                });
+            })
+            .on('hidden.bs.modal', '#genericModal, #deleteGenericModal', function() {
+                $(this).find('form')[0].reset();
+                $(this).find('input[type="hidden"]').val('');
+            });
+
+        // Carga de Tabs
+        $(document).ready(function () {
+            const loadTabConfig = (tabButton) => {
+                const $button = $(tabButton);
+                const target = $button.data('bs-target');
+                const action = $button.data('action');
+                const $container = $(target);
+
+                if ($container.data('loaded')) return;
+
+                $.get(action)
+                    .done(data => {
+                        $container.html(data).data('loaded', true);
+                    })
+                    .fail(() => {
+                        $container.html('<div class="text-danger p-3">Error al cargar el contenido.</div>');
+                    });
+            };
+
+            // Cargar tab activo inicial
+            loadTabConfig($('.nav-link.active')[0]);
+
+            // Cargar tabs al cambiar
+            $('.nav-link').on('shown.bs.tab', e => loadTabConfig(e.target));
+        });
+    </script>
+}

@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using PortalCOSIE.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace PortalCOSIE.Domain.Interfaces
 {
@@ -9,7 +10,7 @@ namespace PortalCOSIE.Domain.Interfaces
     /// recuperación, adición, actualización y eliminación. Está diseñada para abstraer el mecanismo subyacente de acceso a datos,
     /// permitiendo una implementación flexible.</remarks>
     /// <typeparam name="T">El tipo de entidad gestionada por el repositorio. Debe ser un tipo de referencia.</typeparam>
-    public interface IGenericRepo<T> where T : class
+    public interface IGenericRepo<T> where T : BaseEntity
     {
         Task<T> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();

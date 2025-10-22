@@ -1,8 +1,10 @@
-﻿namespace PortalCOSIE.Domain.Interfaces
+﻿using PortalCOSIE.Domain.Entities;
+
+namespace PortalCOSIE.Domain.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IGenericRepo<T> GenericRepo<T>() where T : class;
+        IGenericRepo<T> GenericRepo<T>() where T : BaseEntity;
         Task<int> CompleteAsync();
     }
 }

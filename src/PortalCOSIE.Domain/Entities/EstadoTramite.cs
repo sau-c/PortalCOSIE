@@ -1,6 +1,6 @@
 ﻿namespace PortalCOSIE.Domain.Entities
 {
-    public class TramiteEstado : BaseEntity
+    public class EstadoTramite : BaseEntity
     {
         public string Nombre { get; set; }
     }

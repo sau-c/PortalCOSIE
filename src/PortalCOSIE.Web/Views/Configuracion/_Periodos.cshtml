@@ -1,0 +1,125 @@
+﻿@model PortalCOSIE.Domain.Entities.PeriodoConfig
+
+<div class="container mt-4">
+    <form method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h6 class="mb-0">Configuración de periodos</h6>
+                    </div>
+                    <div class="card-body">
+                        <fieldset class="border rounded px-3 pb-3 mb-3 bg-light">
+                            <legend class="float-none w-auto px-2 text-primary fs-6">
+                                <i class="fas fa-play-circle me-1"></i>Inicio
+                            </legend>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label class="form-label">Año:</label>
+                                    <select name="anioInicio" class="form-select">
+                                        @for (int año = DateTime.Now.Year - 28; año <= DateTime.Now.Year + 1; año++)
+                                        {
+                                            <option value="@año" selected="@(Model.PeriodoInicio?.StartsWith(año.ToString()) == true)">@año</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="form-label">Periodo:</label>
+                                    <select name="periodoInicio" class="form-select">
+                                        @for (int p = 1; p <= 6; p++)
+                                        {
+                                            <option value="@p" selected="@(Model.PeriodoInicio?.EndsWith("/" + p) == true)">@p</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="border rounded px-3 pb-3 mb-3 bg-light">
+                            <legend class="float-none w-auto px-2 text-primary fs-6">
+                                <i class="fas fa-stop-circle me-1"></i>Fin
+                            </legend>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label class="form-label">Año:</label>
+                                    <select name="anioFin" class="form-select">
+                                        @for (int año = DateTime.Now.Year; año <= DateTime.Now.Year + 2; año++)
+                                        {
+                                            <option value="@año" selected="@(Model.PeriodoFin?.StartsWith(año.ToString()) == true)">@año</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="form-label">Periodo:</label>
+                                    <select name="periodoFin" class="form-select">
+                                        @for (int p = 1; p <= 6; p++)
+                                        {
+                                            <option value="@p" selected="@(Model.PeriodoFin?.EndsWith("/" + p) == true)">@p</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div>
+                            <label class="form-label">Periodos por año:</label>
+                            <select asp-for="PeriodosPorAnio" class="form-select">
+                                <option value="2">2 (Semestral)</option>
+                                <option value="3">3 (Cuatrimestral)</option>
+                                <option value="4">4 (Trimestral)</option>
+                                <option value="6">6 (Bimestral)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h6 class="mb-0">Vista previa</h6>
+                    </div>
+                    <div class="card-body">
+                        <select id="previewSelect" class="form-select" size="10" multiple></select>
+                        <small class="text-muted mt-2 d-block">Total: <span id="totalPeriodos">0</span> periodos</small>
+                    </div>
+                </div>
+
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Guardar cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        function generarPreview() {
+            var anioInicio = parseInt($('[name="anioInicio"]').val());
+            var periodoInicio = parseInt($('[name="periodoInicio"]').val());
+            var anioFin = parseInt($('[name="anioFin"]').val());
+            var periodoFin = parseInt($('[name="periodoFin"]').val());
+            var periodosPorAnio = parseInt($('#PeriodosPorAnio').val());
+
+            $('#previewSelect').empty();
+            var total = 0;
+
+            for (var año = anioInicio; año <= anioFin; año++) {
+                var inicio = (año == anioInicio) ? periodoInicio : 1;
+                var fin = (año == anioFin) ? periodoFin : periodosPorAnio;
+
+                for (var periodo = inicio; periodo <= fin; periodo++) {
+                    $('#previewSelect').append('<option>' + año + '/' + periodo + '</option>');
+                    total++;
+                }
+            }
+            $('#totalPeriodos').text(total);
+        }
+
+        $('select').change(generarPreview);
+        generarPreview();
+    });
+</script>

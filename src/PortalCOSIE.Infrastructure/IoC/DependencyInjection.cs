@@ -27,11 +27,12 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
-            services.AddScoped<ICarreraService, CarreraService>();
 
             //Servicios
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<ITramiteService, TramiteService>();
+            services.AddScoped<ICatalogoService, CatalogoService>();
+            services.AddScoped<ICarreraService, CarreraService>();
 
             //Repositorios
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -39,10 +40,10 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IGenericRepo<Alumno>, GenericRepo<Alumno>>();
             services.AddScoped<IGenericRepo<Carrera>, GenericRepo<Carrera>>();
             services.AddScoped<IGenericRepo<Tramite>, GenericRepo<Tramite>>();
-            services.AddScoped<IGenericRepo<TramiteEstado>, GenericRepo<TramiteEstado>>();
+            services.AddScoped<IGenericRepo<EstadoTramite>, GenericRepo<EstadoTramite>>();
             services.AddScoped<IGenericRepo<TipoTramite>, GenericRepo<TipoTramite>>();
             services.AddScoped<IGenericRepo<Documento>, GenericRepo<Documento>>();
-            services.AddScoped<IGenericRepo<DocumentoEstado>, GenericRepo<DocumentoEstado>>();
+            services.AddScoped<IGenericRepo<EstadoDocumento>, GenericRepo<EstadoDocumento>>();
             services.AddScoped<IGenericRepo<UnidadAprendizaje>, GenericRepo<UnidadAprendizaje>>();
 
             return services;

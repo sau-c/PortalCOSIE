@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class GenericRepo<T> : IGenericRepo<T> where T : class
+    public class GenericRepo<T> : IGenericRepo<T> where T : BaseEntity
     {
         private readonly AppDbContext _context;
         private readonly DbSet<T> _dbSet;
@@ -32,18 +32,6 @@ namespace PortalCOSIE.Infrastructure.Repositories
             return _dbSet.AsQueryable();
         }
 
-        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
-        {
-            var query = _dbSet.AsQueryable();
-
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-
-            return await query.FirstOrDefaultAsync(filter);
-        }
-
         public async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
@@ -57,7 +45,23 @@ namespace PortalCOSIE.Infrastructure.Repositories
 
         public async Task DeleteAsync(T entity)
         {
-            _dbSet.Remove(entity);
+            //_dbSet.Remove(entity); // Eliminación física
+            if (entity.Eliminado)
+                return;
+            entity.Eliminado = true;
+            _dbSet.Update(entity);
+        }
+
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
+        {
+            var query = _dbSet.AsQueryable();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync(filter);
         }
 
         public async Task<IEnumerable<T?>> GetListAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)

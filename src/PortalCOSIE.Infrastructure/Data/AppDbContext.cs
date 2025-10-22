@@ -16,10 +16,11 @@ namespace PortalCOSIE.Infrastructure.Data
         public DbSet<Alumno> Alumnos { get; set; }
         public DbSet<Carrera> Carreras { get; set; }
         public DbSet<UnidadAprendizaje> UnidadesAprendizaje { get; set; }
+        public DbSet<PeriodoConfig> PeriodosConfig { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
-        public DbSet<TramiteEstado> TramiteEstados { get; set; }
+        public DbSet<EstadoTramite> TramiteEstados { get; set; }
         public DbSet<Documento> Documentos { get; set; }
-        public DbSet<DocumentoEstado> DocumentoEstados { get; set; }
+        public DbSet<EstadoDocumento> DocumentoEstados { get; set; }
         public DbSet<Personal> Personales { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

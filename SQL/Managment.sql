@@ -10,11 +10,14 @@ select * from AspNetUserRoles
 
 --Dominio
 select * from Carrera
-select * from PlanEstudio
+select * from EstadoTramite
+select * from TipoTramite
+select * from EstadoDocumento
 select * from Tramite
 select * from Personal
 select * from Alumno
 select * from Usuario
+select * from PeriodoConfig
 
 --Modulo autenticacion
 select * from Alumno
@@ -41,35 +44,37 @@ select * from AspNetUsers
 --%%%%%%%%%%%%%%%%%%%%%%%%
 --%%%% ELIMINAR TABLAS %%%
 --%%%%%%%%%%%%%%%%%%%%%%%%
-DROP TABLE dbo.Documento
-GO
-DROP TABLE dbo.DocumentoEstado
-GO
-DROP TABLE dbo.Tramite
-GO
-DROP TABLE dbo.TramiteEstado
-GO
-DROP TABLE dbo.Personal
-GO
-DROP TABLE dbo.Alumno
-GO
-DROP TABLE dbo.Usuario
-GO
-DROP TABLE dbo.UnidadAprendizaje
-GO
-DROP TABLE dbo.Carrera
-GO
-DROP TABLE dbo.AspNetUserClaims
-GO
-DROP TABLE dbo.AspNetUserTokens
-GO
-DROP TABLE dbo.AspNetUserLogins
-GO
-DROP TABLE dbo.AspNetRoleClaims
-GO
-DROP TABLE dbo.AspNetUserRoles
-GO
-DROP TABLE dbo.AspNetRoles
-GO
-DROP TABLE dbo.AspNetUsers
-GO
+--DROP TABLE dbo.Documento
+--GO
+--DROP TABLE dbo.EstadoDocumento
+--GO
+--DROP TABLE dbo.Tramite
+--GO
+--DROP TABLE dbo.EstadoTramite
+--GO
+--DROP TABLE dbo.Personal
+--GO
+--DROP TABLE dbo.Alumno
+--GO
+--DROP TABLE dbo.Usuario
+--GO
+--DROP TABLE dbo.UnidadAprendizaje
+--GO
+--DROP TABLE dbo.Carrera
+--GO
+--DROP TABLE dbo.TipoTramite
+--GO
+--DROP TABLE dbo.AspNetUserClaims
+--GO
+--DROP TABLE dbo.AspNetUserTokens
+--GO
+--DROP TABLE dbo.AspNetUserLogins
+--GO
+--DROP TABLE dbo.AspNetRoleClaims
+--GO
+--DROP TABLE dbo.AspNetUserRoles
+--GO
+--DROP TABLE dbo.AspNetRoles
+--GO
+--DROP TABLE dbo.AspNetUsers
+--GO

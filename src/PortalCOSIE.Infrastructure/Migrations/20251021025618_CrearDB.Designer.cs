@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Data;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251014033519_CrearDBNet")]
-    partial class CrearDBNet
+    [Migration("20251021025618_CrearDB")]
+    partial class CrearDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -231,6 +231,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<int>("CarreraId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
                     b.Property<string>("NumeroBoleta")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -258,6 +261,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -271,26 +277,31 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
+                            Eliminado = false,
                             Nombre = "Mecatrónica"
                         },
                         new
                         {
                             Id = 2,
+                            Eliminado = false,
                             Nombre = "Telemática"
                         },
                         new
                         {
                             Id = 3,
+                            Eliminado = false,
                             Nombre = "Biónica"
                         },
                         new
                         {
                             Id = 4,
+                            Eliminado = false,
                             Nombre = "Energía"
                         },
                         new
                         {
                             Id = 5,
+                            Eliminado = false,
                             Nombre = "ISISA"
                         });
                 });
@@ -309,6 +320,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<int>("DocumentoEstadoId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EstadoDocumentoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -324,20 +341,23 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DocumentoEstadoId");
+                    b.HasIndex("EstadoDocumentoId");
 
                     b.HasIndex("TramiteId");
 
                     b.ToTable("Documento", (string)null);
                 });
 
-            modelBuilder.Entity("PortalCOSIE.Domain.Entities.DocumentoEstado", b =>
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.EstadoDocumento", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -346,38 +366,135 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DocumentoEstado", (string)null);
+                    b.ToTable("EstadoDocumento", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
+                            Eliminado = false,
                             Nombre = "Sin cargar"
                         },
                         new
                         {
                             Id = 2,
+                            Eliminado = false,
                             Nombre = "Validado"
                         },
                         new
                         {
                             Id = 3,
+                            Eliminado = false,
                             Nombre = "Con errores"
                         },
                         new
                         {
                             Id = 4,
+                            Eliminado = false,
                             Nombre = "Mala calidad"
                         },
                         new
                         {
                             Id = 5,
+                            Eliminado = false,
                             Nombre = "Documento equivocado"
                         },
                         new
                         {
                             Id = 6,
+                            Eliminado = false,
                             Nombre = "Corrupto"
+                        });
+                });
+
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.EstadoTramite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EstadoTramite", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Eliminado = false,
+                            Nombre = "Solicitado"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Eliminado = false,
+                            Nombre = "En revision"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Eliminado = false,
+                            Nombre = "Documentos pendientes"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Eliminado = false,
+                            Nombre = "Concluido"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Eliminado = false,
+                            Nombre = "Cancelado"
+                        });
+                });
+
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.PeriodoConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PeriodoFin")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("PeriodoInicio")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<int>("PeriodosPorAnio")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PeriodoConfig", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Eliminado = false,
+                            PeriodoFin = "20202",
+                            PeriodoInicio = "20101",
+                            PeriodosPorAnio = 2
                         });
                 });
 
@@ -385,6 +502,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
 
                     b.Property<string>("IdPersonal")
                         .IsRequired()
@@ -403,6 +523,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -415,11 +538,13 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
+                            Eliminado = false,
                             Nombre = "Dictamen interno (CTE)"
                         },
                         new
                         {
                             Id = 2,
+                            Eliminado = false,
                             Nombre = "Dictamen externo (CGC)"
                         });
                 });
@@ -435,7 +560,13 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<int>("AlumnoId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
                     b.Property<int>("EstadoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EstadoTramiteId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("FechaConclusion")
@@ -447,65 +578,23 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<int>("PersonalId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TipoTramiteId")
+                    b.Property<int>("TipoId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TramiteEstadoId")
+                    b.Property<int>("TipoTramiteId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AlumnoId");
 
+                    b.HasIndex("EstadoTramiteId");
+
                     b.HasIndex("PersonalId");
 
-                    b.HasIndex("TramiteEstadoId");
+                    b.HasIndex("TipoTramiteId");
 
                     b.ToTable("Tramite", (string)null);
-                });
-
-            modelBuilder.Entity("PortalCOSIE.Domain.Entities.TramiteEstado", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TramiteEstado", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Nombre = "Solicitado"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Nombre = "En revision"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Nombre = "Documentos pendientes"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Nombre = "Concluido"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Nombre = "Cacelado"
-                        });
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.UnidadAprendizaje", b =>
@@ -518,6 +607,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     b.Property<int>("CarreraId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -538,6 +630,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 1,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ALGEBRA LINEAL Y NUMEROS COMPLEJOS",
                             Semestre = 1
                         },
@@ -545,6 +638,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 2,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ANALISIS Y DISEÑO DE PROGRAMAS",
                             Semestre = 1
                         },
@@ -552,6 +646,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 3,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CALCULO DIFERENCIAL E INTEGRAL",
                             Semestre = 1
                         },
@@ -559,6 +654,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 4,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CALCULO VECTORIAL",
                             Semestre = 1
                         },
@@ -566,6 +662,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 5,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CIRCUITOS ELECTRICOS",
                             Semestre = 1
                         },
@@ -573,6 +670,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 6,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CIRCUITOS ELECTRICOS AVANZADOS",
                             Semestre = 1
                         },
@@ -580,6 +678,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 7,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "DIBUJO ASISTIDO POR COMPUTADORA",
                             Semestre = 1
                         },
@@ -587,6 +686,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 8,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ECUACIONES DIFERENCIALES",
                             Semestre = 1
                         },
@@ -594,6 +694,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 9,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ELECTRICIDAD Y MAGNETISMO",
                             Semestre = 1
                         },
@@ -601,6 +702,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 10,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ESTRUCTURA Y PROPIEDADES DE LOS MATERIALES",
                             Semestre = 1
                         },
@@ -608,6 +710,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 11,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "COMUNICACION ORAL Y ESCRITA",
                             Semestre = 1
                         },
@@ -615,6 +718,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 12,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "FUNDAMENTOS DE ELECTRONICA",
                             Semestre = 1
                         },
@@ -622,6 +726,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 13,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "HERRAMIENTAS COMPUTACIONALES",
                             Semestre = 1
                         },
@@ -629,6 +734,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 14,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INGLES I",
                             Semestre = 1
                         },
@@ -636,6 +742,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 15,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INGLES II",
                             Semestre = 1
                         },
@@ -643,6 +750,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 16,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INTRODUCCION A LA MECATRONICA",
                             Semestre = 1
                         },
@@ -650,6 +758,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 17,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INTRODUCCION A LA PROGRAMACION",
                             Semestre = 1
                         },
@@ -657,6 +766,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 18,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MECANICA DE LA PARTICULA",
                             Semestre = 1
                         },
@@ -664,6 +774,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 19,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MECANICA DEL CUERPO RIGIDO",
                             Semestre = 1
                         },
@@ -671,6 +782,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 20,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROCESO DE MANUFACTURA",
                             Semestre = 1
                         },
@@ -678,6 +790,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 21,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "RESISTENCIA DE MATERIALES",
                             Semestre = 1
                         },
@@ -685,6 +798,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 22,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ADMINISTRACION ORGANIZACIONAL",
                             Semestre = 2
                         },
@@ -692,6 +806,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 23,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ANALISIS DE SEÑALES Y SISTEMAS",
                             Semestre = 2
                         },
@@ -699,6 +814,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 24,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ANALISIS Y SINTESIS DE MECANISMOS",
                             Semestre = 2
                         },
@@ -706,6 +822,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 25,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CIRCUITOS LOGICOS",
                             Semestre = 2
                         },
@@ -713,6 +830,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 26,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "DISEÑO BASICO DE ELEMENTOS DE MAQUINAS",
                             Semestre = 2
                         },
@@ -720,6 +838,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 27,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "DISPOSITIVOS LOGICOS PROGRAMABLES",
                             Semestre = 2
                         },
@@ -727,6 +846,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 28,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ELECTRONICA ANALOGICA",
                             Semestre = 2
                         },
@@ -734,6 +854,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 29,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INGLES III",
                             Semestre = 2
                         },
@@ -741,6 +862,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 30,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "LIDERAZGO Y EMPRENDEDORES",
                             Semestre = 2
                         },
@@ -748,6 +870,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 31,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MANTENIMIENTO Y SISTEMAS DE MANUFACTURA",
                             Semestre = 2
                         },
@@ -755,6 +878,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 32,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MAQUINAS ELECTRICAS",
                             Semestre = 2
                         },
@@ -762,6 +886,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 33,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MECANICA DE FLUIDOS",
                             Semestre = 2
                         },
@@ -769,6 +894,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 34,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MICROPROCESADORES, MICROCONTROLADORES E INTERFAZ",
                             Semestre = 2
                         },
@@ -776,6 +902,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 35,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "NEUMATICA E HIDRAULICA",
                             Semestre = 2
                         },
@@ -783,6 +910,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 36,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "OSCILACIONES Y OPTICA",
                             Semestre = 2
                         },
@@ -790,6 +918,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 37,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROBABILIDAD Y ESTADISTICA PARA INGENIERIA",
                             Semestre = 2
                         },
@@ -797,6 +926,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 38,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROGRAMACION AVANZADA",
                             Semestre = 2
                         },
@@ -804,6 +934,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 39,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SENSORES Y ACONDICIONADORES DE SEÑAL",
                             Semestre = 2
                         },
@@ -811,6 +942,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 40,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SIMULACION ELECTRONICA Y DISEÑO DE CIRCUITOS IMPRESOS",
                             Semestre = 2
                         },
@@ -818,6 +950,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 41,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SISTEMAS NEURODIFUSOS",
                             Semestre = 2
                         },
@@ -825,6 +958,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 42,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "TEORIA ELECTROMAGNETICA",
                             Semestre = 2
                         },
@@ -832,6 +966,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 43,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "TERMODINAMICA",
                             Semestre = 2
                         },
@@ -839,6 +974,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 44,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CONTROL CLASICO",
                             Semestre = 3
                         },
@@ -846,6 +982,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 45,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ETICA PARA EL EJERCICIO PROFESIONAL",
                             Semestre = 3
                         },
@@ -853,6 +990,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 46,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INSTRUMENTACION VIRTUAL",
                             Semestre = 3
                         },
@@ -860,6 +998,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 47,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MODELADO Y SIMULACION DE SISTEMAS MECATRONICOS",
                             Semestre = 3
                         },
@@ -867,6 +1006,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 48,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "AUTOMATIZACION INDUSTRIAL",
                             Semestre = 3
                         },
@@ -874,6 +1014,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 49,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "DISEÑO AVANZADO DE ELEMENTOS DE MAQUINAS",
                             Semestre = 3
                         },
@@ -881,6 +1022,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 50,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "FINANZAS E INGENIERIA ECONOMICA",
                             Semestre = 3
                         },
@@ -888,6 +1030,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 51,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROCESADOR DIGITAL DE SEÑALES",
                             Semestre = 3
                         },
@@ -895,6 +1038,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 52,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INGENIERIA AMBIENTAL",
                             Semestre = 3
                         },
@@ -902,6 +1046,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 53,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ECONOMIA Y LOGISTICA",
                             Semestre = 3
                         },
@@ -909,6 +1054,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 54,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CONTROL DISTRIBUIDO",
                             Semestre = 3
                         },
@@ -916,6 +1062,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 55,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "TOPICOS AVANZADOS DE ELECTRONICA",
                             Semestre = 3
                         },
@@ -923,6 +1070,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 56,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "DISEÑO AVANZADO Y MANUFACTURA ASISTIDA POR COMPUTADORA",
                             Semestre = 3
                         },
@@ -930,6 +1078,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 57,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROYECTO INTEGRADOR",
                             Semestre = 3
                         },
@@ -937,6 +1086,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 58,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "AUTOMATAS INDUSTRIALES",
                             Semestre = 3
                         },
@@ -944,6 +1094,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 59,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "AUTOMATIZACION DE LINEA DE PRODUCCION",
                             Semestre = 3
                         },
@@ -951,6 +1102,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 60,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "TOPICOS AVANZADOS DE SENSORES",
                             Semestre = 3
                         },
@@ -958,6 +1110,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 61,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "DESARROLLO EMPRESARIAL",
                             Semestre = 3
                         },
@@ -965,6 +1118,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 62,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SEGURIDAD INDUSTRIAL",
                             Semestre = 3
                         },
@@ -972,6 +1126,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 63,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SISTEMAS OPERATIVOS EN TIEMPO REAL",
                             Semestre = 3
                         },
@@ -979,6 +1134,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 64,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "GRAFICACION EN 3D",
                             Semestre = 3
                         },
@@ -986,6 +1142,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 65,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROCESOS INDUSTRIALES",
                             Semestre = 3
                         },
@@ -993,6 +1150,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 66,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PRODUCCION MAS LIMPIA",
                             Semestre = 3
                         },
@@ -1000,6 +1158,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 67,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "USO Y MANTENIMIENTO DE HERRAMENTAL PARA PROC. DE MANUFACTURA",
                             Semestre = 3
                         },
@@ -1007,6 +1166,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 68,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ELECTIVA I",
                             Semestre = 3
                         },
@@ -1014,6 +1174,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 69,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SISTEMAS DE CALIDAD PARA LA MANUFACTURA",
                             Semestre = 3
                         },
@@ -1021,6 +1182,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 70,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROTOCOLOS AVANZADOS DE COMUNICACIONES",
                             Semestre = 3
                         },
@@ -1028,6 +1190,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 71,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CONTROL DE SISTEMAS MECATRONICOS",
                             Semestre = 4
                         },
@@ -1035,6 +1198,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 72,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ELECTRONICA DE POTENCIA",
                             Semestre = 4
                         },
@@ -1042,6 +1206,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 73,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INGENIERIA ASISTIDA POR COMPUTADORA",
                             Semestre = 4
                         },
@@ -1049,6 +1214,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 74,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "METODOLOGIA DE LA INVESTIGACION",
                             Semestre = 4
                         },
@@ -1056,6 +1222,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 75,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROYECTOS DE INVERSION",
                             Semestre = 4
                         },
@@ -1063,6 +1230,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 76,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SISTEMAS DE VISION ARTIFICIAL",
                             Semestre = 4
                         },
@@ -1070,6 +1238,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 77,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MICROCONTROLADORES AVANZADOS",
                             Semestre = 4
                         },
@@ -1077,6 +1246,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 78,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MERCADOTECNIA",
                             Semestre = 4
                         },
@@ -1084,6 +1254,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 79,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INTEGRACION DE UN SISTEMA ROBOTICO",
                             Semestre = 4
                         },
@@ -1091,6 +1262,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 80,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "VISION ARTIFICIAL APLICADA",
                             Semestre = 4
                         },
@@ -1098,6 +1270,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 81,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ELECTIVA II",
                             Semestre = 4
                         },
@@ -1105,6 +1278,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 82,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROCESOS AVANZADOS DE MANUFACTURA",
                             Semestre = 4
                         },
@@ -1112,6 +1286,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 83,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CONTROL DE SISTEMAS ROBOTICOS",
                             Semestre = 4
                         },
@@ -1119,6 +1294,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 84,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "IMPLEMENTACION DE SISTEMAS DIGITALES",
                             Semestre = 4
                         },
@@ -1126,6 +1302,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 85,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "INSTRUMENTACION VIRTUAL APLICADA",
                             Semestre = 4
                         },
@@ -1133,6 +1310,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 86,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "MANUFACTURA INTEGRADA POR COMPUTADORA",
                             Semestre = 4
                         },
@@ -1140,6 +1318,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 87,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "TOPICOS AVANZADOS DE AUTOMATIZACION",
                             Semestre = 4
                         },
@@ -1147,6 +1326,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 88,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SISTEMAS AVANZADOS DE MANUFACTURA",
                             Semestre = 4
                         },
@@ -1154,6 +1334,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 89,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CONTROL DE PROCESOS INDUSTRIALES",
                             Semestre = 4
                         },
@@ -1161,6 +1342,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 90,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CONTROL INTELIGENTE",
                             Semestre = 4
                         },
@@ -1168,6 +1350,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 91,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "DISEÑO DE EQUIPO PARA MANEJO DE MATERIALES",
                             Semestre = 4
                         },
@@ -1175,6 +1358,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 92,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "DISEÑO ERGONOMICO",
                             Semestre = 4
                         },
@@ -1182,6 +1366,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 93,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROTOCOLOS DE COMUNICACION INDUSTRIAL",
                             Semestre = 4
                         },
@@ -1189,6 +1374,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 94,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "PROYECTO DE SISTEMAS EMBEBIDOS",
                             Semestre = 4
                         },
@@ -1196,6 +1382,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 95,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "REALIDAD VIRTUAL",
                             Semestre = 4
                         },
@@ -1203,6 +1390,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 96,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SISTEMAS DE PROCESAMIENTO DIGITAL DE SEÑALES",
                             Semestre = 4
                         },
@@ -1210,6 +1398,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 97,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "TOPICOS AVANZADOS DE SOLDADURA",
                             Semestre = 4
                         },
@@ -1217,6 +1406,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 98,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "CONTROL DE MAQUINAS ELECTRICAS",
                             Semestre = 5
                         },
@@ -1224,6 +1414,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 99,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "ELECTIVA III",
                             Semestre = 5
                         },
@@ -1231,6 +1422,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 100,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "TRABAJO TERMINAL I",
                             Semestre = 5
                         },
@@ -1238,6 +1430,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 101,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "TRABAJO TERMINAL II",
                             Semestre = 5
                         },
@@ -1245,6 +1438,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 102,
                             CarreraId = 1,
+                            Eliminado = false,
                             Nombre = "SERVICIO SOCIAL",
                             Semestre = 5
                         },
@@ -1252,6 +1446,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 103,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROGRAMACION",
                             Semestre = 1
                         },
@@ -1259,6 +1454,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 104,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ANALISIS Y DISEÑO DE SISTEMAS",
                             Semestre = 1
                         },
@@ -1266,6 +1462,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 105,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ESTRUCTURA DE DATOS",
                             Semestre = 1
                         },
@@ -1273,6 +1470,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 106,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ADMINISTRACION DE SISTEMAS OPERATIVOS",
                             Semestre = 1
                         },
@@ -1280,6 +1478,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 107,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "DISEÑO DIGITAL",
                             Semestre = 1
                         },
@@ -1287,6 +1486,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 108,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ARQUITECTURA DE COMPUTADORAS",
                             Semestre = 1
                         },
@@ -1294,6 +1494,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 109,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "FUNDAMENTOS DE FISICA",
                             Semestre = 1
                         },
@@ -1301,6 +1502,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 110,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ECUACIONES DIFERENCIALES",
                             Semestre = 1
                         },
@@ -1308,6 +1510,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 111,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROBABILIDAD",
                             Semestre = 1
                         },
@@ -1315,6 +1518,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 112,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "CALCULO DIFERENCIAL E INTEGRAL",
                             Semestre = 1
                         },
@@ -1322,6 +1526,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 113,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "VARIABLE COMPLEJA",
                             Semestre = 1
                         },
@@ -1329,6 +1534,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 114,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ALGEBRA LINEAL",
                             Semestre = 1
                         },
@@ -1336,6 +1542,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 115,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ELECTROMAGNETISMO",
                             Semestre = 1
                         },
@@ -1343,6 +1550,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 116,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "CALCULO MULTIVARIABLE",
                             Semestre = 1
                         },
@@ -1350,6 +1558,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 117,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ADMINISTRACION ORGANIZACIONAL",
                             Semestre = 1
                         },
@@ -1357,6 +1566,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 118,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ETICA, PROFESION Y SOCIEDAD",
                             Semestre = 1
                         },
@@ -1364,6 +1574,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 119,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "COMUNICACION ORAL Y ESCRITA",
                             Semestre = 1
                         },
@@ -1371,6 +1582,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 120,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "INGLES I",
                             Semestre = 1
                         },
@@ -1378,6 +1590,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 121,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "INGLES II",
                             Semestre = 1
                         },
@@ -1385,6 +1598,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 122,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROGRAMACION ESTRUCTURADA",
                             Semestre = 1
                         },
@@ -1392,6 +1606,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 123,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "SOCIEDAD, CIENCIA Y TECNOLOGIA",
                             Semestre = 1
                         },
@@ -1399,6 +1614,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 124,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "SEÑALES Y SISTEMAS",
                             Semestre = 2
                         },
@@ -1406,6 +1622,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 125,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROPAGACION DE ONDAS ELECTROMAGNETICAS",
                             Semestre = 2
                         },
@@ -1413,6 +1630,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 126,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ELECTRONICA",
                             Semestre = 2
                         },
@@ -1420,6 +1638,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 127,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "TEORIA DE LOS CIRCUITOS",
                             Semestre = 2
                         },
@@ -1427,6 +1646,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 128,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "TEORIA DE LA INFORMACION",
                             Semestre = 2
                         },
@@ -1434,6 +1654,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 129,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "TEORIA DE LAS COMUNICACIONES",
                             Semestre = 2
                         },
@@ -1441,6 +1662,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 130,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "COMUNICACIONES DIGITALES",
                             Semestre = 2
                         },
@@ -1448,6 +1670,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 131,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROCESAMIENTO DIGITAL DE SEÑALES",
                             Semestre = 2
                         },
@@ -1455,6 +1678,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 132,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "TELEFONIA",
                             Semestre = 2
                         },
@@ -1462,6 +1686,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 133,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "SISTEMAS CELULARES",
                             Semestre = 2
                         },
@@ -1469,6 +1694,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 134,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROTOCOLOS DE INTERNET",
                             Semestre = 2
                         },
@@ -1476,6 +1702,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 135,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "SISTEMAS DISTRIBUIDOS",
                             Semestre = 2
                         },
@@ -1483,6 +1710,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 136,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "INGENIERIA WEB",
                             Semestre = 2
                         },
@@ -1490,6 +1718,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 137,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROGRAMACION AVANZADA",
                             Semestre = 2
                         },
@@ -1497,6 +1726,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 138,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "BASES DE DATOS",
                             Semestre = 2
                         },
@@ -1504,6 +1734,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 139,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "TRANSMISION DE DATOS",
                             Semestre = 2
                         },
@@ -1511,6 +1742,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 140,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "INFORMACION FINANCIERA E INGENIERIA ECONOMICA",
                             Semestre = 2
                         },
@@ -1518,6 +1750,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 141,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "OPTATIVA I",
                             Semestre = 2
                         },
@@ -1525,6 +1758,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 142,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "INGLES III",
                             Semestre = 2
                         },
@@ -1532,6 +1766,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 143,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "METODOS NUMERICOS",
                             Semestre = 2
                         },
@@ -1539,6 +1774,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 144,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ELECTRONICA PARA COMUNICACIONES",
                             Semestre = 2
                         },
@@ -1546,6 +1782,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 145,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "OPTICA",
                             Semestre = 2
                         },
@@ -1553,6 +1790,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 146,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "DESARROLLO SUSTENTABLE",
                             Semestre = 2
                         },
@@ -1560,6 +1798,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 147,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ECONOMIA PARA INGENIEROS",
                             Semestre = 2
                         },
@@ -1567,6 +1806,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 148,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "INGLES IV",
                             Semestre = 2
                         },
@@ -1574,6 +1814,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 149,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "REDES INALAMBRICAS",
                             Semestre = 2
                         },
@@ -1581,6 +1822,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 150,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "REDES NEURONALES",
                             Semestre = 2
                         },
@@ -1588,6 +1830,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 151,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "LOGICA DIFUSA",
                             Semestre = 2
                         },
@@ -1595,6 +1838,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 152,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "SISTEMAS DE INFORMACION GEOGRAFICA",
                             Semestre = 2
                         },
@@ -1602,6 +1846,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 153,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROGRAMACION DE DISPOSITIVOS MOVILES",
                             Semestre = 2
                         },
@@ -1609,6 +1854,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 154,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "NORMATIVIDAD EN TELECOMUNICACIONES E INFORMATICA",
                             Semestre = 2
                         },
@@ -1616,6 +1862,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 155,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "REDES INTELIGENTES",
                             Semestre = 3
                         },
@@ -1623,6 +1870,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 156,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "LINEAS DE TRANSMISION Y ANTENAS",
                             Semestre = 3
                         },
@@ -1630,6 +1878,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 157,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "SEGURIDAD EN REDES",
                             Semestre = 3
                         },
@@ -1637,6 +1886,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 158,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "MULTIMEDIA",
                             Semestre = 3
                         },
@@ -1644,6 +1894,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 159,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "BASES DE DATOS DISTRIBUIDAS",
                             Semestre = 3
                         },
@@ -1651,6 +1902,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 160,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "METODOLOGIA DE LA INVESTIGACION",
                             Semestre = 3
                         },
@@ -1658,6 +1910,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 161,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ADMINISTRACION DE PROYECTOS",
                             Semestre = 3
                         },
@@ -1665,6 +1918,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 162,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "LIDERAZGO Y EMPRENDEDORES",
                             Semestre = 3
                         },
@@ -1672,6 +1926,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 163,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "CRIPTOGRAFIA",
                             Semestre = 3
                         },
@@ -1679,6 +1934,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 164,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "MICROONDAS",
                             Semestre = 3
                         },
@@ -1686,6 +1942,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 165,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROCESAMIENTO DE IMAGENES",
                             Semestre = 3
                         },
@@ -1693,6 +1950,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 166,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "TELEVISION DIGITAL",
                             Semestre = 3
                         },
@@ -1700,6 +1958,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 167,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "SISTEMAS DE CALIDAD",
                             Semestre = 3
                         },
@@ -1707,6 +1966,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 168,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROCESAMIENTO DE VOZ",
                             Semestre = 3
                         },
@@ -1714,6 +1974,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 169,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "FILTRADO AVANZADO",
                             Semestre = 3
                         },
@@ -1721,6 +1982,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 171,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROYECTO TERMINAL I",
                             Semestre = 4
                         },
@@ -1728,6 +1990,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 172,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "PROYECTO TERMINAL II",
                             Semestre = 4
                         },
@@ -1735,6 +1998,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 173,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "REDES DE TELECOMUNICACIONES",
                             Semestre = 4
                         },
@@ -1742,6 +2006,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 174,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "APLICACIONES DISTRIBUIDAS",
                             Semestre = 4
                         },
@@ -1749,6 +2014,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 175,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "DISPOSITIVOS PROGRAMABLES",
                             Semestre = 4
                         },
@@ -1756,6 +2022,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 176,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "SERVICIO SOCIAL",
                             Semestre = 4
                         },
@@ -1763,6 +2030,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 177,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ELECTIVA I",
                             Semestre = 4
                         },
@@ -1770,6 +2038,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 178,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ELECTIVA II",
                             Semestre = 4
                         },
@@ -1777,6 +2046,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 179,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ELECTIVA III",
                             Semestre = 4
                         },
@@ -1784,6 +2054,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 180,
                             CarreraId = 2,
+                            Eliminado = false,
                             Nombre = "ELECTIVA IV",
                             Semestre = 4
                         });
@@ -1806,6 +2077,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
 
                     b.Property<string>("IdentityUserId")
                         .IsRequired()
@@ -1895,9 +2169,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Documento", b =>
                 {
-                    b.HasOne("PortalCOSIE.Domain.Entities.DocumentoEstado", "DocumentoEstado")
+                    b.HasOne("PortalCOSIE.Domain.Entities.EstadoDocumento", "EstadoDocumento")
                         .WithMany()
-                        .HasForeignKey("DocumentoEstadoId")
+                        .HasForeignKey("EstadoDocumentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1907,7 +2181,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DocumentoEstado");
+                    b.Navigation("EstadoDocumento");
 
                     b.Navigation("Tramite");
                 });
@@ -1931,23 +2205,31 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("PortalCOSIE.Domain.Entities.EstadoTramite", "EstadoTramite")
+                        .WithMany()
+                        .HasForeignKey("EstadoTramiteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PortalCOSIE.Domain.Entities.Personal", "Personal")
                         .WithMany()
                         .HasForeignKey("PersonalId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PortalCOSIE.Domain.Entities.TramiteEstado", "TramiteEstado")
+                    b.HasOne("PortalCOSIE.Domain.Entities.TipoTramite", "TipoTramite")
                         .WithMany()
-                        .HasForeignKey("TramiteEstadoId")
+                        .HasForeignKey("TipoTramiteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Alumno");
 
+                    b.Navigation("EstadoTramite");
+
                     b.Navigation("Personal");
 
-                    b.Navigation("TramiteEstado");
+                    b.Navigation("TipoTramite");
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.UnidadAprendizaje", b =>

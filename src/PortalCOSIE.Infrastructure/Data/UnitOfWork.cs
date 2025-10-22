@@ -1,4 +1,5 @@
-﻿using PortalCOSIE.Domain.Interfaces;
+﻿using PortalCOSIE.Domain.Entities;
+using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Infrastructure.Repositories;
 
 namespace PortalCOSIE.Infrastructure.Data
@@ -14,7 +15,7 @@ namespace PortalCOSIE.Infrastructure.Data
             _repositories = new Dictionary<Type, object>();
         }
 
-        public IGenericRepo<T> GenericRepo<T>() where T : class
+        public IGenericRepo<T> GenericRepo<T>() where T : BaseEntity
         {
             if (_repositories.ContainsKey(typeof(T)))
             {
