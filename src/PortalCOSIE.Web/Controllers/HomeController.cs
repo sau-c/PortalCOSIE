@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Domain.Entities;
 using System.Security.Claims;
 
 namespace PortalCOSIE.Web.Controllers
@@ -10,14 +11,20 @@ namespace PortalCOSIE.Web.Controllers
     {
 
         private readonly IUsuarioService _usuarioService;
+        private readonly ICatalogoService _catalogoService;
 
-        public HomeController(IUsuarioService usuarioService)
+        public HomeController(
+            IUsuarioService usuarioService,
+            ICatalogoService catalogoService
+            )
         {
             _usuarioService = usuarioService;
+            _catalogoService = catalogoService;
         }
+
         [HttpGet]
-        public IActionResult Index()
-        
+        [Authorize]
+        public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -25,8 +32,16 @@ namespace PortalCOSIE.Web.Controllers
             {
                 return RedirectToAction("Registrar", "Cuenta");
             }
-            return View();
+
+            return View(await _catalogoService.ListarSesiones());
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> EditarSesion(int id, string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
+        {
+            return View(await _catalogoService.ListarSesiones());
+        }
     }
 }

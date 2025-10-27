@@ -11,11 +11,15 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
             builder.ToTable("TipoTramite");
 
             builder.Property(t => t.Nombre)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.HasIndex(d => d.Nombre)
+                .IsUnique();
 
             builder.HasData(
-                new TipoTramite() { Id = 1, Nombre = "Dictamen interno (CTE)" },
-                new TipoTramite() { Id = 2, Nombre = "Dictamen externo (CGC)" }
+                new { Id = 1, Nombre = "Dictamen interno (CTE)", IsDeleted = false },
+                new { Id = 2, Nombre = "Dictamen externo (CGC)", IsDeleted = false }
                 );
         }
     }

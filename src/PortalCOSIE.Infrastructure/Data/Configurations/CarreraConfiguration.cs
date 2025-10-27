@@ -14,12 +14,15 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.HasIndex(d => d.Nombre)
+                .IsUnique();
+
             builder.HasData(
-                new Carrera("Mecatrónica") { Id = 1 },
-                new Carrera("Telemática") { Id = 2 },
-                new Carrera("Biónica") { Id = 3 },
-                new Carrera("Energía") { Id = 4 },
-                new Carrera("ISISA") { Id = 5 }
+                new { Id = 1, Nombre = "Mecatrónica", IsDeleted = false },
+                new { Id = 2, Nombre = "Telemática", IsDeleted = false },
+                new { Id = 3, Nombre = "Biónica", IsDeleted = false },
+                new { Id = 4, Nombre = "Energía", IsDeleted = false },
+                new { Id = 5, Nombre = "ISISA", IsDeleted = false }
             );
         }
     }

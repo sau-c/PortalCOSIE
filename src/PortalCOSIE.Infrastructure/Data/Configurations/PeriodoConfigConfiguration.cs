@@ -10,23 +10,30 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
         {
             builder.ToTable("PeriodoConfig");
 
+            builder.Property(t => t.AnioInicio)
+                .IsRequired()
+                .HasMaxLength(4); 
+            
             builder.Property(t => t.PeriodoInicio)
                 .IsRequired()
-                .HasMaxLength(5);
+                .HasMaxLength(1);
+
+            builder.Property(t => t.AnioFin)
+                .IsRequired()
+                .HasMaxLength(4);
 
             builder.Property(t => t.PeriodoFin)
                 .IsRequired()
-                .HasMaxLength(5);
-
-            builder.Property(t => t.PeriodosPorAnio)
-                .IsRequired();
+                .HasMaxLength(1);
 
             builder.HasData(
-                new PeriodoConfig() {
+                new { 
                     Id = 1,
-                    PeriodoInicio = "20101",
-                    PeriodoFin = "20202",
-                    PeriodosPorAnio = 2
+                    AnioInicio = 2010,
+                    PeriodoInicio = 1,
+                    AnioFin = (DateTime.Now.Year + 1),
+                    PeriodoFin = 2,
+                    IsDeleted = false 
                 });
         }
     }

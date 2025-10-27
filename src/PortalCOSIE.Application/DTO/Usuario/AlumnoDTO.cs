@@ -27,8 +27,8 @@ namespace PortalCOSIE.Application.DTO.Usuario
         [StringLength(10, MinimumLength = 10, ErrorMessage = "Ingrese 10 numeros")]
         public string NumeroBoleta { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
-        public int? CarreraId { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Campo obligatorio.")]
+        public int CarreraId { get; set; }
 
         public string? CarreraNombre { get; set; }
     }

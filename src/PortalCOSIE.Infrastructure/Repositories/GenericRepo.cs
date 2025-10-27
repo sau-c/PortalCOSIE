@@ -9,52 +9,49 @@ namespace PortalCOSIE.Infrastructure.Repositories
     public class GenericRepo<T> : IGenericRepo<T> where T : BaseEntity
     {
         private readonly AppDbContext _context;
-        private readonly DbSet<T> _dbSet;
 
         public GenericRepo(AppDbContext context)
         {
             _context = context;
-            _dbSet = context.Set<T>();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id, bool includeDeleted = false)
         {
-            return await _dbSet.FindAsync(id);
-        }
+            var query = _context.Set<T>().AsQueryable();
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+            if (includeDeleted)
+                query = query.IgnoreQueryFilters();
+
+            return await query.FirstOrDefaultAsync(e => e.Id == id);
+        }
+        public async Task<IEnumerable<T>> GetAllAsync(bool includeDeleted = false)
         {
-            return await _dbSet.ToListAsync();
-        }
+            var query = _context.Set<T>().AsQueryable();
 
-        public IQueryable<T> Query()
-        {
-            return _dbSet.AsQueryable();
-        }
+            if (includeDeleted)
+                query = query.IgnoreQueryFilters();
 
+            return await query.ToListAsync();
+        }
         public async Task<T> AddAsync(T entity)
         {
-            await _dbSet.AddAsync(entity);
+            await _context.Set<T>().AddAsync(entity);
             return entity;
         }
-
-        public async Task UpdateAsync(T entity)
+        public T Delete(T entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Set<T>().Remove(entity);
+            return entity;
         }
-
-        public async Task DeleteAsync(T entity)
+        
+        // Para eager loading
+        public IQueryable<T> Query()
         {
-            //_dbSet.Remove(entity); // Eliminación física
-            if (entity.Eliminado)
-                return;
-            entity.Eliminado = true;
-            _dbSet.Update(entity);
+            return _context.Set<T>().AsQueryable();
         }
-
         public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
         {
-            var query = _dbSet.AsQueryable();
+            var query = _context.Set<T>().AsQueryable();
 
             foreach (var include in includes)
             {
@@ -63,17 +60,16 @@ namespace PortalCOSIE.Infrastructure.Repositories
 
             return await query.FirstOrDefaultAsync(filter);
         }
-
-        public async Task<IEnumerable<T?>> GetListAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        public async Task<IEnumerable<T?>> GetListAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
         {
-            var query = _dbSet.AsQueryable();
+            var query = _context.Set<T>().AsQueryable();
 
             foreach (var include in includes)
             {
                 query = query.Include(include);
             }
 
-            return await query.Where(predicate).AsNoTracking().ToListAsync();
+            return await query.Where(filter).AsNoTracking().ToListAsync();
         }
     }
 }

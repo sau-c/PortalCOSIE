@@ -44,7 +44,7 @@
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
                         <select asp-for="CarreraId" asp-items="ViewBag.Carreras" class="form-select" required>
-                            <option value="">- Carrera -</option>
+                            <option value=0>- Carrera -</option>
                         </select>
                     </div>
                     <span asp-validation-for="CarreraId" class="text-danger small"></span>

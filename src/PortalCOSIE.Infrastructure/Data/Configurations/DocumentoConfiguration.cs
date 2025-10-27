@@ -15,7 +15,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
                 .HasMaxLength(200);
 
             builder.Property(d => d.Observaciones)
-                .HasMaxLength(200);
+                .HasMaxLength(1000);
         }
     }
 }

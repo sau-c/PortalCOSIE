@@ -9,39 +9,52 @@ namespace PortalCOSIE.Application
         private readonly IGenericRepo<EstadoTramite> _estadoTramiteRepository;
         private readonly IGenericRepo<TipoTramite> _tipoTramiteRepository;
         private readonly IGenericRepo<EstadoDocumento> _estadoDocumentoRepository;
+        private readonly IGenericRepo<SesionCOSIE> _sesionRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public CatalogoService(
             IGenericRepo<EstadoTramite> estadoTramiteRepository,
             IGenericRepo<TipoTramite> tipoTramiteRepository,
             IGenericRepo<EstadoDocumento> estadoDocumentoRepository,
+            IGenericRepo<SesionCOSIE> sesionRepository,
             IUnitOfWork unitOfWork)
         {
             _estadoTramiteRepository = estadoTramiteRepository;
             _tipoTramiteRepository = tipoTramiteRepository;
             _estadoDocumentoRepository = estadoDocumentoRepository;
+            _sesionRepository = sesionRepository;
             _unitOfWork = unitOfWork;
         }
 
         //EstadoTramite CRUD
-        public async Task<IEnumerable<EstadoTramite>> ListarEstados()
+        public async Task<IEnumerable<EstadoTramite>> ListarEstadosTramite()
         {
             return await _estadoTramiteRepository.GetAllAsync();
         }
-        public async Task CrearEstado(EstadoTramite estadoTramite)
+        public async Task<IEnumerable<EstadoTramite>> ListarTodoEstadoTramite()
         {
-            await _unitOfWork.GenericRepo<EstadoTramite>().AddAsync(estadoTramite);
-            await _unitOfWork.CompleteAsync();
+            return await _estadoTramiteRepository.GetAllAsync(true);
         }
-        public async Task EditarEstado(EstadoTramite estadoTramite)
+        public async Task CrearEstadoTramite(string nombre)
         {
-            await _estadoTramiteRepository.UpdateAsync(estadoTramite);
+            await _unitOfWork.GenericRepo<EstadoTramite>()
+                .AddAsync(new EstadoTramite(nombre));
+            await _unitOfWork.SaveChangesAsync();
         }
-        public async Task EliminarEstado(int id)
+        public async Task EditarEstadoTramite(int id, string nombre)
         {
-            var estado = await _estadoTramiteRepository.GetByIdAsync(id);
-            await _unitOfWork.GenericRepo<EstadoTramite>().DeleteAsync(estado);
-            await _unitOfWork.CompleteAsync();
+            var estadoTramite = await _estadoTramiteRepository.GetByIdAsync(id, true);
+            estadoTramite.ActualizarNombre(nombre);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        public async Task ToggleEstadoTramite(int id)
+        {
+            var estado = await _estadoTramiteRepository.GetByIdAsync(id, true);
+            if (estado.IsDeleted)
+                estado.Restore();
+            else
+                estado.SoftDelete();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         //EstadoDocumento CRUD
@@ -49,20 +62,31 @@ namespace PortalCOSIE.Application
         {
             return await _estadoDocumentoRepository.GetAllAsync();
         }
-        public async Task EliminarEstadoDocumento(int id)
+        public async Task<IEnumerable<EstadoDocumento>> ListarTodoEstadosDocumento()
         {
-            var estado = await _estadoDocumentoRepository.GetByIdAsync(id);
-            await _unitOfWork.GenericRepo<EstadoDocumento>().DeleteAsync(estado);
-            await _unitOfWork.CompleteAsync();
+            return await _estadoDocumentoRepository.GetAllAsync(true);
         }
-        public async Task EditarEstadoDocumento(EstadoDocumento estadoDocumento)
+        public async Task CrearEstadoDocumento(string nombre)
         {
-            await _estadoDocumentoRepository.UpdateAsync(estadoDocumento);
+            await _unitOfWork.GenericRepo<EstadoDocumento>()
+                .AddAsync(new EstadoDocumento(nombre));
+            await _unitOfWork.SaveChangesAsync();
         }
-        public async Task CrearEstadoDocumento(EstadoDocumento estadoDocumento)
+        public async Task EditarEstadoDocumento(int id, string nombre)
         {
-            await _unitOfWork.GenericRepo<EstadoDocumento>().AddAsync(estadoDocumento);
-            await _unitOfWork.CompleteAsync();
+            var estadoDocumento = await _estadoDocumentoRepository.GetByIdAsync(id, true);
+            estadoDocumento.ActualizarNombre(nombre);
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+        public async Task ToggleEstadoDocumento(int id)
+        {
+            var estado = await _estadoDocumentoRepository.GetByIdAsync(id, true);
+            if (estado.IsDeleted)
+                estado.Restore();
+            else
+                estado.SoftDelete();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         //TipoTramite CRUD
@@ -70,37 +94,85 @@ namespace PortalCOSIE.Application
         {
             return await _tipoTramiteRepository.GetAllAsync();
         }
-        public async Task EliminarTipoTramite(int id)
+        public async Task<IEnumerable<TipoTramite>> ListarTodoTipoTramite()
         {
-            var estado = await _tipoTramiteRepository.GetByIdAsync(id);
-            await _unitOfWork.GenericRepo<TipoTramite>().DeleteAsync(estado);
-            await _unitOfWork.CompleteAsync();
+            return await _tipoTramiteRepository.GetAllAsync(true);
         }
-        public async Task EditarTipoTramite(TipoTramite tipoTramite)
+        public async Task CrearTipoTramite(string nombre)
         {
-            await _tipoTramiteRepository.UpdateAsync(tipoTramite);
+            await _unitOfWork.GenericRepo<TipoTramite>()
+                .AddAsync(new TipoTramite(nombre));
+            await _unitOfWork.SaveChangesAsync();
         }
-        public async Task CrearTipoTramite(TipoTramite tipoTramite)
+        public async Task EditarTipoTramite(int id, string nombre)
         {
-            await _unitOfWork.GenericRepo<TipoTramite>().AddAsync(tipoTramite);
-            await _unitOfWork.CompleteAsync();
+            var tipoTramite = await _tipoTramiteRepository.GetByIdAsync(id, true);
+            tipoTramite.ActualizarNombre(nombre);
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+        public async Task ToggleTipoTramite(int id)
+        {
+            var tipo = await _tipoTramiteRepository.GetByIdAsync(id, true);
+            if (tipo.IsDeleted)
+                tipo.Restore();
+            else
+                tipo.SoftDelete();
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<PeriodoConfig> ListarConfiguracionPeriodos()
+        public async Task<PeriodoConfig> ListarPeriodoConfig()
         {
             if (await _unitOfWork.GenericRepo<PeriodoConfig>().GetFirstOrDefaultAsync(x => x.Id == 1) == null)
             {
-                var nuevo = new PeriodoConfig
-                {
-                    PeriodoInicio = "20101",
-                    PeriodoFin = DateTime.Now.Year.ToString() + "2",
-                    PeriodosPorAnio = 2
-                };
+                var nuevo = new PeriodoConfig(2010, 1, DateTime.Now.Year + 1, 1);
                 await _unitOfWork.GenericRepo<PeriodoConfig>().AddAsync(nuevo);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.SaveChangesAsync();
                 return nuevo;
             }
             return await _unitOfWork.GenericRepo<PeriodoConfig>().GetByIdAsync(1);
+        }
+        public async Task<IEnumerable<string>> ListarPeriodos()
+        {
+            var periodoConfig = await _unitOfWork.GenericRepo<PeriodoConfig>().GetByIdAsync(1);
+
+            if (periodoConfig == null)
+                throw new Exception("No existe configuración de periodos.");
+
+            var periodos = new List<string>();
+
+            int anioInicio = periodoConfig.AnioInicio;
+            int anioFin = periodoConfig.AnioFin;
+
+            for (int anio = anioInicio; anio <= anioFin; anio++)
+            {
+                int periodoInicio = (anio == anioInicio) ? periodoConfig.PeriodoInicio : 1;
+                int periodoFin = (anio == anioFin) ? periodoConfig.PeriodoFin : 2;
+
+                for (int p = periodoInicio; p <= periodoFin; p++)
+                {
+                    periodos.Add($"{anio}/{p}");
+                }
+            }
+            return periodos;
+        }
+        public async Task EditarPeriodoConfig(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
+        {
+            var periodo = await _unitOfWork.GenericRepo<PeriodoConfig>().GetByIdAsync(1);
+            if (periodo == null)
+                throw new Exception("Configuracion de periodo no encontrada");
+            periodo.SetAnioInicio(anioInicio);
+            periodo.SetPeriodoInicio(periodoInicio);
+            periodo.SetAnioFin(anioFin);
+            periodo.SetPeriodoFin(periodoFin);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<SesionCOSIE>> ListarSesiones()
+        {
+            var sesiones = await _sesionRepository.GetAllAsync(true);
+
+            return sesiones;
         }
     }
 }

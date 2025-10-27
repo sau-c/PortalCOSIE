@@ -11,14 +11,18 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
             builder.ToTable("EstadoTramite");
 
             builder.Property(t => t.Nombre)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.HasIndex(d => d.Nombre)
+                .IsUnique();
 
             builder.HasData(
-                new EstadoTramite() { Id = 1, Nombre = "Solicitado" },
-                new EstadoTramite() { Id = 2, Nombre = "En revision" },
-                new EstadoTramite() { Id = 3, Nombre = "Documentos pendientes" },
-                new EstadoTramite() { Id = 4, Nombre = "Concluido" },
-                new EstadoTramite() { Id = 5, Nombre = "Cancelado" }
+                new { Id = 1, Nombre = "Solicitado", IsDeleted = false },
+                new { Id = 2, Nombre = "En revision", IsDeleted = false },
+                new { Id = 3, Nombre = "Documentos pendientes", IsDeleted = false },
+                new { Id = 4, Nombre = "Concluido", IsDeleted = false },
+                new { Id = 5, Nombre = "Cancelado", IsDeleted = false }
                 );
         }
     }

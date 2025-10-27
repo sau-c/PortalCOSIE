@@ -59,7 +59,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,8 +72,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,8 +86,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -100,14 +100,30 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PeriodoInicio = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
-                    PeriodoFin = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
-                    PeriodosPorAnio = table.Column<int>(type: "int", nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    AnioInicio = table.Column<int>(type: "int", maxLength: 4, nullable: false),
+                    PeriodoInicio = table.Column<int>(type: "int", maxLength: 1, nullable: false),
+                    AnioFin = table.Column<int>(type: "int", maxLength: 4, nullable: false),
+                    PeriodoFin = table.Column<int>(type: "int", maxLength: 1, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PeriodoConfig", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SesionCOSIE",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NumeroSesion = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FechaSesion = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SesionCOSIE", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,8 +132,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -240,7 +256,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -262,7 +278,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CarreraId = table.Column<int>(type: "int", nullable: false),
                     Semestre = table.Column<int>(type: "int", nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -276,6 +292,27 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FechaRecepcion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SesionId = table.Column<int>(type: "int", nullable: false),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FechaRecepcion", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FechaRecepcion_SesionCOSIE_SesionId",
+                        column: x => x.SesionId,
+                        principalTable: "SesionCOSIE",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Alumno",
                 columns: table => new
                 {
@@ -283,7 +320,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     NumeroBoleta = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     PeriodoIngreso = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CarreraId = table.Column<int>(type: "int", nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -308,7 +345,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
                     IdPersonal = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    Area = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -332,10 +370,10 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     PersonalId = table.Column<int>(type: "int", nullable: false),
                     TipoId = table.Column<int>(type: "int", nullable: false),
                     FechaSolicitud = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaConclusion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaConclusion = table.Column<DateTime>(type: "datetime2", nullable: true),
                     EstadoTramiteId = table.Column<int>(type: "int", nullable: false),
                     TipoTramiteId = table.Column<int>(type: "int", nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -373,12 +411,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Observaciones = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Observaciones = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     TramiteId = table.Column<int>(type: "int", nullable: false),
                     DocumentoEstadoId = table.Column<int>(type: "int", nullable: false),
-                    Blob = table.Column<int>(type: "int", nullable: false),
+                    Blob = table.Column<byte>(type: "tinyint", nullable: false),
                     EstadoDocumentoId = table.Column<int>(type: "int", nullable: false),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -399,7 +437,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Carrera",
-                columns: new[] { "Id", "Eliminado", "Nombre" },
+                columns: new[] { "Id", "IsDeleted", "Nombre" },
                 values: new object[,]
                 {
                     { 1, false, "Mecatrónica" },
@@ -411,7 +449,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "EstadoDocumento",
-                columns: new[] { "Id", "Eliminado", "Nombre" },
+                columns: new[] { "Id", "IsDeleted", "Nombre" },
                 values: new object[,]
                 {
                     { 1, false, "Sin cargar" },
@@ -424,7 +462,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "EstadoTramite",
-                columns: new[] { "Id", "Eliminado", "Nombre" },
+                columns: new[] { "Id", "IsDeleted", "Nombre" },
                 values: new object[,]
                 {
                     { 1, false, "Solicitado" },
@@ -436,12 +474,22 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "PeriodoConfig",
-                columns: new[] { "Id", "Eliminado", "PeriodoFin", "PeriodoInicio", "PeriodosPorAnio" },
-                values: new object[] { 1, false, "20202", "20101", 2 });
+                columns: new[] { "Id", "AnioFin", "AnioInicio", "IsDeleted", "PeriodoFin", "PeriodoInicio" },
+                values: new object[] { 1, 2026, 2010, false, 2, 1 });
+
+            migrationBuilder.InsertData(
+                table: "SesionCOSIE",
+                columns: new[] { "Id", "FechaSesion", "IsDeleted", "NumeroSesion" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "PRIMERA" },
+                    { 2, new DateTime(2025, 8, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "SEGUNDA" },
+                    { 3, new DateTime(2025, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "TERCERA" }
+                });
 
             migrationBuilder.InsertData(
                 table: "TipoTramite",
-                columns: new[] { "Id", "Eliminado", "Nombre" },
+                columns: new[] { "Id", "IsDeleted", "Nombre" },
                 values: new object[,]
                 {
                     { 1, false, "Dictamen interno (CTE)" },
@@ -450,7 +498,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "UnidadAprendizaje",
-                columns: new[] { "Id", "CarreraId", "Eliminado", "Nombre", "Semestre" },
+                columns: new[] { "Id", "CarreraId", "IsDeleted", "Nombre", "Semestre" },
                 values: new object[,]
                 {
                     { 1, 1, false, "ALGEBRA LINEAL Y NUMEROS COMPLEJOS", 1 },
@@ -622,16 +670,16 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     { 167, 2, false, "SISTEMAS DE CALIDAD", 3 },
                     { 168, 2, false, "PROCESAMIENTO DE VOZ", 3 },
                     { 169, 2, false, "FILTRADO AVANZADO", 3 },
-                    { 171, 2, false, "PROYECTO TERMINAL I", 4 },
-                    { 172, 2, false, "PROYECTO TERMINAL II", 4 },
-                    { 173, 2, false, "REDES DE TELECOMUNICACIONES", 4 },
-                    { 174, 2, false, "APLICACIONES DISTRIBUIDAS", 4 },
-                    { 175, 2, false, "DISPOSITIVOS PROGRAMABLES", 4 },
-                    { 176, 2, false, "SERVICIO SOCIAL", 4 },
-                    { 177, 2, false, "ELECTIVA I", 4 },
-                    { 178, 2, false, "ELECTIVA II", 4 },
-                    { 179, 2, false, "ELECTIVA III", 4 },
-                    { 180, 2, false, "ELECTIVA IV", 4 }
+                    { 170, 2, false, "PROYECTO TERMINAL I", 4 },
+                    { 171, 2, false, "PROYECTO TERMINAL II", 4 },
+                    { 172, 2, false, "REDES DE TELECOMUNICACIONES", 4 },
+                    { 173, 2, false, "APLICACIONES DISTRIBUIDAS", 4 },
+                    { 174, 2, false, "DISPOSITIVOS PROGRAMABLES", 4 },
+                    { 175, 2, false, "SERVICIO SOCIAL", 4 },
+                    { 176, 2, false, "ELECTIVA I", 4 },
+                    { 177, 2, false, "ELECTIVA II", 4 },
+                    { 178, 2, false, "ELECTIVA III", 4 },
+                    { 179, 2, false, "ELECTIVA IV", 4 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -685,6 +733,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Carrera_Nombre",
+                table: "Carrera",
+                column: "Nombre",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Documento_EstadoDocumentoId",
                 table: "Documento",
                 column: "EstadoDocumentoId");
@@ -693,6 +747,35 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "IX_Documento_TramiteId",
                 table: "Documento",
                 column: "TramiteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EstadoDocumento_Nombre",
+                table: "EstadoDocumento",
+                column: "Nombre",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EstadoTramite_Nombre",
+                table: "EstadoTramite",
+                column: "Nombre",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FechaRecepcion_SesionId",
+                table: "FechaRecepcion",
+                column: "SesionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SesionCOSIE_NumeroSesion",
+                table: "SesionCOSIE",
+                column: "NumeroSesion",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TipoTramite_Nombre",
+                table: "TipoTramite",
+                column: "Nombre",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tramite_AlumnoId",
@@ -747,6 +830,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "Documento");
 
             migrationBuilder.DropTable(
+                name: "FechaRecepcion");
+
+            migrationBuilder.DropTable(
                 name: "PeriodoConfig");
 
             migrationBuilder.DropTable(
@@ -760,6 +846,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tramite");
+
+            migrationBuilder.DropTable(
+                name: "SesionCOSIE");
 
             migrationBuilder.DropTable(
                 name: "Alumno");

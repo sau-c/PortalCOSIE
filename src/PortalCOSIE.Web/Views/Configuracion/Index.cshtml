@@ -1,17 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Configuración del sistema";
+    ViewData["Title"] = "Configuración del portal";
 }
 
 <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
-            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+            <h6 class="mb-0 py-1"><i class="fas fa-cogs me-2"></i>@ViewData["Title"]</h6>
         </div>
     </div>
 
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
         <!-- Tabs -->
-        <ul class="nav nav-tabs" id="configTabs" role="tablist">
+        <ul class="nav nav-tabs small" id="configTabs" role="tablist">
             <li class="nav-item">
                 <button class="nav-link active"
                         data-bs-toggle="tab"
@@ -36,7 +36,7 @@
                         data-bs-target="#tipo"
                         data-action="@Url.Action("Tipo", "Configuracion")"
                         type="button">
-                    <i class="fas fa-tasks me-2"></i>Tipo de trámite
+                    <i class="fas fa-tasks me-2"></i>Tipo trámite
                 </button>
             </li>
             <li class="nav-item">
@@ -45,7 +45,7 @@
                         data-bs-target="#estadoTramite"
                         data-action="@Url.Action("Estados", "Configuracion")"
                         type="button">
-                    <i class="fas fa-clipboard-check me-2"></i>Estado de trámite
+                    <i class="fas fa-clipboard-check me-2"></i>Estado trámite
                 </button>
             </li>
             <li class="nav-item">
@@ -54,7 +54,7 @@
                         data-bs-target="#estadoDocumento"
                         data-action="@Url.Action("EstadosDocumento", "Configuracion")"
                         type="button">
-                    <i class="fas fa-file-alt me-2"></i>Estado de documento
+                    <i class="fas fa-file-alt me-2"></i>Estado documento
                 </button>
             </li>
         </ul>
@@ -108,51 +108,67 @@
     </div>
 </div>
 
-<!-- Modal Genérico para Desactivar -->
-<div class="modal fade" id="deleteGenericModal" tabindex="-1">
+<!-- Modal Genérico para Toggle (Activar/Desactivar) -->
+<div class="modal fade" id="toggleGenericModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="deleteGenericForm" method="post">
+            <form id="toggleGenericForm" method="post">
                 @Html.AntiForgeryToken()
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteGenericModalTitle">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmar desactivación
+                <div class="modal-header" id="toggleGenericModalHeader">
+                    <h5 class="modal-title" id="toggleGenericModalTitle">
+                        <i class="fas fa-exchange-alt me-2"></i>Cambiar estado
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-warning border-warning mb-3">
+                    <div class="alert" id="toggleGenericAlert">
                         <div class="d-flex">
-                            <i class="fas fa-exclamation-circle fa-2x me-3 text-warning"></i>
+                            <i class="fas fa-2x me-3" id="toggleGenericAlertIcon"></i>
                             <div>
-                                <h6 class="alert-heading mb-2">¡Advertencia!</h6>
-                                <p id="deleteGenericAlertMessage" class="mb-0"></p>
+                                <h6 class="alert-heading mb-2" id="toggleGenericAlertTitle">Cambio de estado</h6>
+                                <p id="toggleGenericAlertMessage" class="mb-0">
+                                    Esta acción cambiará la visibilidad del registro en el sistema.
+                                </p>
                             </div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <p class="fw-semibold mb-2">¿Está seguro de desactivar el siguiente registro?</p>
-                        <div class="card border-danger">
+                        <p class="fw-semibold mb-2" id="toggleGenericQuestion">¿Está seguro de cambiar el estado?</p>
+                        <div class="card" id="toggleGenericCard">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-4"><strong class="text-muted">ID:</strong></div>
-                                    <div class="col-8"><span id="deleteGenericId" class="fw-bold text-danger"></span></div>
+                                    <div class="col-8"><span id="toggleGenericId" class="fw-bold"></span></div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-4"><strong class="text-muted">Nombre:</strong></div>
-                                    <div class="col-8"><span id="deleteGenericName" class="fw-bold text-danger"></span></div>
+                                    <div class="col-8"><span id="toggleGenericName" class="fw-bold"></span></div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4"><strong class="text-muted">Estado actual:</strong></div>
+                                    <div class="col-8">
+                                        <span class="badge" id="toggleGenericCurrentStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4"><strong class="text-muted">Nuevo estado:</strong></div>
+                                    <div class="col-8">
+                                        <span class="badge" id="toggleGenericNewStatus"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" id="deleteGenericIdInput" name="id" />
+                    <input type="hidden" id="toggleGenericIdInput" name="id" />
+                    <input type="hidden" id="toggleGenericCurrentState" name="currentState" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt me-1"></i><span>Desactivar</span>
+                    <button type="submit" class="btn" id="toggleGenericSubmitBtn">
+                        <i class="fas me-1" id="toggleGenericSubmitIcon"></i>
+                        <span id="toggleGenericSubmitText">Cambiar estado</span>
                     </button>
                 </div>
             </form>
@@ -183,26 +199,61 @@
             $('#genericNombre').focus().select();
         };
 
-        // Modal Genérico Desactivar
-        const openDeleteModal = (options) => {
+        // Modal Genérico toggle
+        const openToggleModal = (options) => {
             const config = {
-                title: 'Confirmar desactivación',
+                title: 'Cambiar estado',
                 action: '',
                 id: '',
                 name: '',
+                estadoActual: '',
                 entityName: 'elemento',
-                alertMessage: 'Esta acción no se puede deshacer. El elemento y todos sus datos asociados serán eliminados permanentemente.',
                 ...options
             };
 
-            $('#deleteGenericModalTitle').html(`<i class="fas fa-exclamation-triangle me-2"></i>${config.title}`);
-            $('#deleteGenericForm').attr('action', config.action);
-            $('#deleteGenericAlertMessage').text(config.alertMessage);
-            $('#deleteGenericId').text(config.id);
-            $('#deleteGenericName').text(config.name);
-            $('#deleteGenericIdInput').val(config.id);
+            if (config.estadoActual == 'False') {
+                // Actualmente ACTIVO → cambiar a INACTIVO
+                $('#toggleGenericModalHeader').removeClass('bg-success').addClass('bg-danger text-white');
+                $('#toggleGenericAlert').removeClass('alert-success border-success').addClass('alert-warning border-warning');
+                $('#toggleGenericAlertIcon').removeClass('fa-check-circle text-success').addClass('fa-exclamation-triangle text-warning');
+                $('#toggleGenericCard').removeClass('border-success').addClass('border-danger');
+                $('#toggleGenericSubmitBtn').removeClass('btn-success').addClass('btn-danger');
+                $('#toggleGenericSubmitIcon').removeClass('fa-eye').addClass('fa-eye-slash');
+                $('#toggleGenericSubmitText').text('Desactivar');
 
-            $('#deleteGenericModal').modal('show');
+                $('#toggleGenericCurrentStatus').removeClass('bg-danger').addClass('bg-success').text('Activo');
+                $('#toggleGenericNewStatus').removeClass('bg-success').addClass('bg-danger').text('Inactivo');
+
+                $('#toggleGenericAlertTitle').text('Desactivar registro');
+                $('#toggleGenericAlertMessage').text('Esta acción ocultará el registro en el sistema, sin embargo no afecta acciones pasadas.');
+                $('#toggleGenericQuestion').text(`¿Está seguro de desactivar el siguiente ${config.entityName}?`);
+            } else {
+                // Actualmente INACTIVO → cambiar a ACTIVO
+                $('#toggleGenericModalHeader').removeClass('bg-danger').addClass('bg-success text-white');
+                $('#toggleGenericAlert').removeClass('alert-warning border-warning').addClass('alert-success border-success');
+                $('#toggleGenericAlertIcon').removeClass('fa-exclamation-triangle text-warning').addClass('fa-check-circle text-success');
+                $('#toggleGenericCard').removeClass('border-danger').addClass('border-success');
+                $('#toggleGenericSubmitBtn').removeClass('btn-danger').addClass('btn-success');
+                $('#toggleGenericSubmitIcon').removeClass('fa-eye-slash').addClass('fa-eye');
+                $('#toggleGenericSubmitText').text('Activar');
+
+                $('#toggleGenericCurrentStatus').removeClass('bg-success').addClass('bg-danger').text('Inactivo');
+                $('#toggleGenericNewStatus').removeClass('bg-danger').addClass('bg-success').text('Activo');
+
+                $('#toggleGenericAlertTitle').text('Activar registro');
+                $('#toggleGenericAlertMessage').text('Esta acción hará visible el registro en el sistema.');
+                $('#toggleGenericQuestion').text(`¿Está seguro de activar el siguiente ${config.entityName}?`);
+            }
+
+            // Configurar datos
+            $('#toggleGenericModalTitle').html(`<i class="fas fa-exchange-alt me-2"></i>${config.title}`);
+            $('#toggleGenericForm').attr('action', config.action);
+            $('#toggleGenericId').text(config.id);
+            $('#toggleGenericName').text(config.name);
+            $('#toggleGenericIdInput').val(config.id);
+            $('#toggleGenericCurrentState').val(config.estadoActual);
+
+            $('#toggleGenericModal').modal('show');
         };
 
         // Event Handlers
@@ -228,26 +279,35 @@
                     icon: $btn.data('icon')
                 });
             })
-            .on('click', '.generic-delete', function() {
+            .on('click', '.generic-create', function() {
+                const $btn = $(this);
+                openGenericModal({
+                    title: $btn.data('title'),
+                    action: $btn.data('action'),
+                    id: '',
+                    nombre: '',
+                    placeholder: $btn.data('placeholder'),
+                    icon: $btn.data('icon')
+                });
+            })
+            .on('click', '.generic-toggle', function() {
                 const $btn = $(this);
                 const entity = $btn.data('entity') || 'elemento';
 
-                openDeleteModal({
-                    title: `Desactivar ${entity}`,
+                openToggleModal({
+                    title: `Cambiar estado`,
                     action: $btn.data('action'),
                     id: $btn.data('id'),
                     name: $btn.data('name'),
-                    entityName: entity,
-                    question: `¿Está seguro de desactivar ${entity}?`,
-                    alertMessage: `Esta acción no se puede deshacer. El ${entity} y todos sus datos asociados serán eliminados permanentemente.`
+                    estadoActual: $btn.data('estado-actual'),
+                    entityName: entity
                 });
             })
-            .on('hidden.bs.modal', '#genericModal, #deleteGenericModal', function() {
+            .on('hidden.bs.modal', '#genericModal, #toggleGenericModal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('input[type="hidden"]').val('');
             });
 
-        // Carga de Tabs
         $(document).ready(function () {
             const loadTabConfig = (tabButton) => {
                 const $button = $(tabButton);

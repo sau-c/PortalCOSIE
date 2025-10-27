@@ -21,40 +21,48 @@ namespace PortalCOSIE.Application
         public Usuario? BuscarUsuarioPorIdentityId(string id)
         {
             return _usuarioRepository.Query().Where(u => u.IdentityUserId == id).FirstOrDefault();
-            //return _usuarioRepository.Get(u=>u.IdentityUserId == id);
+            //return _usuarioRepository.GetByIdAsync(id);
         }
 
         public async Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId)
         {
-            var alumnoPorBoleta = _usuarioRepository.Query().Where(
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var alumnoPorBoleta = _unitOfWork.GenericRepo<Usuario>().Query().Where(
                 u => u.Alumno.NumeroBoleta == dto.NumeroBoleta
                 ).FirstOrDefault();
 
-            if (alumnoPorBoleta != null)
-            {
-                return Result<string>.Failure("El número de boleta ya existe");
+                if (alumnoPorBoleta != null)
+                {
+                    return Result<string>.Failure("El número de boleta ya existe");
+                }
+
+                var usuario = new Usuario(
+                    userId,
+                    dto.Nombre,
+                    dto.ApellidoPaterno,
+                    dto.ApellidoMaterno
+                );
+
+                var alumno = new Alumno(
+                    dto.NumeroBoleta,
+                    dto.PeriodoIngreso,
+                    dto.CarreraId
+                    );
+
+                usuario.SetAlumno(alumno);
+                await _unitOfWork.GenericRepo<Usuario>().AddAsync(usuario);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                return Result<string>.Success(alumno.NumeroBoleta);
             }
-
-            var usuario = new Usuario
+            catch (Exception)
             {
-                IdentityUserId = userId,
-                Nombre = dto.Nombre,
-                ApellidoPaterno = dto.ApellidoPaterno,
-                ApellidoMaterno = dto.ApellidoMaterno
-            };
-
-            await _unitOfWork.GenericRepo<Usuario>().AddAsync(usuario);
-            await _unitOfWork.CompleteAsync();
-            var alumno = new Alumno
-            {
-                Id = usuario.Id,
-                NumeroBoleta = dto.NumeroBoleta,
-                PeriodoIngreso = dto.PeriodoIngreso,
-                CarreraId = dto.CarreraId
-            };
-            await _unitOfWork.GenericRepo<Alumno>().AddAsync(alumno);
-            await _unitOfWork.CompleteAsync();
-            return Result<string>.Success(alumno.NumeroBoleta);
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         public async Task<AlumnoDTO?> BuscarAlumno(string id)
@@ -83,6 +91,7 @@ namespace PortalCOSIE.Application
 
         public async Task<Result<string>> EditarAlumno(AlumnoDTO dto)
         {
+            await _unitOfWork.BeginTransactionAsync();
             var alumnoPorBoleta = _usuarioRepository.Query().Where(
                 u => u.Alumno.NumeroBoleta == dto.NumeroBoleta
                 && u.IdentityUserId != dto.IdentityUserId
@@ -93,11 +102,9 @@ namespace PortalCOSIE.Application
                 return Result<string>.Failure("El número de boleta ya existe");
             }
 
-            // 1. Validar que el DTO tenga el IdentityUserId
             if (string.IsNullOrEmpty(dto.IdentityUserId))
                 return Result<string>.Failure("Se requiere el IdentityUserId");
 
-            // 2. Obtener datos existentes
             var usuario = await _unitOfWork.GenericRepo<Usuario>()
                 .GetFirstOrDefaultAsync(
                     u => u.IdentityUserId == dto.IdentityUserId,
@@ -109,21 +116,19 @@ namespace PortalCOSIE.Application
             if (usuario.Alumno == null)
                 return Result<string>.Failure("Registro de alumno no encontrado");
 
-            // 3. Actualizar solo los campos modificados (patch update)
-            usuario.Nombre = dto.Nombre ?? usuario.Nombre;
-            usuario.ApellidoPaterno = dto.ApellidoPaterno ?? usuario.ApellidoPaterno;
-            usuario.ApellidoMaterno = dto.ApellidoMaterno ?? usuario.ApellidoMaterno;
+            usuario.SetNombre(dto.Nombre);
+            usuario.SetApellidoPaterno(dto.ApellidoPaterno);
+            usuario.SetApellidoMaterno(dto.ApellidoMaterno);
 
-            // 4. Actualizar datos del alumno
-            var alumno = usuario.Alumno;
-            alumno.NumeroBoleta = dto.NumeroBoleta ?? alumno.NumeroBoleta;
-            alumno.CarreraId = dto.CarreraId ?? alumno.CarreraId;
-            alumno.PeriodoIngreso = dto.PeriodoIngreso;
+            //var alumno = usuario.Alumno;
+            usuario.Alumno.SetNumeroBoleta(dto.NumeroBoleta);
+            usuario.Alumno.SetPeriodoIngreso(dto.PeriodoIngreso);
+            usuario.Alumno.SetCarrera(dto.CarreraId);
 
             // 4. Persistir cambios
-            await _unitOfWork.GenericRepo<Usuario>().UpdateAsync(usuario);
-            var cambios = await _unitOfWork.CompleteAsync();
-
+            var cambios = await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitTransactionAsync();
+            
             return cambios > 0
                 ? Result<string>.Success("Usuario actualizado con éxito")
                 : Result<string>.Failure("No se detectaron cambios para guardar");

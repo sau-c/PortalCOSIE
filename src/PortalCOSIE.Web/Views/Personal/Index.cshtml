@@ -5,7 +5,6 @@
 <style>
     .editable-cell {
         cursor: pointer;
-        transition: all 0.3s;
     }
 
     .editable-email:hover {
@@ -31,7 +30,7 @@
 <div class="card shadow">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+            <h6 class="mb-0 py-1">@ViewData["Title"]</h6>
             <a asp-action="Crear" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus me-2"></i>Crear
             </a>
@@ -91,7 +90,7 @@
                                         data-user-id="@personal.IdentityUserId"
                                         data-user-name="@personal.Nombre @personal.ApellidoPaterno @personal.ApellidoMaterno"
                                         data-user-email="@personal.Correo" >
-                                    <i class="fas fa-ban"></i>
+                                    <i class="fas fa-eye-slash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -109,8 +108,8 @@
             <form id="deleteForm" asp-action="Eliminar" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Confirmar eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Desactivar</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" ></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning mb-3">
@@ -135,7 +134,7 @@
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt me-2"></i>Confirmar eliminación
+                        <i class="fas fa-eye-slash me-2"></i>Desactivar
                     </button>
                 </div>
             </form>
@@ -151,7 +150,7 @@
                 @Html.AntiForgeryToken()
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">Actualizar correo electrónico</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" ></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -166,7 +165,7 @@
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Guardar cambios
+                        <i class="fas fa-save me-2"></i>Guardar
                     </button>
                 </div>
             </form>
@@ -226,7 +225,7 @@
                     },
                     {
                         targets: 5,
-                        width: "90px",
+                        width: "95px",
                         className: "text-center",
                         orderable: false
                     }

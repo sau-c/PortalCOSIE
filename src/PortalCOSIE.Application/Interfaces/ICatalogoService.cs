@@ -4,24 +4,33 @@ namespace PortalCOSIE.Application.Interfaces
 {
     public interface ICatalogoService
     {
-        //EstadoTramite CRUD
-        Task<IEnumerable<EstadoTramite>> ListarEstados();
-        Task EliminarEstado(int id);
-        Task EditarEstado(EstadoTramite estadoTramite);
-        Task CrearEstado(EstadoTramite estadoTramite);
+        #region ESTADO_TRAMITE
+        Task<IEnumerable<EstadoTramite>> ListarEstadosTramite();
+        Task<IEnumerable<EstadoTramite>> ListarTodoEstadoTramite();
+        Task CrearEstadoTramite(string nombre);
+        Task EditarEstadoTramite(int id, string nombre);
+        Task ToggleEstadoTramite(int id);
+        #endregion
 
-        //EstadoDocumento CRUD
+        #region ESTADO_DOCUMENTO
         Task<IEnumerable<EstadoDocumento>> ListarEstadosDocumento();
-        Task EliminarEstadoDocumento(int id);
-        Task EditarEstadoDocumento(EstadoDocumento estadoDocumento);
-        Task CrearEstadoDocumento(EstadoDocumento estadoDocumento);
+        Task<IEnumerable<EstadoDocumento>> ListarTodoEstadosDocumento();
+        Task CrearEstadoDocumento(string nombre);
+        Task EditarEstadoDocumento(int id, string nombre);
+        Task ToggleEstadoDocumento(int id);
+        #endregion
 
-        //EstadoDocumento CRUD
+        #region TIPO_TRAMITE
         Task<IEnumerable<TipoTramite>> ListarTipoTramite();
-        Task EliminarTipoTramite(int id);
-        Task EditarTipoTramite(TipoTramite tipoTramite);
-        Task CrearTipoTramite(TipoTramite tipoTramite);
+        Task<IEnumerable<TipoTramite>> ListarTodoTipoTramite();
+        Task CrearTipoTramite(string nombre);
+        Task EditarTipoTramite(int id, string nombre);
+        Task ToggleTipoTramite(int id);
+        #endregion
 
-        Task<PeriodoConfig> ListarConfiguracionPeriodos();
+        Task<PeriodoConfig> ListarPeriodoConfig();
+        Task<IEnumerable<string>> ListarPeriodos();
+        Task EditarPeriodoConfig(int anioInicio, int periodoInicio, int anioFin, int periodoFin);
+        Task<IEnumerable<SesionCOSIE>> ListarSesiones();
     }
 }

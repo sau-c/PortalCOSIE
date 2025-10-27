@@ -1,47 +1,63 @@
 ﻿@model IEnumerable<PortalCOSIE.Domain.Entities.EstadoTramite>
 
-<div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-    <table id="tblEstados" class="table table-hover table-bordered">
-        <thead class="table-secondary">
-            <tr class="small">
-                <th>Id</th>
-                <th>Nombre</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var estado in Model)
-            {
-                <tr class="small">
-                    <td>@estado.Id</td>
-                    <td>@estado.Nombre</td>
-                    <td>
-                        <button type="button"
-                                class="btn btn-sm btn-outline-primary generic-edit"
-                                title="Editar"
-                                data-title="Editar estado tramite"
-                                data-action="@Url.Action("EditarEstado", "Configuracion")"
-                                data-id="@estado.Id"
-                                data-nombre="@estado.Nombre"
-                                data-placeholder="Nombre del tramite"
-                                data-icon="fas fa-clipboard-check">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button type="button"
-                                class="btn btn-sm btn-outline-danger generic-delete"
-                                title="Desactivar"
-                                data-action="@Url.Action("DesactivarEstado", "Configuracion")"
-                                data-id="@estado.Id"
-                                data-name="@estado.Nombre"
-                                data-entity="estado">
-                            <i class="fas fa-ban"></i>
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="d-flex justify-content-end mt-3">
+    <button type="button"
+            class="btn btn-sm btn-success generic-create"
+            data-title="Crear estado"
+            data-action="@Url.Action("Estados", "Configuracion")"
+            data-placeholder="Nombre del estado del tramite"
+            data-icon="fas fas fa-clipboard-check">
+        <i class="fas fa-plus me-1"></i> Crear
+    </button>
 </div>
+
+<table id="tblEstados" class="table table-hover table-bordered">
+    <thead class="table-secondary">
+        <tr class="small">
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Esatus</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var estado in Model)
+        {
+            <tr class="small" style="@(estado.IsDeleted ? "background-color: #ffd4d4" : "")">
+                <td>@estado.Id</td>
+                <td>@estado.Nombre</td>
+                <td>
+                    <span class="badge @(estado.IsDeleted ? "bg-danger" : "bg-success") badge-role">
+                        @(estado.IsDeleted ? "Inactivo" : "Activo")
+                    </span>
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-primary generic-edit"
+                            title="Editar"
+                            data-title="Editar estado tramite"
+                            data-action="@Url.Action("EditarEstadoTramite", "Configuracion")"
+                            data-id="@estado.Id"
+                            data-nombre="@estado.Nombre"
+                            data-placeholder="Nombre del tramite"
+                            data-icon="fas fa-clipboard-check">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button"
+                            class="btn btn-sm @(estado.IsDeleted ? "btn-outline-success" : "btn-outline-danger") generic-toggle"
+                            title="@(estado.IsDeleted ? "Activar" : "Desactivar")"
+                            data-action="@Url.Action("ToggleEstado", "Configuracion")"
+                            data-id="@estado.Id"
+                            data-name="@estado.Nombre"
+                            data-estado-actual="@estado.IsDeleted"
+                            data-entity="estado">
+                        <i class="fas @(estado.IsDeleted ? "fa-eye" : "fa-eye-slash")"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <script>
     $(document).ready(function () {
@@ -53,16 +69,14 @@
             searching: false,
             paging: false,
             scrollCollapse: true,
-            scrollY: '35vh',
+            scrollY: 'calc(100vh - 445px)',
             columnDefs:
             [
+                { targets: 0, width: "1%" },
+                { targets: 2, width: "1%", className: "text-center",},
                 {
-                    targets: 0,
-                    width: "1%"
-                },
-                {
-                    targets: 2,
-                    width: "90px",
+                    targets: 3,
+                    width: "95px",
                     className: "text-center",
                     orderable: false
                 }

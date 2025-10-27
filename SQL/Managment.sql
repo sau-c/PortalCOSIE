@@ -16,13 +16,15 @@ select * from EstadoDocumento
 select * from Tramite
 select * from Personal
 select * from Alumno
+select * from Tramite
 select * from Usuario
 select * from PeriodoConfig
+select * from SesionCOSIE
+select * from FechaRecepcion
 
 --Modulo autenticacion
 select * from Alumno
 select * from Usuario
-
 select * from AspNetUsers
 
 
@@ -36,9 +38,9 @@ select * from AspNetUsers
 --SET UserName = 'hola'
 --WHERE Email = 'saulcaz01@gmail.com'
 
---UPDATE Alumno
---SET CarreraId = 2
---WHERE Email = 'saulcaz01@gmail.com'
+UPDATE PeriodoConfig
+SET AnioFin = 2026
+WHERE Email = 'saulcaz01@gmail.com'
 
 
 --%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,3 +80,9 @@ select * from AspNetUsers
 --GO
 --DROP TABLE dbo.AspNetUsers
 --GO
+
+
+--INSERT INTO FechaRecepcion(SesionId, Fecha, EsInactivo)
+--VALUES (1, '2025/11/11',0)
+
+DELETE FROM EstadoTramite WHERE Id = 1

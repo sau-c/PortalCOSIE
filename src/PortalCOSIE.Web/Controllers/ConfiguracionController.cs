@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain;
-using PortalCOSIE.Domain.Entities;
-using PortalCOSIE.Domain.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -31,7 +29,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Carreras()
         {
-            return PartialView("_Carreras", await _carreraService.ListarCarrerasAsync());
+            return PartialView("_Carreras", await _carreraService.ListarTodoCarrerasAsync());
         }
 
         [HttpPost]
@@ -53,7 +51,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> CarreraUnidades(string id)
+        public async Task<IActionResult> Unidades(string id)
         {
             return View(await _carreraService.ListarCarreraConUnidadesAsync(id));
         }
@@ -70,16 +68,16 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> DesactivarCarrera(int id)
+        public async Task<IActionResult> ToggleCarrera(int id)
         {
-            await _carreraService.EliminarCarrrera(id);
+            await _carreraService.ToggleCarrrera(id);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> DesactivarUnidad(int id)
+        public async Task<IActionResult> ToggleUnidad(int id)
         {
             await _carreraService.EliminarUnidad(id);
             return RedirectToAction(nameof(Index));
@@ -91,33 +89,33 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Estados()
         {
-            return PartialView("_EstadoTramite", await _catalogoService.ListarEstados());
+            return PartialView("_EstadoTramite", await _catalogoService.ListarTodoEstadoTramite());
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Estados(EstadoTramite estadoTramite)
+        public async Task<IActionResult> Estados(string nombre)
         {
-            await _catalogoService.CrearEstado(estadoTramite);
+            await _catalogoService.CrearEstadoTramite(nombre);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditarEstado(EstadoTramite estadoTramite)
+        public async Task<IActionResult> EditarEstadoTramite(int id, string nombre)
         {
-            await _catalogoService.EditarEstado(estadoTramite);
+            await _catalogoService.EditarEstadoTramite(id, nombre);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> DesactivarEstado(int id)
+        public async Task<IActionResult> ToggleEstado(int id)
         {
-            await _catalogoService.EliminarEstado(id);
+            await _catalogoService.ToggleEstadoTramite(id);
             return RedirectToAction(nameof(Index));
         }
         #endregion
@@ -127,34 +125,52 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> EstadosDocumento()
         {
-            return PartialView("_EstadoDocumento", await _catalogoService.ListarEstadosDocumento());
+            return PartialView("_EstadoDocumento", await _catalogoService.ListarTodoEstadosDocumento());
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EstadosDocumento(EstadoDocumento estadoDocumento)
+        public async Task<IActionResult> EstadosDocumento(string nombre)
         {
-            await _catalogoService.CrearEstadoDocumento(estadoDocumento);
-            return RedirectToAction(nameof(EstadosDocumento));
-        }
-        
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> EditarEstadoDocumento(EstadoDocumento estadoDocumento)
-        {
-            await _catalogoService.EditarEstadoDocumento(estadoDocumento);
+            //try
+            //{
+            //    await _catalogoService.CrearEstadoDocumento(nombre);
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //catch (DomainException ex)
+            //{
+            //    TempData["AlertType"] = "error";
+            //    TempData["AlertMessage"] = $"{ex.Message}";
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //catch (Exception ex)
+            //{
+            //    TempData["AlertType"] = "error";
+            //    TempData["AlertMessage"] = $"{ex.Message}";
+            //    return RedirectToAction(nameof(Index));
+            //}
+
+            await _catalogoService.CrearEstadoDocumento(nombre);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> DesactivarEstadoDocumento(int id)
+        public async Task<IActionResult> EditarEstadoDocumento(int id, string nombre)
         {
-            await _catalogoService.EliminarEstado(id);
-            return RedirectToAction(nameof(EstadosDocumento));
+            await _catalogoService.EditarEstadoDocumento(id, nombre);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> ToggleEstadoDocumento(int id)
+        {
+            await _catalogoService.ToggleEstadoDocumento(id);
+            return RedirectToAction(nameof(Index));
         }
         #endregion
 
@@ -163,43 +179,51 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Tipo()
         {
-            return PartialView("_TipoTramite", await _catalogoService.ListarTipoTramite());
+            return PartialView("_TipoTramite", await _catalogoService.ListarTodoTipoTramite());
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Tipo(TipoTramite tipoTramite)
+        public async Task<IActionResult> Tipo(string nombre)
         {
-            await _catalogoService.CrearTipoTramite(tipoTramite);
+            await _catalogoService.CrearTipoTramite(nombre);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditarTipo(TipoTramite tipoTramite)
+        public async Task<IActionResult> EditarTipo(int id, string nombre)
         {
-            await _catalogoService.EditarTipoTramite(tipoTramite);
+            await _catalogoService.EditarTipoTramite(id, nombre);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> DesactivarTipo(int id)
+        public async Task<IActionResult> ToggleTipo(int id)
         {
-            await _catalogoService.EliminarTipoTramite(id);
+            await _catalogoService.ToggleTipoTramite(id);
             return RedirectToAction(nameof(Index));
         }
-        
+
         #endregion
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Periodos()
         {
-            return PartialView("_Periodos", await _catalogoService.ListarConfiguracionPeriodos());
+            return PartialView("_Periodos", await _catalogoService.ListarPeriodoConfig());
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> Periodos(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
+        {
+            await _catalogoService.EditarPeriodoConfig(anioInicio, periodoInicio, anioFin, periodoFin);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

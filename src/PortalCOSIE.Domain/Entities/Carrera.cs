@@ -1,26 +1,33 @@
-﻿namespace PortalCOSIE.Domain.Entities
+﻿using System.Text.RegularExpressions;
+
+namespace PortalCOSIE.Domain.Entities
 {
     public class Carrera : BaseEntity
     {
-        public string Nombre { get; private set; }
+        public string Nombre { get; private set; } = string.Empty;
         private readonly List<UnidadAprendizaje> _unidadesAprendizaje = new();
 
-        //Navegacion de EFCore
-        public virtual IReadOnlyCollection<UnidadAprendizaje> UnidadesAprendizaje => _unidadesAprendizaje.AsReadOnly();
+        private const int LongitudMaxima = 100;
+        private static readonly Regex SoloLetras =
+            new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\(\)]+$", RegexOptions.Compiled);
 
-        // Constructor requerido por EF Core (debe ser protegido o privado)
-        protected Carrera() { }
+        public IReadOnlyCollection<UnidadAprendizaje> UnidadesAprendizaje => _unidadesAprendizaje;
+        private Carrera() { }
 
         public Carrera(string nombre)
         {
-            SetNombre(nombre);
+            ActualizarNombre(nombre);
         }
 
-        public void SetNombre(string nombre)
+        public void ActualizarNombre(string nombre)
         {
+            nombre = nombre.Trim();
             if (string.IsNullOrWhiteSpace(nombre))
-                throw new DomainException("El nombre de la carrera no puede estar vacío.");
-
+                throw new DomainException("El nombre no puede estar vacío.");
+            if (!SoloLetras.IsMatch(nombre))
+                throw new DomainException("El nombre solo puede contener letras y espacios.");
+            if (nombre.Length > LongitudMaxima)
+                throw new DomainException($"El nombre no puede tener más de {LongitudMaxima} caracteres.");
             Nombre = nombre;
         }
 
@@ -28,15 +35,11 @@
         {
             if (unidad == null)
                 throw new DomainException("La unidad de aprendizaje no puede ser nula");
-
             _unidadesAprendizaje.Add(unidad);
         }
 
         public void RemoverUnidadAprendizaje(UnidadAprendizaje unidad)
         {
-            if (unidad == null)
-                throw new DomainException("La unidad de aprendizaje no puede ser nula");
-
             _unidadesAprendizaje.Remove(unidad);
         }
     }

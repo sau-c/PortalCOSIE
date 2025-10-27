@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace PortalCOSIE.Infrastructure.Data
 {
@@ -27,6 +28,18 @@ namespace PortalCOSIE.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+            // Filtro global para entidades eliminadas
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+                {
+                    var parameter = Expression.Parameter(entityType.ClrType, "e");
+                    var prop = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
+                    var filter = Expression.Lambda(Expression.Equal(prop, Expression.Constant(false)), parameter);
+                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(filter);
+                }
+            }
         }
     }
 }

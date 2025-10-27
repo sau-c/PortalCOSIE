@@ -127,7 +127,7 @@
         <div class="col-lg-4">
             <div class="chart-card card shadow h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0 fw-bold py-2">Solicitud CTE por carrera</h6>
+                    <h6 class="mb-0 py-1">Solicitud CTE por carrera</h6>
                     <select class="form-select form-select-sm w-auto">
                         <option>Últimos 6 meses</option>
                         <option>Últimos 3 meses</option>
@@ -144,7 +144,7 @@
         <div class="col-lg-8">
             <div class="chart-card card shadow h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <div><h6 class="mb-0 fw-bold py-2">Actividad de documentos</h6></div>
+                    <div><h6 class="mb-0 py-1">Actividad de documentos</h6></div>
                     <select class="form-select form-select-sm w-auto">
                         <option>Últimos 6 meses</option>
                         <option>Últimos 3 meses</option>
@@ -161,57 +161,6 @@
         </div>
     </div>
 
-    <!-- Documentos Recientes -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="chart-card card shadow">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0 fw-bold py-2">Documentos recientes</h6>
-                    <a href="#" class="btn btn-sm btn-outline-primary">Ver Todos</a>
-                </div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <a href="#" class="list-group-item list-group-item-action doc-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1">Solicitud de Certificado</h6>
-                                    <small class="text-muted">#DOC-2023-00456 • Juan Pérez</small>
-                                </div>
-                                <div>
-                                    <span class="badge bg-success">Aprobado</span>
-                                    <small class="text-muted ms-2">Hoy, 10:45 AM</small>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action doc-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1">Cambio de Carrera</h6>
-                                    <small class="text-muted">#DOC-2023-00455 • María García</small>
-                                </div>
-                                <div>
-                                    <span class="badge bg-warning text-dark">En Revisión</span>
-                                    <small class="text-muted ms-2">Ayer, 3:20 PM</small>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action doc-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1">Justificante de Inasistencia</h6>
-                                    <small class="text-muted">#DOC-2023-00454 • Carlos López</small>
-                                </div>
-                                <div>
-                                    <span class="badge bg-danger">Rechazado</span>
-                                    <small class="text-muted ms-2">Ayer, 11:15 AM</small>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 @section Scripts {
@@ -230,14 +179,14 @@
                 data: {
                     labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
                     datasets: [{
-                        label: 'Documentos Recibidos',
+                        label: 'Documentos recibidos',
                         data: [120, 190, 170, 200, 220, 180],
                         borderColor: 'rgba(90, 18, 54, 1)',
                         backgroundColor: 'rgba(90, 18, 54, 0.1)',
                         tension: 0.3,
                         fill: true
                     }, {
-                        label: 'Documentos Procesados',
+                        label: 'Documentos procesados',
                         data: [100, 160, 150, 180, 200, 160],
                         borderColor: 'rgba(255, 107, 53, 1)',
                         backgroundColor: 'rgba(255, 107, 53, 0.1)',

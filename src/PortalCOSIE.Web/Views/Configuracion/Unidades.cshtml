@@ -8,9 +8,9 @@
 <div class="card shadow">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-bold py-2">@ViewData["Title"]</h6>
+            <h6 class="mb-0 py-1">@ViewData["Title"]</h6>
             <div>
-                <a href="@Url.Action("Index", "Carrera")" class="btn btn-outline-secondary btn-sm">
+                <a href="@Url.Action("Index", "Configuracion")" class="btn btn-outline-secondary btn-sm">
                     <i class="fas fa-arrow-left me-2"></i>Volver
                 </a>
                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createModal">
@@ -56,7 +56,7 @@
                                         data-unidad-id="@unidad.Id"
                                         data-unidad-name="@unidad.Nombre"
                                         data-unidad-semestre="@unidad.Semestre">
-                                    <i class="fas fa-ban"></i>
+                                    <i class="fas fa-eye-slash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -76,7 +76,7 @@
                 <input type="hidden" name="carreraId" value="@Model.Id" />
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">Crear Nueva Unidad</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" ></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -117,7 +117,7 @@
                 <input type="hidden" id="editUnidadId" name="id" />
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">Editar unidad de aprendizaje</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" ></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -141,7 +141,7 @@
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Guardar cambios
+                        <i class="fas fa-save me-2"></i>Guardar
                     </button>
                 </div>
             </form>
@@ -156,8 +156,8 @@
             <form id="deleteForm" asp-action="EliminarUnidad" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Confirmar eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Desactivar</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" ></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning mb-3">
@@ -185,7 +185,7 @@
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt me-2"></i>Eliminar Unidad
+                        <i class="fas fa-eye-slash me-2"></i>Eliminar Unidad
                     </button>
                 </div>
             </form>
@@ -212,7 +212,7 @@
                     },
                     {
                         targets: 3,
-                        width: "90px",
+                        width: "95px",
                         orderable: false
                     }
                 ]

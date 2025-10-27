@@ -40,12 +40,13 @@ namespace PortalCOSIE.Application
         }
         public async Task Actualizar(Tramite tramite)
         {
-            await _tramiteRepository.UpdateAsync(tramite);
+            await _unitOfWork.SaveChangesAsync();
         }
         public async Task Eliminar(int id)
         {
             var tramite = await _tramiteRepository.GetByIdAsync(id);
-            await _tramiteRepository.DeleteAsync(tramite);
+            tramite.SoftDelete();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

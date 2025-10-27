@@ -238,10 +238,12 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         public async Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos()
         {
             var usuarios = await _usuarioRepository.Query()
-                .Where(u => u.Alumno != null)
+                .Where(u => u.Alumno != null && u.Personal == null)
                 .Include(u => u.Alumno)
                 .Include(u => u.Alumno.Carrera)
-                .ToListAsync();
+                .IgnoreQueryFilters().ToListAsync();
+
+            var usuariosTEST = await _usuarioRepository.GetAllAsync();
 
             var alumnosDTO = new List<AlumnoConIdentityDTO>();
 
@@ -259,7 +261,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                     Nombre = usuario.Nombre,
                     ApellidoPaterno = usuario.ApellidoPaterno,
                     ApellidoMaterno = usuario.ApellidoMaterno,
-                    Carrera = usuario.Alumno.Carrera.Nombre,
+                    Carrera = usuario.Alumno.Carrera,
                     PeriodoIngreso = usuario.Alumno.PeriodoIngreso,
                     Correo = identityUser.Email,
                     Celular = identityUser.PhoneNumber,

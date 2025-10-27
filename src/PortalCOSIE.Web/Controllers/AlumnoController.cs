@@ -12,12 +12,19 @@ namespace PortalCOSIE.Web.Controllers
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
         private readonly ICarreraService _carreraService;
+        private readonly ICatalogoService _catalogoService;
 
-        public AlumnoController(ISecurityService securityService, IUsuarioService usuarioService, ICarreraService catalogoService)
+        public AlumnoController(
+            ISecurityService securityService,
+            IUsuarioService usuarioService,
+            ICarreraService carreraService,
+            ICatalogoService catalogoService
+            )
         {
             _securityService = securityService;
             _usuarioService = usuarioService;
-            _carreraService = catalogoService;
+            _carreraService = carreraService;
+            _catalogoService = catalogoService;
         }
 
         [HttpGet]
@@ -32,7 +39,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Editar(string id)
         {
             ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
-            ViewBag.Periodos = new SelectList(_carreraService.ListarPeriodos(), "Id", "Periodo");
+            ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
             return View(await _usuarioService.BuscarAlumno(id));
         }
 
@@ -44,7 +51,7 @@ namespace PortalCOSIE.Web.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
-                ViewBag.Periodos = new SelectList(_carreraService.ListarPeriodos(), "Id", "Periodo");
+                ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
                 return View(dto);
             }
             var result = await _usuarioService.EditarAlumno(dto);
@@ -54,7 +61,7 @@ namespace PortalCOSIE.Web.Controllers
                 foreach (var error in result.Errors)
                 {
                     ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
-                    ViewBag.Periodos = new SelectList(_carreraService.ListarPeriodos(), "Id", "Periodo");
+                    ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
                     ModelState.AddModelError(string.Empty, error);
                 }
                 return View(dto);

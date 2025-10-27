@@ -27,7 +27,7 @@ namespace PortalCOSIE.Application.DTO.Cuenta
         [Required(ErrorMessage = "Campo obligatorio.")]
         public string PeriodoIngreso { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
-        public int? CarreraId { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Campo obligatorio.")]
+        public int CarreraId { get; set; }
     }
 }

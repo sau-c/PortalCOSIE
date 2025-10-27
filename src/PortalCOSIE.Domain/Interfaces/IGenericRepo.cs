@@ -12,11 +12,10 @@ namespace PortalCOSIE.Domain.Interfaces
     /// <typeparam name="T">El tipo de entidad gestionada por el repositorio. Debe ser un tipo de referencia.</typeparam>
     public interface IGenericRepo<T> where T : BaseEntity
     {
-        Task<T> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> GetByIdAsync(int id, bool includeDeleted = false);
+        Task<IEnumerable<T>> GetAllAsync(bool includeDeleted = false);
         Task<T> AddAsync(T entity);
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(T entity);
+        T Delete(T entity);
 
         // Para eager loading
         IQueryable<T> Query();

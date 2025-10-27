@@ -12,16 +12,19 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
 
             builder.Property(d => d.Nombre)
                 .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(100);
+
+            builder.HasIndex(d => d.Nombre)
+                .IsUnique();
 
             builder.HasData(
-                new EstadoDocumento() { Id = 1, Nombre = "Sin cargar" },
-                new EstadoDocumento() { Id = 2, Nombre = "Validado" },
-                new EstadoDocumento() { Id = 3, Nombre = "Con errores" },
-                new EstadoDocumento() { Id = 4, Nombre = "Mala calidad" },
-                new EstadoDocumento() { Id = 5, Nombre = "Documento equivocado" },
-                new EstadoDocumento() { Id = 6, Nombre = "Corrupto" }
-                );
+                new { Id = 1, Nombre = "Sin cargar", IsDeleted = false },
+                new { Id = 2, Nombre = "Validado", IsDeleted = false },
+                new { Id = 3, Nombre = "Con errores", IsDeleted = false },
+                new { Id = 4, Nombre = "Mala calidad", IsDeleted = false },
+                new { Id = 5, Nombre = "Documento equivocado", IsDeleted = false },
+                new { Id = 6, Nombre = "Corrupto", IsDeleted = false }
+            );
         }
     }
 }
