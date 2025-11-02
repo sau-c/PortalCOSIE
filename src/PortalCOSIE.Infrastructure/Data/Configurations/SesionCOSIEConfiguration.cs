@@ -17,6 +17,10 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
             builder.HasIndex(s => s.NumeroSesion)
                 .IsUnique();
 
+            builder.HasMany(s => s.FechasRecepcion)
+                .WithOne(f => f.Sesion)
+                .HasForeignKey(f => f.SesionId);
+
             builder.HasData(
                 new
                 {

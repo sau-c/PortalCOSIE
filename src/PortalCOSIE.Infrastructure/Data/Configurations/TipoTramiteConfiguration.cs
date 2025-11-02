@@ -18,7 +18,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
                 .IsUnique();
 
             builder.HasData(
-                new { Id = 1, Nombre = "Dictamen interno (CTE)", IsDeleted = false },
+                new { Id = 1, Nombre = "Dictamen interno (CTCE)", IsDeleted = false },
                 new { Id = 2, Nombre = "Dictamen externo (CGC)", IsDeleted = false }
                 );
         }

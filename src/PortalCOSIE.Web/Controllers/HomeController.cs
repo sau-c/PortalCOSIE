@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain.Entities;
 using System.Security.Claims;
 
 namespace PortalCOSIE.Web.Controllers
@@ -9,7 +8,6 @@ namespace PortalCOSIE.Web.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-
         private readonly IUsuarioService _usuarioService;
         private readonly ICatalogoService _catalogoService;
 
@@ -27,21 +25,29 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (_usuarioService.BuscarUsuarioPorIdentityId(userId) == null && !User.IsInRole("Administrador"))
             {
                 return RedirectToAction("Registrar", "Cuenta");
             }
-
-            return View(await _catalogoService.ListarSesiones());
+            return View(await _catalogoService.ListarSesionCOSIE());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> EditarSesion(int id, string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
+        public async Task<IActionResult> CrearSesionCOSIE(string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
         {
-            return View(await _catalogoService.ListarSesiones());
+            await _catalogoService.CrearSesionCOSIE(numeroSesion, fechaSesion, fechasRecepcion);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> EditarSesionCOSIE(int id, string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
+        {
+            await _catalogoService.EditarSesionCOSIE(id, numeroSesion, fechaSesion, fechasRecepcion);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -10,17 +10,19 @@
 
             <form id="formSesion" method="post">
                 @Html.AntiForgeryToken()
-                <input type="hidden" id="sesionId" name="Id" />
+                <input type="hidden" id="sesionId" name="id" />
 
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="numeroSesion" class="form-label fw-semibold">Número de sesión</label>
-                        <input type="text" class="form-control" id="numeroSesion" name="NumeroSesion" required>
-                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="numeroSesion" class="form-label fw-semibold">No. de sesión</label>
+                            <input type="text" class="form-control" id="numeroSesion" name="NumeroSesion" required>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="fechaSesion" class="form-label fw-semibold">Fecha de sesión</label>
-                        <input type="date" class="form-control" id="fechaSesion" name="FechaSesion" required>
+                        <div class="col-lg-6 col-md-6">
+                            <label for="fechaSesion" class="form-label fw-semibold">Fecha de sesión</label>
+                            <input type="date" class="form-control" id="fechaSesion" name="FechaSesion" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -45,7 +47,6 @@
 </div>
 
 <script>
-    // JavaScript específico para el modal de sesión
     document.addEventListener('DOMContentLoaded', function() {
         // Eventos para abrir modal de crear/editar
         $(document).on('click', '.btn-crear, .btn-editar', function() {
@@ -53,22 +54,35 @@
             const id = $(this).data('id');
             const numero = $(this).data('numero-sesion');
             const fecha = $(this).data('fecha-sesion');
+            const fechasRecepcion = $(this).data('fechas-recepcion');
 
             $('#fechasRecepcionContainer').empty();
 
             if (mode === 'crear') {
                 $('#modalTitle').text('Crear nueva sesión');
                 $('#btnSubmitText').text('Crear');
-                $('#formSesion').attr('action', '@Url.Action("CrearSesion", "Sesion")');
+                $('#formSesion').attr('action', '@Url.Action("CrearSesionCOSIE", "Home")');
                 $('#sesionId, #numeroSesion, #fechaSesion').val('');
+                // NO agregar campo vacío por defecto - el usuario decide si agregar fechas
             } else {
                 $('#modalTitle').text('Editar sesión');
                 $('#btnSubmitText').text('Guardar');
-                $('#formSesion').attr('action', '@Url.Action("EditarSesion", "Sesion")');
+                $('#formSesion').attr('action', '@Url.Action("EditarSesionCOSIE", "Home")');
                 $('#sesionId').val(id);
                 $('#numeroSesion').val(numero);
                 $('#fechaSesion').val(fecha);
-                cargarFechasRecepcion(id);
+
+                // Cargar fechas desde el data attribute - SOLO si existen
+                if (fechasRecepcion && fechasRecepcion.length > 0) {
+                    fechasRecepcion.forEach(fecha => {
+                        const fechaFormateada = formatearFechaParaInput(fecha);
+                        // Solo agregar si la fecha no está vacía
+                        if (fechaFormateada) {
+                            agregarCampoFecha(fechaFormateada);
+                        }
+                    });
+                }
+                // NO agregar campo vacío si no hay fechas - el contenedor queda vacío
             }
         });
 
@@ -77,26 +91,47 @@
             agregarCampoFecha('');
         });
 
-        // Remover fecha de recepción
+        // Remover fecha de recepción - PERMITE eliminar TODAS
         $(document).on('click', '.btn-remover-fecha', function() {
             $(this).closest('.fecha-recepcion-item').remove();
+            // Ya no hay restricción - se pueden eliminar todas las fechas
         });
 
-        function cargarFechasRecepcion(id) {
-            $.get('@Url.Action("ObtenerFechasRecepcion", "Sesion")', { id }, function(fechas) {
-                $('#fechasRecepcionContainer').empty();
-                fechas.forEach(f => agregarCampoFecha(f));
-            });
+        function agregarCampoFecha(valor) {
+            // Solo agregar si el valor no está vacío o es un string vacío
+            if (valor || valor === '') {
+                $('#fechasRecepcionContainer').append(`
+                    <div class="input-group mb-2 fecha-recepcion-item">
+                        <input type="date" class="form-control" name="fechasRecepcion" value="${valor}">
+                        <button type="button" class="btn btn-outline-danger btn-remover-fecha">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>`);
+            }
         }
 
-        function agregarCampoFecha(valor) {
-            $('#fechasRecepcionContainer').append(`
-                <div class="input-group mb-2 fecha-recepcion-item">
-                    <input type="date" class="form-control" name="FechasRecepcion[]" value="${valor}" required>
-                    <button type="button" class="btn btn-outline-danger btn-remover-fecha">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>`);
+        function formatearFechaParaInput(fechaString) {
+            if (!fechaString) return null; // Retorna null en lugar de string vacío
+
+            // Si ya está en formato YYYY-MM-DD, retornar directamente
+            if (fechaString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                return fechaString;
+            }
+
+            // Convertir de otros formatos a YYYY-MM-DD
+            const fecha = new Date(fechaString);
+            if (isNaN(fecha.getTime())) return null; // Retorna null si no es fecha válida
+
+            return fecha.toISOString().split('T')[0];
         }
+
+        // Validación opcional del formulario - permitir enviar sin fechas
+        $('#formSesion').on('submit', function(e) {
+            const fechas = $('input[name="fechasRecepcion"]').filter(function() {
+                return $(this).val() !== ''; // Solo contar fechas con valor
+            });
+
+            return true;
+        });
     });
 </script>

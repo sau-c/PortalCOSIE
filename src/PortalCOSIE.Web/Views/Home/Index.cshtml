@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<PortalCOSIE.Domain.Entities.SesionCOSIE>
 @{
-    ViewData["Title"] = "Calendario de sesiones COSIE CTE";
+    ViewData["Title"] = "Calendario de sesiones COSIE CTCE";
     var puedeEditar = User.IsInRole("Administrador") || User.IsInRole("Personal");
 }
 
@@ -75,7 +75,8 @@
                                         data-mode="editar"
                                         data-id="@sesion.Id"
                                         data-numero-sesion="@sesion.NumeroSesion"
-                                        data-fecha-sesion="@sesion.FechaSesion?.ToString("yyyy-MM-dd")">
+                                        data-fecha-sesion="@sesion.FechaSesion?.ToString("yyyy-MM-dd")"
+                                        data-fechas-recepcion='@Json.Serialize(sesion.FechasRecepcion?.Select(f => f.Fecha.ToString("yyyy-MM-dd")).ToList())'>
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button type="button"

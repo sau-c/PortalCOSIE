@@ -15,6 +15,10 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
 
             builder.Property(s => s.Fecha)
                 .IsRequired();
+
+            builder.HasOne(f => f.Sesion)
+            .WithMany(s => s.FechasRecepcion)
+            .HasForeignKey(f => f.SesionId);
         }
     }
 }
