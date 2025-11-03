@@ -1,26 +1,30 @@
-﻿<div class="modal fade" id="desactivarModal" tabindex="-1">
+﻿<!-- Modal Activar/Desactivar -->
+<div class="modal fade" id="desactivarModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Desactivar sesión</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <!-- Header dinámico -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitulo">Cambiar estado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form asp-action="DesactivarSesion" method="post">
+            <form asp-action="ToggleSesionCOSIE" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="desactivarId" name="id" />
+                <input type="hidden" id="accionEstado" name="accion" /> <!-- opcional si tu backend la necesita -->
 
                 <div class="modal-body text-center">
-                    <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
-                    <h6 class="fw-bold">¿Está seguro que desea desactivar esta sesión?</h6>
+                    <i id="modalIcono" class="fas fa-exclamation-triangle fa-3x mb-3 text-warning"></i>
+                    <h6 id="modalMensaje" class="fw-bold mb-2">¿Está seguro que desea desactivar esta sesión?</h6>
                     <p class="text-muted mb-0">Sesión: <span id="desactivarNumeroSesion" class="fw-semibold"></span></p>
-                    <p class="text-muted">Esta acción no se puede deshacer.</p>
+                    <p id="modalDetalle" class="text-muted">Se ocultará la sesión a los demás usuarios.</p>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-eye-slash me-1"></i>Desactivar
+                    <button type="submit" id="btnConfirmarEstado" class="btn">
+                        <i id="btnIcono" class="fas fa-eye-slash me-1"></i>
+                        <span id="btnTexto">Desactivar</span>
                     </button>
                 </div>
             </form>
@@ -29,11 +33,46 @@
 </div>
 
 <script>
-    // JavaScript específico para el modal de desactivar
-    document.addEventListener('DOMContentLoaded', function() {
-        $(document).on('click', '.btn-desactivar', function() {
-            $('#desactivarId').val($(this).data('id'));
-            $('#desactivarNumeroSesion').text($(this).data('numero-sesion'));
+    document.addEventListener('DOMContentLoaded', function () {
+
+        $(document).on('click', '.btn-toggle-estado', function () {
+            var id = $(this).data('id');
+            var numero = $(this).data('numero-sesion');
+            var isDeleted = $(this).data('isdeleted') === true || $(this).data('isdeleted') === "True";
+
+            // Referencias
+            var modal = $('#desactivarModal');
+            var header = modal.find('.modal-header');
+            var btn = $('#btnConfirmarEstado');
+
+            // Seteamos datos base
+            $('#desactivarId').val(id);
+            $('#desactivarNumeroSesion').text(numero);
+
+            if (isDeleted) {
+                // === ACTIVAR ===
+                header.removeClass('bg-danger text-white').addClass('bg-success text-white');
+                modal.find('#modalTitulo').text('Activar sesión');
+                modal.find('#modalMensaje').text('¿Está seguro que desea activar esta sesión?');
+                modal.find('#modalDetalle').text('La sesión volverá a estar visible para los usuarios.');
+                $('#modalIcono').removeClass('fa-exclamation-triangle text-warning').addClass('fa-eye');
+                btn.removeClass('btn-danger').addClass('btn-success');
+                $('#btnIcono').removeClass('fa-eye-slash').addClass('fa-eye');
+                $('#btnTexto').text('Activar');
+                $('#accionEstado').val('activar');
+            } else {
+                // === DESACTIVAR ===
+                header.removeClass('bg-success text-white').addClass('bg-danger text-white');
+                modal.find('#modalTitulo').text('Desactivar sesión');
+                modal.find('#modalMensaje').text('¿Está seguro que desea desactivar esta sesión?');
+                modal.find('#modalDetalle').text('Se ocultará la sesión a los demás usuarios.');
+                $('#modalIcono').removeClass('fa-eye text-white').addClass('fa-exclamation-triangle text-warning');
+                btn.removeClass('btn-success').addClass('btn-danger');
+                $('#btnIcono').removeClass('fa-eye').addClass('fa-eye-slash');
+                $('#btnTexto').text('Desactivar');
+                $('#accionEstado').val('desactivar');
+            }
         });
+
     });
 </script>

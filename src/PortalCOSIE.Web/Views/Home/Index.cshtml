@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PortalCOSIE.Domain.Entities.SesionCOSIE>
+﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Calendario.SesionCOSIE>
 @{
     ViewData["Title"] = "Calendario de sesiones COSIE CTCE";
     var puedeEditar = User.IsInRole("Administrador") || User.IsInRole("Personal");
@@ -39,7 +39,7 @@
             <tbody>
                 @foreach (var sesion in Model)
                 {
-                    <tr class="small">
+                    <tr class="small" style="@(sesion.IsDeleted ? "background-color: #ffd4d4" : "")">
                         <td class="fw-semibold">@sesion.NumeroSesion</td>
                         <td>
                             @if (sesion.FechasRecepcion?.Any() == true)
@@ -80,13 +80,14 @@
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button type="button"
-                                        class="btn btn-sm btn-outline-danger btn-desactivar"
-                                        title="Desactivar"
+                                        class="btn btn-sm @(sesion.IsDeleted ? "btn-outline-success" : "btn-outline-danger") btn-toggle-estado"
+                                        title="@(sesion.IsDeleted ? "Activar sesión" : "Desactivar sesión")"
                                         data-bs-toggle="modal"
                                         data-bs-target="#desactivarModal"
                                         data-id="@sesion.Id"
-                                        data-numero-sesion="@sesion.NumeroSesion">
-                                    <i class="fas fa-eye-slash"></i>
+                                        data-numero-sesion="@sesion.NumeroSesion"
+                                        data-isdeleted="@sesion.IsDeleted">
+                                    <i class="fas @(sesion.IsDeleted ? "fa-eye" : "fa-eye-slash")"></i>
                                 </button>
                             </td>
                         }

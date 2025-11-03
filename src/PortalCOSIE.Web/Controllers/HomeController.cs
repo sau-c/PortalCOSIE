@@ -29,7 +29,15 @@ namespace PortalCOSIE.Web.Controllers
             {
                 return RedirectToAction("Registrar", "Cuenta");
             }
-            return View(await _catalogoService.ListarSesionCOSIE());
+
+            if (User.IsInRole("Administrador") || User.IsInRole("Personal"))
+            {
+                return View(await _catalogoService.ListarSesiones());
+            }
+            else
+            {
+                return View(await _catalogoService.ListarSesionesActivas());
+            }
         }
 
         [HttpPost]
@@ -37,7 +45,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> CrearSesionCOSIE(string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
         {
-            await _catalogoService.CrearSesionCOSIE(numeroSesion, fechaSesion, fechasRecepcion);
+            await _catalogoService.CrearSesion(numeroSesion, fechaSesion, fechasRecepcion);
             return RedirectToAction(nameof(Index));
         }
 
@@ -46,7 +54,15 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> EditarSesionCOSIE(int id, string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
         {
-            await _catalogoService.EditarSesionCOSIE(id, numeroSesion, fechaSesion, fechasRecepcion);
+            await _catalogoService.EditarSesion(id, numeroSesion, fechaSesion, fechasRecepcion);
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> ToggleSesionCOSIE(int id)
+        {
+            await _catalogoService.ToggleSesion(id);
             return RedirectToAction(nameof(Index));
         }
     }
