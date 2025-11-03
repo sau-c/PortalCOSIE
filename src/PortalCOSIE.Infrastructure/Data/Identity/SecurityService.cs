@@ -4,7 +4,8 @@ using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain.Entities;
+using PortalCOSIE.Domain.Entities.Usuarios;
+using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Infrastructure.Data.Email;
 using System.Data;
@@ -15,12 +16,12 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
     public class SecurityService : ISecurityService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IGenericRepo<Usuario> _usuarioRepository;
+        private readonly IBaseRepository<Usuario> _usuarioRepository;
         private readonly IEmailSender _emailSender;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
-            IGenericRepo<Usuario> usuarioRepository,
+            IBaseRepository<Usuario> usuarioRepository,
             IEmailSender emailSender)
         {
             _userManager = userManager;

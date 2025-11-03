@@ -1,28 +1,19 @@
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain.Entities;
+using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Interfaces;
 
 namespace PortalCOSIE.Application
 {
     public class TramiteService : ITramiteService
     {
-        private readonly IGenericRepo<Tramite> _tramiteRepository;
-        private readonly IGenericRepo<EstadoTramite> _estadoTramiteRepository;
-        private readonly IGenericRepo<TipoTramite> _tipoTramiteRepository;
-        private readonly IGenericRepo<EstadoDocumento> _estadoDocumentoRepository;
+        private readonly IBaseRepository<Tramite> _tramiteRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public TramiteService(
-            IGenericRepo<Tramite> tramiteRepository,
-            IGenericRepo<EstadoTramite> estadoTramiteRepository,
-            IGenericRepo<TipoTramite> tipoTramiteRepository,
-            IGenericRepo<EstadoDocumento> estadoDocumentoRepository,
+            IBaseRepository<Tramite> tramiteRepository,
             IUnitOfWork unitOfWork)
         {
             _tramiteRepository = tramiteRepository;
-            _estadoTramiteRepository = estadoTramiteRepository;
-            _tipoTramiteRepository = tipoTramiteRepository;
-            _estadoDocumentoRepository = estadoDocumentoRepository;
             _unitOfWork = unitOfWork;
         }
 

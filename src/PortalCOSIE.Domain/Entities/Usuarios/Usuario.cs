@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace PortalCOSIE.Domain.Entities
+namespace PortalCOSIE.Domain.Entities.Usuarios
 {
     public class Usuario : BaseEntity
     {

@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Domain.Entities
+﻿namespace PortalCOSIE.Domain.Entities.Usuarios
 {
     public class Personal : BaseEntity
     {

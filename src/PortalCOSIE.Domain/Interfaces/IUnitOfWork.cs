@@ -4,7 +4,7 @@ namespace PortalCOSIE.Domain.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IGenericRepo<T> GenericRepo<T>() where T : BaseEntity;
+        IBaseRepository<T> BaseRepo<T>() where T : BaseEntity;
         //Task<int> CommitAsync();
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

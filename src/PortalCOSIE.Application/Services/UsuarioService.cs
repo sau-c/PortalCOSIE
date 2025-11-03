@@ -2,6 +2,7 @@ using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities;
+using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
 
 
@@ -10,9 +11,9 @@ namespace PortalCOSIE.Application
     public class UsuarioService : IUsuarioService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IGenericRepo<Usuario> _usuarioRepository;
+        private readonly IBaseRepository<Usuario> _usuarioRepository;
 
-        public UsuarioService(IUnitOfWork unitOfWork, IGenericRepo<Usuario> usuarioRepository)
+        public UsuarioService(IUnitOfWork unitOfWork, IBaseRepository<Usuario> usuarioRepository)
         {
             _unitOfWork = unitOfWork;
             _usuarioRepository = usuarioRepository;
@@ -30,7 +31,7 @@ namespace PortalCOSIE.Application
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var alumnoPorBoleta = _unitOfWork.GenericRepo<Usuario>().Query().Where(
+                var alumnoPorBoleta = _unitOfWork.BaseRepo<Usuario>().Query().Where(
                 u => u.Alumno.NumeroBoleta == dto.NumeroBoleta
                 ).FirstOrDefault();
 
@@ -53,7 +54,7 @@ namespace PortalCOSIE.Application
                     );
 
                 usuario.SetAlumno(alumno);
-                await _unitOfWork.GenericRepo<Usuario>().AddAsync(usuario);
+                await _unitOfWork.BaseRepo<Usuario>().AddAsync(usuario);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
                 return Result<string>.Success(alumno.NumeroBoleta);
@@ -67,7 +68,7 @@ namespace PortalCOSIE.Application
 
         public async Task<AlumnoDTO?> BuscarAlumno(string id)
         {
-            var usuario = await _usuarioRepository.GetFirstOrDefaultAsync(
+            var usuario = await _usuarioRepository.GetFirstOrDefaultWhereAsync(
                 u => u.IdentityUserId == id,
                 u => u.Alumno,
                 u => u.Alumno.Carrera
@@ -105,8 +106,8 @@ namespace PortalCOSIE.Application
             if (string.IsNullOrEmpty(dto.IdentityUserId))
                 return Result<string>.Failure("Se requiere el IdentityUserId");
 
-            var usuario = await _unitOfWork.GenericRepo<Usuario>()
-                .GetFirstOrDefaultAsync(
+            var usuario = await _unitOfWork.BaseRepo<Usuario>()
+                .GetFirstOrDefaultWhereAsync(
                     u => u.IdentityUserId == dto.IdentityUserId,
                     u => u.Alumno);
 
@@ -136,7 +137,7 @@ namespace PortalCOSIE.Application
 
         public async Task<PersonalDTO?> BuscarPersonal(string id)
         {
-            var personal = await _usuarioRepository.GetFirstOrDefaultAsync(
+            var personal = await _usuarioRepository.GetFirstOrDefaultWhereAsync(
                 u => u.IdentityUserId == id
                 );
 

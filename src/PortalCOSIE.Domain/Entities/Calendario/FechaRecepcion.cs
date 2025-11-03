@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Domain.Entities
+﻿namespace PortalCOSIE.Domain.Entities.Calendario
 {
     public class FechaRecepcion : BaseEntity
     {
@@ -6,7 +6,7 @@
         public DateTime Fecha { get; private set; }
 
         // Navegación EF CORE
-        public virtual SesionCOSIE Sesion { get; private set; }
+        public SesionCOSIE Sesion { get; private set; }
 
         protected FechaRecepcion() { }
 

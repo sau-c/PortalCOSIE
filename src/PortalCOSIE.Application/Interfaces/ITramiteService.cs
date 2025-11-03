@@ -1,4 +1,4 @@
-﻿using PortalCOSIE.Domain.Entities;
+﻿using PortalCOSIE.Domain.Entities.Tramites;
 
 namespace PortalCOSIE.Application.Interfaces
 {

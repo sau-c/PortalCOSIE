@@ -2,14 +2,18 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PortalCOSIE.Domain.Entities;
+using PortalCOSIE.Domain.Entities.Usuarios;
+using PortalCOSIE.Domain.Entities.Carreras;
+using PortalCOSIE.Domain.Entities.Tramites;
+using PortalCOSIE.Domain.Entities.Calendario;
 using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Application;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Services;
 using PortalCOSIE.Infrastructure.Data;
 using PortalCOSIE.Infrastructure.Data.Email;
 using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.Repositories;
-using PortalCOSIE.Application.Services;
 
 namespace PortalCOSIE.Infrastructure.IoC
 {
@@ -24,11 +28,12 @@ namespace PortalCOSIE.Infrastructure.IoC
                     b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
 
+            //Servicios Infraestructura
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
 
-            //Servicios
+            //Servicios Aplicacion
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<ITramiteService, TramiteService>();
             services.AddScoped<ICatalogoService, CatalogoService>();
@@ -36,17 +41,17 @@ namespace PortalCOSIE.Infrastructure.IoC
 
             //Repositorios
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IGenericRepo<Usuario>, GenericRepo<Usuario>>();
-            services.AddScoped<IGenericRepo<Alumno>, GenericRepo<Alumno>>();
-            services.AddScoped<IGenericRepo<Carrera>, GenericRepo<Carrera>>();
-            services.AddScoped<IGenericRepo<Tramite>, GenericRepo<Tramite>>();
-            services.AddScoped<IGenericRepo<EstadoTramite>, GenericRepo<EstadoTramite>>();
-            services.AddScoped<IGenericRepo<TipoTramite>, GenericRepo<TipoTramite>>();
-            services.AddScoped<IGenericRepo<Documento>, GenericRepo<Documento>>();
-            services.AddScoped<IGenericRepo<EstadoDocumento>, GenericRepo<EstadoDocumento>>();
-            services.AddScoped<IGenericRepo<UnidadAprendizaje>, GenericRepo<UnidadAprendizaje>>();
-            services.AddScoped<IGenericRepo<SesionCOSIE>, GenericRepo<SesionCOSIE>>();
-            services.AddScoped<IGenericRepo<PeriodoConfig>, GenericRepo<PeriodoConfig>>();
+            services.AddScoped<IBaseRepository<Usuario>, BaseRepository<Usuario>>();
+            services.AddScoped<IBaseRepository<Alumno>, BaseRepository<Alumno>>();
+            services.AddScoped<IBaseRepository<Carrera>, BaseRepository<Carrera>>();
+            services.AddScoped<IBaseRepository<Tramite>, BaseRepository<Tramite>>();
+            services.AddScoped<IBaseRepository<EstadoTramite>, BaseRepository<EstadoTramite>>();
+            services.AddScoped<IBaseRepository<TipoTramite>, BaseRepository<TipoTramite>>();
+            services.AddScoped<IBaseRepository<Documento>, BaseRepository<Documento>>();
+            services.AddScoped<IBaseRepository<EstadoDocumento>, BaseRepository<EstadoDocumento>>();
+            services.AddScoped<IBaseRepository<UnidadAprendizaje>, BaseRepository<UnidadAprendizaje>>();
+            services.AddScoped<IBaseRepository<SesionCOSIE>, BaseRepository<SesionCOSIE>>();
+            services.AddScoped<IBaseRepository<PeriodoConfig>, BaseRepository<PeriodoConfig>>();
 
             return services;
         }

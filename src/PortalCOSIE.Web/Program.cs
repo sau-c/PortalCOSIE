@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using PortalCOSIE.Application.Interfaces.Common;
 using PortalCOSIE.Infrastructure.Data;
 using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.IoC;

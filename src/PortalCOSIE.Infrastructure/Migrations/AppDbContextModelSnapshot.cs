@@ -642,7 +642,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Tramite", b =>
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Tramites", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2268,7 +2268,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PortalCOSIE.Domain.Entities.Tramite", "Tramite")
+                    b.HasOne("PortalCOSIE.Domain.Entities.Tramites", "Tramite")
                         .WithMany("Documentos")
                         .HasForeignKey("TramiteId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2301,7 +2301,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Tramite", b =>
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Tramites", b =>
                 {
                     b.HasOne("PortalCOSIE.Domain.Entities.Alumno", "Alumno")
                         .WithMany()
@@ -2366,7 +2366,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Navigation("FechasRecepcion");
                 });
 
-            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Tramite", b =>
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Tramites", b =>
                 {
                     b.Navigation("Documentos");
                 });

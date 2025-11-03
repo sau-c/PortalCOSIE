@@ -27,15 +27,15 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Alumno")]
-        public async Task<IActionResult> SolicitarCTE(string carrera)
+        public async Task<IActionResult> SolicitarCTCE()
         {
-            ViewBag.Unidades = new SelectList(await _carreraService.ListarUnidadesAsync(carrera), "Id", "Nombre");
+            ViewBag.Unidades = new SelectList(await _carreraService.ListarUnidadesAsync("Mecatronica"), "Id", "Nombre");
             return View();
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Alumno")]
-        public IActionResult SolicitarCTE(int id, string ContenidoSolicitud)
+        public IActionResult SolicitarCTCE(int id, string ContenidoSolicitud)
         {
             return View();
         }

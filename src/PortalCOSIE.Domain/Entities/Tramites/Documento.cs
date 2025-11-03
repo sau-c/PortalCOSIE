@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PortalCOSIE.Domain.Entities
+﻿namespace PortalCOSIE.Domain.Entities.Tramites
 {
     public class Documento : BaseEntity
     {

@@ -1,4 +1,4 @@
-﻿using PortalCOSIE.Domain.Entities;
+﻿using PortalCOSIE.Domain.Entities.Carreras;
 using System.ComponentModel.DataAnnotations;
 
 namespace PortalCOSIE.Application.DTO.Tramite

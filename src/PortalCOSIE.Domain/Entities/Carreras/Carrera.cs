@@ -1,6 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using PortalCOSIE.Domain.Enums;
+using System.Text.RegularExpressions;
 
-namespace PortalCOSIE.Domain.Entities
+namespace PortalCOSIE.Domain.Entities.Carreras
 {
     public class Carrera : BaseEntity
     {
@@ -31,15 +32,19 @@ namespace PortalCOSIE.Domain.Entities
             Nombre = nombre;
         }
 
-        public void AgregarUnidadAprendizaje(UnidadAprendizaje unidad)
+        public void AgregarUnidad(string nombre, Semestre semestre)
         {
-            if (unidad == null)
-                throw new DomainException("La unidad de aprendizaje no puede ser nula");
+            if (_unidadesAprendizaje.Any(u => u.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase)))
+                throw new DomainException($"Ya existe una unidad con el nombre '{nombre}'.");
+
+            var unidad = new UnidadAprendizaje(nombre, Id, semestre);
             _unidadesAprendizaje.Add(unidad);
         }
 
-        public void RemoverUnidadAprendizaje(UnidadAprendizaje unidad)
+        public void RemoverUnidad(int id)
         {
+            var unidad = _unidadesAprendizaje.FirstOrDefault(u => u.Id == id)
+            ?? throw new DomainException("Unidad no encontrada.");
             _unidadesAprendizaje.Remove(unidad);
         }
     }

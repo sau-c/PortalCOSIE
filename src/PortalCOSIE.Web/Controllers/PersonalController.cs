@@ -76,7 +76,7 @@ namespace PortalCOSIE.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
+                ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
                 
                 return View(dto);
             }

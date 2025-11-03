@@ -35,7 +35,7 @@
       <FileName>Entities\Personal.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="PortalCOSIE.Domain.Entities.Tramite">
+  <Class Name="PortalCOSIE.Domain.Entities.Tramites">
     <Position X="19.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAACAAAAAAAARBAAAAAAAAAEAAA=</HashCode>

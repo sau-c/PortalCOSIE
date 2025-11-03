@@ -6,30 +6,24 @@ using System.Linq.Expressions;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class GenericRepo<T> : IGenericRepo<T> where T : BaseEntity
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         private readonly AppDbContext _context;
 
-        public GenericRepo(AppDbContext context)
+        public BaseRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<T> GetByIdAsync(int id, bool includeDeleted = false)
+        public async Task<T> GetByIdAsync(int id)
         {
             var query = _context.Set<T>().AsQueryable();
-
-            if (includeDeleted)
-                query = query.IgnoreQueryFilters();
 
             return await query.FirstOrDefaultAsync(e => e.Id == id);
         }
-        public async Task<IEnumerable<T>> GetAllAsync(bool includeDeleted = false)
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             var query = _context.Set<T>().AsQueryable();
-
-            if (includeDeleted)
-                query = query.IgnoreQueryFilters();
 
             return await query.ToListAsync();
         }
@@ -49,7 +43,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
         {
             return _context.Set<T>().AsQueryable();
         }
-        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
+        public async Task<T?> GetFirstOrDefaultWhereAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
         {
             var query = _context.Set<T>().AsQueryable();
 
@@ -60,7 +54,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
 
             return await query.FirstOrDefaultAsync(filter);
         }
-        public async Task<IEnumerable<T?>> GetListAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
+        public async Task<IEnumerable<T?>> GetAllWhereAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
         {
             var query = _context.Set<T>().AsQueryable();
 

@@ -1,6 +1,6 @@
 ﻿using PortalCOSIE.Domain.Enums;
 
-namespace PortalCOSIE.Domain.Entities
+namespace PortalCOSIE.Domain.Entities.Carreras
 {
     public class UnidadAprendizaje : BaseEntity
     {
@@ -24,12 +24,13 @@ namespace PortalCOSIE.Domain.Entities
 
         public void SetNombre(string nombre)
         {
+            nombre = nombre.Trim();
             if (string.IsNullOrWhiteSpace(nombre))
                 throw new ArgumentException("El nombre de la unidad de aprendizaje no puede estar vacío.", nameof(nombre));
-            Nombre = nombre.Trim();
+            Nombre = nombre;
         }
 
-        public void SetCarreraId(int carreraId)
+        private void SetCarreraId(int carreraId)
         {
             if (carreraId <= 0)
                 throw new ArgumentException("El ID de la carrera debe ser válido.", nameof(carreraId));

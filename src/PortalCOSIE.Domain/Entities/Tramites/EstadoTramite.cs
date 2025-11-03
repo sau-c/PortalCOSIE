@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace PortalCOSIE.Domain.Entities
+namespace PortalCOSIE.Domain.Entities.Tramites
 {
-    public class EstadoDocumento : BaseEntity
+    public class EstadoTramite : BaseEntity
     {
         public string Nombre { get; private set; } = string.Empty;
         
@@ -10,15 +10,13 @@ namespace PortalCOSIE.Domain.Entities
         private static readonly Regex SoloLetras =
             new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\(\)]+$", RegexOptions.Compiled);
 
-        private EstadoDocumento() { }
+        private EstadoTramite() { }
 
-        public EstadoDocumento(string nombre)
-        {
-            ActualizarNombre(nombre);
+        public EstadoTramite(string nombre) {
+            ActualizarNombre(nombre);        
         }
 
-        public void ActualizarNombre(string nombre)
-        {
+        public void ActualizarNombre(string nombre) {
             nombre = nombre.Trim();
             if (string.IsNullOrWhiteSpace(nombre))
                 throw new DomainException("El nombre no puede estar vacío.");

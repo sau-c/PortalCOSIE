@@ -1,4 +1,4 @@
-﻿using PortalCOSIE.Domain.Entities;
+﻿using PortalCOSIE.Domain.Entities.Carreras;
 
 namespace PortalCOSIE.Application.DTO.Usuario
 {

@@ -1,6 +1,6 @@
 ﻿@model PortalCOSIE.Application.DTO.Tramite.SolicitarCteDTO
 @{
-    ViewData["Title"] = "Dictamen interno (CTE)";
+    ViewData["Title"] = "Dictamen interno (CTCE)";
     var periodos = new[] { "2026/1", "2025/2", "2025/1", "2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2" };
 }
 
@@ -13,7 +13,7 @@
     </div>
 
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
-        <form asp-action="SolicitarCTE" asp-controller="Tramite" enctype="multipart/form-data" method="post">
+        <form asp-action="SolicitarCTCE" asp-controller="Tramite" enctype="multipart/form-data" method="post">
 
             <!-- === DATOS GENERALES === -->
             <fieldset class="border rounded p-3 mb-3">

@@ -1,4 +1,6 @@
-﻿namespace PortalCOSIE.Domain.Entities
+﻿using PortalCOSIE.Domain.Entities.Usuarios;
+
+namespace PortalCOSIE.Domain.Entities.Tramites
 {
     public class Tramite : BaseEntity
     {
@@ -6,6 +8,7 @@
         public int AlumnoId { get; private set; }
         public int PersonalId { get; private set; }
         public int TipoId { get; private set; }
+
         public DateTime FechaSolicitud { get; private set; }
         public DateTime? FechaConclusion { get; private set; }
 

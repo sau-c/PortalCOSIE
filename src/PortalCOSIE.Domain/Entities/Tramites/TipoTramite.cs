@@ -1,23 +1,25 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace PortalCOSIE.Domain.Entities
+namespace PortalCOSIE.Domain.Entities.Tramites
 {
-    public class EstadoTramite : BaseEntity
+    public class TipoTramite : BaseEntity
     {
         public string Nombre { get; private set; } = string.Empty;
-        
+
         private const int LongitudMaxima = 100;
         private static readonly Regex SoloLetras =
             new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\(\)]+$", RegexOptions.Compiled);
 
-        private EstadoTramite() { }
+        private TipoTramite() { }
 
-        public EstadoTramite(string nombre) {
-            ActualizarNombre(nombre);        
+        public TipoTramite(string nombre)
+        {
+            ActualizarNombre(nombre);
         }
 
-        public void ActualizarNombre(string nombre) {
-            nombre = nombre.Trim();
+        public void ActualizarNombre(string nombre)
+        {
+            nombre = nombre?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(nombre))
                 throw new DomainException("El nombre no puede estar vacío.");
             if (!SoloLetras.IsMatch(nombre))

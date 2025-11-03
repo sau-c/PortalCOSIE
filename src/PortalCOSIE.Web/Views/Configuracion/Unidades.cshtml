@@ -1,138 +1,94 @@
-﻿@model PortalCOSIE.Domain.Entities.Carrera
+﻿@model PortalCOSIE.Domain.Entities.Carreras.Carrera
 @using PortalCOSIE.Domain.Enums
+
 @{
-    ViewData["Title"] = "Unidades de aprendizaje de " + @Model.Nombre;
-    var semestres = Enum.GetValues(typeof(Semestre)).Cast<Semestre>();
+    ViewData["Title"] = "Unidades de aprendizaje de " + Model.Nombre;
 }
 
 <div class="card shadow">
-    <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 py-1">@ViewData["Title"]</h6>
-            <div>
-                <a href="@Url.Action("Index", "Configuracion")" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-2"></i>Volver
-                </a>
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createModal">
-                    <i class="fas fa-plus me-2"></i>Crear
-                </button>
-            </div>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 py-1">@ViewData["Title"]</h6>
+        <div>
+            <a asp-action="Index" asp-controller="Configuracion" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#unidadModal"
+                    data-mode="create" data-carrera-id="@Model.Id">
+                <i class="fas fa-plus me-2"></i>Crear
+            </button>
         </div>
     </div>
+
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
-        <div class="table-responsive">
-            <table id="tblUnidades" class="table table-hover table-bordered">
-                <thead class="table-secondary">
+        <table id="tblUnidades" class="table table-hover table-bordered align-middle">
+            <thead class="table-secondary small">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Semestre</th>
+                    <th style="width:95px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var unidad in Model.UnidadesAprendizaje)
+                {
                     <tr class="small">
-                        <th>Id</th>
-                        <th>Nombre</th>
-                        <th>Semestre</th>
-                        <th>Acción</th>
+                        <td>@unidad.Id</td>
+                        <td>@unidad.Nombre</td>
+                        <td>@unidad.Semestre</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-primary"
+                                    title="Editar"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#unidadModal"
+                                    data-mode="edit"
+                                    data-unidad-id="@unidad.Id"
+                                    data-unidad-name="@unidad.Nombre"
+                                    data-unidad-semestre="@((int)unidad.Semestre)"
+                                    data-carrera-id="@Model.Id">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger"
+                                    title="Desactivar"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#desactivarModal"
+                                    data-unidad-id="@unidad.Id"
+                                    data-unidad-name="@unidad.Nombre"
+                                    data-unidad-semestre="@unidad.Semestre">
+                                <i class="fas fa-eye-slash"></i>
+                            </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var unidad in Model.UnidadesAprendizaje)
-                    {
-                        <tr class="small">
-                            <td>@unidad.Id</td>
-                            <td>@unidad.Nombre</td>
-                            <td>@unidad.Semestre</td>
-                            <td>
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-primary"
-                                        title="Editar"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editModal"
-                                        data-unidad-id="@unidad.Id"
-                                        data-unidad-name="@unidad.Nombre"
-                                        data-unidad-semestre="@((int)unidad.Semestre)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-danger"
-                                        title="Desactivar"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#desactivarModal"
-                                        data-unidad-id="@unidad.Id"
-                                        data-unidad-name="@unidad.Nombre"
-                                        data-unidad-semestre="@unidad.Semestre">
-                                    <i class="fas fa-eye-slash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Modal para crear unidad -->
-<div class="modal fade" id="createModal" tabindex="-1">
+<!-- Modal Reutilizable Crear/Editar -->
+<div class="modal fade" id="unidadModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="createForm" asp-action="CrearUnidad" method="post">
+            <form id="unidadForm" method="post">
                 @Html.AntiForgeryToken()
-                <input type="hidden" name="carreraId" value="@Model.Id" />
+                <input type="hidden" id="unidadId" name="id" />
+                <input type="hidden" id="unidadCarreraId" name="carreraId" />
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Crear Nueva Unidad</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" ></button>
+                    <h5 class="modal-title" id="unidadModalTitle"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="unidadNombre" class="form-label fw-bold">Nombre de la Unidad</label>
-                        <input type="text" class="form-control" id="unidadNombre" name="nombre" required
-                               placeholder="Ingrese el nombre de la unidad" maxlength="100">
+                        <label class="form-label fw-bold">Nombre de la unidad</label>
+                        <input type="text" class="form-control" id="unidadNombre" name="nombre"
+                               placeholder="Ingrese el nombre de la unidad"
+                               maxlength="100" required />
                     </div>
                     <div class="mb-3">
-                        <label for="unidadSemestre" class="form-label fw-bold">Semestre</label>
-                        <select class="form-select" id="unidadSemestre" name="semestre" required>
+                        <label class="form-label fw-bold">Semestre</label>
+                        <select class="form-select" id="unidadSemestre" name="semestre"
+                                asp-items="Html.GetEnumSelectList<Semestre>()" required>
                             <option value="">Seleccione un semestre</option>
-                            @foreach (var semestre in semestres)
-                            {
-                                <option value="@((int)semestre)">@semestre</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Guardar Unidad
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para editar unidad -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form id="editForm" asp-action="EditarUnidad" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" id="editUnidadId" name="id" />
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Editar unidad de aprendizaje</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" ></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="editUnidadNombre" class="form-label fw-bold">Nombre de la unidad</label>
-                        <input type="text" class="form-control" id="editUnidadNombre" name="nombre" required
-                               placeholder="Ingrese el nombre de la unidad" maxlength="100">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUnidadSemestre" class="form-label fw-bold">Semestre</label>
-                        <select class="form-select" id="editUnidadSemestre" name="semestre" required>
-                            <option value="">Seleccione un semestre</option>
-                            @foreach (var semestre in semestres)
-                            {
-                                <option value="@((int)semestre)">@semestre</option>
-                            }
                         </select>
                     </div>
                 </div>
@@ -149,43 +105,34 @@
     </div>
 </div>
 
-<!-- Modal de eliminación -->
+<!-- Modal Eliminar -->
 <div class="modal fade" id="desactivarModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="deleteForm" asp-action="EliminarUnidad" method="post">
+            <form id="deleteForm" asp-action="ToggleUnidad" method="post">
                 @Html.AntiForgeryToken()
+                <input type="hidden" id="modalUnidadIdInput" name="id" />
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Desactivar</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" ></button>
+                    <h5 class="modal-title">Desactivar unidad</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning mb-3">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        Esta acción no se puede deshacer. La unidad y todos sus datos asociados serán eliminados permanentemente.
+                        La unidad será desactivada.
                     </div>
-                    <div class="mb-3">
-                        <p>¿Está seguro de eliminar la siguiente unidad de aprendizaje?</p>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <strong>Nombre:</strong> <span id="modalUnidadName"></span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong>Semestre:</strong> <span id="modalUnidadSemestre"></span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong>Carrera:</strong> @Model.Nombre
-                            </li>
-                        </ul>
-                    </div>
-                    <input type="hidden" id="modalUnidadIdInput" name="id" />
+                    <ul class="list-group small">
+                        <li class="list-group-item"><strong>Nombre:</strong> <span id="modalUnidadName"></span></li>
+                        <li class="list-group-item"><strong>Semestre:</strong> <span id="modalUnidadSemestre"></span></li>
+                        <li class="list-group-item"><strong>Carrera:</strong> @Model.Nombre</li>
+                    </ul>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-eye-slash me-2"></i>Eliminar Unidad
+                        <i class="fas fa-eye-slash me-2"></i>Desactivar
                     </button>
                 </div>
             </form>
@@ -195,102 +142,51 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            // Configuración de DataTable
+        $(function () {
+            // ✅ Configuración de DataTable
             $('#tblUnidades').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
-                },
+                language: { url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json' },
                 paging: false,
                 scrollCollapse: true,
                 scrollY: '50vh',
-                columnDefs:
-                [
-                    {
-                        targets: 0,
-                        width: "1%"
-                    },
-                    {
-                        targets: 3,
-                        width: "95px",
-                        orderable: false
-                    }
+                columnDefs: [
+                    { targets: 0, width: "1%" },
+                    { targets: 3, width: "95px", orderable: false }
                 ]
             });
 
-            // Manejo del modal de edición de unidad
-            $('#editModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var unidadId = button.data('unidad-id');
-                var unidadName = button.data('unidad-name');
-                var unidadSemestre = button.data('unidad-semestre');
+            // ✅ Modal Crear/Editar
+            const unidadModal = document.getElementById('unidadModal');
+            unidadModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const mode = button.getAttribute('data-mode');
+                const form = document.getElementById('unidadForm');
 
-                var modal = $(this);
-                modal.find('#editUnidadId').val(unidadId);
-                modal.find('#editUnidadNombre').val(unidadName);
-                modal.find('#editUnidadSemestre').val(unidadSemestre);
+                // Resetea el formulario
+                form.reset();
+
+                if (mode === 'create') {
+                    $('#unidadModalTitle').text('Crear nueva unidad de aprendizaje');
+                    form.action = '@Url.Action("Unidades", "Configuracion")';
+                    $('#unidadId').val('');
+                    $('#unidadCarreraId').val(button.getAttribute('data-carrera-id'));
+                } else {
+                    $('#unidadModalTitle').text('Editar unidad de aprendizaje');
+                    form.action = '@Url.Action("EditarUnidad", "Configuracion")';
+                    $('#unidadId').val(button.getAttribute('data-unidad-id'));
+                    $('#unidadCarreraId').val(button.getAttribute('data-carrera-id'));
+                    $('#unidadNombre').val(button.getAttribute('data-unidad-name'));
+                    $('#unidadSemestre').val(button.getAttribute('data-unidad-semestre'));
+                }
             });
 
-            // Manejo del modal de eliminación
-            $('#deleteModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var unidadId = button.data('unidad-id');
-                var unidadName = button.data('unidad-name');
-                var unidadSemestre = button.data('unidad-semestre');
-
-                var modal = $(this);
-                modal.find('#modalUnidadName').text(unidadName);
-                modal.find('#modalUnidadSemestre').text(unidadSemestre);
-                modal.find('#modalUnidadIdInput').val(unidadId);
-            });
-
-            // Limpiar formulario de creación cuando se cierra el modal
-            $('#createModal').on('hidden.bs.modal', function () {
-                $('#createForm')[0].reset();
-            });
-
-            // Validación del formulario de creación de unidad
-            $('#createForm').on('submit', function(e) {
-                var nombre = $('#unidadNombre').val().trim();
-                var semestre = $('#unidadSemestre').val();
-
-                if (!nombre) {
-                    e.preventDefault();
-                    alert('Por favor ingrese el nombre de la unidad');
-                    $('#unidadNombre').focus();
-                    return false;
-                }
-
-                if (!semestre) {
-                    e.preventDefault();
-                    alert('Por favor seleccione un semestre');
-                    $('#unidadSemestre').focus();
-                    return false;
-                }
-
-                return true;
-            });
-
-            // Validación del formulario de edición de unidad
-            $('#editForm').on('submit', function(e) {
-                var nombre = $('#editUnidadNombre').val().trim();
-                var semestre = $('#editUnidadSemestre').val();
-
-                if (!nombre) {
-                    e.preventDefault();
-                    alert('Por favor ingrese el nombre de la unidad');
-                    $('#editUnidadNombre').focus();
-                    return false;
-                }
-
-                if (!semestre) {
-                    e.preventDefault();
-                    alert('Por favor seleccione un semestre');
-                    $('#editUnidadSemestre').focus();
-                    return false;
-                }
-
-                return true;
+            // Modal Eliminar
+            const desactivarModal = document.getElementById('desactivarModal');
+            desactivarModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                $('#modalUnidadIdInput').val(button.getAttribute('data-unidad-id'));
+                $('#modalUnidadName').text(button.getAttribute('data-unidad-name'));
+                $('#modalUnidadSemestre').text(button.getAttribute('data-unidad-semestre'));
             });
         });
     </script>

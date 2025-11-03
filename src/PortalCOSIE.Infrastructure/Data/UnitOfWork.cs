@@ -18,14 +18,14 @@ namespace PortalCOSIE.Infrastructure.Data
             _repositories = new Dictionary<Type, object>();
         }
 
-        public IGenericRepo<T> GenericRepo<T>() where T : BaseEntity
+        public IBaseRepository<T> BaseRepo<T>() where T : BaseEntity
         {
             if (_repositories.ContainsKey(typeof(T)))
             {
-                return (IGenericRepo<T>)_repositories[typeof(T)];
+                return (IBaseRepository<T>)_repositories[typeof(T)];
             }
 
-            var repository = new GenericRepo<T>(_context);
+            var repository = new BaseRepository<T>(_context);
             _repositories.Add(typeof(T), repository);
             return repository;
         }

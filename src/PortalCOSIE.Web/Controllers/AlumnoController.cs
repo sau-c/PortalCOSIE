@@ -38,7 +38,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Editar(string id)
         {
-            ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
+            ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
             ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
             return View(await _usuarioService.BuscarAlumno(id));
         }
@@ -50,7 +50,7 @@ namespace PortalCOSIE.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
+                ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
                 ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
                 return View(dto);
             }
@@ -60,7 +60,7 @@ namespace PortalCOSIE.Web.Controllers
             {
                 foreach (var error in result.Errors)
                 {
-                    ViewBag.Carreras = new SelectList(await _carreraService.ListarCarrerasAsync(), "Id", "Nombre");
+                    ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
                     ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
                     ModelState.AddModelError(string.Empty, error);
                 }

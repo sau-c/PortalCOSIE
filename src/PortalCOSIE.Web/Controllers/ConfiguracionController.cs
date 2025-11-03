@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain;
+using PortalCOSIE.Domain.Enums;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -29,7 +30,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Carreras()
         {
-            return PartialView("_Carreras", await _carreraService.ListarTodoCarrerasAsync());
+            return PartialView("_Carreras", await _carreraService.ListarAsync());
         }
 
         [HttpPost]
@@ -47,13 +48,6 @@ namespace PortalCOSIE.Web.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return RedirectToAction(nameof(Index));
             }
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Unidades(string id)
-        {
-            return View(await _carreraService.ListarCarreraConUnidadesAsync(id));
         }
 
         [HttpPost]
@@ -74,6 +68,28 @@ namespace PortalCOSIE.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> Unidades(string id)
+        {
+            return View(await _carreraService.ListarConUnidadesAsync(id));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> Unidades(string nombre, int carreraId, Semestre semestre)
+        {
+            await _carreraService.CrearUnidadAsync(nombre, carreraId, semestre);
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> EditarUnidad(int id, string nombre, Semestre semestre)
+        {
+            await _carreraService.EditarUnidadAsync(id, nombre, semestre);
+            return RedirectToAction(nameof(Index));
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
@@ -89,7 +105,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Estados()
         {
-            return PartialView("_EstadoTramite", await _catalogoService.ListarTodoEstadoTramite());
+            return PartialView("_EstadoTramite", await _catalogoService.ListarEstadoTramite());
         }
 
         [HttpPost]
@@ -125,7 +141,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> EstadosDocumento()
         {
-            return PartialView("_EstadoDocumento", await _catalogoService.ListarTodoEstadosDocumento());
+            return PartialView("_EstadoDocumento", await _catalogoService.ListarEstadosDocumento());
         }
 
         [HttpPost]
@@ -179,7 +195,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Tipo()
         {
-            return PartialView("_TipoTramite", await _catalogoService.ListarTodoTipoTramite());
+            return PartialView("_TipoTramite", await _catalogoService.ListarTipoTramite());
         }
 
         [HttpPost]

@@ -1,6 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using PortalCOSIE.Domain.Entities.Carreras;
+using System.Text.RegularExpressions;
 
-namespace PortalCOSIE.Domain.Entities
+namespace PortalCOSIE.Domain.Entities.Usuarios
 {
     public class Alumno : BaseEntity
     {

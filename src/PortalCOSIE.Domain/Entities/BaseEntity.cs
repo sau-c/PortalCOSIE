@@ -1,12 +1,24 @@
-﻿using System.Security.Cryptography;
-
-namespace PortalCOSIE.Domain.Entities
+﻿namespace PortalCOSIE.Domain.Entities
 {
+    /// <summary>
+    /// Clase base abstracta para todas las entidades del dominio.
+    /// Define un identificador genérico y soporte para eliminación lógica (soft delete).
+    /// </summary>
     public abstract class BaseEntity
     {
-        public int Id { get; private set; }
+        /// <summary>
+        /// Identificador único de la entidad.
+        /// </summary>
+        public int Id { get; protected set; }
+
+        /// <summary>
+        /// Indica si la entidad está marcada como eliminada lógicamente.
+        /// </summary>
         public bool IsDeleted { get; private set; }
 
+        /// <summary>
+        /// Marca la entidad como eliminada lógicamente.
+        /// </summary>
         public void SoftDelete()
         {
             if (IsDeleted)
@@ -14,6 +26,9 @@ namespace PortalCOSIE.Domain.Entities
             IsDeleted = true;
         }
 
+        /// <summary>
+        /// Restaura una entidad eliminada lógicamente.
+        /// </summary>
         public void Restore()
         {
             if (!IsDeleted)
