@@ -1,28 +1,28 @@
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain.Entities;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
-
 
 namespace PortalCOSIE.Application
 {
     public class UsuarioService : IUsuarioService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBaseRepository<Usuario> _usuarioRepository;
+        private readonly IUsuarioRepository _usuarioRepo;
 
-        public UsuarioService(IUnitOfWork unitOfWork, IBaseRepository<Usuario> usuarioRepository)
+        public UsuarioService(
+            IUnitOfWork unitOfWork,
+            IUsuarioRepository usuarioRepo
+            )
         {
             _unitOfWork = unitOfWork;
-            _usuarioRepository = usuarioRepository;
+            _usuarioRepo = usuarioRepo;
         }
 
-        public Usuario? BuscarUsuarioPorIdentityId(string id)
+        public async Task<Usuario> BuscarUsuarioPorIdentityId(string id)
         {
-            return _usuarioRepository.Query().Where(u => u.IdentityUserId == id).FirstOrDefault();
-            //return _usuarioRepository.GetByIdAsync(id);
+            return await _usuarioRepo.BuscarPorIdentityId(id);
         }
 
         public async Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId)
@@ -31,11 +31,7 @@ namespace PortalCOSIE.Application
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var alumnoPorBoleta = _unitOfWork.BaseRepo<Usuario>().Query().Where(
-                u => u.Alumno.NumeroBoleta == dto.NumeroBoleta
-                ).FirstOrDefault();
-
-                if (alumnoPorBoleta != null)
+                if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
                 {
                     return Result<string>.Failure("El número de boleta ya existe");
                 }
@@ -54,7 +50,7 @@ namespace PortalCOSIE.Application
                     );
 
                 usuario.SetAlumno(alumno);
-                await _unitOfWork.BaseRepo<Usuario>().AddAsync(usuario);
+                await _usuarioRepo.AddAsync(usuario);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
                 return Result<string>.Success(alumno.NumeroBoleta);
@@ -66,20 +62,16 @@ namespace PortalCOSIE.Application
             }
         }
 
-        public async Task<AlumnoDTO?> BuscarAlumno(string id)
+        public async Task<AlumnoDTO?> BuscarAlumno(string identityUserId)
         {
-            var usuario = await _usuarioRepository.GetFirstOrDefaultWhereAsync(
-                u => u.IdentityUserId == id,
-                u => u.Alumno,
-                u => u.Alumno.Carrera
-                );
+            var usuario = await _usuarioRepo.BuscarConAlumnoYCarrera(identityUserId);
 
             if (usuario == null)
                 return null;
 
             return new AlumnoDTO
             {
-                IdentityUserId = id,
+                IdentityUserId = identityUserId,
                 Nombre = usuario.Nombre,
                 ApellidoPaterno = usuario.ApellidoPaterno,
                 ApellidoMaterno = usuario.ApellidoMaterno,
@@ -93,24 +85,14 @@ namespace PortalCOSIE.Application
         public async Task<Result<string>> EditarAlumno(AlumnoDTO dto)
         {
             await _unitOfWork.BeginTransactionAsync();
-            var alumnoPorBoleta = _usuarioRepository.Query().Where(
-                u => u.Alumno.NumeroBoleta == dto.NumeroBoleta
-                && u.IdentityUserId != dto.IdentityUserId
-                ).FirstOrDefault();
+            var alumnoPorBoleta = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
 
-            if (alumnoPorBoleta != null)
+            if (alumnoPorBoleta != null && (alumnoPorBoleta.IdentityUserId != dto.IdentityUserId))
             {
                 return Result<string>.Failure("El número de boleta ya existe");
             }
 
-            if (string.IsNullOrEmpty(dto.IdentityUserId))
-                return Result<string>.Failure("Se requiere el IdentityUserId");
-
-            var usuario = await _unitOfWork.BaseRepo<Usuario>()
-                .GetFirstOrDefaultWhereAsync(
-                    u => u.IdentityUserId == dto.IdentityUserId,
-                    u => u.Alumno);
-
+            var usuario = await _usuarioRepo.BuscarConAlumno(dto.IdentityUserId);
             if (usuario == null)
                 return Result<string>.Failure("Usuario no encontrado");
 
@@ -137,9 +119,7 @@ namespace PortalCOSIE.Application
 
         public async Task<PersonalDTO?> BuscarPersonal(string id)
         {
-            var personal = await _usuarioRepository.GetFirstOrDefaultWhereAsync(
-                u => u.IdentityUserId == id
-                );
+            var personal = await _usuarioRepo.BuscarPorIdentityId(id);
 
             if (personal == null)
                 return null;

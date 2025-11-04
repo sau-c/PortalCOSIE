@@ -10,37 +10,39 @@ namespace PortalCOSIE.Application
     {
         private readonly IBaseRepository<EstadoTramite> _estadoTramiteRepo;
         private readonly IBaseRepository<TipoTramite> _tipoTramiteRepo;
+        private readonly IBaseRepository<PeriodoConfig> _periodoRepo;
         private readonly IBaseRepository<EstadoDocumento> _estadoDocumentoRepo;
-        private readonly IBaseRepository<SesionCOSIE> _sesionRepo;
+        private readonly ISesionRepository _sesionRepo;
         private readonly IUnitOfWork _unitOfWork;
 
         public CatalogoService(
             IBaseRepository<EstadoTramite> estadoTramiteRepo,
             IBaseRepository<TipoTramite> tipoTramiteRepo,
             IBaseRepository<EstadoDocumento> estadoDocumentoRepo,
-            IBaseRepository<SesionCOSIE> sesionRepo,
+            ISesionRepository sesionRepo,
+            IBaseRepository<PeriodoConfig> periodoRepo,
             IUnitOfWork unitOfWork)
         {
             _estadoTramiteRepo = estadoTramiteRepo;
             _tipoTramiteRepo = tipoTramiteRepo;
             _estadoDocumentoRepo = estadoDocumentoRepo;
             _sesionRepo = sesionRepo;
+            _periodoRepo = periodoRepo;
             _unitOfWork = unitOfWork;
         }
 
         #region ESTADO_TRAMITE
         public async Task<IEnumerable<EstadoTramite>> ListarEstadosTramiteActivos()
         {
-            return await _estadoTramiteRepo.GetAllWhereAsync(c => c.IsDeleted == false);
+            return await _estadoTramiteRepo.GetAllAsync(true);
         }
         public async Task<IEnumerable<EstadoTramite>> ListarEstadoTramite()
         {
-            return await _estadoTramiteRepo.GetAllAsync();
+            return await _estadoTramiteRepo.GetAllAsync(false);
         }
         public async Task CrearEstadoTramite(string nombre)
         {
-            await _unitOfWork.BaseRepo<EstadoTramite>()
-                .AddAsync(new EstadoTramite(nombre));
+            await _estadoTramiteRepo.AddAsync(new EstadoTramite(nombre));
             await _unitOfWork.SaveChangesAsync();
         }
         public async Task EditarEstadoTramite(int id, string nombre)
@@ -63,16 +65,15 @@ namespace PortalCOSIE.Application
         #region ESTADO_DOCUMENTO
         public async Task<IEnumerable<EstadoDocumento>> ListarEstadosDocumentoActivos()
         {
-            return await _estadoDocumentoRepo.GetAllWhereAsync(c => c.IsDeleted == false);
+            return await _estadoDocumentoRepo.GetAllAsync(true);
         }
         public async Task<IEnumerable<EstadoDocumento>> ListarEstadosDocumento()
         {
-            return await _estadoDocumentoRepo.GetAllAsync();
+            return await _estadoDocumentoRepo.GetAllAsync(false);
         }
         public async Task CrearEstadoDocumento(string nombre)
         {
-            await _unitOfWork.BaseRepo<EstadoDocumento>()
-                .AddAsync(new EstadoDocumento(nombre));
+            await _estadoDocumentoRepo.AddAsync(new EstadoDocumento(nombre));
             await _unitOfWork.SaveChangesAsync();
         }
         public async Task EditarEstadoDocumento(int id, string nombre)
@@ -96,23 +97,21 @@ namespace PortalCOSIE.Application
         #region TIPO_TRAMITE
         public async Task<IEnumerable<TipoTramite>> ListarTipoTramiteActivos()
         {
-            return await _tipoTramiteRepo.GetAllWhereAsync(c => c.IsDeleted == false);
+            return await _tipoTramiteRepo.GetAllAsync(true);
         }
         public async Task<IEnumerable<TipoTramite>> ListarTipoTramite()
         {
-            return await _tipoTramiteRepo.GetAllAsync();
+            return await _tipoTramiteRepo.GetAllAsync(false);
         }
         public async Task CrearTipoTramite(string nombre)
         {
-            await _unitOfWork.BaseRepo<TipoTramite>()
-                .AddAsync(new TipoTramite(nombre));
+            await _tipoTramiteRepo.AddAsync(new TipoTramite(nombre));
             await _unitOfWork.SaveChangesAsync();
         }
         public async Task EditarTipoTramite(int id, string nombre)
         {
             var tipoTramite = await _tipoTramiteRepo.GetByIdAsync(id);
             tipoTramite.ActualizarNombre(nombre);
-
             await _unitOfWork.SaveChangesAsync();
         }
         public async Task ToggleTipoTramite(int id)
@@ -127,20 +126,20 @@ namespace PortalCOSIE.Application
         #endregion
 
         #region PERIODO_CONFIG
-        public async Task<PeriodoConfig> ListarPeriodoConfig()
+        public async Task<PeriodoConfig> BuscarPeriodoConfig()
         {
-            if (await _unitOfWork.BaseRepo<PeriodoConfig>().GetFirstOrDefaultWhereAsync(x => x.Id == 1) == null)
+            if (await _periodoRepo.GetByIdAsync(1) == null)
             {
                 var nuevo = new PeriodoConfig(2010, 1, DateTime.Now.Year + 1, 1);
-                await _unitOfWork.BaseRepo<PeriodoConfig>().AddAsync(nuevo);
+                await _periodoRepo.AddAsync(nuevo);
                 await _unitOfWork.SaveChangesAsync();
                 return nuevo;
             }
-            return await _unitOfWork.BaseRepo<PeriodoConfig>().GetByIdAsync(1);
+            return await _periodoRepo.GetByIdAsync(1);
         }
         public async Task<IEnumerable<string>> ListarPeriodos()
         {
-            var periodoConfig = await _unitOfWork.BaseRepo<PeriodoConfig>().GetByIdAsync(1);
+            var periodoConfig = await _periodoRepo.GetByIdAsync(1);
 
             if (periodoConfig == null)
                 throw new Exception("No existe configuración de periodos.");
@@ -164,7 +163,7 @@ namespace PortalCOSIE.Application
         }
         public async Task EditarPeriodoConfig(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
         {
-            var periodo = await _unitOfWork.BaseRepo<PeriodoConfig>().GetByIdAsync(1);
+            var periodo = await _periodoRepo.GetByIdAsync(1);
             if (periodo == null)
                 throw new Exception("Configuracion de periodo no encontrada");
             periodo.SetAnioInicio(anioInicio);
@@ -178,21 +177,12 @@ namespace PortalCOSIE.Application
         #region SESION_COSIE
         public async Task<IEnumerable<SesionCOSIE>> ListarSesiones()
         {
-            var sesiones = await _sesionRepo.GetAllWhereAsync(
-                s => true,
-                s => s.FechasRecepcion
-            );
-            return sesiones;
+            return await _sesionRepo.ListarSesiones(false);
         }
         public async Task<IEnumerable<SesionCOSIE>> ListarSesionesActivas()
         {
-            var sesiones = await _sesionRepo.GetAllWhereAsync(
-                s=> s.IsDeleted == false,
-                s => s.FechasRecepcion
-            );
-            return sesiones;
+            return await _sesionRepo.ListarSesiones(true);
         }
-
         public async Task CrearSesion(string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
         {
             var sesion = new SesionCOSIE(
@@ -200,15 +190,13 @@ namespace PortalCOSIE.Application
                 fechaSesion
                 );
             sesion.SetFechasRecepcion(fechasRecepcion);
-            await _unitOfWork.BaseRepo<SesionCOSIE>().AddAsync(sesion);
+            await _sesionRepo.AddAsync(sesion);
             await _unitOfWork.SaveChangesAsync();
         }
         public async Task EditarSesion(int id, string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
         {
-            var sesion = await _sesionRepo.GetFirstOrDefaultWhereAsync(
-                s =>s.Id == id,
-                s => s.FechasRecepcion
-                );
+            var sesion = await _sesionRepo.ObtenerConFechasRecepcion(id);
+
             if (sesion == null)
                 throw new Exception("No se encontro el registro");
             sesion.SetNumeroSesion(numeroSesion);
@@ -216,7 +204,6 @@ namespace PortalCOSIE.Application
             sesion.SetFechasRecepcion(fechasRecepcion);
             await _unitOfWork.SaveChangesAsync();
         }
-
         public async Task ToggleSesion(int id)
         {
             var sesion = await _sesionRepo.GetByIdAsync(id);
@@ -227,6 +214,5 @@ namespace PortalCOSIE.Application
             await _unitOfWork.SaveChangesAsync();
         }
         #endregion
-
     }
 }

@@ -19,7 +19,7 @@ namespace PortalCOSIE.Application
 
         public async Task<IEnumerable<Tramite>> ListarTodos()
         {
-            return await _tramiteRepository.GetAllAsync();
+            return await _tramiteRepository.GetAllAsync(false);
         }
         public async Task<Tramite?> BuscarPorId(int id)
         {

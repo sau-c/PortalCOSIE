@@ -31,7 +31,7 @@ namespace PortalCOSIE.Application.Interfaces
         #endregion
 
         #region PERIODO_CONFIG
-        Task<PeriodoConfig> ListarPeriodoConfig();
+        Task<PeriodoConfig> BuscarPeriodoConfig();
         Task<IEnumerable<string>> ListarPeriodos();
         Task EditarPeriodoConfig(int anioInicio, int periodoInicio, int anioFin, int periodoFin);
         #endregion

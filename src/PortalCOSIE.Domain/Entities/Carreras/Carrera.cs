@@ -41,11 +41,11 @@ namespace PortalCOSIE.Domain.Entities.Carreras
             _unidadesAprendizaje.Add(unidad);
         }
 
-        public void RemoverUnidad(int id)
-        {
-            var unidad = _unidadesAprendizaje.FirstOrDefault(u => u.Id == id)
-            ?? throw new DomainException("Unidad no encontrada.");
-            _unidadesAprendizaje.Remove(unidad);
-        }
+        //public void RemoverUnidad(int id)
+        //{
+        //    var unidad = _unidadesAprendizaje.FirstOrDefault(u => u.Id == id)
+        //    ?? throw new DomainException("Unidad no encontrada.");
+        //    _unidadesAprendizaje.Remove(unidad);
+        //}
     }
 }

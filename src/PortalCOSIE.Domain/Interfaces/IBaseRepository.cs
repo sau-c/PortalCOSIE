@@ -1,25 +1,18 @@
 ﻿using PortalCOSIE.Domain.Entities;
-using System.Linq.Expressions;
-
 namespace PortalCOSIE.Domain.Interfaces
 {
     /// <summary>
-    /// Define un repositorio generico para manejar entidades del tipo <typeparamref name="T"/>.
+    /// Define un repositorio generico para manejar entidades del tipo <typeparamref name="TEntity"/>.
     /// </summary>
-    /// <remarks>Esta interfaz proporciona operaciones CRUD comunes para trabajar con entidades, incluyendo
-    /// recuperación, adición, actualización y eliminación. Está diseñada para abstraer el mecanismo subyacente de acceso a datos,
+    /// <remarks>Esta interfaz proporciona operaciones comunes para trabajar con entidades
+    /// Está diseñada para abstraer el mecanismo subyacente de acceso a datos,
     /// permitiendo una implementación flexible.</remarks>
-    /// <typeparam name="T">El tipo de entidad gestionada por el repositorio. Debe ser un tipo de referencia.</typeparam>
-    public interface IBaseRepository<T> where T : BaseEntity
+    /// <typeparam name="TEntity">El tipo de entidad gestionada por el repositorio. Debe ser un tipo de referencia.</typeparam>
+    public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     {
-        Task<T> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T> AddAsync(T entity);
-        T Delete(T entity);
-
-        // Para eager loading
-        IQueryable<T> Query();
-        Task<T?> GetFirstOrDefaultWhereAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes);
-        Task<IEnumerable<T?>> GetAllWhereAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes);
+        Task<TEntity> GetByIdAsync(int id);
+        Task<IEnumerable<TEntity>> GetAllAsync(bool filtrarActivos);
+        Task<TEntity> AddAsync(TEntity entity);
+        TEntity Delete(TEntity entity);
     }
 }

@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain.Entities.Usuarios;
-using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Infrastructure.Data.Email;
 using System.Data;
@@ -16,16 +13,16 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
     public class SecurityService : ISecurityService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IBaseRepository<Usuario> _usuarioRepository;
+        private readonly IUsuarioRepository _usuarioRepo;
         private readonly IEmailSender _emailSender;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
-            IBaseRepository<Usuario> usuarioRepository,
+            IUsuarioRepository usuarioRepo,
             IEmailSender emailSender)
         {
             _userManager = userManager;
-            _usuarioRepository = usuarioRepository;
+            _usuarioRepo = usuarioRepo;
             _emailSender = emailSender;
         }
 
@@ -238,13 +235,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         }
         public async Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos()
         {
-            var usuarios = await _usuarioRepository.Query()
-                .Where(u => u.Alumno != null && u.Personal == null)
-                .Include(u => u.Alumno)
-                .Include(u => u.Alumno.Carrera)
-                .IgnoreQueryFilters().ToListAsync();
-
-            var usuariosTEST = await _usuarioRepository.GetAllAsync();
+            var usuarios = await _usuarioRepo.ListarConAlumnoYCarrera();
 
             var alumnosDTO = new List<AlumnoConIdentityDTO>();
 
@@ -274,10 +265,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         }
         public async Task<IEnumerable<PersonalConIdentityDTO>> ListarPersonal()
         {
-            var usuarios = await _usuarioRepository.Query()
-                .Where(u => u.Personal != null)
-                .Include(u => u.Personal)
-                .ToListAsync();
+            var usuarios = await _usuarioRepo.ListarConPersonal();
 
             var personalDTO = new List<PersonalConIdentityDTO>();
 
@@ -298,7 +286,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                     Rol = roles.FirstOrDefault()
                 });
             }
-
             return personalDTO;
         }
     }

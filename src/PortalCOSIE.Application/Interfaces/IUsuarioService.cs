@@ -6,10 +6,10 @@ namespace PortalCOSIE.Application.Interfaces
 {
     public interface IUsuarioService
     {
-        Usuario? BuscarUsuarioPorIdentityId(string id);
+        Task<Usuario> BuscarUsuarioPorIdentityId(string id);
         Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId);
-        Task<AlumnoDTO?> BuscarAlumno(string id);
-        Task<PersonalDTO?> BuscarPersonal(string id);
+        Task<AlumnoDTO?> BuscarAlumno(string identityUserId);
+        Task<PersonalDTO?> BuscarPersonal(string identityUserId);
         Task<Result<string>> EditarAlumno(AlumnoDTO dto);
     }
 }

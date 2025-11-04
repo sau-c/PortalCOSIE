@@ -85,17 +85,17 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> EditarUnidad(int id, string nombre, Semestre semestre)
+        public async Task<IActionResult> EditarUnidad(string carreraNombre, int id, string nombre, Semestre semestre)
         {
-            await _carreraService.EditarUnidadAsync(id, nombre, semestre);
+            await _carreraService.EditarUnidadAsync(carreraNombre, id, nombre, semestre);
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> ToggleUnidad(int id)
+        public async Task<IActionResult> ToggleUnidad(string carreraNombre, int id)
         {
-            await _carreraService.EliminarUnidad(id);
+            await _carreraService.ToggleUnidad(carreraNombre, id);
             return RedirectToAction(nameof(Index));
         }
         #endregion
@@ -149,24 +149,6 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EstadosDocumento(string nombre)
         {
-            //try
-            //{
-            //    await _catalogoService.CrearEstadoDocumento(nombre);
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //catch (DomainException ex)
-            //{
-            //    TempData["AlertType"] = "error";
-            //    TempData["AlertMessage"] = $"{ex.Message}";
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //catch (Exception ex)
-            //{
-            //    TempData["AlertType"] = "error";
-            //    TempData["AlertMessage"] = $"{ex.Message}";
-            //    return RedirectToAction(nameof(Index));
-            //}
-
             await _catalogoService.CrearEstadoDocumento(nombre);
             return RedirectToAction(nameof(Index));
         }
@@ -231,7 +213,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Periodos()
         {
-            return PartialView("_Periodos", await _catalogoService.ListarPeriodoConfig());
+            return PartialView("_Periodos", await _catalogoService.BuscarPeriodoConfig());
         }
 
         [HttpPost]

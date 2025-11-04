@@ -13,9 +13,8 @@ namespace PortalCOSIE.Application.Interfaces
         Task ToggleCarrrera(int id);
 
         Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAsync(string carrera);
-        Task EliminarUnidad(int unidadId);
         Task CrearUnidadAsync(string nombre, int carreraId, Semestre semestre);
-        Task EditarUnidadAsync(int id, string nombre, Semestre semestre);
-        Task ToggleUnidad(int unidadId);
+        Task EditarUnidadAsync(string carreraNombre, int id, string nombre, Semestre semestre);
+        Task ToggleUnidad(string carreraNombre, int unidadId);
     }
 }

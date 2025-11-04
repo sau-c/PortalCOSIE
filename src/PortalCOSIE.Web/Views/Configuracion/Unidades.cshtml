@@ -32,7 +32,7 @@
             <tbody>
                 @foreach (var unidad in Model.UnidadesAprendizaje)
                 {
-                    <tr class="small">
+                    <tr class="small" style="@(unidad.IsDeleted ? "background-color: #ffd4d4" : "")">
                         <td>@unidad.Id</td>
                         <td>@unidad.Nombre</td>
                         <td>@unidad.Semestre</td>
@@ -45,7 +45,7 @@
                                     data-unidad-id="@unidad.Id"
                                     data-unidad-name="@unidad.Nombre"
                                     data-unidad-semestre="@((int)unidad.Semestre)"
-                                    data-carrera-id="@Model.Id">
+                                    data-carrera-nombre="@Model.Nombre">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <button class="btn btn-sm btn-outline-danger"
@@ -54,6 +54,7 @@
                                     data-bs-target="#desactivarModal"
                                     data-unidad-id="@unidad.Id"
                                     data-unidad-name="@unidad.Nombre"
+                                    data-carrera-nombre="@Model.Nombre"
                                     data-unidad-semestre="@unidad.Semestre">
                                 <i class="fas fa-eye-slash"></i>
                             </button>
@@ -72,7 +73,7 @@
             <form id="unidadForm" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="unidadId" name="id" />
-                <input type="hidden" id="unidadCarreraId" name="carreraId" />
+                <input type="hidden" id="carreraNombre" name="carreraNombre" />
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="unidadModalTitle"></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -112,6 +113,7 @@
             <form id="deleteForm" asp-action="ToggleUnidad" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="modalUnidadIdInput" name="id" />
+                <input type="hidden" id="carreraNombreEliminar" name="carreraNombre" />
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title">Desactivar unidad</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -169,12 +171,12 @@
                     $('#unidadModalTitle').text('Crear nueva unidad de aprendizaje');
                     form.action = '@Url.Action("Unidades", "Configuracion")';
                     $('#unidadId').val('');
-                    $('#unidadCarreraId').val(button.getAttribute('data-carrera-id'));
+                    $('#carreraNombre').val(button.getAttribute('data-carrera-nombre'));
                 } else {
                     $('#unidadModalTitle').text('Editar unidad de aprendizaje');
                     form.action = '@Url.Action("EditarUnidad", "Configuracion")';
                     $('#unidadId').val(button.getAttribute('data-unidad-id'));
-                    $('#unidadCarreraId').val(button.getAttribute('data-carrera-id'));
+                    $('#carreraNombre').val(button.getAttribute('data-carrera-nombre'));
                     $('#unidadNombre').val(button.getAttribute('data-unidad-name'));
                     $('#unidadSemestre').val(button.getAttribute('data-unidad-semestre'));
                 }
@@ -185,6 +187,7 @@
             desactivarModal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
                 $('#modalUnidadIdInput').val(button.getAttribute('data-unidad-id'));
+                $('#carreraNombreEliminar').val(button.getAttribute('data-carrera-nombre'));
                 $('#modalUnidadName').text(button.getAttribute('data-unidad-name'));
                 $('#modalUnidadSemestre').text(button.getAttribute('data-unidad-semestre'));
             });

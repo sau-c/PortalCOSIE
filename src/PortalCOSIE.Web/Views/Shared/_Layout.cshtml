@@ -173,24 +173,6 @@
         &copy; 2025 - UPIITA COSIE @("v" + version)
     </footer>
 
-    @* MODAL GLOBAL de mensajes *@
-    <div class="modal fade" id="globalModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Loader Global -->
     <div class="global-loader top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center"
          id="globalLoader">
@@ -241,58 +223,9 @@
             });
 
             $('[title]:not([title=""])').tooltip();
-
-
-            // MODAL GLOBAL Verificar si TempData tiene mensajes
-            const alertType = '@TempData["AlertType"]';
-            const alertMessage = '@TempData["AlertMessage"]';
-
-            if (alertMessage && alertMessage !== '') {
-                showModal(alertType, alertMessage);
-            }
         });
 
-        function showModal(type, message) {
-            // Configuración según el tipo
-            const config = {
-                'error': {
-                    title: 'Error',
-                    icon: 'fas fa-exclamation-circle text-danger',
-                    btnClass: 'btn-danger'
-                },
-                'success': {
-                    title: 'Éxito',
-                    icon: 'fas fa-check-circle text-success',
-                    btnClass: 'btn-success'
-                },
-                'warning': {
-                    title: 'Advertencia',
-                    icon: 'fas fa-exclamation-triangle text-warning',
-                    btnClass: 'btn-warning'
-                },
-                'info': {
-                    title: 'Información',
-                    icon: 'fas fa-info-circle text-info',
-                    btnClass: 'btn-primary'
-                }
-            };
-
-            const modalConfig = config[type] || config['info'];
-
-            // Actualizar el modal existente
-            $('#globalModal .modal-title').html(`
-                <i class="${modalConfig.icon} me-2"></i>
-                ${modalConfig.title}
-            `);
-            $('#globalModal .modal-body p').text(message);
-            $('#globalModal .modal-footer .btn')
-                .removeClass('btn-danger btn-success btn-warning btn-primary')
-                .addClass(modalConfig.btnClass);
-
-            // Mostrar modal
-            $('#globalModal').modal('show');
-        }
-
+        
         // Ajustar tooltips cuando cambia el estado del sidebar (No sirven)
         $(document).on('click', '#sidebarToggle', function() {
             if ($('#sidebar').hasClass('sidebar-collapsed')) {

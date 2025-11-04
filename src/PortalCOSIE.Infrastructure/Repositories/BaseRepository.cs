@@ -6,64 +6,36 @@ using System.Linq.Expressions;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
+    public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
     {
-        private readonly AppDbContext _context;
+        protected readonly AppDbContext _context;
+        protected readonly DbSet<TEntity> _dbSet;
 
         public BaseRepository(AppDbContext context)
         {
             _context = context;
+            _dbSet = _context.Set<TEntity>();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<TEntity> GetByIdAsync(int id)
         {
-            var query = _context.Set<T>().AsQueryable();
-
-            return await query.FirstOrDefaultAsync(e => e.Id == id);
+            return await _dbSet.FindAsync(id);
         }
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<TEntity>> GetAllAsync(bool filtrarActivos)
         {
-            var query = _context.Set<T>().AsQueryable();
-
-            return await query.ToListAsync();
+            return await _dbSet
+                .Where(e => filtrarActivos ? e.IsDeleted == false : true)
+                .ToListAsync();
         }
-        public async Task<T> AddAsync(T entity)
+        public async Task<TEntity> AddAsync(TEntity entity)
         {
-            await _context.Set<T>().AddAsync(entity);
+            await _dbSet.AddAsync(entity);
             return entity;
         }
-        public T Delete(T entity)
+        public TEntity Delete(TEntity entity)
         {
-            _context.Set<T>().Remove(entity);
+            _dbSet.Remove(entity);
             return entity;
-        }
-        
-        // Para eager loading
-        public IQueryable<T> Query()
-        {
-            return _context.Set<T>().AsQueryable();
-        }
-        public async Task<T?> GetFirstOrDefaultWhereAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
-        {
-            var query = _context.Set<T>().AsQueryable();
-
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-
-            return await query.FirstOrDefaultAsync(filter);
-        }
-        public async Task<IEnumerable<T?>> GetAllWhereAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
-        {
-            var query = _context.Set<T>().AsQueryable();
-
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-
-            return await query.Where(filter).AsNoTracking().ToListAsync();
         }
     }
 }

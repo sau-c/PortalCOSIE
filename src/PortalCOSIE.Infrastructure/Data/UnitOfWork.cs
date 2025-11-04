@@ -1,33 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using PortalCOSIE.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 using PortalCOSIE.Domain.Interfaces;
-using PortalCOSIE.Infrastructure.Repositories;
+using PortalCOSIE.Infrastructure.Data;
 
-namespace PortalCOSIE.Infrastructure.Data
+namespace Infrastructure.Data
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
-        private readonly Dictionary<Type, object> _repositories;
-        private IDbContextTransaction? _transaction;
+        private IDbContextTransaction _transaction;
 
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
-            _repositories = new Dictionary<Type, object>();
-        }
-
-        public IBaseRepository<T> BaseRepo<T>() where T : BaseEntity
-        {
-            if (_repositories.ContainsKey(typeof(T)))
-            {
-                return (IBaseRepository<T>)_repositories[typeof(T)];
-            }
-
-            var repository = new BaseRepository<T>(_context);
-            _repositories.Add(typeof(T), repository);
-            return repository;
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -42,28 +26,34 @@ namespace PortalCOSIE.Infrastructure.Data
 
         public async Task CommitTransactionAsync()
         {
-            if (_transaction != null)
+            try
             {
+                await _context.SaveChangesAsync();
                 await _transaction.CommitAsync();
-                await _transaction.DisposeAsync();
+            }
+            catch
+            {
+                await RollbackTransactionAsync();
+                throw;
+            }
+            finally
+            {
+                _transaction?.Dispose();
                 _transaction = null;
             }
         }
 
         public async Task RollbackTransactionAsync()
         {
-            if (_transaction != null)
-            {
-                await _transaction.RollbackAsync();
-                await _transaction.DisposeAsync();
-                _transaction = null;
-            }
+            await _transaction?.RollbackAsync();
+            _transaction?.Dispose();
+            _transaction = null;
         }
 
         public void Dispose()
         {
             _transaction?.Dispose();
-            _context.Dispose();
+            _context?.Dispose();
         }
     }
 }
