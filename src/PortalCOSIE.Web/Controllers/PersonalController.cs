@@ -7,7 +7,6 @@ using PortalCOSIE.Application.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
 {
-    [Authorize]
     public class PersonalController : Controller
     {
         private readonly ISecurityService _securityService;
@@ -44,7 +43,7 @@ namespace PortalCOSIE.Web.Controllers
                 return View(dto);
             }
 
-            var result = await _securityService.CrearUsuarioAsync(new CrearCuentaDTO());
+            var result = await _securityService.CrearContrasenaAsync(new CrearContrasenaDTO());
 
             if (!result.Succeeded)
             {
@@ -92,15 +91,5 @@ namespace PortalCOSIE.Web.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Eliminar(string id)
-        {
-            var result = await _securityService.EliminarUsuario(id);
-            return RedirectToAction(nameof(Index), result);
-        }
-
     }
 }

@@ -57,14 +57,5 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
                 throw new DomainException("El ID de carrera no es válido");
             CarreraId = carreraId;
         }
-
-        //public int? ObtenerAnioIngreso()
-        //{
-        //    if (string.IsNullOrEmpty(PeriodoIngreso) || !PeriodoIngreso.Contains('/'))
-        //        return null;
-
-        //    var partes = PeriodoIngreso.Split('/');
-        //    return int.TryParse(partes[0], out int anio) ? anio : null;
-        //}
     }
 }

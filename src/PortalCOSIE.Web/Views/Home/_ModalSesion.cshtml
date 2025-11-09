@@ -1,16 +1,14 @@
-﻿<div class="modal fade" id="sesionModal" tabindex="-1">
+﻿<div class="modal fade" id="modalSesion" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="sesionModalLabel">
-                    <span id="modalTitle"></span>
-                </h5>
+                <h5 class="modal-title"></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <form id="formSesion" method="post">
                 @Html.AntiForgeryToken()
-                <input type="hidden" id="sesionId" name="id" />
+                <input type="hidden" name="id" />
 
                 <div class="modal-body">
                     <div class="row mb-3">
@@ -19,7 +17,7 @@
                             <input type="text" class="form-control" id="numeroSesion" name="NumeroSesion" required>
                         </div>
 
-                        <div class="col-lg-6 col-md-6">
+                        <div class="col-md-6">
                             <label for="fechaSesion" class="form-label fw-semibold">Fecha de sesión</label>
                             <input type="date" class="form-control" id="fechaSesion" name="FechaSesion" required>
                         </div>
@@ -27,8 +25,8 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Fechas de recepción documental</label>
-                        <div id="fechasRecepcionContainer"></div>
-                        <button type="button" class="btn btn-sm btn-outline-success mt-2" id="btnAgregarFecha">
+                        <div class="fechas-container"></div>
+                        <button type="button" class="btn btn-sm btn-outline-success mt-2 btn-agregar-fecha">
                             <i class="fas fa-plus me-1"></i>Agregar fecha
                         </button>
                     </div>
@@ -36,9 +34,9 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmit">
+                    <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-1"></i>
-                        <span id="btnSubmitText">Guardar</span>
+                        <span></span>
                     </button>
                 </div>
             </form>
@@ -47,91 +45,88 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Eventos para abrir modal de crear/editar
+    function inicializarModalSesion() {
+        const $modal = $('#modalSesion');
+        const $form = $modal.find('#formSesion');
+        const $fechasContainer = $modal.find('.fechas-container');
+
+        // Configuración de modos
+        const MODOS = {
+            crear: {
+                titulo: 'Crear nueva sesión',
+                btnTexto: 'Crear',
+                action: '@Url.Action("CrearSesionCOSIE", "Home")'
+            },
+            editar: {
+                titulo: 'Editar sesión',
+                btnTexto: 'Guardar',
+                action: '@Url.Action("EditarSesionCOSIE", "Home")'
+            }
+        };
+
+        // Formatear fecha a YYYY-MM-DD
+        const formatearFecha = (fecha) => {
+            if (!fecha) return null;
+            if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return fecha;
+            const date = new Date(fecha);
+            return isNaN(date) ? null : date.toISOString().split('T')[0];
+        };
+
+        // Agregar campo de fecha
+        const agregarCampoFecha = (valor = '') => {
+            const $campo = $(`
+                <div class="input-group mb-2 fecha-item">
+                    <input type="date" class="form-control" name="fechasRecepcion" value="${valor}">
+                    <button type="button" class="btn btn-outline-danger btn-remover-fecha">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `);
+            $fechasContainer.append($campo);
+        };
+
+        // Abrir modal (crear o editar)
         $(document).on('click', '.btn-crear, .btn-editar', function() {
-            const mode = $(this).data('mode');
-            const id = $(this).data('id');
-            const numero = $(this).data('numero-sesion');
-            const fecha = $(this).data('fecha-sesion');
-            const fechasRecepcion = $(this).data('fechas-recepcion');
+            const $btn = $(this);
+            const modo = $btn.data('mode');
+            const config = MODOS[modo];
+            const esCrear = modo === 'crear';
 
-            $('#fechasRecepcionContainer').empty();
+            // Limpiar y configurar modal
+            $fechasContainer.empty();
+            $form[0].reset();
+            $modal.find('.modal-title').text(config.titulo);
+            $modal.find('button[type="submit"] span').text(config.btnTexto);
+            $form.attr('action', config.action);
 
-            if (mode === 'crear') {
-                $('#modalTitle').text('Crear nueva sesión');
-                $('#btnSubmitText').text('Crear');
-                $('#formSesion').attr('action', '@Url.Action("CrearSesionCOSIE", "Home")');
-                $('#sesionId, #numeroSesion, #fechaSesion').val('');
-                // NO agregar campo vacío por defecto - el usuario decide si agregar fechas
-            } else {
-                $('#modalTitle').text('Editar sesión');
-                $('#btnSubmitText').text('Guardar');
-                $('#formSesion').attr('action', '@Url.Action("EditarSesionCOSIE", "Home")');
-                $('#sesionId').val(id);
-                $('#numeroSesion').val(numero);
-                $('#fechaSesion').val(fecha);
+            // Llenar datos si es edición
+            if (!esCrear) {
+                $form.find('input[name="id"]').val($btn.data('id'));
+                $('#numeroSesion').val($btn.data('numero-sesion'));
+                $('#fechaSesion').val($btn.data('fecha-sesion'));
 
-                // Cargar fechas desde el data attribute - SOLO si existen
-                if (fechasRecepcion && fechasRecepcion.length > 0) {
-                    fechasRecepcion.forEach(fecha => {
-                        const fechaFormateada = formatearFechaParaInput(fecha);
-                        // Solo agregar si la fecha no está vacía
-                        if (fechaFormateada) {
-                            agregarCampoFecha(fechaFormateada);
-                        }
-                    });
-                }
-                // NO agregar campo vacío si no hay fechas - el contenedor queda vacío
+                // Cargar fechas de recepción
+                const fechasRecepcion = $btn.data('fechas-recepcion') || [];
+                fechasRecepcion.forEach(fecha => {
+                    const fechaFormateada = formatearFecha(fecha);
+                    if (fechaFormateada) agregarCampoFecha(fechaFormateada);
+                });
             }
         });
 
         // Agregar fecha de recepción
-        $('#btnAgregarFecha').on('click', function() {
-            agregarCampoFecha('');
+        $modal.on('click', '.btn-agregar-fecha', () => agregarCampoFecha());
+
+        // Remover fecha
+        $modal.on('click', '.btn-remover-fecha', function() {
+            $(this).closest('.fecha-item').remove();
         });
 
-        // Remover fecha de recepción - PERMITE eliminar TODAS
-        $(document).on('click', '.btn-remover-fecha', function() {
-            $(this).closest('.fecha-recepcion-item').remove();
-            // Ya no hay restricción - se pueden eliminar todas las fechas
-        });
-
-        function agregarCampoFecha(valor) {
-            // Solo agregar si el valor no está vacío o es un string vacío
-            if (valor || valor === '') {
-                $('#fechasRecepcionContainer').append(`
-                    <div class="input-group mb-2 fecha-recepcion-item">
-                        <input type="date" class="form-control" name="fechasRecepcion" value="${valor}">
-                        <button type="button" class="btn btn-outline-danger btn-remover-fecha">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>`);
-            }
-        }
-
-        function formatearFechaParaInput(fechaString) {
-            if (!fechaString) return null; // Retorna null en lugar de string vacío
-
-            // Si ya está en formato YYYY-MM-DD, retornar directamente
-            if (fechaString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                return fechaString;
-            }
-
-            // Convertir de otros formatos a YYYY-MM-DD
-            const fecha = new Date(fechaString);
-            if (isNaN(fecha.getTime())) return null; // Retorna null si no es fecha válida
-
-            return fecha.toISOString().split('T')[0];
-        }
-
-        // Validación opcional del formulario - permitir enviar sin fechas
-        $('#formSesion').on('submit', function(e) {
-            const fechas = $('input[name="fechasRecepcion"]').filter(function() {
-                return $(this).val() !== ''; // Solo contar fechas con valor
-            });
-
+        // Submit del formulario
+        $form.on('submit', function(e) {
+            // Aquí puedo agregar validación perzonalzada para frontend
+            // e.preventDefault()
             return true;
         });
-    });
+    }
 </script>

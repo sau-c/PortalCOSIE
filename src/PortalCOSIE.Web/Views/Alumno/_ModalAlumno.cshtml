@@ -1,0 +1,220 @@
+﻿<!-- Modal para Crear/Editar alumno -->
+<div class="modal fade" id="modalAlumno" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form id="alumnoForm" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="identityUserId" name="identityUserId" />
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalTitle"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <fieldset class="border rounded px-3 mb-3">
+                        <legend class="float-none w-auto px-2 text-primary fs-6">
+                            <i class="fas fa-user-circle me-2"></i>Datos personales
+                        </legend>
+                        <div class="row mb-4">
+                            <div class="col-lg-4 col-md-4">
+                                <label for="nombre" class="form-label">Nombre:</label>
+                                <input type="text" id="nombre" name="nombre" class="form-control"
+                                    pattern="[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s]+"
+                                    required>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <label for="apellidoPaterno" class="form-label">Apellido paterno:</label>
+                                <input type="text" id="apellidoPaterno" name="apellidoPaterno" class="form-control"
+                                    pattern="[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s]+"
+                                    required>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <label for="apellidoPaterno" class="form-label">Apellido materno:</label>
+                                <input type="text" id="apellidoMaterno" name="apellidoMaterno" class="form-control"
+                                    pattern="[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s]+"
+                                    required>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="border rounded px-3 mb-3">
+                        <legend class="float-none w-auto px-2 text-primary fs-6">
+                            <i class="fas fa-graduation-cap me-2"></i>Datos académicos
+                        </legend>
+                        <div class="row mb-3">
+                            <div class="col-lg-4 col-md-4">
+                                <label for="numeroBoleta" class="form-label">No. de boleta:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-id-card"></i>
+                                    </span>
+                                    <input type="text" id="numeroBoleta" name="numeroBoleta" class="form-control" required
+                                           placeholder="Ej. 2020640595"
+                                           maxlength="10"
+                                           pattern="\d*"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <label for="carreraId" class="form-label">Carrera:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-university"></i>
+                                    </span>
+                                    <select asp-items="ViewBag.Carreras" id="carreraId" name="carreraId" class="form-select" required>
+                                        <option value="">- Carrera -</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <label for="periodoIngreso" class="form-label">Periodo ingreso:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                    <select asp-items="ViewBag.Periodos" id="periodoIngreso" name="periodoIngreso" class="form-select" required>
+                                        <option value="">- Periodo ingreso -</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <label for="correo" class="form-label">Correo institucional:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                    <input type="email" id="correo" name="correo" class="form-control" placeholder="usuario@alumno.ipn.mx" required />
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button id="btnModalAlumno" type="submit" class="btn btn-primary">
+                        <i id="btnIcon" class="fas fa-save me-2"></i><span id="submitText"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function inicializarModalAlumno() {
+        const MODOS = {
+            crear: {
+                titulo: 'Crear alumno',
+                btnTexto: 'Enviar correo',
+                action: '@Url.Action("Crear", "Alumno")'
+            },
+            editar: {
+                titulo: 'Editar alumno',
+                btnTexto: 'Guardar cambios',
+                action: '@Url.Action("Editar", "Alumno")'
+            }
+        };
+
+        const $modal = $('#modalAlumno');
+        const $form = $modal.find('#alumnoForm');
+        const $btnSubmit = $form.find('button[type="submit"]');
+        const $btnIcon = $btnSubmit.find('i');
+        const $btnText = $btnSubmit.find('span');
+
+        // Estado original del botón
+        const btnOriginalState = {
+            iconClass: 'fas fa-save me-2',
+            text: ''  // Se setea dinámicamente según el modo
+        };
+
+        // Función para restaurar el botón a su estado original
+        const restaurarBoton = () => {
+            $btnIcon.attr('class', btnOriginalState.iconClass);
+            $btnText.text(btnOriginalState.text);
+            $btnSubmit.prop('disabled', false);
+        };
+
+        // Configurar modal según modo (crear/editar)
+        const configurarModal = (modo, data = {}) => {
+            const config = MODOS[modo];
+            // Resetear formulario
+            $form[0].reset();
+
+            // Configurar modal
+            $modal.find('.modal-title').text(config.titulo);
+            $btnText.text(config.btnTexto);
+            $form.attr('action', config.action);
+            btnOriginalState.text = config.btnTexto;
+
+            // Restaurar botón a estado normal
+            restaurarBoton();
+
+            // Llenar datos si es edición
+            if (modo === 'editar') {
+                $form.find('input[name="identityUserId"]').val(data.userid || '');
+                $('#nombre').val(data.nombre || '');
+                $('#apellidoPaterno').val(data.apellidopaterno || '');
+                $('#apellidoMaterno').val(data.apellidomaterno || '');
+                $('#numeroBoleta').val(data.numeroboleta || '');
+                $('#carreraId').val(data.carreraid || '');
+                $('#periodoIngreso').val(data.periodoingreso || '');
+                $('#correo').val(data.correo || '');
+            }
+        };
+
+        // Evento: Botón crear
+        $(document).on('click', 'button[data-mode="create"]', function() {
+            configurarModal('crear');
+        });
+
+        // Evento: Botón editar
+        $(document).on('click', 'button[data-mode="edit"]', function() {
+            const $btn = $(this);
+            configurarModal('editar', $btn.data());
+        });
+
+        // Limpiar al cerrar modal (IMPORTANTE)
+        $modal.on('hidden.bs.modal', function() {
+            $form[0].reset();
+            $form.find('input[name="identityUserId"]').val('');
+            restaurarBoton();
+        });
+
+        // Submit del formulario
+        $form.off('submit').on('submit', async function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            // Validar correo
+            const correo = $('#correo').val().trim();
+            if (!correo.endsWith('@@alumno.ipn.mx')) {
+                $('#correo')
+                    .attr('data-bs-original-title', 'El correo debe terminar con @@alumno.ipn.mx')
+                    .tooltip('show')
+                    .focus();
+                return false;
+            }
+
+            // Bloquear botón
+            $btnIcon.attr('class', 'fas fa-spinner fa-spin me-2');
+            $btnText.text('Cargando...');
+            $btnSubmit.prop('disabled', true);
+
+            try {
+                const url = $(this).attr('action');
+                const formData = Object.fromEntries(new FormData(this));
+                const resultado = await executeFetch(url, 'POST', formData);
+
+                $modal.modal('hide');
+                showGlobalModal('success', resultado.message);
+                $form[0].reset();
+            } catch (error) {
+                showGlobalModal('error', error.message);
+                $('#messageModal').on('hidden.bs.modal', function() {
+                    restaurarBoton();
+                });
+            }
+        });
+    }
+</script>

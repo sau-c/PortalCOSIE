@@ -12,7 +12,7 @@
             <a asp-action="Index" asp-controller="Configuracion" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-arrow-left me-2"></i>Volver
             </a>
-            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#unidadModal"
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalUnidad"
                     data-mode="create" data-carrera-id="@Model.Id">
                 <i class="fas fa-plus me-2"></i>Crear
             </button>
@@ -40,7 +40,7 @@
                             <button class="btn btn-sm btn-outline-primary"
                                     title="Editar"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#unidadModal"
+                                    data-bs-target="#modalUnidad"
                                     data-mode="edit"
                                     data-unidad-id="@unidad.Id"
                                     data-unidad-name="@unidad.Nombre"
@@ -67,13 +67,13 @@
 </div>
 
 <!-- Modal Reutilizable Crear/Editar -->
-<div class="modal fade" id="unidadModal" tabindex="-1">
+<div class="modal fade" id="modalUnidad" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="unidadForm" method="post">
                 @Html.AntiForgeryToken()
-                <input type="hidden" id="unidadId" name="id" />
-                <input type="hidden" id="carreraNombre" name="carreraNombre" />
+                <input type="hidden" id="hiddenUnidadId" name="id" />
+                <input type="hidden" id="hiddenCarreraNombre" name="carrera" />
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="unidadModalTitle"></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -81,7 +81,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nombre de la unidad</label>
-                        <input type="text" class="form-control" id="unidadNombre" name="nombre"
+                        <input type="text" class="form-control" id="txtUnidadNombre" name="nombre"
                                placeholder="Ingrese el nombre de la unidad"
                                maxlength="100" required />
                     </div>
@@ -145,7 +145,7 @@
 @section Scripts {
     <script>
         $(function () {
-            // ✅ Configuración de DataTable
+            // Configuración de DataTable
             $('#tblUnidades').DataTable({
                 language: { url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json' },
                 paging: false,
@@ -157,40 +157,68 @@
                 ]
             });
 
-            // ✅ Modal Crear/Editar
-            const unidadModal = document.getElementById('unidadModal');
-            unidadModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                const mode = button.getAttribute('data-mode');
-                const form = document.getElementById('unidadForm');
+            // Modal Crear/Editar Unidad
+            $('#modalUnidad').on('show.bs.modal', function (event) {
+                const button = $(event.relatedTarget);
+                const mode = button.data('mode');
+                const form = $('#unidadForm')[0];
 
-                // Resetea el formulario
-                form.reset();
+                form.reset(); // Reset del formulario
 
                 if (mode === 'create') {
                     $('#unidadModalTitle').text('Crear nueva unidad de aprendizaje');
-                    form.action = '@Url.Action("Unidades", "Configuracion")';
-                    $('#unidadId').val('');
-                    $('#carreraNombre').val(button.getAttribute('data-carrera-nombre'));
+                    $('#hiddenUnidadId').val('');
+                    $('#hiddenCarreraNombre').val(button.data('carrera-id'));
                 } else {
                     $('#unidadModalTitle').text('Editar unidad de aprendizaje');
-                    form.action = '@Url.Action("EditarUnidad", "Configuracion")';
-                    $('#unidadId').val(button.getAttribute('data-unidad-id'));
-                    $('#carreraNombre').val(button.getAttribute('data-carrera-nombre'));
-                    $('#unidadNombre').val(button.getAttribute('data-unidad-name'));
-                    $('#unidadSemestre').val(button.getAttribute('data-unidad-semestre'));
+                    $('#hiddenUnidadId').val(button.data('unidad-id'));
+                    $('#hiddenCarreraNombre').val(button.data('carrera-id'));
+                    $('#txtUnidadNombre').val(button.data('unidad-name'));
+                    $('#unidadSemestre').val(button.data('unidad-semestre'));
                 }
             });
 
-            // Modal Eliminar
-            const desactivarModal = document.getElementById('desactivarModal');
-            desactivarModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                $('#modalUnidadIdInput').val(button.getAttribute('data-unidad-id'));
-                $('#carreraNombreEliminar').val(button.getAttribute('data-carrera-nombre'));
-                $('#modalUnidadName').text(button.getAttribute('data-unidad-name'));
-                $('#modalUnidadSemestre').text(button.getAttribute('data-unidad-semestre'));
+            // Modal Desactivar Unidad
+            $('#desactivarModal').on('show.bs.modal', function (event) {
+                const button = $(event.relatedTarget);
+                $('#modalUnidadIdInput').val(button.data('unidad-id'));
+                $('#carreraNombreEliminar').val(button.data('carrera-nombre'));
+                $('#modalUnidadName').text(button.data('unidad-name'));
+                $('#modalUnidadSemestre').text(button.data('unidad-semestre'));
+            });
+
+            // Submit Crear/Editar Unidad
+            $('#unidadForm').on('submit', async function (e) {
+                e.preventDefault();
+                const form = this;
+                const url = form.action;
+                const formData = new FormData(form);
+
+                const resultado = await executeFetch(url, 'POST', formData);
+                if (resultado.success) {
+                    $('#modalUnidad').modal('hide');
+                    showGlobalModal('success', resultado.message);
+                } else {
+                    showGlobalModal('error', resultado.message);
+                }
+            });
+
+            // Submit Desactivar Unidad
+            $('#deleteForm').on('submit', async function (e) {
+                e.preventDefault();
+                const form = this;
+                const url = form.action;
+                const formData = new FormData(form);
+
+                const resultado = await executeFetch(url, 'POST', formData);
+                if (resultado.success) {
+                    $('#desactivarModal').modal('hide');
+                    showGlobalModal('success', resultado.message);
+                } else {
+                    showGlobalModal('error', resultado.message);
+                }
             });
         });
     </script>
 }
+

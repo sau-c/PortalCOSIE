@@ -1,0 +1,62 @@
+﻿<div id="messageModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content shadow">
+            <div class="modal-body text-center p-4">
+                <i class="modal-icon"></i>
+                <h6 class="modal-title fw-semibold mb-4 fs-2">
+                    @* Titulo dinamico *@
+                </h6>
+                <p class="message-content text-muted small mb-3">
+                    @* Mensaje Dinamico *@
+                </p>
+                <button type="button" class="btn w-100" data-bs-dismiss="modal"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showGlobalModal(type, message) {
+        const modal = $('#messageModal');
+        const config = {
+            success: {
+                icon: "fas fa-check-circle text-success fs-1",
+                title: "Listo",
+                btnClass: "btn-success",
+                btnText: "Continuar",
+                autoClose: 2500
+            },
+            error: {
+                icon: "fas fa-times-circle text-danger fs-1",
+                title: "Error",
+                btnClass: "btn-danger",
+                btnText: "Entendido",
+                autoClose: false
+            }
+        };
+
+        const { icon, title, btnClass, btnText, autoClose: closeTime } = config[type];
+
+        // Configurar contenido del modal
+        modal.find('.modal-icon').attr('class', 'modal-icon ' + icon);
+        modal.find('.modal-title').text(title);
+        modal.find('.message-content').html(message);
+        modal.find('.btn').attr('class', `btn w-100 ${btnClass}`).text(btnText);
+
+        // Mostrar modal
+        const bsModal = new bootstrap.Modal(modal[0]);
+        bsModal.show();
+
+        // // Función para recargar la página
+        const reloadPage = () => location.reload();
+
+        // Auto-cierre y recarga si es success
+        if (type === 'success') {
+            setTimeout(reloadPage, closeTime);
+            modal.find('.btn').off('click').on('click', reloadPage);
+        } else if (closeTime) {
+            // Solo cerrar modal si tiene autoClose configurado
+            setTimeout(() => bsModal.hide(), closeTime);
+        }
+    }
+</script>

@@ -19,9 +19,9 @@ namespace PortalCOSIE.Domain.Entities.Tramites
 
         public void ActualizarNombre(string nombre)
         {
-            nombre = nombre.Trim();
             if (string.IsNullOrWhiteSpace(nombre))
                 throw new DomainException("El nombre no puede estar vacío.");
+            nombre = nombre.Trim();
             if (!SoloLetras.IsMatch(nombre))
                 throw new DomainException("El nombre solo puede contener letras y espacios.");
             if (nombre.Length > LongitudMaxima)

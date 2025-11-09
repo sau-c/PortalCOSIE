@@ -4,7 +4,7 @@ namespace PortalCOSIE.Application
     public class Result<T>
     {
         public bool Succeeded { get; private set; }
-        public T? Value { get; private set; }
+        public T Value { get; private set; }
         public List<string> Errors { get; private set; } = new();
 
         private Result() { }

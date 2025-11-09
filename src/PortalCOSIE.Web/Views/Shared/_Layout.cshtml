@@ -173,18 +173,11 @@
         &copy; 2025 - UPIITA COSIE @("v" + version)
     </footer>
 
-    <!-- Loader Global -->
-    <div class="global-loader top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center"
-         id="globalLoader">
-        <div class="text-center">
-            <div class="spinner-border text-white" style="width: 3rem; height: 3rem;"></div>
-            <div class="text-white fs-4">Cargando...</div>
-        </div>
-    </div>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <partial name="_ModalMessage" />
 
     <script>
         $(document).ready(function() {

@@ -8,122 +8,19 @@ namespace PortalCOSIE.Application
 {
     public class CatalogoService : ICatalogoService
     {
-        private readonly IBaseRepository<EstadoTramite> _estadoTramiteRepo;
-        private readonly IBaseRepository<TipoTramite> _tipoTramiteRepo;
         private readonly IBaseRepository<PeriodoConfig> _periodoRepo;
-        private readonly IBaseRepository<EstadoDocumento> _estadoDocumentoRepo;
         private readonly ISesionRepository _sesionRepo;
         private readonly IUnitOfWork _unitOfWork;
 
         public CatalogoService(
-            IBaseRepository<EstadoTramite> estadoTramiteRepo,
-            IBaseRepository<TipoTramite> tipoTramiteRepo,
-            IBaseRepository<EstadoDocumento> estadoDocumentoRepo,
             ISesionRepository sesionRepo,
             IBaseRepository<PeriodoConfig> periodoRepo,
             IUnitOfWork unitOfWork)
         {
-            _estadoTramiteRepo = estadoTramiteRepo;
-            _tipoTramiteRepo = tipoTramiteRepo;
-            _estadoDocumentoRepo = estadoDocumentoRepo;
             _sesionRepo = sesionRepo;
             _periodoRepo = periodoRepo;
             _unitOfWork = unitOfWork;
         }
-
-        #region ESTADO_TRAMITE
-        public async Task<IEnumerable<EstadoTramite>> ListarEstadosTramiteActivos()
-        {
-            return await _estadoTramiteRepo.GetAllAsync(true);
-        }
-        public async Task<IEnumerable<EstadoTramite>> ListarEstadoTramite()
-        {
-            return await _estadoTramiteRepo.GetAllAsync(false);
-        }
-        public async Task CrearEstadoTramite(string nombre)
-        {
-            await _estadoTramiteRepo.AddAsync(new EstadoTramite(nombre));
-            await _unitOfWork.SaveChangesAsync();
-        }
-        public async Task EditarEstadoTramite(int id, string nombre)
-        {
-            var estadoTramite = await _estadoTramiteRepo.GetByIdAsync(id);
-            estadoTramite.ActualizarNombre(nombre);
-            await _unitOfWork.SaveChangesAsync();
-        }
-        public async Task ToggleEstadoTramite(int id)
-        {
-            var estado = await _estadoTramiteRepo.GetByIdAsync(id);
-            if (estado.IsDeleted)
-                estado.Restore();
-            else
-                estado.SoftDelete();
-            await _unitOfWork.SaveChangesAsync();
-        }
-        #endregion
-
-        #region ESTADO_DOCUMENTO
-        public async Task<IEnumerable<EstadoDocumento>> ListarEstadosDocumentoActivos()
-        {
-            return await _estadoDocumentoRepo.GetAllAsync(true);
-        }
-        public async Task<IEnumerable<EstadoDocumento>> ListarEstadosDocumento()
-        {
-            return await _estadoDocumentoRepo.GetAllAsync(false);
-        }
-        public async Task CrearEstadoDocumento(string nombre)
-        {
-            await _estadoDocumentoRepo.AddAsync(new EstadoDocumento(nombre));
-            await _unitOfWork.SaveChangesAsync();
-        }
-        public async Task EditarEstadoDocumento(int id, string nombre)
-        {
-            var estadoDocumento = await _estadoDocumentoRepo.GetByIdAsync(id);
-            estadoDocumento.ActualizarNombre(nombre);
-
-            await _unitOfWork.SaveChangesAsync();
-        }
-        public async Task ToggleEstadoDocumento(int id)
-        {
-            var estado = await _estadoDocumentoRepo.GetByIdAsync(id);
-            if (estado.IsDeleted)
-                estado.Restore();
-            else
-                estado.SoftDelete();
-            await _unitOfWork.SaveChangesAsync();
-        }
-        #endregion
-
-        #region TIPO_TRAMITE
-        public async Task<IEnumerable<TipoTramite>> ListarTipoTramiteActivos()
-        {
-            return await _tipoTramiteRepo.GetAllAsync(true);
-        }
-        public async Task<IEnumerable<TipoTramite>> ListarTipoTramite()
-        {
-            return await _tipoTramiteRepo.GetAllAsync(false);
-        }
-        public async Task CrearTipoTramite(string nombre)
-        {
-            await _tipoTramiteRepo.AddAsync(new TipoTramite(nombre));
-            await _unitOfWork.SaveChangesAsync();
-        }
-        public async Task EditarTipoTramite(int id, string nombre)
-        {
-            var tipoTramite = await _tipoTramiteRepo.GetByIdAsync(id);
-            tipoTramite.ActualizarNombre(nombre);
-            await _unitOfWork.SaveChangesAsync();
-        }
-        public async Task ToggleTipoTramite(int id)
-        {
-            var tipo = await _tipoTramiteRepo.GetByIdAsync(id);
-            if (tipo.IsDeleted)
-                tipo.Restore();
-            else
-                tipo.SoftDelete();
-            await _unitOfWork.SaveChangesAsync();
-        }
-        #endregion
 
         #region PERIODO_CONFIG
         public async Task<PeriodoConfig> BuscarPeriodoConfig()

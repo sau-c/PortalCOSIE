@@ -24,10 +24,9 @@ namespace PortalCOSIE.Domain.Entities.Carreras
 
         public void SetNombre(string nombre)
         {
-            nombre = nombre.Trim();
             if (string.IsNullOrWhiteSpace(nombre))
                 throw new ArgumentException("El nombre de la unidad de aprendizaje no puede estar vacío.", nameof(nombre));
-            Nombre = nombre;
+            Nombre = nombre.Trim();
         }
 
         private void SetCarreraId(int carreraId)

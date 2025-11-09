@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Infrastructure.Data.Email
+﻿namespace PortalCOSIE.Application
 {
     public static class HtmlTemplates
     {

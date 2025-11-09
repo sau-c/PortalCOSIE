@@ -6,7 +6,6 @@ using PortalCOSIE.Domain.Entities;
 
 namespace PortalCOSIE.Web.Controllers
 {
-    [Authorize]
     public class TramiteController : Controller
     {
         private readonly ITramiteService _tramiteService;

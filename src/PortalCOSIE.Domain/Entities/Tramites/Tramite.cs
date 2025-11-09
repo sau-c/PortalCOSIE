@@ -13,7 +13,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         public DateTime? FechaConclusion { get; private set; }
 
         // Propiedades de navegación
-        public EstadoTramite EstadoTramite { get; private set; }
+        public EstadoDocumento EstadoTramite { get; private set; }
         public TipoTramite TipoTramite { get; private set; }
         public Alumno Alumno { get; private set; }
         public Personal Personal { get; private set; }
@@ -53,7 +53,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         /// <summary>
         /// Cambia el estado del trámite (por ejemplo: En Proceso → Concluido)
         /// </summary>
-        public void CambiarEstado(EstadoTramite nuevoEstado)
+        public void CambiarEstado(EstadoDocumento nuevoEstado)
         {
             if (nuevoEstado == null)
                 throw new DomainException("El nuevo estado no puede ser nulo.");

@@ -33,9 +33,9 @@
         // Método de negocio para actualizar nombre
         public void SetNombre(string nombre)
         {
-            nombre = nombre?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(nombre))
                 throw new DomainException("El nombre del documento no puede estar vacío.");
+            nombre = nombre?.Trim() ?? string.Empty;
             if (nombre.Length > 100)
                 throw new DomainException("El nombre del documento no puede exceder 100 caracteres.");
             Nombre = nombre;
@@ -53,8 +53,6 @@
         {
             if (nuevoEstado == null)
                 throw new DomainException("El estado del documento no puede ser nulo.");
-
-            //EstadoDocumento = nuevoEstado;
             DocumentoEstadoId = nuevoEstado.Id;
         }
 

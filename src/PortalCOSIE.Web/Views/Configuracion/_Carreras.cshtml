@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-end mt-3">
     <button type="button"
-            class="btn btn-sm btn-success generic-create"
+            class="btn btn-sm btn-primary generic-create"
             data-title="Crear carrera"
             data-action="@Url.Action("Carreras", "Configuracion")"
             data-placeholder="Nombre de la carrera"
@@ -52,8 +52,7 @@
                             data-action="@Url.Action("ToggleCarrera", "Configuracion")"
                             data-id="@carrera.Id"
                             data-name="@carrera.Nombre"
-                            data-estado-actual="@carrera.IsDeleted"
-                            data-entity="estado">
+                            data-estado-actual="@carrera.IsDeleted">
                         <i class="fas @(carrera.IsDeleted ? "fa-eye" : "fa-eye-slash")"></i>
                     </button>
                 </td>

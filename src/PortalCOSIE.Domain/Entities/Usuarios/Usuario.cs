@@ -57,9 +57,9 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
         // Método privado reutilizable
         private static void ValidarTexto(string valor, string campo)
         {
-            valor = valor?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(valor))
                 throw new DomainException($"El campo '{campo}' no puede estar vacío.");
+            valor = valor?.Trim() ?? string.Empty;
             if (!SoloLetras.IsMatch(valor))
                 throw new DomainException($"El campo '{campo}' solo puede contener letras, espacios o guiones.");
             if (valor.Length > LongitudMaxima)

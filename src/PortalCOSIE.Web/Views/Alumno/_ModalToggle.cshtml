@@ -1,0 +1,89 @@
+﻿<div class="modal fade" id="toggleRoleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="toggleRoleForm" asp-action="ActualizarRol" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header" id="modalHeader">
+                    <h5 class="modal-title">
+                        <i id="modalIcon" class="me-2"></i>
+                        <span id="modalTitle">Cambiar Estado</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <div id="modalMessage" class="alert" role="alert"></div>
+                    </div>
+                    <input type="hidden" id="userId" name="userId" />
+                    <input type="hidden" id="rol" name="rol" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" id="confirmButton" class="btn">
+                        <i id="confirmIcon" class="me-2"></i>
+                        <span id="confirmText">Confirmar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function inicializarModalToggle(){
+        $('#toggleRoleModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const userId = button.data('user-id');
+            const currentRole = button.data('current-role');
+            const roleType = button.data('role-type'); // "Alumno"
+
+            // Configurar campos ocultos
+            $('#userId').val(userId);
+            $('#rol').val(roleType);
+
+            // Configurar contenido del modal según el estado actual
+            const isActive = currentRole !== 'Inactivo';
+
+            if (isActive) {
+                // Usuario está activo, se va a desactivar
+                $('#modalHeader').removeClass('bg-success text-white').addClass('bg-warning text-dark');
+                $('#modalIcon').removeClass().addClass('fas fa-user-slash');
+                $('#modalTitle').text('Desactivar Usuario');
+                $('#modalMessage')
+                    .removeClass('alert-success')
+                    .addClass('alert-warning')
+                    .html(`<strong>¿Desactivar usuario?</strong><br>
+                            El usuario perderá el rol de "<strong>${roleType}</strong>" y su acceso al sistema será revocado.`);
+                $('#confirmButton')
+                    .removeClass('btn-success')
+                    .addClass('btn-warning');
+                $('#confirmIcon').removeClass().addClass('fas fa-user-slash');
+                $('#confirmText').text('Desactivar');
+            } else {
+                // Usuario está inactivo, se va a activar
+                $('#modalHeader').removeClass('bg-warning text-dark').addClass('bg-success text-white');
+                $('#modalIcon').removeClass().addClass('fas fa-user-check');
+                $('#modalTitle').text('Activar Usuario');
+                $('#modalMessage')
+                    .removeClass('alert-warning')
+                    .addClass('alert-success')
+                    .html(`<strong>¿Activar usuario?</strong><br>
+                            El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema.`);
+                $('#confirmButton')
+                    .removeClass('btn-warning')
+                    .addClass('btn-success');
+                $('#confirmIcon').removeClass().addClass('fas fa-user-check');
+                $('#confirmText').text('Activar');
+            }
+        });
+
+        // Deshabilitar botón al enviar el formulario
+        $('#toggleRoleForm').one('submit', function () {
+            $("#confirmButton").prop('disabled', true);
+            $('#confirmIcon').removeClass().addClass('fas fa-spinner fa-spin');
+            $('#confirmText').text('Cargando...');
+        });
+    }
+</script>

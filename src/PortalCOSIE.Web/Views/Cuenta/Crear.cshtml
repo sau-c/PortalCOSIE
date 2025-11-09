@@ -1,4 +1,4 @@
-﻿@model PortalCOSIE.Application.DTO.Cuenta.CrearCuentaDTO
+﻿@model PortalCOSIE.Application.DTO.Cuenta.CrearContrasenaDTO
 @{
     ViewData["Title"] = "Crear cuenta";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
@@ -12,17 +12,14 @@
         </div>
 
         <form asp-action="Crear" novalidate method="post">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-            <div class="row mb-3">
-                <div class="col">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
-                        <input asp-for="Correo" class="form-control" type="email" placeholder="Correo" />
-                    </div>
-                    <span asp-validation-for="Correo" class="text-danger small"></span>
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Message"]
                 </div>
-            </div>
-
+            }
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <input type="hidden" asp-for="IdentityUserId" />
             <div class="row mb-3">
                 <div class="col">
                     <div class="input-group">
@@ -61,10 +58,6 @@
                 <button type="submit" class="btn btn-primary shadow-sm w-100">
                     Crear
                 </button>
-            </div>
-
-            <div class="form-text text-center mt-2">
-                ¿Ya tienes una cuenta? <a asp-action="Ingresar">Ingresa aquí</a>
             </div>
         </form>
 

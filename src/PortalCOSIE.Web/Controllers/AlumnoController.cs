@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
 {
-    [Authorize]
     public class AlumnoController : Controller
     {
         private readonly ISecurityService _securityService;
@@ -31,42 +31,27 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Index()
         {
-            return View(await _securityService.ListarAlumnos());
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Editar(string id)
-        {
             ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
             ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
-            return View(await _usuarioService.BuscarAlumno(id));
+            return View(await _securityService.ListarAlumnos());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Editar(AlumnoDTO dto)
+        public async Task<IActionResult> Crear([FromBody] RegistrarAlumnoDTO dto)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-                ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
-                return View(dto);
-            }
-            var result = await _usuarioService.EditarAlumno(dto);
+            var result = await _securityService.RegistrarAlumnoPendiente(dto);
+            return Json(new { success = true, message = result.Value });
+        }
 
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                {
-                    ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-                    ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
-                    ModelState.AddModelError(string.Empty, error);
-                }
-                return View(dto);
-            }
-            return RedirectToAction(nameof(Index));
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> Editar([FromBody] AlumnoDTO dto)
+        {
+            var result = await _usuarioService.EditarAlumno(dto);
+            return Json(new { success = true, message = result.Value });
         }
 
         [HttpPost]
@@ -86,15 +71,5 @@ namespace PortalCOSIE.Web.Controllers
             var result = await _securityService.ActualizarCorreoAsync(userId, correo);
             return RedirectToAction(nameof(Index));
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Eliminar(string id)
-        {
-            var result = await _securityService.EliminarUsuario(id);
-            return RedirectToAction(nameof(Index), result);
-        }
-
     }
 }

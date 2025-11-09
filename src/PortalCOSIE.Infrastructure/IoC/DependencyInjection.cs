@@ -39,6 +39,9 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<ITramiteService, TramiteService>();
             services.AddScoped<ICatalogoService, CatalogoService>();
             services.AddScoped<ICarreraService, CarreraService>();
+            services.AddScoped<IEstadoDocumentoService, EstadoDocumentoService>();
+            services.AddScoped<IEstadoTramiteService, EstadoTramiteService>();
+            services.AddScoped<ITipoTramiteService, TipoTramiteService>();
 
             //Repositorios
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
@@ -48,7 +51,7 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IBaseRepository<Alumno>, BaseRepository<Alumno>>();
             services.AddScoped<ICarreraRepository, CarreraRepository>();
             services.AddScoped<IBaseRepository<Tramite>, BaseRepository<Tramite>>();
-            services.AddScoped<IBaseRepository<EstadoTramite>, BaseRepository<EstadoTramite>>();
+            services.AddScoped<IBaseRepository<EstadoDocumento>, BaseRepository<EstadoDocumento>>();
             services.AddScoped<IBaseRepository<TipoTramite>, BaseRepository<TipoTramite>>();
             services.AddScoped<IBaseRepository<Documento>, BaseRepository<Documento>>();
             services.AddScoped<IBaseRepository<EstadoDocumento>, BaseRepository<EstadoDocumento>>();

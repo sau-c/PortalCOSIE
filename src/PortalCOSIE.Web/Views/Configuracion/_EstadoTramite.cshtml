@@ -1,8 +1,8 @@
-﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Tramites.EstadoTramite>
+﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Tramites.EstadoDocumento>
 
 <div class="d-flex justify-content-end mt-3">
     <button type="button"
-            class="btn btn-sm btn-success generic-create"
+            class="btn btn-sm btn-primary generic-create"
             data-title="Crear estado"
             data-action="@Url.Action("Estados", "Configuracion")"
             data-placeholder="Nombre del estado del tramite"
@@ -49,8 +49,7 @@
                             data-action="@Url.Action("ToggleEstado", "Configuracion")"
                             data-id="@estado.Id"
                             data-name="@estado.Nombre"
-                            data-estado-actual="@estado.IsDeleted"
-                            data-entity="estado">
+                            data-estado-actual="@estado.IsDeleted">
                         <i class="fas @(estado.IsDeleted ? "fa-eye" : "fa-eye-slash")"></i>
                     </button>
                 </td>

@@ -14,7 +14,7 @@
             <button type="button"
                     class="btn btn-sm btn-primary btn-crear"
                     data-bs-toggle="modal"
-                    data-bs-target="#sesionModal"
+                    data-bs-target="#modalSesion"
                     data-mode="crear">
                 <i class="fas fa-plus me-1"></i>Crear sesión
             </button>
@@ -71,7 +71,7 @@
                                         class="btn btn-sm btn-outline-primary btn-editar"
                                         title="Editar"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#sesionModal"
+                                        data-bs-target="#modalSesion"
                                         data-mode="editar"
                                         data-id="@sesion.Id"
                                         data-numero-sesion="@sesion.NumeroSesion"
@@ -83,7 +83,7 @@
                                         class="btn btn-sm @(sesion.IsDeleted ? "btn-outline-success" : "btn-outline-danger") btn-toggle-estado"
                                         title="@(sesion.IsDeleted ? "Activar sesión" : "Desactivar sesión")"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#desactivarModal"
+                                        data-bs-target="#modalToggle"
                                         data-id="@sesion.Id"
                                         data-numero-sesion="@sesion.NumeroSesion"
                                         data-isdeleted="@sesion.IsDeleted">
@@ -101,9 +101,9 @@
 @if (puedeEditar)
 {
     <!-- Modal Crear/Editar -->
-    <partial>@await Html.PartialAsync("_ModalSesion")</partial>
+    <partial name="_ModalSesion" />
     <!-- Modal Desactivar -->
-    <partial>@await Html.PartialAsync("_ModalDesactivar")</partial>
+    <partial name="_ModalToggle" />
 }
 
 @section Scripts {
@@ -127,7 +127,10 @@
             // Agregar configuración para columna de acciones si puede editar
             @if (puedeEditar)
             {
-                        @:config.columnDefs.push({ targets: 3, width: "95px", className: "text-center", orderable: false });
+                @:config.columnDefs.push({ targets: 3, width: "95px", className: "text-center", orderable: false });
+                // Inicializar modales
+                @:inicializarModalSesion();
+                @:inicializarModalToggle();
             }
 
             $('#tblSesiones').DataTable(config);

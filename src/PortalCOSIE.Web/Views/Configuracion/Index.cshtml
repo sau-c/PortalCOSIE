@@ -1,6 +1,17 @@
 ﻿@{
     ViewData["Title"] = "Configuración del portal";
 }
+@{
+    // Definimos un array de tabs para no repetir HTML
+    var tabs = new[]
+    {
+        new { Id = "periodos", Title="Periodos", Icon="fas fa-calendar-alt", Action=Url.Action("Periodos","Configuracion")},
+        new { Id = "carreras", Title="Carreras", Icon="fas fa-graduation-cap", Action=Url.Action("Carreras","Configuracion")},
+        new { Id = "tipo", Title="Tipo trámite", Icon="fas fa-tasks", Action=Url.Action("Tipo","Configuracion")},
+        new { Id = "estadoTramite", Title="Estado trámite", Icon="fas fa-clipboard-check", Action=Url.Action("Estados","Configuracion")},
+        new { Id = "estadoDocumento", Title="Estado documento", Icon="fas fa-file-alt", Action=Url.Action("EstadosDocumento","Configuracion")}
+    };
+}
 
 <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -10,17 +21,6 @@
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
         <!-- Tabs -->
         <ul class="nav nav-tabs small" id="configTabs" role="tablist">
-            @* Definimos un array de tabs para no repetir HTML *@
-            @{
-                var tabs = new[]
-                {
-                        new { Id = "periodos", Title="Periodos", Icon="fas fa-calendar-alt", Action=Url.Action("Periodos","Configuracion")},
-                        new { Id = "carreras", Title="Carreras", Icon="fas fa-graduation-cap", Action=Url.Action("Carreras","Configuracion")},
-                        new { Id = "tipo", Title="Tipo trámite", Icon="fas fa-tasks", Action=Url.Action("Tipo","Configuracion")},
-                        new { Id = "estadoTramite", Title="Estado trámite", Icon="fas fa-clipboard-check", Action=Url.Action("Estados","Configuracion")},
-                        new { Id = "estadoDocumento", Title="Estado documento", Icon="fas fa-file-alt", Action=Url.Action("EstadosDocumento","Configuracion")}
-                        };
-            }
 
             @foreach (var tab in tabs)
             {
@@ -47,25 +47,26 @@
 </div>
 
 <!-- Modal Genérico para Crear/Editar -->
-<div class="modal fade" id="genericModal" tabindex="-1">
+<div class="modal fade" id="modalNombre" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="genericForm" method="post">
+            <form id="formNombre" method="post">
                 @Html.AntiForgeryToken()
-                <input type="hidden" id="genericId" name="id" />
+                <input type="hidden" id="hiddenNombreId" name="id" />
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="genericModalTitle">
-                        <i class="fas fa-edit me-2"></i>Editar
+                    <h5 class="modal-title" id="hdrNombre">
+                        <i class="fas fa-edit me-2"></i>
+                        @* Titulo dinamico *@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="genericNombre" class="form-label fw-semibold">
-                            <i class="fas fa-tag me-1"></i>Nombre
+                        <label for="txtNombre" class="form-label fw-semibold">
+                            <i class="fas fa-tag me-1"></i>Nombre:
                         </label>
-                        <input type="text" class="form-control" id="genericNombre" name="nombre" required
-                               placeholder="Ingrese el nombre" maxlength="100">
+                        <input type="text" id="txtNombre" name="nombre" class="form-control" required
+                               maxlength="100">
                         <div class="form-text text-muted">
                             <i class="fas fa-info-circle me-1"></i>Máximo 100 caracteres
                         </div>
@@ -75,8 +76,8 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i>Guardar
+                    <button id="btnSubmitNombre" type="submit" class="btn btn-primary">
+                        <i id="iconBtnNombre" class="fas fa-save me-2"></i>Guardar
                     </button>
                 </div>
             </form>
@@ -85,66 +86,64 @@
 </div>
 
 <!-- Modal Genérico para Toggle (Activar/Desactivar) -->
-<div class="modal fade" id="toggleGenericModal" tabindex="-1">
+<div class="modal fade" id="modalToggle" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="toggleGenericForm" method="post">
+            <form id="formToggle" method="post">
                 @Html.AntiForgeryToken()
-                <div class="modal-header" id="toggleGenericModalHeader">
-                    <h5 class="modal-title" id="toggleGenericModalTitle">
+                <div class="modal-header" id="divHdrToggle">
+                    <h5 class="modal-title" id="hdrToggle">
                         <i class="fas fa-exchange-alt me-2"></i>Cambiar estado
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert" id="toggleGenericAlert">
+                    <div class="alert" id="divAlertToggle">
                         <div class="d-flex">
-                            <i class="fas fa-2x me-3" id="toggleGenericAlertIcon"></i>
+                            <i class="fas fa-2x me-3" id="iconToggle"></i>
                             <div>
-                                <h6 class="alert-heading mb-2" id="toggleGenericAlertTitle">Cambio de estado</h6>
-                                <p id="toggleGenericAlertMessage" class="mb-0">
-                                    Esta acción cambiará la visibilidad del registro en el sistema.
-                                </p>
+                                <h6 class="alert-heading mb-2" id="hdrAlertTitle">@* Cambio de estado *@</h6>
+                                <p id="pMessageToggle" class="mb-0"></p>
                             </div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <p class="fw-semibold mb-2" id="toggleGenericQuestion">¿Está seguro de cambiar el estado?</p>
-                        <div class="card" id="toggleGenericCard">
+                        <p class="fw-semibold mb-2">¿Está seguro de cambiar el estado?</p>
+                        <div class="card" id="divCardToggle">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-4"><strong class="text-muted">ID:</strong></div>
-                                    <div class="col-8"><span id="toggleGenericId" class="fw-bold"></span></div>
+                                    <div class="col-8"><span id="spanToggleId" class="fw-bold"></span></div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-4"><strong class="text-muted">Nombre:</strong></div>
-                                    <div class="col-8"><span id="toggleGenericName" class="fw-bold"></span></div>
+                                    <div class="col-8"><span id="spanToggleNombre" class="fw-bold"></span></div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-4"><strong class="text-muted">Estado actual:</strong></div>
                                     <div class="col-8">
-                                        <span class="badge" id="toggleGenericCurrentStatus"></span>
+                                        <span class="badge" id="spanToggleStatus"></span>
                                     </div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-4"><strong class="text-muted">Nuevo estado:</strong></div>
                                     <div class="col-8">
-                                        <span class="badge" id="toggleGenericNewStatus"></span>
+                                        <span class="badge" id="spanToggleNewStatus"></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" id="toggleGenericIdInput" name="id" />
-                    <input type="hidden" id="toggleGenericCurrentState" name="currentState" />
+                    <input type="hidden" id="hiddenToggleId" name="id" />
+                    @* <input type="hidden" id="hiddenToggleStatus"/> *@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn" id="toggleGenericSubmitBtn">
-                        <i class="fas me-1" id="toggleGenericSubmitIcon"></i>
-                        <span id="toggleGenericSubmitText">Cambiar estado</span>
+                    <button type="submit" class="btn" id="btnToggle">
+                        <i class="fas me-1" id="iBtnToggle"></i>
+                        <span id="btnToggleText">Cambiar estado</span>
                     </button>
                 </div>
             </form>
@@ -155,9 +154,9 @@
 @section Scripts {
     <script>
         // Modal Genérico Crear/Editar
-        const openGenericModal = (options) => {
+        const openModalNombre = (options) => {
             const config = {
-                title: 'Editar',
+                title: 'Crear/Editar',
                 action: '',
                 id: '',
                 nombre: '',
@@ -166,126 +165,149 @@
                 ...options
             };
 
-            $('#genericModalTitle').html(`<i class="${config.icon} me-2"></i>${config.title}`);
-            $('#genericForm').attr('action', config.action);
-            $('#genericId').val(config.id);
-            $('#genericNombre').val(config.nombre).attr('placeholder', config.placeholder);
-
-            $('#genericModal').modal('show');
-            $('#genericNombre').focus().select();
+            $('#hdrNombre').html(`<i class="${config.icon} me-2"></i>${config.title}`);
+            $('#formNombre').attr('action', config.action);
+            $('#hiddenNombreId').val(config.id);
+            $('#txtNombre').val(config.nombre).attr('placeholder', config.placeholder);
+            // Mostrar y focus en input
+            $('#modalNombre').modal('show');
+            $('#modalNombre').on('shown.bs.modal', function () {
+                $('#txtNombre').trigger('focus');
+            });
         };
 
-        // Modal Genérico toggle
-        const openToggleModal = (options) => {
+        // Modal Genérico Toggle
+        const openModalToggle = (options) => {
             const config = {
                 title: 'Cambiar estado',
                 action: '',
                 id: '',
                 name: '',
                 estadoActual: '',
-                entityName: 'elemento',
                 ...options
             };
 
             if (config.estadoActual == 'False') {
                 // Actualmente ACTIVO → cambiar a INACTIVO
-                $('#toggleGenericModalHeader').removeClass('bg-success').addClass('bg-danger text-white');
-                $('#toggleGenericAlert').removeClass('alert-success border-success').addClass('alert-warning border-warning');
-                $('#toggleGenericAlertIcon').removeClass('fa-check-circle text-success').addClass('fa-exclamation-triangle text-warning');
-                $('#toggleGenericCard').removeClass('border-success').addClass('border-danger');
-                $('#toggleGenericSubmitBtn').removeClass('btn-success').addClass('btn-danger');
-                $('#toggleGenericSubmitIcon').removeClass('fa-eye').addClass('fa-eye-slash');
-                $('#toggleGenericSubmitText').text('Desactivar');
+                $('#divHdrToggle').removeClass('bg-success').addClass('bg-danger text-white');
+                $('#divAlertToggle').removeClass('alert-success border-success').addClass('alert-warning border-warning');
+                $('#iconToggle').removeClass('fa-check-circle text-success').addClass('fa-exclamation-triangle text-warning');
+                $('#divCardToggle').removeClass('border-success').addClass('border-danger');
+                $('#btnToggle').removeClass('btn-success').addClass('btn-danger');
+                $('#iBtnToggle').removeClass('fa-eye').addClass('fa-eye-slash');
+                $('#btnToggleText').text('Desactivar');
 
-                $('#toggleGenericCurrentStatus').removeClass('bg-danger').addClass('bg-success').text('Activo');
-                $('#toggleGenericNewStatus').removeClass('bg-success').addClass('bg-danger').text('Inactivo');
+                $('#spanToggleStatus').removeClass('bg-danger').addClass('bg-success').text('Activo');
+                $('#spanToggleNewStatus').removeClass('bg-success').addClass('bg-danger').text('Inactivo');
 
-                $('#toggleGenericAlertTitle').text('Desactivar registro');
-                $('#toggleGenericAlertMessage').text('Esta acción ocultará el registro en el sistema, sin embargo no afecta acciones pasadas.');
-                $('#toggleGenericQuestion').text(`¿Está seguro de desactivar el siguiente ${config.entityName}?`);
+                $('#hdrAlertTitle').text('Desactivar registro');
+                $('#pMessageToggle').text('Esta acción ocultará el registro en el sistema para acciones de creación.');
             } else {
                 // Actualmente INACTIVO → cambiar a ACTIVO
-                $('#toggleGenericModalHeader').removeClass('bg-danger').addClass('bg-success text-white');
-                $('#toggleGenericAlert').removeClass('alert-warning border-warning').addClass('alert-success border-success');
-                $('#toggleGenericAlertIcon').removeClass('fa-exclamation-triangle text-warning').addClass('fa-check-circle text-success');
-                $('#toggleGenericCard').removeClass('border-danger').addClass('border-success');
-                $('#toggleGenericSubmitBtn').removeClass('btn-danger').addClass('btn-success');
-                $('#toggleGenericSubmitIcon').removeClass('fa-eye-slash').addClass('fa-eye');
-                $('#toggleGenericSubmitText').text('Activar');
+                $('#divHdrToggle').removeClass('bg-danger').addClass('bg-success text-white');
+                $('#divAlertToggle').removeClass('alert-warning border-warning').addClass('alert-success border-success');
+                $('#iconToggle').removeClass('fa-exclamation-triangle text-warning').addClass('fa-check-circle text-success');
+                $('#divCardToggle').removeClass('border-danger').addClass('border-success');
+                $('#btnToggle').removeClass('btn-danger').addClass('btn-success');
+                $('#iBtnToggle').removeClass('fa-eye-slash').addClass('fa-eye');
+                $('#btnToggleText').text('Activar');
 
-                $('#toggleGenericCurrentStatus').removeClass('bg-success').addClass('bg-danger').text('Inactivo');
-                $('#toggleGenericNewStatus').removeClass('bg-danger').addClass('bg-success').text('Activo');
+                $('#spanToggleStatus').removeClass('bg-success').addClass('bg-danger').text('Inactivo');
+                $('#spanToggleNewStatus').removeClass('bg-danger').addClass('bg-success').text('Activo');
 
-                $('#toggleGenericAlertTitle').text('Activar registro');
-                $('#toggleGenericAlertMessage').text('Esta acción hará visible el registro en el sistema.');
-                $('#toggleGenericQuestion').text(`¿Está seguro de activar el siguiente ${config.entityName}?`);
+                $('#hdrAlertTitle').text('Activar registro');
+                $('#pMessageToggle').text('Esta acción hará visible el registro en el sistema para acciones de creación.');
             }
 
             // Configurar datos
-            $('#toggleGenericModalTitle').html(`<i class="fas fa-exchange-alt me-2"></i>${config.title}`);
-            $('#toggleGenericForm').attr('action', config.action);
-            $('#toggleGenericId').text(config.id);
-            $('#toggleGenericName').text(config.name);
-            $('#toggleGenericIdInput').val(config.id);
-            $('#toggleGenericCurrentState').val(config.estadoActual);
+            $('#hdrToggle').html(`<i class="fas fa-exchange-alt me-2"></i>${config.title}`);
+            $('#formToggle').attr('action', config.action);
+            $('#spanToggleId').text(config.id);
+            $('#spanToggleNombre').text(config.name);
+            $('#hiddenToggleId').val(config.id);
+            $('#hiddenToggleStatus').val(config.estadoActual);
 
-            $('#toggleGenericModal').modal('show');
+            $('#modalToggle').modal('show');
         };
 
-        // Event Handlers
+        // Event Handlers - Estilo limpio y directo
+        $('#formNombre').on('submit', async function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const url = $(form).attr('action');
+            const formData = new FormData(form);
+
+            // Deshabilitar botón y cambiar contenido
+            const originalIconClass = $('#iconBtnNombre').attr('class');
+            const originalText = $('#btnSubmitNombre').text();
+            $("#btnSubmitNombre").prop('disabled', true);
+            $('#iconBtnNombre').attr('class', 'fas fa-spinner fa-spin me-2');
+            $('#btnSubmitNombre').text('Cargando...');
+
+            const resultado = await executeFetch(url, 'POST', formData);
+            if (resultado.success) {
+                showGlobalModal('success', resultado.message);
+                $('#modalNombre').modal('hide');
+            } else {
+                showGlobalModal('error', resultado.message);
+                // Reactivar boton
+                $("#btnSubmitNombre").prop('disabled', false)
+                $('#iconBtnNombre').attr('class', originalIconClass);
+                $('#btnSubmitNombre').text(originalText);
+            }
+        });
+
+        $('#formToggle').on('submit', async function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const url = $(form).attr('action');
+            const formData = new FormData(form);
+
+            const resultado = await executeFetch(
+                url,
+                'POST',
+                formData,
+            );
+            if (resultado.success) {
+                showGlobalModal('success', resultado.message);
+                $('#modalToggle').modal('hide');
+            } else {
+                showGlobalModal('error', resultado.message);
+            }
+        });
+
+        // Event Handlers para abrir modales
         $(document)
-            .on('submit', '#genericForm', function(e) {
-                const nombre = $('#genericNombre').val().trim();
-                if (!nombre || nombre.length > 100) {
-                    e.preventDefault();
-                    alert(!nombre ? 'Por favor ingrese el nombre' : 'El nombre no puede exceder los 100 caracteres');
-                    $('#genericNombre').focus();
-                    return false;
-                }
-                return true;
-            })
-            .on('click', '.generic-edit', function() {
+            .on('click', '.generic-edit, .generic-create', function() {
                 const $btn = $(this);
-                openGenericModal({
+                const isEdit = $btn.hasClass('generic-edit');
+
+                openModalNombre({
                     title: $btn.data('title'),
                     action: $btn.data('action'),
-                    id: $btn.data('id'),
-                    nombre: $btn.data('nombre'),
-                    placeholder: $btn.data('placeholder'),
-                    icon: $btn.data('icon')
-                });
-            })
-            .on('click', '.generic-create', function() {
-                const $btn = $(this);
-                openGenericModal({
-                    title: $btn.data('title'),
-                    action: $btn.data('action'),
-                    id: '',
-                    nombre: '',
+                    id: isEdit ? $btn.data('id') : '',
+                    nombre: isEdit ? $btn.data('nombre') : '',
                     placeholder: $btn.data('placeholder'),
                     icon: $btn.data('icon')
                 });
             })
             .on('click', '.generic-toggle', function() {
                 const $btn = $(this);
-                const entity = $btn.data('entity') || 'elemento';
 
-                openToggleModal({
-                    title: `Cambiar estado`,
+                openModalToggle({
+                    title: 'Cambiar estado',
                     action: $btn.data('action'),
                     id: $btn.data('id'),
                     name: $btn.data('name'),
                     estadoActual: $btn.data('estado-actual'),
-                    entityName: entity
+                    entityName: $btn.data('entity') || 'elemento'
                 });
-            })
-            .on('hidden.bs.modal', '#genericModal, #toggleGenericModal', function() {
-                $(this).find('form')[0].reset();
-                $(this).find('input[type="hidden"]').val('');
             });
 
         $(document).ready(function () {
-            const loadTabConfig = (tabButton) => {
+            const loadTabConfig = async (tabButton) => {
                 const $button = $(tabButton);
                 const target = $button.data('bs-target');
                 const action = $button.data('action');
@@ -293,13 +315,13 @@
 
                 if ($container.data('loaded')) return;
 
-                $.get(action)
-                    .done(data => {
-                        $container.html(data).data('loaded', true);
-                    })
-                    .fail(() => {
-                        $container.html('<div class="text-danger p-3">Error al cargar el contenido.</div>');
-                    });
+                const resultado = await executeFetch(action, 'GET', null, 'text');
+                if (resultado.success) {
+                    $container.html(resultado.data).data('loaded', true);
+                } else {
+                    $container.html('<div class="text-danger p-3">Error al cargar el contenido.</div>');
+                }
+
             };
 
             // Cargar tab activo inicial

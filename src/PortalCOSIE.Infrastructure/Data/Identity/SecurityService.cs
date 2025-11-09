@@ -3,8 +3,8 @@ using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
-using PortalCOSIE.Infrastructure.Data.Email;
 using System.Data;
 using System.Net;
 
@@ -13,49 +13,83 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
     public class SecurityService : ISecurityService
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IEmailSender _emailSender;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
+            IUnitOfWork unitOfWork,
             IUsuarioRepository usuarioRepo,
             IEmailSender emailSender)
         {
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
             _usuarioRepo = usuarioRepo;
             _emailSender = emailSender;
         }
-
-        public async Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto)
+        public async Task<Result<string>> RegistrarAlumnoPendiente(RegistrarAlumnoDTO dto)
         {
-            var user = new IdentityUser
+            try
             {
-                UserName = dto.Correo,
-                Email = dto.Correo,
-                PhoneNumber = dto.Celular
-            };
+                await _unitOfWork.BeginTransactionAsync();
 
-            var crear = await _userManager.CreateAsync(user, dto.Contrasena);
-            if (!crear.Succeeded)
-            {
-                var errors = crear.Errors.Select(e => e.Description);
-                return Result<string>.Failure(errors);
+                if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
+                {
+                    throw new ApplicationException("El número de boleta ya existe");
+                }
+
+                var alumno = new Alumno(
+                    dto.NumeroBoleta,
+                    dto.PeriodoIngreso,
+                    dto.CarreraId
+                );
+
+                var user = new IdentityUser
+                {
+                    UserName = dto.Correo,
+                    Email = dto.Correo
+                };
+
+                var usuario = new Usuario(
+                    user.Id,
+                    dto.Nombre,
+                    dto.ApellidoPaterno,
+                    dto.ApellidoMaterno
+                );
+                usuario.SetAlumno(alumno);
+
+                var crear = await _userManager.CreateAsync(user);
+                if (!crear.Succeeded)
+                {
+                    var errores = string.Join(", ", crear.Errors.Select(e => e.Description));
+                    throw new ApplicationException(errores);
+                }
+
+                await _usuarioRepo.AddAsync(usuario);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var encodedToken = WebUtility.UrlEncode(token);
+                var correo = await _emailSender.SendEmailAsync(
+                    dto.Correo,
+                    "Confirma tu cuenta",
+                    HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken)
+                );
+
+                if (!correo.Succeeded)
+                {
+                    throw new ApplicationException(crear.Errors.ToString());
+                }
+
+                return Result<string>.Success("Se ha enviado un enlace al correo para confirmar la cuenta. Favor de revisar su spam.");
             }
-
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodedToken = WebUtility.UrlEncode(token);
-
-            var correo = await _emailSender.SendEmailAsync(
-                dto.Correo,
-                "Confirma tu cuenta",
-                HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken));
-
-            if (!correo.Succeeded)
+            catch (Exception)
             {
-                var errors = crear.Errors.Select(e => e.Description);
-                return Result<string>.Failure(errors);
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
             }
-            return Result<string>.Success("Se ha enviado un enlace a tu correo para confirmar tu cuenta. No olvides revisar tu carpeta de spam.");
         }
         public async Task<Result<string>> ConfirmarCorreoAsync(string correo, string token)
         {
@@ -82,6 +116,19 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 return Result<string>.Failure(errors);
             }
             return Result<string>.Success("Correo confirmado");
+        }
+        public async Task<Result<string>> CrearContrasenaAsync(CrearContrasenaDTO dto)
+        {
+            var user = await _userManager.FindByIdAsync(dto.IdentityUserId);
+
+            var crear = await _userManager.CreateAsync(user, dto.Contrasena);
+            if (!crear.Succeeded)
+            {
+                var errors = crear.Errors.Select(e => e.Description);
+                return Result<string>.Failure(errors);
+            }
+
+            return Result<string>.Success("Se creo el acceso.");
         }
         public async Task<Result<string>> RecuperarContrasenaAsync(CorreoDTO dto)
         {
@@ -151,21 +198,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                     return Result<string>.Failure($"Error al actualizar nombre de usuario: {string.Join(", ", setUserNameResult.Errors.Select(e => e.Description))}");
             }
             return Result<string>.Success("Correo actualizado con éxito");
-        }
-        public async Task<Result<string>> EliminarUsuario(string id)
-        {
-            // 1. Validaciones de entrada
-            if (string.IsNullOrEmpty(id))
-                return Result<string>.Failure("Se requiere ID de usuario");
-            // 2. Obtener usuario
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-                return Result<string>.Failure("Usuario no encontrado");
-            // 3. Operación de eliminación
-            var result = await _userManager.DeleteAsync(user);
-            if (!result.Succeeded)
-                return Result<string>.Failure($"Error al eliminar usuario: {result.Errors}");
-            return Result<string>.Success("Usuario eliminado con éxito");
         }
         public async Task<Result<string>> ToggleRol(string userId, string rol)
         {

@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-end mt-3">
     <button type="button"
-            class="btn btn-sm btn-success generic-create"
+            class="btn btn-sm btn-primary generic-create"
             data-title="Crear tipo"
             data-action="@Url.Action("Tipo", "Configuracion")"
             data-placeholder="Nombre del tipo"
@@ -39,7 +39,7 @@
                             data-action="@Url.Action("EditarTipo", "Configuracion")"
                             data-id="@tipo.Id"
                             data-nombre="@tipo.Nombre"
-                            data-placeholder="Nombre del tramite"
+                            data-placeholder="Nombre del tipo tramite"
                             data-icon="fas fa-tasks">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -49,8 +49,7 @@
                             data-action="@Url.Action("ToggleTipo", "Configuracion")"
                             data-id="@tipo.Id"
                             data-name="@tipo.Nombre"
-                            data-estado-actual="@tipo.IsDeleted"
-                            data-entity="tipo">
+                            data-estado-actual="@tipo.IsDeleted">
                         <i class="fas @(tipo.IsDeleted ? "fa-eye" : "fa-eye-slash")"></i>
                     </button>
                 </td>

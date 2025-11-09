@@ -19,6 +19,8 @@ namespace PortalCOSIE.Infrastructure.Repositories
 
         public async Task<TEntity> GetByIdAsync(int id)
         {
+            if (id <= 0)
+                throw new ArgumentOutOfRangeException(nameof(id), "El Id no puede ser menor o igual a 0");
             return await _dbSet.FindAsync(id);
         }
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool filtrarActivos)

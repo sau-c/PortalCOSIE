@@ -2,11 +2,9 @@
 
 namespace PortalCOSIE.Application.DTO.Cuenta
 {
-    public class CrearCuentaDTO
+    public class CrearContrasenaDTO
     {
-        [Required(ErrorMessage = "Campo obligatorio.")]
-        [EmailAddress(ErrorMessage = "Formato incorrecto.")]
-        public string Correo { get; set; }
+        public string IdentityUserId { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         [RegularExpression(@"^\d{1,10}$", ErrorMessage = "Ingrese solo números.")]

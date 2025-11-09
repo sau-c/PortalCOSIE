@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Application.Services;
 using System.Security.Claims;
 
 namespace PortalCOSIE.Web.Controllers
@@ -14,22 +12,16 @@ namespace PortalCOSIE.Web.Controllers
         private readonly IAuthService _authService;
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
-        private readonly ICarreraService _carreraService;
-        private readonly ICatalogoService _catalogoService;
 
         public CuentaController(
             IAuthService authService,
             ISecurityService securityService,
-            IUsuarioService usuarioService,
-            ICarreraService carreraService,
-            ICatalogoService catalogoService
+            IUsuarioService usuarioService
             )
         {
             _authService = authService;
             _securityService = securityService;
             _usuarioService = usuarioService;
-            _carreraService = carreraService;
-            _catalogoService = catalogoService;
         }
 
         [HttpGet]
@@ -44,14 +36,14 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear(CrearCuentaDTO dto)
+        public async Task<IActionResult> Crear(CrearContrasenaDTO dto)
         {
             if (!ModelState.IsValid)
             {
                 return View(dto);
             }
 
-            var result = await _securityService.CrearUsuarioAsync(dto);
+            var result = await _securityService.CrearContrasenaAsync(dto);
 
             if (!result.Succeeded)
             {
@@ -82,14 +74,14 @@ namespace PortalCOSIE.Web.Controllers
             {
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error);
+                    TempData["Message"] = result.Value;
                 }
             }
             else
             {
                 TempData["Message"] = result.Value;
             }
-            return RedirectToAction(nameof(Ingresar));
+            return RedirectToAction(nameof(Crear));
         }
 
         [HttpGet]
@@ -124,53 +116,39 @@ namespace PortalCOSIE.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Registrar()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null || User.IsInRole("Administrador, Personal"))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-            ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
-            return View();
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Authorize]
+        //public async Task<IActionResult> Registrar(RegistrarAlumnoDTO dto)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
+        //        ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
+        //        return View(dto);
+        //    }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Registrar(RegistrarDTO dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-                ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
-                return View(dto);
-            }
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null || User.IsInRole("Administrador"))
+        //    {
+        //        ModelState.AddModelError(string.Empty, "No es posible registrar este usuario");
+        //    }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null || User.IsInRole("Administrador"))
-            {
-                ModelState.AddModelError(string.Empty, "No es posible registrar este usuario");
-            }
+        //    var result = await _usuarioService.RegistrarAlumnoPendiente(dto);
 
-            var result = await _usuarioService.RegistrarAlumno(dto, userId);
+        //    if (!result.Succeeded)
+        //    {
+        //        foreach (var error in result.Errors)
+        //        {
+        //            ModelState.AddModelError(string.Empty, error);
+        //            ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
+        //            ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
+        //        }
+        //        return View(dto);
+        //    }
 
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                    ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-                    ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
-                }
-                return View(dto);
-            }
-
-            return RedirectToAction("Index", "Home");
-        }
+        //    return RedirectToAction("Index", "Home");
+        //}
 
         [HttpGet]
         public IActionResult Recuperar()
@@ -232,7 +210,7 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Personal, Alumno")]
         public async Task<IActionResult> MisDatos()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

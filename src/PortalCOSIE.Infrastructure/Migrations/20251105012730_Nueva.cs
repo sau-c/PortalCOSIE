@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CrearBD : Migration
+    public partial class Nueva : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -252,7 +252,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -265,8 +265,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         name: "FK_Usuario_AspNetUsers_IdentityUserId",
                         column: x => x.IdentityUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -492,7 +491,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 columns: new[] { "Id", "IsDeleted", "Nombre" },
                 values: new object[,]
                 {
-                    { 1, false, "Dictamen interno (CTE)" },
+                    { 1, false, "Dictamen interno (CTCE)" },
                     { 2, false, "Dictamen externo (CGC)" }
                 });
 

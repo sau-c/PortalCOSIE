@@ -1,24 +1,31 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain;
 using PortalCOSIE.Domain.Enums;
 
 namespace PortalCOSIE.Web.Controllers
 {
-    [Authorize]
     public class ConfiguracionController : Controller
     {
         private readonly ICatalogoService _catalogoService;
         private readonly ICarreraService _carreraService;
+        private readonly IEstadoTramiteService _estadoTramiteService;
+        private readonly ITipoTramiteService _tipoTramiteService;
+        private readonly IEstadoDocumentoService _estadoDocumentoService;
 
         public ConfiguracionController(
+            ICatalogoService tramiteService,
             ICarreraService catalogoService,
-            ICatalogoService tramiteService
+            IEstadoTramiteService estadoTramiteService,
+            ITipoTramiteService tipoTramiteService,
+            IEstadoDocumentoService estadoDocumentoService
             )
         {
-            _carreraService = catalogoService;
             _catalogoService = tramiteService;
+            _carreraService = catalogoService;
+            _estadoTramiteService = estadoTramiteService;
+            _tipoTramiteService = tipoTramiteService;
+            _estadoDocumentoService = estadoDocumentoService;
         }
 
         [HttpGet]
@@ -36,36 +43,28 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Carreras(string nombre)
+        public async Task<IActionResult> Carreras([FromForm] string nombre)
         {
-            try
-            {
-                await _carreraService.CrearCarreraAsync(nombre);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DomainException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Index));
-            }
+            await _carreraService.CrearCarreraAsync(nombre);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> EditarCarrera(int id, string Nombre)
+        public async Task<IActionResult> EditarCarrera([FromForm] int id, [FromForm] string nombre)
         {
-            await _carreraService.EditarCarreraAsync(id, Nombre);
-            return RedirectToAction(nameof(Index));
+            await _carreraService.EditarCarreraAsync(id, nombre);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> ToggleCarrera(int id)
+        public async Task<IActionResult> ToggleCarrera([FromForm] int id)
         {
             await _carreraService.ToggleCarrrera(id);
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpGet]
@@ -77,26 +76,26 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Unidades(string nombre, int carreraId, Semestre semestre)
+        public async Task<IActionResult> Unidades([FromForm] string nombre, [FromForm] int carreraId, [FromForm] Semestre semestre)
         {
             await _carreraService.CrearUnidadAsync(nombre, carreraId, semestre);
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Cambios guardados" });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> EditarUnidad(string carreraNombre, int id, string nombre, Semestre semestre)
+        public async Task<IActionResult> EditarUnidad([FromForm] int id, [FromForm] string nombre, [FromForm] string carreraNombre, [FromForm] Semestre semestre)
         {
             await _carreraService.EditarUnidadAsync(carreraNombre, id, nombre, semestre);
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Cambios guardados" });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> ToggleUnidad(string carreraNombre, int id)
+        public async Task<IActionResult> ToggleUnidad([FromForm] string carreraNombre, [FromForm] int id)
         {
             await _carreraService.ToggleUnidad(carreraNombre, id);
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Cambios guardados" });
         }
         #endregion
 
@@ -105,34 +104,34 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Estados()
         {
-            return PartialView("_EstadoTramite", await _catalogoService.ListarEstadoTramite());
+            return PartialView("_EstadoTramite", await _estadoTramiteService.ListarEstadoTramite());
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Estados(string nombre)
+        public async Task<IActionResult> Estados([FromForm] string nombre)
         {
-            await _catalogoService.CrearEstadoTramite(nombre);
-            return RedirectToAction(nameof(Index));
+            await _estadoTramiteService.CrearEstadoTramite(nombre);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditarEstadoTramite(int id, string nombre)
+        public async Task<IActionResult> EditarEstadoTramite([FromForm] int id, [FromForm] string nombre)
         {
-            await _catalogoService.EditarEstadoTramite(id, nombre);
-            return RedirectToAction(nameof(Index));
+            await _estadoTramiteService.EditarEstadoTramite(id, nombre);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> ToggleEstado(int id)
+        public async Task<IActionResult> ToggleEstado([FromForm] int id)
         {
-            await _catalogoService.ToggleEstadoTramite(id);
-            return RedirectToAction(nameof(Index));
+            await _estadoTramiteService.ToggleEstadoTramite(id);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
         #endregion
 
@@ -141,34 +140,34 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> EstadosDocumento()
         {
-            return PartialView("_EstadoDocumento", await _catalogoService.ListarEstadosDocumento());
+            return PartialView("_EstadoDocumento", await _estadoDocumentoService.ListarEstadosDocumento());
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EstadosDocumento(string nombre)
+        public async Task<IActionResult> EstadosDocumento([FromForm] string nombre)
         {
-            await _catalogoService.CrearEstadoDocumento(nombre);
-            return RedirectToAction(nameof(Index));
+            await _estadoDocumentoService.CrearEstadoDocumento(nombre);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> EditarEstadoDocumento(int id, string nombre)
+        public async Task<IActionResult> EditarEstadoDocumento([FromForm] int id, [FromForm] string nombre)
         {
-            await _catalogoService.EditarEstadoDocumento(id, nombre);
-            return RedirectToAction(nameof(Index));
+            await _estadoDocumentoService.EditarEstadoDocumento(id, nombre);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> ToggleEstadoDocumento(int id)
+        public async Task<IActionResult> ToggleEstadoDocumento([FromForm] int id)
         {
-            await _catalogoService.ToggleEstadoDocumento(id);
-            return RedirectToAction(nameof(Index));
+            await _estadoDocumentoService.ToggleEstadoDocumento(id);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
         #endregion
 
@@ -177,34 +176,34 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Tipo()
         {
-            return PartialView("_TipoTramite", await _catalogoService.ListarTipoTramite());
+            return PartialView("_TipoTramite", await _tipoTramiteService.ListarTipoTramite());
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Tipo(string nombre)
+        public async Task<IActionResult> Tipo([FromForm] string nombre)
         {
-            await _catalogoService.CrearTipoTramite(nombre);
-            return RedirectToAction(nameof(Index));
+            await _tipoTramiteService.CrearTipoTramite(nombre);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador, Personal")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditarTipo(int id, string nombre)
+        public async Task<IActionResult> EditarTipo([FromForm] int id, [FromForm] string nombre)
         {
-            await _catalogoService.EditarTipoTramite(id, nombre);
-            return RedirectToAction(nameof(Index));
+            await _tipoTramiteService.EditarTipoTramite(id, nombre);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> ToggleTipo(int id)
+        public async Task<IActionResult> ToggleTipo([FromForm] int id)
         {
-            await _catalogoService.ToggleTipoTramite(id);
-            return RedirectToAction(nameof(Index));
+            await _tipoTramiteService.ToggleTipoTramite(id);
+            return Json(new { success = true, message = "Cambios guardados" });
         }
 
         #endregion
@@ -221,7 +220,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Periodos(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
         {
             await _catalogoService.EditarPeriodoConfig(anioInicio, periodoInicio, anioFin, periodoFin);
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Cambios guardados" });
         }
     }
 }

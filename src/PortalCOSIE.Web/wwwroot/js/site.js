@@ -1,34 +1,63 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿/**
+ * Función genérica para hacer fetch
+ * @param {string} url URL del recurso
+ * @param {string} metodo Método HTTP ('GET', 'POST', etc.)
+ * @param {object|null} datos Datos a enviar (opcional)
+ * @param {string} tipoRespuesta 'json', 'text', 'html' (por defecto 'json')
+ * @returns {Promise<{success: boolean, data?: any, message?: string}>} Respuesta procesada
+ */
 
-// Write your JavaScript code.
+async function executeFetch(url, metodo = 'GET', datos = null, tipoRespuesta = 'json') {
+    const opciones = {
+        method: metodo,
+        headers: {}
+    };
 
-class GlobalLoader {
-    static requests = 0;
-
-    static show() {
-        this.requests++;
-        $('#globalLoader')
-            .removeClass('d-none')
-            .addClass('d-flex')
-            .show(); // Por si acaso
+    // Añadir token anti-forgery si existe
+    const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+    if (tokenInput) {
+        opciones.headers['RequestVerificationToken'] = tokenInput.value;
     }
 
-    static hide() {
-        this.requests = Math.max(0, this.requests - 1);
-        if (this.requests === 0) {
-            $('#globalLoader')
-                .removeClass('d-flex')
-                .addClass('d-none')
-                .hide(); // Por si acaso
+    // Enviar datos si los hay
+    if (datos) {
+        // Si los datos son FormData, no se pone Content-Type manualmente
+        if (datos instanceof FormData) {
+            opciones.body = datos;
+        } else {
+            // Tipo JSON
+            opciones.headers['Content-Type'] = 'application/json';
+            opciones.body = JSON.stringify(datos);
         }
     }
 
-    static init() {
-        $(document).ajaxStart(() => GlobalLoader.show());
-        $(document).ajaxStop(() => GlobalLoader.hide());
-        $(document).ajaxError(() => GlobalLoader.hide());
-    }
-}
+    const response = await fetch(url, opciones);
 
-$(document).ready(() => GlobalLoader.init());
+    // Verificar si hay redirección (sesión expirada)
+    if (response.redirected) {
+        window.location.href = response.url;
+        throw new Error('Sesión expirada. Redirigiendo...');
+    }
+
+    // Parsear respuesta
+    const resultado = tipoRespuesta.toLowerCase() === 'json'
+        ? await response.json()
+        : await response.text();
+
+    // Si el status no es exitoso, lanzar error
+    if (!response.ok) {
+        const errorMessage = resultado?.message || `Error ${response.status}`;
+        throw new Error(errorMessage);
+    }
+
+    // Lanzar error si el backend indica failure
+    if (resultado.success === false) {
+        throw new Error(resultado.message || 'Operación falló');
+    }
+
+    return {
+        success: true,
+        data: resultado,
+        message: resultado.message
+    };
+}

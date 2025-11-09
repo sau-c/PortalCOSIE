@@ -47,7 +47,7 @@ namespace PortalCOSIE.Infrastructure.Data.Email
             };
 
             await smtpClient.SendMailAsync(mailMessage);
-            return Result<string>.Success("Correo enviado correctamente.");
+            return Result<string>.Success("Correo enviado correctamente");
         }
     }
 

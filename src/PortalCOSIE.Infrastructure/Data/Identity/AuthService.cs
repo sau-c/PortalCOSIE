@@ -10,11 +10,12 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
     /// </summary>
     public class AuthService: IAuthService
     {
-        //Ya quedo
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public AuthService(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AuthService(
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -60,7 +61,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 ? Result<string>.Success("Inicio de sesión exitoso.")
                 : Result<string>.Failure("Contraseña incorrecta.");
         }
-
         public async Task CerrarSesionAsync()
         {
             await _signInManager.SignOutAsync();

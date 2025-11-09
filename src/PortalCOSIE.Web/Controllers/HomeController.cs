@@ -5,7 +5,6 @@ using System.Security.Claims;
 
 namespace PortalCOSIE.Web.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         private readonly IUsuarioService _usuarioService;
@@ -21,13 +20,13 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Administrador, Personal, Alumno")]
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) == null && !User.IsInRole("Administrador"))
             {
-                return RedirectToAction("Registrar", "Cuenta");
+                return RedirectToAction("Crear", "Cuenta");
             }
 
             if (User.IsInRole("Administrador") || User.IsInRole("Personal"))
