@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Application.DTO.Cuenta
+﻿namespace PortalCOSIE.Application.DTO.Usuario
 {
     public class RegistrarAlumnoDTO
     {   

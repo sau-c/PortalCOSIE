@@ -23,12 +23,6 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal, Alumno")]
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) == null && !User.IsInRole("Administrador"))
-            {
-                return RedirectToAction("Crear", "Cuenta");
-            }
-
             if (User.IsInRole("Administrador") || User.IsInRole("Personal"))
             {
                 return View(await _catalogoService.ListarSesiones());

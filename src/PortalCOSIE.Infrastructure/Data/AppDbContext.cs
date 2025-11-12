@@ -6,7 +6,6 @@ using PortalCOSIE.Domain.Entities.Calendario;
 using PortalCOSIE.Domain.Entities.Carreras;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;
-using System.Linq.Expressions;
 
 namespace PortalCOSIE.Infrastructure.Data
 {
@@ -25,7 +24,7 @@ namespace PortalCOSIE.Infrastructure.Data
         public DbSet<FechaRecepcion> FechasRecepcion { get; set; }
         public DbSet<SesionCOSIE> SesionesCOSIE { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
-        public DbSet<EstadoDocumento> EstadosTramite { get; set; }
+        public DbSet<EstadoTramite> EstadosTramite { get; set; }
         public DbSet<TipoTramite> TiposTramite { get; set; }
         public DbSet<Documento> Documentos { get; set; }
         public DbSet<EstadoDocumento> EstadosDocumento { get; set; }

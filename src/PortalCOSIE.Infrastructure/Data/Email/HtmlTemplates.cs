@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Application
+﻿namespace PortalCOSIE.Infrastructure
 {
     public static class HtmlTemplates
     {
@@ -41,7 +41,6 @@
                 </table>
             </body>";
         }
-
         public static string RecuperarContrasenaHtml(string correo, string encodedToken)
         {
             return $@"
@@ -81,7 +80,6 @@
                 </table>
             </body>";
         }
-
         public static string ContrasenaRestablecidaHtml()
         {
             return $@"
@@ -121,7 +119,6 @@
                 </table>
             </body>";
         }
-
         public static string RestringirAccesoHtml(string rol)
         {
             return $@"
@@ -157,7 +154,6 @@
                 </table>
             </body>";
         }
-
         public static string ActivarAccesoHtml(string rol)
         {
             return $@"

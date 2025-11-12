@@ -1,3 +1,4 @@
+using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities.Usuarios;
@@ -19,6 +20,45 @@ namespace PortalCOSIE.Application
             _usuarioRepo = usuarioRepo;
         }
 
+        public async Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                //if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
+                //    throw new ApplicationException("El número de boleta ya existe");
+
+                if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
+                {
+                    return Result<string>.Failure("El número de boleta ya existe");
+                }
+
+                var alumno = new Alumno(
+                    dto.NumeroBoleta,
+                    dto.PeriodoIngreso,
+                    dto.CarreraId
+                    );
+
+                var usuario = new Usuario(
+                    userId,
+                    dto.Nombre,
+                    dto.ApellidoPaterno,
+                    dto.ApellidoMaterno
+                );
+
+                usuario.SetAlumno(alumno);
+                await _usuarioRepo.AddAsync(usuario);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                return Result<string>.Success(alumno.NumeroBoleta);
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+        }
         public async Task<Usuario> BuscarUsuarioPorIdentityId(string id)
         {
             return await _usuarioRepo.BuscarPorIdentityId(id);

@@ -12,16 +12,22 @@ namespace PortalCOSIE.Web.Controllers
         private readonly IAuthService _authService;
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
+        private readonly ICarreraService _carreraService;
+        private readonly ICatalogoService _catalogoService;
 
         public CuentaController(
             IAuthService authService,
             ISecurityService securityService,
-            IUsuarioService usuarioService
+            IUsuarioService usuarioService,
+            ICarreraService carreraService,
+            ICatalogoService catalogoService
             )
         {
             _authService = authService;
             _securityService = securityService;
             _usuarioService = usuarioService;
+            _carreraService = carreraService;
+            _catalogoService = catalogoService;
         }
 
         [HttpGet]
@@ -36,28 +42,15 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear(CrearContrasenaDTO dto)
+        public async Task<IActionResult> Crear(CrearCuentaDTO dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
-
-            var result = await _securityService.CrearContrasenaAsync(dto);
+            var result = await _securityService.CrearUsuarioAsync(dto);
 
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
-                return View(dto);
+                return Json(new { success = false, message = result.Errors });
             }
-            else
-            {
-                TempData["Message"] = result.Value;
-            }
-            return RedirectToAction(nameof(Ingresar));
+            return Json(new { success = true, message = result.Value });
         }
 
         [HttpGet]
@@ -81,7 +74,53 @@ namespace PortalCOSIE.Web.Controllers
             {
                 TempData["Message"] = result.Value;
             }
-            return RedirectToAction(nameof(Crear));
+            return RedirectToAction(nameof(Ingresar));
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Registrar()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) != null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
+            ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Registrar(RegistrarDTO dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!ModelState.IsValid)
+            {
+                return View(dto);
+            }
+
+            if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) != null)
+            {
+                ModelState.AddModelError(string.Empty, "No es posible registrar este usuario");
+            }
+
+            var result = await _usuarioService.RegistrarAlumno(dto, userId);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+                return View(dto);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -98,20 +137,15 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Ingresar(IngresarDTO dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
-
             var result = await _authService.IngresarUsuarioAsync(dto);
-
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
-                return View(dto);
+                return Json(new { success = false, message = result.Errors });
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) == null && !User.IsInRole("Administrador"))
+            {
+                return RedirectToAction(nameof(Registrar));
             }
             return RedirectToAction("Index", "Home");
         }
@@ -158,31 +192,21 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Recuperar(CorreoDTO dto)
+        public async Task<IActionResult> Recuperar(string correo)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
-
-            var result = await _securityService.RecuperarContrasenaAsync(dto);
+            var result = await _securityService.RecuperarContrasenaAsync(correo);
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
-                return View(dto);
+                return Json(new { success = false, message = result.Errors });
             }
-            TempData["Message"] = result.Value;
-            return RedirectToAction(nameof(Ingresar));
+            return Json(new { success = true, message = result.Value });
         }
 
         [HttpGet]
         public IActionResult Restablecer(string correo, string token)
         {
             if (string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(token))
-                return RedirectToAction("Error", "Home");
+                return RedirectToAction(nameof(Ingresar));
 
             var model = new RestablecerDTO { Correo = correo, Token = token };
             return View(model);
@@ -192,21 +216,12 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restablecer(RestablecerDTO dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
-
             var result = await _securityService.RestablecerContrasenaAsync(dto);
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
-                return View(dto);
+                return Json(new { success = false, message = result.Errors });
             }
-            return RedirectToAction(nameof(Ingresar));
+            return Json(new { success = true, message = result.Value });
         }
 
         [HttpGet]

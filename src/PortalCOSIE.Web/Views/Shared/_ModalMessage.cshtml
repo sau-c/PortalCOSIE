@@ -1,4 +1,4 @@
-﻿<div id="messageModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+﻿<div id="modalGlobal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content shadow">
             <div class="modal-body text-center p-4">
@@ -16,47 +16,73 @@
 </div>
 
 <script>
-    function showGlobalModal(type, message) {
-        const modal = $('#messageModal');
-        const config = {
+        function showGlobalModal(type, message, options = {}) {
+        const CONFIG = {
             success: {
-                icon: "fas fa-check-circle text-success fs-1",
-                title: "Listo",
-                btnClass: "btn-success",
-                btnText: "Continuar",
+                iconClass: 'modal-icon fas fa-check-circle text-success fs-1',
+                title: 'Listo',
+                btnClass: 'btn w-100 btn-success',
+                btnText: 'Continuar',
                 autoClose: 2500
             },
             error: {
-                icon: "fas fa-times-circle text-danger fs-1",
-                title: "Error",
-                btnClass: "btn-danger",
-                btnText: "Entendido",
+                iconClass: 'modal-icon fas fa-times-circle text-danger fs-1',
+                title: 'Error',
+                btnClass: 'btn w-100 btn-danger',
+                btnText: 'Entendido',
                 autoClose: false
             }
         };
 
-        const { icon, title, btnClass, btnText, autoClose: closeTime } = config[type];
+        const config = { ...CONFIG[type], ...options };
+        const $modal = $('#modalGlobal');
 
-        // Configurar contenido del modal
-        modal.find('.modal-icon').attr('class', 'modal-icon ' + icon);
-        modal.find('.modal-title').text(title);
-        modal.find('.message-content').html(message);
-        modal.find('.btn').attr('class', `btn w-100 ${btnClass}`).text(btnText);
+        // Configurar apariencia del modal
+        $modal.find('.modal-icon').attr('class', config.iconClass);
+        $modal.find('.modal-title').text(config.title);
+        $modal.find('.message-content').html(message);
+        $modal.find('.btn').attr('class', config.btnClass).text(config.btnText);
 
         // Mostrar modal
-        const bsModal = new bootstrap.Modal(modal[0]);
+        const bsModal = new bootstrap.Modal($modal[0]);
         bsModal.show();
 
-        // // Función para recargar la página
-        const reloadPage = () => location.reload();
+        // Limpiar listeners previos
+        $modal.off('hidden.bs.modal click.action');
 
-        // Auto-cierre y recarga si es success
+        // Para modales de éxito: SIEMPRE acción al cerrar
         if (type === 'success') {
-            setTimeout(reloadPage, closeTime);
-            modal.find('.btn').off('click').on('click', reloadPage);
-        } else if (closeTime) {
-            // Solo cerrar modal si tiene autoClose configurado
-            setTimeout(() => bsModal.hide(), closeTime);
+            const executeAction = () => {
+                if (options.redirectUrl) {
+                    // 1. Si hay redirectUrl, redirigir
+                    window.location.href = options.redirectUrl;
+                } else {
+                    // 2. Si no hay redirectUrl, recargar la página
+                    location.reload();
+                }
+            };
+
+            // Auto-acción después de autoClose (si está configurado)
+            if (config.autoClose) {
+                setTimeout(executeAction, config.autoClose);
+            }
+
+            // Acción al hacer clic en el botón
+            $modal.find('.btn').on('click.action', executeAction);
+
+            // Acción al cerrar el modal de cualquier forma (ESC, click fuera, etc.)
+            $modal.on('hidden.bs.modal', executeAction);
+
+        } else {
+            // Comportamiento normal para errores
+            if (config.autoClose) {
+                setTimeout(() => bsModal.hide(), config.autoClose);
+            }
+
+            // Callback personalizado si existe
+            if (options.onClose && typeof options.onClose === 'function') {
+                $modal.on('hidden.bs.modal', options.onClose);
+            }
         }
     }
 </script>

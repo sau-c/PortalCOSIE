@@ -5,7 +5,6 @@ using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
-using System.Data;
 using System.Net;
 
 namespace PortalCOSIE.Infrastructure.Data.Identity
@@ -13,83 +12,116 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
     public class SecurityService : ISecurityService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUnitOfWork _unitOfWork;
+        //private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IEmailSender _emailSender;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
-            IUnitOfWork unitOfWork,
+            //IUnitOfWork unitOfWork,
             IUsuarioRepository usuarioRepo,
             IEmailSender emailSender)
         {
-            _unitOfWork = unitOfWork;
+            //_unitOfWork = unitOfWork;
             _userManager = userManager;
             _usuarioRepo = usuarioRepo;
             _emailSender = emailSender;
         }
-        public async Task<Result<string>> RegistrarAlumnoPendiente(RegistrarAlumnoDTO dto)
+        //public async Task<string> RegistrarAlumnoPendiente(RegistrarAlumnoDTO dto)
+        //{
+        //    try
+        //    {
+        //        await _unitOfWork.BeginTransactionAsync();
+
+        //        if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
+        //            throw new ApplicationException("El número de boleta ya existe");
+
+        //        var alumno = new Alumno(
+        //            dto.NumeroBoleta,
+        //            dto.PeriodoIngreso,
+        //            dto.CarreraId
+        //        );
+
+        //        var user = new IdentityUser
+        //        {
+        //            UserName = dto.Correo,
+        //            Email = dto.Correo
+        //        };
+
+        //        var usuario = new Usuario(
+        //            user.Id,
+        //            dto.Nombre,
+        //            dto.ApellidoPaterno,
+        //            dto.ApellidoMaterno
+        //        );
+        //        usuario.SetAlumno(alumno);
+
+        //        var crear = await _userManager.CreateAsync(user);
+        //        if (!crear.Succeeded)
+        //        {
+        //            var errores = string.Join(", ", crear.Errors.Select(e => e.Description));
+        //            throw new ApplicationException(errores);
+        //        }
+
+        //        await _usuarioRepo.AddAsync(usuario);
+        //        await _unitOfWork.SaveChangesAsync();
+        //        await _unitOfWork.CommitTransactionAsync();
+
+        //        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        //        var encodedToken = WebUtility.UrlEncode(token);
+        //        var correo = await _emailSender.SendEmailAsync(dto.Correo, "Confirma tu cuenta", HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken)
+        //        );
+
+        //        if (!correo.Succeeded)
+        //        {
+        //            throw new ApplicationException(string.Join(", ", correo.Errors));
+        //        }
+
+        //        return "Se ha enviado un enlace al correo para confirmar la cuenta. Favor de revisar su spam.";
+        //    }
+        //    catch (Exception)
+        //    {
+        //        await _unitOfWork.RollbackTransactionAsync();
+        //        throw;
+        //    }
+        //}
+        public async Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto)
         {
-            try
+            if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Contrasena) || string.IsNullOrEmpty(dto.ConfirmarContrasena))
+                throw new ApplicationException("Datos incompletos para restablecer la contraseña.");
+            if (await _userManager.FindByEmailAsync(dto.Correo) != null)
+                throw new ApplicationException("Ya existe este usuario.");
+            if (dto.ConfirmarContrasena!= dto.ConfirmarContrasena)
+                return Result<string>.Failure("Las contraseñas no coinciden.");
+
+            var user = new IdentityUser
             {
-                await _unitOfWork.BeginTransactionAsync();
+                UserName = dto.Correo,
+                Email = dto.Correo,
+                PhoneNumber = dto.Celular
+            };
 
-                if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
-                {
-                    throw new ApplicationException("El número de boleta ya existe");
-                }
-
-                var alumno = new Alumno(
-                    dto.NumeroBoleta,
-                    dto.PeriodoIngreso,
-                    dto.CarreraId
-                );
-
-                var user = new IdentityUser
-                {
-                    UserName = dto.Correo,
-                    Email = dto.Correo
-                };
-
-                var usuario = new Usuario(
-                    user.Id,
-                    dto.Nombre,
-                    dto.ApellidoPaterno,
-                    dto.ApellidoMaterno
-                );
-                usuario.SetAlumno(alumno);
-
-                var crear = await _userManager.CreateAsync(user);
-                if (!crear.Succeeded)
-                {
-                    var errores = string.Join(", ", crear.Errors.Select(e => e.Description));
-                    throw new ApplicationException(errores);
-                }
-
-                await _usuarioRepo.AddAsync(usuario);
-                await _unitOfWork.SaveChangesAsync();
-                await _unitOfWork.CommitTransactionAsync();
-
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var encodedToken = WebUtility.UrlEncode(token);
-                var correo = await _emailSender.SendEmailAsync(
-                    dto.Correo,
-                    "Confirma tu cuenta",
-                    HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken)
-                );
-
-                if (!correo.Succeeded)
-                {
-                    throw new ApplicationException(crear.Errors.ToString());
-                }
-
-                return Result<string>.Success("Se ha enviado un enlace al correo para confirmar la cuenta. Favor de revisar su spam.");
-            }
-            catch (Exception)
+            var crear = await _userManager.CreateAsync(user, dto.Contrasena);
+            if (!crear.Succeeded)
             {
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
+                var errors = crear.Errors.Select(e => e.Description);
+                return Result<string>.Failure(errors);
             }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedToken = WebUtility.UrlEncode(token);
+
+            var correo = await _emailSender.SendEmailAsync(
+                dto.Correo,
+                "Confirma tu cuenta",
+                HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken));
+
+            if (!correo.Succeeded)
+            {
+                var errors = crear.Errors.Select(e => e.Description);
+                return Result<string>.Failure(errors);
+            }
+            return Result<string>.Success("Se ha enviado un enlace a tu correo para confirmar tu cuenta. No olvides revisar tu carpeta de spam.");
         }
         public async Task<Result<string>> ConfirmarCorreoAsync(string correo, string token)
         {
@@ -117,22 +149,12 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             }
             return Result<string>.Success("Correo confirmado");
         }
-        public async Task<Result<string>> CrearContrasenaAsync(CrearContrasenaDTO dto)
+        public async Task<Result<string>> RecuperarContrasenaAsync(string correo)
         {
-            var user = await _userManager.FindByIdAsync(dto.IdentityUserId);
+            if (string.IsNullOrEmpty(correo))
+                throw new ApplicationException("El correo no puede ser nulo");
 
-            var crear = await _userManager.CreateAsync(user, dto.Contrasena);
-            if (!crear.Succeeded)
-            {
-                var errors = crear.Errors.Select(e => e.Description);
-                return Result<string>.Failure(errors);
-            }
-
-            return Result<string>.Success("Se creo el acceso.");
-        }
-        public async Task<Result<string>> RecuperarContrasenaAsync(CorreoDTO dto)
-        {
-            var user = await _userManager.FindByEmailAsync(dto.Correo);
+            var user = await _userManager.FindByEmailAsync(correo);
 
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 return Result<string>.Failure("No se puede recuperar la contraseña. Verifica que el correo sea correcto y esté confirmado.");
@@ -141,9 +163,9 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             var encodedToken = WebUtility.UrlEncode(token);
 
             var envio = await _emailSender.SendEmailAsync(
-                dto.Correo,
+                correo,
                 "Recupera tu contraseña",
-                HtmlTemplates.RecuperarContrasenaHtml(dto.Correo, encodedToken)
+                HtmlTemplates.RecuperarContrasenaHtml(correo, encodedToken)
             );
 
             if (!envio.Succeeded)
@@ -153,9 +175,14 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         }
         public async Task<Result<string>> RestablecerContrasenaAsync(RestablecerDTO dto)
         {
+            if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Token) || string.IsNullOrEmpty(dto.NuevaContrasena))
+                throw new ApplicationException("Datos incompletos para restablecer la contraseña.");
             var user = await _userManager.FindByEmailAsync(dto.Correo);
             if (user == null)
-                return Result<string>.Failure("No se encontró el usuario.");
+                throw new ApplicationException("No se encontró el usuario.");
+
+            if (dto.NuevaContrasena != dto.ConfirmarContrasena)
+                return Result<string>.Failure("Las contraseñas no coinciden.");
 
             var resultado = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NuevaContrasena);
 

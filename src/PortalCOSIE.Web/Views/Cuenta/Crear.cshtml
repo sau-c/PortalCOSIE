@@ -1,4 +1,4 @@
-﻿@model PortalCOSIE.Application.DTO.Cuenta.CrearContrasenaDTO
+﻿@model PortalCOSIE.Application.DTO.Cuenta.CrearCuentaDTO
 @{
     ViewData["Title"] = "Crear cuenta";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
@@ -11,26 +11,27 @@
             <p class="text-muted">Ingresa tus datos</p>
         </div>
 
-        <form asp-action="Crear" novalidate method="post">
-            @if (TempData["Message"] != null)
-            {
-                <div class="alert alert-success">
-                    @TempData["Message"]
-                </div>
-            }
+        <form id="formCrear" asp-action="Crear" method="post">
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-            <input type="hidden" asp-for="IdentityUserId" />
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                        <input asp-for="Correo" class="form-control" type="email" placeholder="Correo" required />
+                    </div>
+                </div>
+            </div>
+
             <div class="row mb-3">
                 <div class="col">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-phone"></i></span>
-                        <input asp-for="Celular" class="form-control" type="tel" required
+                        <input asp-for="Celular" class="form-control" type="text" required
                                placeholder="Celular"
-                               maxlength="10"
-                               pattern="\d{0,9}"
+                               maxlength="11"
+                               pattern="\d*"
                                oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                     </div>
-                    <span asp-validation-for="Celular" class="text-danger small"></span>
                 </div>
             </div>
 
@@ -38,9 +39,8 @@
                 <div class="col">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                        <input asp-for="Contrasena" class="form-control" placeholder="Contraseña" />
+                        <input type="password" asp-for="Contrasena" class="form-control" placeholder="Contraseña" required />
                     </div>
-                    <span asp-validation-for="Contrasena" class="text-danger small"></span>
                 </div>
             </div>
 
@@ -48,18 +48,55 @@
                 <div class="col">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                        <input asp-for="ConfirmarContrasena" class="form-control" placeholder="Confirmar contraseña" />
+                        <input type="password" asp-for="ConfirmarContrasena" class="form-control" placeholder="Confirmar contraseña" required />
                     </div>
-                    <span asp-validation-for="ConfirmarContrasena" class="text-danger small"></span>
                 </div>
             </div>
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary shadow-sm w-100">
-                    Crear
+                    <i class="fas fa-user-plus me-2"></i><span>Crear</span>
                 </button>
+            </div>
+
+            <div class="form-text text-center mt-2">
+                ¿Ya tienes una cuenta? <a asp-action="Ingresar">Ingresa aquí</a>
             </div>
         </form>
 
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('formCrear');
+            const btnSubmit = form.querySelector('button[type="submit"]');
+            const boton = bloqueadorBoton(btnSubmit);
+
+            // Evento submit
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                boton.bloquear();
+
+                try {
+                    const url = form.getAttribute('action');
+                    const formData = new FormData(form);
+                    const data = await executeFetch(url, 'POST', formData);
+                    showGlobalModal('success', data.message, {
+                        redirectUrl: '/',
+                        // Si no viene redirectUrl, recarga por defecto
+                        autoClose: false
+                    });
+                } catch (error) {
+                    showGlobalModal('error', error.message, {
+                        onClose: function() {
+                            boton.restaurar();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

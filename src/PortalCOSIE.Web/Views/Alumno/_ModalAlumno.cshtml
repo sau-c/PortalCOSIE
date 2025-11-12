@@ -30,7 +30,7 @@
                             </div>
 
                             <div class="col-lg-4 col-md-4">
-                                <label for="apellidoPaterno" class="form-label">Apellido materno:</label>
+                                <label for="apellidoMaterno" class="form-label">Apellido materno:</label>
                                 <input type="text" id="apellidoMaterno" name="apellidoMaterno" class="form-control"
                                     pattern="[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s]+"
                                     required>
@@ -102,6 +102,128 @@
 </div>
 
 <script>
+//     function inicializarModalAlumno() {
+//     const MODOS = {
+//         crear: {
+//             titulo: 'Crear alumno',
+//             btnTexto: 'Enviar correo',
+//             action: '@Url.Action("Crear", "Alumno")'
+//         },
+//         editar: {
+//             titulo: 'Editar alumno',
+//             btnTexto: 'Guardar cambios',
+//             action: '@Url.Action("Editar", "Alumno")'
+//         }
+//     };
+
+//     const modal = document.getElementById('modalAlumno');
+//     const form = modal.querySelector('#alumnoForm');
+//     const btnSubmit = form.querySelector('button[type="submit"]');
+//     const btnIcon = btnSubmit.querySelector('i');
+//     const btnText = btnSubmit.querySelector('span');
+
+//     // Estado original del botón
+//     const btnOriginalState = {
+//         iconClass: btnIcon.className,
+//         text: '' // se setea según el modo
+//     };
+
+//     // Funciones para bloquear/restaurar botón
+//     const bloquearBoton = () => {
+//         btnIcon.className = 'fas fa-spinner fa-spin me-2';
+//         btnText.textContent = 'Cargando...';
+//         btnSubmit.disabled = true;
+//     };
+
+//     const restaurarBoton = () => {
+//         btnIcon.className = btnOriginalState.iconClass;
+//         btnText.textContent = btnOriginalState.text;
+//         btnSubmit.disabled = false;
+//     };
+
+//     // Configurar modal según modo
+//     const configurarModal = (modo, data = {}) => {
+//         const config = MODOS[modo];
+
+//         // Resetear formulario
+//         form.reset();
+
+//         // Configurar título y botón
+//         modal.querySelector('.modal-title').textContent = config.titulo;
+//         btnText.textContent = config.btnTexto;
+//         form.action = config.action;
+//         btnOriginalState.text = config.btnTexto;
+
+//         restaurarBoton();
+
+//         // Llenar datos si es edición
+//         if (modo === 'editar') {
+//             form.querySelector('input[name="identityUserId"]').value = data.userid || '';
+//             form.querySelector('#nombre').value = data.nombre || '';
+//             form.querySelector('#apellidoPaterno').value = data.apellidopaterno || '';
+//             form.querySelector('#apellidoMaterno').value = data.apellidomaterno || '';
+//             form.querySelector('#numeroBoleta').value = data.numeroboleta || '';
+//             form.querySelector('#carreraId').value = data.carreraid || '';
+//             form.querySelector('#periodoIngreso').value = data.periodoingreso || '';
+//             form.querySelector('#correo').value = data.correo || '';
+//         }
+//     };
+
+//     // Evento botones crear/editar usando delegation
+//     document.addEventListener('click', (e) => {
+//         const btn = e.target.closest('button[data-mode]');
+//         if (!btn) return;
+
+//         const modo = btn.dataset.mode === 'create' ? 'crear' : 'editar';
+//         configurarModal(modo, btn.dataset);
+//     });
+
+//     // Limpiar al cerrar modal
+//     modal.addEventListener('hidden.bs.modal', () => {
+//         form.reset();
+//         form.querySelector('input[name="identityUserId"]').value = '';
+//         restaurarBoton();
+//     });
+
+//     // Submit del formulario
+//     form.addEventListener('submit', async (e) => {
+//         e.preventDefault();
+//         e.stopPropagation();
+
+//         // Validar correo
+//         const correoInput = form.querySelector('#correo');
+//         const correo = correoInput.value.trim();
+//         if (!correo.endsWith('@@alumno.ipn.mx')) {
+//             correoInput.setAttribute('title', 'El correo debe pertenecer a @@alumno.ipn.mx');
+//             // Bootstrap tooltip si se usa
+//             if (bootstrap?.Tooltip) {
+//                 new bootstrap.Tooltip(correoInput).show();
+//             }
+//             correoInput.focus();
+//             return false;
+//         }
+
+//         bloquearBoton();
+//         try {
+//             const url = form.action;
+//             const json = Object.fromEntries(new FormData(form).entries());
+//             const resultado = await executeFetch(url, 'POST', json);
+
+//             // Cerrar modal
+//             if (bootstrap?.Modal) {
+//                 const bsModal = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+//                 bsModal.hide();
+//             }
+//             showGlobalModal('success', resultado.message);
+//             form.reset();
+//         } catch (error) {
+//             showGlobalModal('error', error.message, {
+//                 onClose: restaurarBoton
+//             });
+//         }
+//     });
+// }
+
     function inicializarModalAlumno() {
         const MODOS = {
             crear: {
@@ -122,13 +244,16 @@
         const $btnIcon = $btnSubmit.find('i');
         const $btnText = $btnSubmit.find('span');
 
-        // Estado original del botón
+        // Funciones para evitar doble envio
         const btnOriginalState = {
-            iconClass: 'fas fa-save me-2',
+            iconClass: $btnIcon.attr('class'),
             text: ''  // Se setea dinámicamente según el modo
         };
-
-        // Función para restaurar el botón a su estado original
+        const bloquearBoton = () => {
+            $btnIcon.attr('class', 'fas fa-spinner fa-spin me-2');
+            $btnText.text('Cargando...');
+            $btnSubmit.prop('disabled', true);
+        };
         const restaurarBoton = () => {
             $btnIcon.attr('class', btnOriginalState.iconClass);
             $btnText.text(btnOriginalState.text);
@@ -190,29 +315,26 @@
             const correo = $('#correo').val().trim();
             if (!correo.endsWith('@@alumno.ipn.mx')) {
                 $('#correo')
-                    .attr('data-bs-original-title', 'El correo debe terminar con @@alumno.ipn.mx')
+                    .attr('data-bs-original-title', 'El correo debe pertenecer a @@alumno.ipn.mx')
                     .tooltip('show')
                     .focus();
                 return false;
             }
 
-            // Bloquear botón
-            $btnIcon.attr('class', 'fas fa-spinner fa-spin me-2');
-            $btnText.text('Cargando...');
-            $btnSubmit.prop('disabled', true);
-
+            bloquearBoton();
             try {
                 const url = $(this).attr('action');
-                const formData = Object.fromEntries(new FormData(this));
-                const resultado = await executeFetch(url, 'POST', formData);
+                const json = Object.fromEntries(new FormData(this));
+                const resultado = await executeFetch(url, 'POST', json);
 
                 $modal.modal('hide');
                 showGlobalModal('success', resultado.message);
                 $form[0].reset();
             } catch (error) {
-                showGlobalModal('error', error.message);
-                $('#messageModal').on('hidden.bs.modal', function() {
-                    restaurarBoton();
+                showGlobalModal('error', error.message, {
+                    onClose: function() {
+                        restaurarBoton();
+                    }
                 });
             }
         });

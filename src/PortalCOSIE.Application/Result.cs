@@ -14,9 +14,9 @@ namespace PortalCOSIE.Application
             return new Result<T> { Succeeded = true, Value = value };
         }
 
-        public static Result<T> Failure(params string[] errors)
+        public static Result<T> Failure(string error)
         {
-            return new Result<T> { Succeeded = false, Errors = errors.ToList() };
+            return new Result<T> { Succeeded = false, Errors = new List<string> { error } };
         }
 
         public static Result<T> Failure(IEnumerable<string> errors)

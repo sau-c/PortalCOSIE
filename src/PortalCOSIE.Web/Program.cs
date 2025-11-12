@@ -31,7 +31,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; //Solo para HTTPS
     options.Cookie.SameSite = SameSiteMode.Strict; //Solo peticiones desde el sitio
     options.SlidingExpiration = true;   //Cada request -> Reinicia ExpireTimeSpan
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(1); //Duracion de sesion
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5); //Duracion de sesion
 });
 
 builder.Services.AddControllersWithViews();

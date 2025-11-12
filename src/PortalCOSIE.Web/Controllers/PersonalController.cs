@@ -43,7 +43,7 @@ namespace PortalCOSIE.Web.Controllers
                 return View(dto);
             }
 
-            var result = await _securityService.CrearContrasenaAsync(new CrearContrasenaDTO());
+            var result = await _securityService.CrearUsuarioAsync(new CrearCuentaDTO());
 
             if (!result.Succeeded)
             {

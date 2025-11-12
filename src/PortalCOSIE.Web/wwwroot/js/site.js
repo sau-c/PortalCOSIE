@@ -36,7 +36,7 @@ async function executeFetch(url, metodo = 'GET', datos = null, tipoRespuesta = '
     // Verificar si hay redirección (sesión expirada)
     if (response.redirected) {
         window.location.href = response.url;
-        throw new Error('Sesión expirada. Redirigiendo...');
+        //throw new Error('Sesión expirada. Redirigiendo...');
     }
 
     // Parsear respuesta
@@ -46,7 +46,7 @@ async function executeFetch(url, metodo = 'GET', datos = null, tipoRespuesta = '
 
     // Si el status no es exitoso, lanzar error
     if (!response.ok) {
-        const errorMessage = resultado?.message || `Error ${response.status}`;
+        const errorMessage = resultado.message || `Error ${response.status}`;
         throw new Error(errorMessage);
     }
 
@@ -61,3 +61,33 @@ async function executeFetch(url, metodo = 'GET', datos = null, tipoRespuesta = '
         message: resultado.message
     };
 }
+
+/**
+ * Controlador de botón para bloquear y restaurar durante procesos async.
+ * @param {HTMLButtonElement} button - El botón que quieres controlar.
+ * @returns {object} - Funciones bloquear() y restaurar().
+ */
+function bloqueadorBoton(button) {
+    const icon = button.querySelector('i');
+    const textSpan = button.querySelector('span');
+
+    const originalState = {
+        iconClass: icon ? icon.className : '',
+        text: textSpan ? textSpan.textContent : ''
+    };
+
+    const bloquear = () => {
+        if (icon) icon.className = 'fas fa-spinner fa-spin me-2';
+        if (textSpan) textSpan.textContent = 'Cargando...';
+        button.disabled = true;
+    };
+
+    const restaurar = () => {
+        if (icon) icon.className = originalState.iconClass;
+        if (textSpan) textSpan.textContent = originalState.text;
+        button.disabled = false;
+    };
+
+    return { bloquear, restaurar };
+}
+

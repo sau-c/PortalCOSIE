@@ -2,7 +2,6 @@
 using PortalCOSIE.Domain.Entities;
 using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Infrastructure.Data;
-using System.Linq.Expressions;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {

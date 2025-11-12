@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.DTO.Cuenta;
-using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
@@ -36,14 +35,14 @@ namespace PortalCOSIE.Web.Controllers
             return View(await _securityService.ListarAlumnos());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Crear([FromBody] RegistrarAlumnoDTO dto)
-        {
-            var result = await _securityService.RegistrarAlumnoPendiente(dto);
-            return Json(new { success = true, message = result.Value });
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Administrador, Personal")]
+        //public async Task<IActionResult> Crear([FromBody] RegistrarAlumnoDTO dto)
+        //{
+        //    var result = await _securityService.RegistrarAlumnoPendiente(dto);
+        //    return Json(new { success = true, message = result});
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]

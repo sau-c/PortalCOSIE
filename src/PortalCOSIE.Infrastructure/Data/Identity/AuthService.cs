@@ -27,21 +27,19 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
 
             if (user == null)
             {
-                var errors = "Usuario no encontrado.";
-                return Result<string>.Failure(errors);
+                throw new ApplicationException("Usuario no encontrado.");
             }
 
             if (!user.EmailConfirmed)
             {
                 //En caso de que el ususario borre el email de confirmacion que?
-                var errors = "Revisa tu correo electrónico para confirmar tu cuenta.";
-                return Result<string>.Failure(errors);
+                return Result<string>.Failure("Revisa tu correo electrónico para confirmar tu cuenta.");
             }
 
             //RememberMe false para mayor seguridad
-            var result = await _signInManager.PasswordSignInAsync(user, dto.Contrasena, false, lockoutOnFailure: true);
+            var login = await _signInManager.PasswordSignInAsync(user, dto.Contrasena, false, lockoutOnFailure: true);
 
-            if (result.IsLockedOut)
+            if (login.IsLockedOut)
             {
                 var lockoutEnd = await _userManager.GetLockoutEndDateAsync(user);
                 var restante = lockoutEnd.Value.UtcDateTime - DateTime.UtcNow;
@@ -54,10 +52,14 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 else
                     tiempo = $"{segundos} segundo{(segundos != 1 ? "s" : "")}";
 
-                return Result<string>.Failure("Tu cuenta ha sido bloqueada por múltiples intentos fallidos.", $"Intenta de nuevo en {tiempo}.");
+                return Result<string>.Failure($"Cuenta bloqueada por múltiples intentos fallidos. Intenta de nuevo en {tiempo}.");
+            }
+            if (login.IsNotAllowed)
+            {
+                return Result<string>.Failure("Ingreso no permitido");
             }
 
-            return result.Succeeded
+            return login.Succeeded
                 ? Result<string>.Success("Inicio de sesión exitoso.")
                 : Result<string>.Failure("Contraseña incorrecta.");
         }

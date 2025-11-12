@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Domain;
 
 public class GlobalExceptionHandlingMiddleware
@@ -18,32 +19,38 @@ public class GlobalExceptionHandlingMiddleware
         {
             await _next(httpContext);
         }
-        catch (DomainException ex)
-        {
-            _logger.LogWarning(ex, "Excepción de dominio: {Message}", ex.Message);
-            await HandleExceptionAsync(httpContext, ex, StatusCodes.Status400BadRequest);
-        }
-        catch (ApplicationException ex)
-        {
-            _logger.LogError(ex, "Excepción de aplicación: {Message}", ex.Message);
-            await HandleExceptionAsync(httpContext, ex, StatusCodes.Status400BadRequest);
-        }
-        catch (SqlException ex)
-        {
-            _logger.LogError(ex, "Error de SQL: {Message}", ex.Message);
-            var userMessage = ex.Number switch
-            {
-                2627 or 2601 => "El registro ya existe en el sistema.",
-                547 => "No se puede eliminar el registro porque tiene datos relacionados.",
-                _ => "Error en la base de datos. Por favor, intente nuevamente."
-            };
-            await HandleExceptionAsync(httpContext, new ApplicationException(userMessage), StatusCodes.Status400BadRequest);
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Excepción no controlada: {Message}", ex.Message);
-            await HandleExceptionAsync(httpContext, ex, StatusCodes.Status500InternalServerError);
+            var (statusCode, userMessage, logAsError) = ex switch
+            {
+                DomainException => (StatusCodes.Status400BadRequest, ex.Message, false),
+                ApplicationException => (StatusCodes.Status400BadRequest, ex.Message, true),
+                DbUpdateException dbEx when dbEx.InnerException is SqlException sqlEx => MapSqlException(sqlEx),
+                SqlException sqlEx => MapSqlException(sqlEx),
+                _ => (StatusCodes.Status500InternalServerError, "Error interno del servidor", true) // Esta maneja las NO controladas
+            };
+
+            if (logAsError)
+            {
+                _logger.LogError(ex, "Excepción manejada: {Message}", ex.Message);
+            }
+            else
+            {
+                _logger.LogWarning(ex, "Excepción de dominio/aplicación: {Message}", ex.Message);
+            }
+
+            await HandleExceptionAsync(httpContext, ex, statusCode);
         }
+    }
+
+    private static (int statusCode, string message, bool logAsError) MapSqlException(SqlException ex)
+    {
+        return ex.Number switch
+        {
+            2627 or 2601 => (StatusCodes.Status409Conflict, "El registro ya existe en el sistema, revisas los indices unicos.", true),
+            547 => (StatusCodes.Status400BadRequest, "No se puede completar la operación porque tiene datos relacionados.", true),
+            _ => (StatusCodes.Status500InternalServerError, "Error en la base de datos. Por favor, intente nuevamente.", true)
+        };
     }
 
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception, int statusCode)
@@ -61,44 +68,3 @@ public class GlobalExceptionHandlingMiddleware
         await context.Response.WriteAsJsonAsync(response);
     }
 }
-
-//public class GlobalExceptionHandlingMiddleware
-//{
-//    private readonly RequestDelegate _next;
-//    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
-
-//    public GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlingMiddleware> logger)
-//    {
-//        _next = next;
-//        _logger = logger;
-//    }
-
-//    public async Task InvokeAsync(HttpContext httpContext)
-//    {
-//        try
-//        {
-//            await _next(httpContext);
-//        }
-//        catch (DomainException ex)
-//        {
-//            _logger.LogError(ex, "Se ha producido una excepción específica de dominio.");
-//            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest; // Adjusted status code for domain-specific errors
-//            httpContext.Response.ContentType = "application/json";
-//            await httpContext.Response.WriteAsJsonAsync(new { message = ex.Message });
-//        }
-//        catch (ApplicationException ex)
-//        {
-//            _logger.LogError(ex, "Se ha producido una excepción específica de aplicación.");
-//            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError; // Adjusted status code for domain-specific errors
-//            httpContext.Response.ContentType = "application/json";
-//            await httpContext.Response.WriteAsJsonAsync(new { message = ex.Message });
-//        }
-//        catch (Exception ex)
-//        {
-//            _logger.LogError(ex, "Se ha producido una excepción no controlada.");
-//            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-//            httpContext.Response.ContentType = "application/json";
-//            await httpContext.Response.WriteAsJsonAsync(new { message = "Ocurrió un error inesperado sin manejar." });
-//        }
-//    }
-//}
