@@ -26,13 +26,10 @@ namespace PortalCOSIE.Application
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                //if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
-                //    throw new ApplicationException("El número de boleta ya existe");
-
                 if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
-                {
                     return Result<string>.Failure("El número de boleta ya existe");
-                }
+                if (await _usuarioRepo.BuscarPorIdentityId(userId) != null)
+                    throw new ApplicationException("Este id de usuario ya existe");
 
                 var alumno = new Alumno(
                     dto.NumeroBoleta,
@@ -51,7 +48,7 @@ namespace PortalCOSIE.Application
                 await _usuarioRepo.AddAsync(usuario);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
-                return Result<string>.Success(alumno.NumeroBoleta);
+                return Result<string>.Success("Registro exitoso.\nDebes acudir a gestión escolar con tu credencial para activar tu cuenta.");
             }
             catch (Exception)
             {
@@ -84,33 +81,41 @@ namespace PortalCOSIE.Application
         }
         public async Task<Result<string>> EditarAlumno(AlumnoDTO dto)
         {
-            await _unitOfWork.BeginTransactionAsync();
-            var alumnoPorBoleta = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+                var alumnoPorBoleta = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
 
-            if (alumnoPorBoleta != null && (alumnoPorBoleta.IdentityUserId != dto.IdentityUserId))
-                throw new ApplicationException("El número de boleta ya existe");
-            
-            var usuario = await _usuarioRepo.BuscarConAlumno(dto.IdentityUserId);
-            if (usuario == null)
-                throw new ApplicationException("Usuario no encontrado");
+                if (alumnoPorBoleta != null && (alumnoPorBoleta.IdentityUserId != dto.IdentityUserId))
+                    throw new ApplicationException("El número de boleta ya existe");
 
-            if (usuario.Alumno == null)
-                throw new ApplicationException("Registro de alumno no encontrado");
+                var usuario = await _usuarioRepo.BuscarConAlumno(dto.IdentityUserId);
+                if (usuario == null)
+                    throw new ApplicationException("Usuario no encontrado");
 
-            usuario.SetNombre(dto.Nombre);
-            usuario.SetApellidoPaterno(dto.ApellidoPaterno);
-            usuario.SetApellidoMaterno(dto.ApellidoMaterno);
+                if (usuario.Alumno == null)
+                    throw new ApplicationException("Registro de alumno no encontrado");
 
-            usuario.Alumno.SetNumeroBoleta(dto.NumeroBoleta);
-            usuario.Alumno.SetPeriodoIngreso(dto.PeriodoIngreso);
-            usuario.Alumno.SetCarrera(dto.CarreraId);
-            
-            var cambios = await _unitOfWork.SaveChangesAsync();
-            await _unitOfWork.CommitTransactionAsync();
-            
-            return cambios > 0
-                ? Result<string>.Success("Usuario actualizado con éxito")
-                : Result<string>.Success("No se detectaron cambios para guardar");
+                usuario.SetNombre(dto.Nombre);
+                usuario.SetApellidoPaterno(dto.ApellidoPaterno);
+                usuario.SetApellidoMaterno(dto.ApellidoMaterno);
+
+                usuario.Alumno.SetNumeroBoleta(dto.NumeroBoleta);
+                usuario.Alumno.SetPeriodoIngreso(dto.PeriodoIngreso);
+                usuario.Alumno.SetCarrera(dto.CarreraId);
+
+                var cambios = await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                return cambios > 0
+                    ? Result<string>.Success("Usuario actualizado con éxito")
+                    : Result<string>.Success("No se detectaron cambios para guardar");
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
         public async Task<PersonalDTO?> BuscarPersonal(string id)
         {

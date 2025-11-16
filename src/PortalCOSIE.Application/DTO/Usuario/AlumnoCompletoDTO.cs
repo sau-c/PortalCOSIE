@@ -2,7 +2,7 @@
 
 namespace PortalCOSIE.Application.DTO.Usuario
 {
-    public class AlumnoConIdentityDTO
+    public class AlumnoCompletoDTO
     {
         public string IdentityUserId { get; set; }
         public string Nombre { get; set; }

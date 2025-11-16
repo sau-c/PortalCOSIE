@@ -47,9 +47,13 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Editar([FromBody] AlumnoDTO dto)
+        public async Task<IActionResult> Editar(AlumnoDTO dto)
         {
             var result = await _usuarioService.EditarAlumno(dto);
+            if (!result.Succeeded)
+            {
+                return Json(new { success = false, message = result.Errors });
+            }
             return Json(new { success = true, message = result.Value });
         }
 
@@ -65,10 +69,27 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> ActualizarCorreo(string userId, string correo)
+        public async Task<IActionResult> ActualizarCelular(string userId, string celular)
         {
-            var result = await _securityService.ActualizarCorreoAsync(userId, correo);
-            return RedirectToAction(nameof(Index));
+            var result = await _securityService.ActualizarCelularAsync(userId, celular);
+            if (!result.Succeeded)
+            {
+                return Json(new { success = false, message = result.Errors });
+            }
+            return Json(new { success = true, message = result.Value });
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> VerificarCorreo(string userId, string correo)
+        {
+            var result = await _securityService.VerificarCorreoAsync(userId, correo);
+            if (!result.Succeeded)
+            {
+                return Json(new { success = false, message = result.Errors });
+            }
+            return Json(new { success = true, message = result.Value });
         }
     }
 }

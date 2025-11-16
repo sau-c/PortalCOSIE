@@ -12,7 +12,6 @@
         </div>
 
         <form id="formCrear" asp-action="Crear" method="post">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
             <div class="row mb-3">
                 <div class="col">
                     <div class="input-group">
@@ -28,7 +27,7 @@
                         <span class="input-group-text"><i class="fa fa-phone"></i></span>
                         <input asp-for="Celular" class="form-control" type="text" required
                                placeholder="Celular"
-                               maxlength="11"
+                               maxlength="10"
                                pattern="\d*"
                                oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                     </div>
@@ -86,7 +85,6 @@
                     const data = await executeFetch(url, 'POST', formData);
                     showGlobalModal('success', data.message, {
                         redirectUrl: '/',
-                        // Si no viene redirectUrl, recarga por defecto
                         autoClose: false
                     });
                 } catch (error) {

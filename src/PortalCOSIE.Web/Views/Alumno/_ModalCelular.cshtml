@@ -1,0 +1,81 @@
+﻿<div class="modal fade" id="modalCelular" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formCelular" asp-action="ActualizarCelular" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="hdnIdCelular" name="userId" />
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>Editar celular
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-phone"></i>
+                        </span>
+                        <input type="text" id="celular" name="celular" class="form-control" required
+                               placeholder="Número de celular"
+                               maxlength="10"
+                               pattern="\d*"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    </div>
+                    <div class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i>Se enviará un correo de verificación
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button id="btnSubmitCelular" type="submit" class="btn btn-primary">
+                        <i class="fa fa-paper-plane me-2"></i><span>Actualizar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function inicializarModalCelular() {
+        const modal = document.getElementById('modalCelular');
+        const form = document.getElementById('formCelular');
+        const celular = document.getElementById('celular');
+        const hiddenId = document.getElementById('hdnIdCelular');
+        const btnSubmit = document.getElementById('btnSubmitCelular');
+        const boton = bloqueadorBoton(btnSubmit);
+
+        modal.addEventListener("show.bs.modal", event => {
+            const button = event.relatedTarget;
+            form.reset();
+            hiddenId.value = button.getAttribute("data-id");
+            celular.value = button.getAttribute("data-celular");
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            boton.bloquear();
+            try {
+                const formData = new FormData(form);
+                const data = await executeFetch(form.action, 'POST', formData);
+                showGlobalModal('success', data.message, {
+                    autoClose: false
+                });
+            } catch (error) {
+                showGlobalModal('error', error.message, {
+                    onClose: () => boton.restaurar()
+                });
+            }
+        });
+
+        // Limpiar al cerrar modal
+        modal.addEventListener('hidden.bs.modal', () => {
+            form.reset();
+            boton.restaurar();
+        });
+    }
+</script>

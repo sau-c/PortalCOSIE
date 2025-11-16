@@ -1,26 +1,23 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Interfaces;
-using System.Security.Claims;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IUsuarioService _usuarioService;
         private readonly ICatalogoService _catalogoService;
 
         public HomeController(
-            IUsuarioService usuarioService,
             ICatalogoService catalogoService
             )
         {
-            _usuarioService = usuarioService;
             _catalogoService = catalogoService;
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal, Alumno")]
+        [Authorize]
+        //[Authorize(Roles = "Administrador, Personal, Alumno")]
         public async Task<IActionResult> Index()
         {
             if (User.IsInRole("Administrador") || User.IsInRole("Personal"))

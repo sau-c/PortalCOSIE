@@ -1,6 +1,6 @@
 ﻿namespace PortalCOSIE.Application.DTO.Usuario
 {
-    public class PersonalConIdentityDTO
+    public class PersonalCompletoDTO
     {
         public string IdentityUserId { get; set; }
         public string Nombre { get; set; }

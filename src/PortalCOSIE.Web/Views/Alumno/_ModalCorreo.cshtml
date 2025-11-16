@@ -1,0 +1,94 @@
+﻿<div class="modal fade" id="modalCorreo" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formCorreo" asp-action="VerificarCorreo" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="hdnIdCorreo" name="userId" />
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>Editar correo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                        <input type="email" id="correo" name="correo" class="form-control" placeholder="usuario@alumno.ipn.mx" required />
+                    </div>
+                    <div class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i>Se enviará un enlace de verificación
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button id="btnSubmitCorreo" type="submit" class="btn btn-primary">
+                        <i class="fa fa-paper-plane me-2"></i><span>Enviar verificación</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function inicializarModalCorreo() {
+        const modal = document.getElementById('modalCorreo');
+        const form = document.getElementById('formCorreo');
+        const correo = document.getElementById('correo');
+        const hiddenId = document.getElementById('hdnIdCorreo');
+        const btnSubmit = document.getElementById('btnSubmitCorreo');
+        const boton = bloqueadorBoton(btnSubmit);
+
+        modal.addEventListener("show.bs.modal", event => {
+            const button = event.relatedTarget;
+            form.reset();
+            hiddenId.value = button.getAttribute("data-id");
+            correo.value = button.getAttribute("data-correo");
+        });
+
+        // Validar correo antes de enviar
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // const correoTrim = correo.value.trim();
+
+            // if (!correoTrim.endsWith('@@alumno.ipn.mx')) {
+            //     correo.setAttribute('title', 'El correo debe pertenecer a @@alumno.ipn.mx');
+            //     // Bootstrap tooltip si se usa
+            //     if (bootstrap?.Tooltip) {
+            //         new bootstrap.Tooltip(correo).show();
+            //     }
+            //     correo.focus();
+            //     return false;
+            // }
+
+            boton.bloquear();
+            try {
+                const formData = new FormData(form);
+                const data = await executeFetch(form.action, 'POST', formData);
+                showGlobalModal('success', data.message, {
+                    autoClose: false
+                });
+            } catch (error) {
+                showGlobalModal('error', error.message, {
+                    onClose: () => boton.restaurar()
+                });
+            }
+        });
+
+        // Limpiar al cerrar modal
+        modal.addEventListener('hidden.bs.modal', () => {
+            form.reset();
+            boton.restaurar();
+
+            // Limpiar tooltips si existen
+            const tooltip = bootstrap.Tooltip.getInstance(correo);
+            if (tooltip) {
+                tooltip.dispose();
+            }
+        });
+    }
+</script>

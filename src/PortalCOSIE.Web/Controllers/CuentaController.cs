@@ -65,15 +65,12 @@ namespace PortalCOSIE.Web.Controllers
 
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    TempData["Message"] = result.Value;
-                }
+                TempData["MessageType"] = "error";
+                TempData["Message"] = string.Join(", ", result.Errors);
+                return RedirectToAction(nameof(Ingresar));
             }
-            else
-            {
-                TempData["Message"] = result.Value;
-            }
+            TempData["MessageType"] = "success";
+            TempData["Message"] = result.Value;
             return RedirectToAction(nameof(Ingresar));
         }
 
@@ -98,29 +95,13 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Registrar(RegistrarDTO dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
-
-            if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) != null)
-            {
-                ModelState.AddModelError(string.Empty, "No es posible registrar este usuario");
-            }
-
             var result = await _usuarioService.RegistrarAlumno(dto, userId);
 
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
-                return View(dto);
+                return Json(new { success = false, message = result.Errors });
             }
-
-            return RedirectToAction("Index", "Home");
+            return Json(new { success = true, message = result.Value });
         }
 
         [HttpGet]
@@ -225,7 +206,28 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Personal, Alumno")]
+        public async Task<IActionResult> ActualizarCorreo(string id, string correo, string token)
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var result = await _securityService.ActualizarCorreoAsync(id, correo, token);
+            if (!result.Succeeded)
+            {
+                TempData["MessageType"] = "error";
+                TempData["Message"] = string.Join(", ", result.Errors);
+                return RedirectToAction(nameof(Ingresar));
+            }
+            TempData["MessageType"] = "success";
+            TempData["Message"] = result.Value;
+            return RedirectToAction(nameof(Ingresar));
+        }
+
+        [HttpGet]
+        [Authorize]
+        //[Authorize(Roles = "Personal, Alumno")]
         public async Task<IActionResult> MisDatos()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

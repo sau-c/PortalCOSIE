@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PortalCOSIE.Application.DTO.Cuenta
+﻿namespace PortalCOSIE.Application.DTO.Cuenta
 {
     public class AlumnoDTO
     {

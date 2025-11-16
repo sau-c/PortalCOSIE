@@ -1,4 +1,4 @@
-﻿<div class="modal fade" id="toggleRoleModal" tabindex="-1">
+﻿<div class="modal fade" id="modalToggle" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="toggleRoleForm" asp-action="ActualizarRol" method="post">
@@ -6,7 +6,7 @@
                 <div class="modal-header" id="modalHeader">
                     <h5 class="modal-title">
                         <i id="modalIcon" class="me-2"></i>
-                        <span id="modalTitle">Cambiar Estado</span>
+                        <span id="modalTitle">Cambiar estado</span>
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -33,7 +33,7 @@
 
 <script>
     function inicializarModalToggle(){
-        $('#toggleRoleModal').on('show.bs.modal', function (event) {
+        $('#modalToggle').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget);
             const userId = button.data('user-id');
             const currentRole = button.data('current-role');
@@ -50,12 +50,12 @@
                 // Usuario está activo, se va a desactivar
                 $('#modalHeader').removeClass('bg-success text-white').addClass('bg-warning text-dark');
                 $('#modalIcon').removeClass().addClass('fas fa-user-slash');
-                $('#modalTitle').text('Desactivar Usuario');
+                $('#modalTitle').text('Desactivar usuario');
                 $('#modalMessage')
                     .removeClass('alert-success')
                     .addClass('alert-warning')
                     .html(`<strong>¿Desactivar usuario?</strong><br>
-                            El usuario perderá el rol de "<strong>${roleType}</strong>" y su acceso al sistema será revocado.`);
+                            El usuario perderá el rol de "<strong>${roleType}</strong>" y solo vera el calendario al ingresar.`);
                 $('#confirmButton')
                     .removeClass('btn-success')
                     .addClass('btn-warning');
@@ -65,12 +65,13 @@
                 // Usuario está inactivo, se va a activar
                 $('#modalHeader').removeClass('bg-warning text-dark').addClass('bg-success text-white');
                 $('#modalIcon').removeClass().addClass('fas fa-user-check');
-                $('#modalTitle').text('Activar Usuario');
+                $('#modalTitle').text('Activar usuario');
                 $('#modalMessage')
                     .removeClass('alert-warning')
                     .addClass('alert-success')
                     .html(`<strong>¿Activar usuario?</strong><br>
-                            El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema.`);
+                            El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema. 
+                            <strong>Verifica que los datos sean correctos con su credencial</strong>`);
                 $('#confirmButton')
                     .removeClass('btn-warning')
                     .addClass('btn-success');

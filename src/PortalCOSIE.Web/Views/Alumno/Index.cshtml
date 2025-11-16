@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PortalCOSIE.Application.DTO.Usuario.AlumnoConIdentityDTO>
+﻿@model IEnumerable<PortalCOSIE.Application.DTO.Usuario.AlumnoCompletoDTO>
 @{
     ViewData["Title"] = "Gestión de alumnos";
 }
@@ -63,24 +63,24 @@
                             <td class="editable-cell"
                                 title="Editar"
                                 data-bs-toggle="modal"
-                                data-bs-target="#editEmailModal"
-                                data-user-id="@alumno.IdentityUserId"
-                                data-user-email="@alumno.Correo">
+                                data-bs-target="#modalCorreo"
+                                data-id="@alumno.IdentityUserId"
+                                data-correo="@alumno.Correo">
                                 @alumno.Correo
                             </td>
                             <td class="editable-cell"
                                 title="Editar"
                                 data-bs-toggle="modal"
-                                data-bs-target="#editPhoneModal"
-                                data-user-id="@alumno.IdentityUserId"
-                                data-user-phone="@alumno.Celular">
+                                data-bs-target="#modalCelular"
+                                data-id="@alumno.IdentityUserId"
+                                data-celular="@alumno.Celular">
                                 @alumno.Celular
                             </td>
                             <td class="text-center">
                                 <button type="button"
                                         class="btn btn-link p-0 border-0 bg-transparent toggle-role-btn"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#toggleRoleModal"
+                                        data-bs-target="#modalToggle"
                                         data-user-id="@alumno.IdentityUserId"
                                         data-current-role="@(alumno.Rol ?? "Inactivo")"
                                         data-role-type="Alumno"
@@ -115,16 +115,14 @@
     </div>
 </div>
 
- @* Modal para Crear/Editar *@
 <partial name="_ModalAlumno" />
-
-@* Modal para Toggle de Rol *@
+<partial name="_ModalCorreo" />
+<partial name="_ModalCelular" />
 <partial name="_ModalToggle" />
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Configuración de DataTable
             $('#tblAlumnos').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
@@ -166,6 +164,8 @@
             });
 
             inicializarModalAlumno();
+            inicializarModalCorreo();
+            inicializarModalCelular();
             inicializarModalToggle();
         });
     </script>

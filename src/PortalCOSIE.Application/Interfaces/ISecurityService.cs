@@ -5,14 +5,15 @@ namespace PortalCOSIE.Application.Interfaces
 {
     public interface ISecurityService
     {
-        //Task<string> RegistrarAlumnoPendiente(RegistrarAlumnoDTO dto);
         Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto);
         Task<Result<string>> ConfirmarCorreoAsync(string correo, string token);
         Task<Result<string>> RecuperarContrasenaAsync(string correo);
         Task<Result<string>> RestablecerContrasenaAsync(RestablecerDTO dto);
         Task<Result<string>> ToggleRol(string userId, string rol);
-        Task<Result<string>> ActualizarCorreoAsync(string userId, string correo);
-        Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos();
-        Task<IEnumerable<PersonalConIdentityDTO>> ListarPersonal();
+        Task<Result<string>> VerificarCorreoAsync(string userId, string correo);
+        Task<Result<string>> ActualizarCorreoAsync(string id, string correo, string token);
+        Task<Result<string>> ActualizarCelularAsync(string userId, string celular);
+        Task<IEnumerable<AlumnoCompletoDTO>> ListarAlumnos();
+        Task<IEnumerable<PersonalCompletoDTO>> ListarPersonal();
     }
 }

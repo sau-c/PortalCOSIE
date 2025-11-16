@@ -1,97 +1,36 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain.Entities.Usuarios;
-using PortalCOSIE.Domain.Interfaces;
 using System.Net;
+using Microsoft.AspNetCore.Identity;
 
 namespace PortalCOSIE.Infrastructure.Data.Identity
 {
     public class SecurityService : ISecurityService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        //private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IEmailSender _emailSender;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
-            //IUnitOfWork unitOfWork,
             IUsuarioRepository usuarioRepo,
             IEmailSender emailSender)
         {
-            //_unitOfWork = unitOfWork;
             _userManager = userManager;
             _usuarioRepo = usuarioRepo;
             _emailSender = emailSender;
         }
-        //public async Task<string> RegistrarAlumnoPendiente(RegistrarAlumnoDTO dto)
-        //{
-        //    try
-        //    {
-        //        await _unitOfWork.BeginTransactionAsync();
 
-        //        if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
-        //            throw new ApplicationException("El número de boleta ya existe");
-
-        //        var alumno = new Alumno(
-        //            dto.NumeroBoleta,
-        //            dto.PeriodoIngreso,
-        //            dto.CarreraId
-        //        );
-
-        //        var user = new IdentityUser
-        //        {
-        //            UserName = dto.Correo,
-        //            Email = dto.Correo
-        //        };
-
-        //        var usuario = new Usuario(
-        //            user.Id,
-        //            dto.Nombre,
-        //            dto.ApellidoPaterno,
-        //            dto.ApellidoMaterno
-        //        );
-        //        usuario.SetAlumno(alumno);
-
-        //        var crear = await _userManager.CreateAsync(user);
-        //        if (!crear.Succeeded)
-        //        {
-        //            var errores = string.Join(", ", crear.Errors.Select(e => e.Description));
-        //            throw new ApplicationException(errores);
-        //        }
-
-        //        await _usuarioRepo.AddAsync(usuario);
-        //        await _unitOfWork.SaveChangesAsync();
-        //        await _unitOfWork.CommitTransactionAsync();
-
-        //        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        //        var encodedToken = WebUtility.UrlEncode(token);
-        //        var correo = await _emailSender.SendEmailAsync(dto.Correo, "Confirma tu cuenta", HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken)
-        //        );
-
-        //        if (!correo.Succeeded)
-        //        {
-        //            throw new ApplicationException(string.Join(", ", correo.Errors));
-        //        }
-
-        //        return "Se ha enviado un enlace al correo para confirmar la cuenta. Favor de revisar su spam.";
-        //    }
-        //    catch (Exception)
-        //    {
-        //        await _unitOfWork.RollbackTransactionAsync();
-        //        throw;
-        //    }
-        //}
         public async Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto)
         {
             if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Contrasena) || string.IsNullOrEmpty(dto.ConfirmarContrasena))
                 throw new ApplicationException("Datos incompletos para restablecer la contraseña.");
             if (await _userManager.FindByEmailAsync(dto.Correo) != null)
                 throw new ApplicationException("Ya existe este usuario.");
-            if (dto.ConfirmarContrasena!= dto.ConfirmarContrasena)
+            if (dto.ConfirmarContrasena != dto.ConfirmarContrasena)
                 return Result<string>.Failure("Las contraseñas no coinciden.");
 
             var user = new IdentityUser
@@ -127,20 +66,11 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         {
             var user = await _userManager.FindByEmailAsync(correo);
             if (user == null)
-            {
                 return Result<string>.Failure("Usuario no encontrado");
-            }
-
             if (user.EmailConfirmed)
-            {
                 return Result<string>.Failure("Ya se ha confirmado tu correo");
-            }
-
             if (token == null)
-            {
                 return Result<string>.Failure("Token vacio");
-            }
-
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
@@ -153,15 +83,11 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         {
             if (string.IsNullOrEmpty(correo))
                 throw new ApplicationException("El correo no puede ser nulo");
-
             var user = await _userManager.FindByEmailAsync(correo);
-
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 return Result<string>.Failure("No se puede recuperar la contraseña. Verifica que el correo sea correcto y esté confirmado.");
-
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
-
             var envio = await _emailSender.SendEmailAsync(
                 correo,
                 "Recupera tu contraseña",
@@ -203,35 +129,87 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
 
             return Result<string>.Success("Contraseña restablecida con éxito.");
         }
-        public async Task<Result<string>> ActualizarCorreoAsync(string userId, string correo)
+        public async Task<Result<string>> VerificarCorreoAsync(string userId, string correo)
         {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(correo))
-                return Result<string>.Failure("Se requieren ID de usuario y nuevo correo");
+            // Validaciones básicas
+            if (string.IsNullOrWhiteSpace(userId))
+                return Result<string>.Failure("El id no puede ser nulo o vacío");
+            if (string.IsNullOrWhiteSpace(correo))
+                return Result<string>.Failure("El correo no puede ser nulo o vacío");
+
+            // Buscar usuario
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<string>.Failure("No se encontró el usuario a editar");
+
+            // Si es el mismo correo -> no hacer nada
+            if (user.NormalizedEmail == _userManager.NormalizeEmail(correo))
+                return Result<string>.Failure("No se detectaron cambios");
+
+            // Validar si el correo ya está en uso
+            var correoExistente = await _userManager.FindByEmailAsync(correo);
+            if (correoExistente != null)
+                return Result<string>.Failure("Ese correo ya está en uso");
+
+            // 2. Envio correo
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, correo);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var envio = await _emailSender.SendEmailAsync(correo, "Cambio de correo", HtmlTemplates.VerificarCorreoHtml(userId, correo, encodedToken));
+            if (!envio.Succeeded)
+                return Result<string>.Failure("No se pudo enviar el correo.");
+
+            return Result<string>.Success($"Se envió una verificación a {correo}");
+        }
+        public async Task<Result<string>> ActualizarCorreoAsync(string id, string correo, string token)
+        {
+            // 1. Validaciones
+            if (string.IsNullOrEmpty(correo))
+                return Result<string>.Failure("El nuevo correo no puede ser nulo o vacio");
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return Result<string>.Failure("Usuario no encontrado");
+            string correoViejo = user.Email;
+
+            var emailResult = await _userManager.ChangeEmailAsync(user, correo, token);
+            if (!emailResult.Succeeded)
+                return Result<string>.Failure(string.Join(", ", emailResult.Errors.Select(e => e.Description)));
+
+            var nameResult = await _userManager.SetUserNameAsync(user, correo);
+            if (!nameResult.Succeeded)
+                return Result<string>.Failure($"Error al actualizar nombre de usuario: {string.Join(", ", nameResult.Errors.Select(e => e.Description))}");
+
+            var envio = await _emailSender.SendEmailAsync(correoViejo, "Correo actualizado", HtmlTemplates.CorreoActualizadoHtml(correo));
+            if (!envio.Succeeded)
+                return Result<string>.Failure("No se pudo enviar el correo.");
+
+            return Result<string>.Success("Se actualizó el correo con éxito");
+        }
+        public async Task<Result<string>> ActualizarCelularAsync(string userId, string celular)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new ApplicationException("El id no puede ser nulo o vacio");
+            if (string.IsNullOrEmpty(celular))
+                throw new ApplicationException("El nuevo celular no puede ser nulo o vacio");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return Result<string>.Failure("Usuario no encontrado");
-            
-            var token = await _userManager.GenerateChangeEmailTokenAsync(user, correo);
-            var result = await _userManager.ChangeEmailAsync(user, correo, token);
+            if (user.PhoneNumber == celular)
+                return Result<string>.Failure("No se detectaron cambios");
+
+            var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, celular);
+            var result = await _userManager.ChangePhoneNumberAsync(user, celular, token);
             if (!result.Succeeded)
-                return Result<string>.Failure($"Error al actualizar correo: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-            
-            // Opcional: Actualizar UserName si es igual al correo
-            if (user.UserName == user.Email)
-            {
-                var setUserNameResult = await _userManager.SetUserNameAsync(user, correo);
-                if (!setUserNameResult.Succeeded)
-                    return Result<string>.Failure($"Error al actualizar nombre de usuario: {string.Join(", ", setUserNameResult.Errors.Select(e => e.Description))}");
-            }
-            return Result<string>.Success("Correo actualizado con éxito");
+                return Result<string>.Failure($"Error al actualizar celular: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            var envio = await _emailSender.SendEmailAsync(user.Email, "Celular actualizado", HtmlTemplates.CelularActualizadoHtml(celular));
+            if (!envio.Succeeded)
+                return Result<string>.Failure("No se pudo enviar el correo.");
+            return Result<string>.Success("Celular actualizado con éxito");
         }
         public async Task<Result<string>> ToggleRol(string userId, string rol)
         {
-            // Validaciones iniciales
             if (string.IsNullOrWhiteSpace(userId))
                 return Result<string>.Failure("ID de usuario no válido");
-
             if (string.IsNullOrWhiteSpace(rol))
                 return Result<string>.Failure("Nombre de rol no válido");
 
@@ -253,7 +231,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             {
                 // Si tiene el rol, lo removemos (pasa a "Inactivo")
                 result = await _userManager.RemoveFromRoleAsync(user, rol);
-                
+
                 if (!result.Succeeded)
                 {
                     return Result<string>.Failure($"Error al desactivar usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
@@ -288,15 +266,12 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
 
                 await _emailSender.SendEmailAsync(user.Email, "Acceso activado", HtmlTemplates.ActivarAccesoHtml(rol));
                 return Result<string>.Success($"Rol {rol} asignado correctamente");
-
             }
-
         }
-        public async Task<IEnumerable<AlumnoConIdentityDTO>> ListarAlumnos()
+        public async Task<IEnumerable<AlumnoCompletoDTO>> ListarAlumnos()
         {
             var usuarios = await _usuarioRepo.ListarConAlumnoYCarrera();
-
-            var alumnosDTO = new List<AlumnoConIdentityDTO>();
+            var alumnosDTO = new List<AlumnoCompletoDTO>();
 
             foreach (var usuario in usuarios)
             {
@@ -305,7 +280,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
 
                 var roles = await _userManager.GetRolesAsync(identityUser);
 
-                alumnosDTO.Add(new AlumnoConIdentityDTO
+                alumnosDTO.Add(new AlumnoCompletoDTO
                 {
                     IdentityUserId = identityUser.Id,
                     NumeroBoleta = usuario.Alumno?.NumeroBoleta ?? "N/A",
@@ -319,14 +294,13 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                     Rol = roles.FirstOrDefault()
                 });
             }
-
             return alumnosDTO;
         }
-        public async Task<IEnumerable<PersonalConIdentityDTO>> ListarPersonal()
+        public async Task<IEnumerable<PersonalCompletoDTO>> ListarPersonal()
         {
             var usuarios = await _usuarioRepo.ListarConPersonal();
 
-            var personalDTO = new List<PersonalConIdentityDTO>();
+            var personalDTO = new List<PersonalCompletoDTO>();
 
             foreach (var usuario in usuarios)
             {
@@ -335,7 +309,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
 
                 var roles = await _userManager.GetRolesAsync(identityUser);
 
-                personalDTO.Add(new PersonalConIdentityDTO
+                personalDTO.Add(new PersonalCompletoDTO
                 {
                     IdentityUserId = identityUser.Id,
                     Nombre = usuario.Nombre,
@@ -347,5 +321,6 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             }
             return personalDTO;
         }
+
     }
 }

@@ -39,7 +39,7 @@ public class GlobalExceptionHandlingMiddleware
                 _logger.LogWarning(ex, "Excepción de dominio/aplicación: {Message}", ex.Message);
             }
 
-            await HandleExceptionAsync(httpContext, ex, statusCode);
+            await HandleExceptionAsync(httpContext, userMessage, statusCode, ex.GetType().Name);
         }
     }
 
@@ -47,13 +47,13 @@ public class GlobalExceptionHandlingMiddleware
     {
         return ex.Number switch
         {
-            2627 or 2601 => (StatusCodes.Status409Conflict, "El registro ya existe en el sistema, revisas los indices unicos.", true),
+            2627 or 2601 => (StatusCodes.Status409Conflict, "El registro ya existe, revisa los campos unicos.", true),
             547 => (StatusCodes.Status400BadRequest, "No se puede completar la operación porque tiene datos relacionados.", true),
             _ => (StatusCodes.Status500InternalServerError, "Error en la base de datos. Por favor, intente nuevamente.", true)
         };
     }
 
-    private static async Task HandleExceptionAsync(HttpContext context, Exception exception, int statusCode)
+    private static async Task HandleExceptionAsync(HttpContext context, string userMessage, int statusCode, string exceptionType)
     {
         context.Response.StatusCode = statusCode;
         context.Response.ContentType = "application/json";
@@ -61,8 +61,8 @@ public class GlobalExceptionHandlingMiddleware
         var response = new
         {
             success = false,
-            message = exception.Message,
-            type = exception.GetType().Name
+            message = userMessage,
+            type = exceptionType
         };
 
         await context.Response.WriteAsJsonAsync(response);

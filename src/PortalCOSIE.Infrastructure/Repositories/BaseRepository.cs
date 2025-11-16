@@ -26,6 +26,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
         {
             return await _dbSet
                 .Where(e => filtrarActivos ? e.IsDeleted == false : true)
+                .AsNoTracking()
                 .ToListAsync();
         }
         public async Task<TEntity> AddAsync(TEntity entity)

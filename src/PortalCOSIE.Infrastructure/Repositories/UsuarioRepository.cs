@@ -39,6 +39,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 .Where(u => u.Alumno != null && u.Personal == null)
                 .Include(u => u.Alumno!)
                 .ThenInclude(a => a.Carrera!)
+                .AsNoTracking()
                 .ToListAsync();
         }
         public async Task<IEnumerable<Usuario>> ListarConPersonal()
@@ -46,6 +47,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
             return await _dbSet
                 .Where(u => u.Personal != null && u.Alumno == null)
                 .Include(u => u.Personal)
+                .AsNoTracking()
                 .ToListAsync();
         }
     }

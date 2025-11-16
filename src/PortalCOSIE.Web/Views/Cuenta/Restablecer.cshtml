@@ -53,7 +53,6 @@
                     const data = await executeFetch(url, 'POST', formData);
                     showGlobalModal('success', data.message, {
                         redirectUrl: '/',
-                        // Si no viene redirectUrl, recarga por defecto
                         autoClose: false
                     });
                 } catch (error) {

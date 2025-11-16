@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PortalCOSIE.Application.DTO.Usuario.PersonalConIdentityDTO>
+﻿@model IEnumerable<PortalCOSIE.Application.DTO.Usuario.PersonalCompletoDTO>
 @{
     ViewData["Title"] = "Gestión de personal";
 }
@@ -68,7 +68,7 @@
                                 <button type="button"
                                         class="btn btn-link p-0 border-0 bg-transparent toggle-role-btn"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#toggleRoleModal"
+                                        data-bs-target="#modalToggle"
                                         data-user-id="@personal.IdentityUserId"
                                         data-current-role="@(personal.Rol ?? "Inactivo")"
                                         data-role-type="Personal"
@@ -146,7 +146,7 @@
 <div class="modal fade" id="editEmailModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="editEmailForm" asp-action="ActualizarCorreo" method="post">
+            <form id="editEmailForm" asp-action="VerificarCorreo" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">Actualizar correo electrónico</h5>
@@ -174,7 +174,7 @@
 </div>
 
 <!-- Modal para Toggle de Rol (NUEVO) -->
-<div class="modal fade" id="toggleRoleModal" tabindex="-1">
+<div class="modal fade" id="modalToggle" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="toggleRoleForm" asp-action="ActualizarRol" method="post">
@@ -260,7 +260,7 @@
             });
 
             // ========== NUEVO: Modal para Toggle de Rol ==========
-            $('#toggleRoleModal').on('show.bs.modal', function (event) {
+            $('#modalToggle').on('show.bs.modal', function (event) {
                 const button = $(event.relatedTarget);
                 const userId = button.data('user-id');
                 const currentRole = button.data('current-role');

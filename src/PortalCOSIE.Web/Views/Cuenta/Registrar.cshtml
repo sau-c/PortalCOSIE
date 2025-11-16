@@ -11,33 +11,29 @@
             <p class="text-muted">Completa tus datos</p>
         </div>
 
-        <form asp-action="Registrar" novalidate method="post">
+        <form id="formRegistrar" asp-action="Registrar" method="post">
             <div class="row mb-3">
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input type="text" id="nombre" name="nombre" class="form-control"
+                    <input type="text" asp-for="Nombre" class="form-control"
                            pattern="[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s]+" placeholder="Nombre" required>
-                    <span asp-validation-for="Nombre" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input type="text" id="apellidoPaterno" name="apellidoPaterno" class="form-control"
+                    <input type="text" asp-for="ApellidoPaterno" class="form-control"
                            pattern="[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s]+" placeholder="Apellido paterno" required>
-                    <span asp-validation-for="ApellidoPaterno" class="text-danger small"></span>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input type="text" id="apellidoMaterno" name="apellidoMaterno" class="form-control"
+                    <input type="text" asp-for="ApellidoMaterno" class="form-control"
                            pattern="[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s]+" placeholder="Apellido materno" required>
-                    <span asp-validation-for="ApellidoMaterno" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <input type="text" id="numeroBoleta" name="numeroBoleta" class="form-control" required
+                    <input type="text" asp-for="NumeroBoleta" class="form-control" required
                            placeholder="No. de boleta"
                            maxlength="10"
                            pattern="\d*"
                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                    <span asp-validation-for="NumeroBoleta" class="text-danger small"></span>
                 </div>
             </div>
 
@@ -45,24 +41,22 @@
                 <div class="col-lg-6 col-md-6 col-sm-6">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
-                        <select asp-items="ViewBag.Carreras" id="CarreraId" name="CarreraId" class="form-select" required>
+                        <select asp-items="ViewBag.Carreras" asp-for="CarreraId" class="form-select" required>
                             <option value="">- Carrera -</option>
                         </select>
                     </div>
-                    <span asp-validation-for="CarreraId" class="text-danger small"></span>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                        <select asp-items="ViewBag.Periodos" id="periodoIngreso" name="periodoIngreso" class="form-select" required>
+                        <select asp-items="ViewBag.Periodos" asp-for="PeriodoIngreso" class="form-select" required>
                             <option value="">- Periodo ingreso -</option>
                         </select>
                     </div>
-                    <span asp-validation-for="PeriodoIngreso" class="text-danger small"></span>
                 </div>
             </div>
 
-            <div class="row mb-3">
+            @* <div class="row mb-3">
                 <div class="col-lg-6 col-md-6 col-sm-6">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
@@ -72,16 +66,48 @@
                             <option value="2">2009</option>
                         </select>
                     </div>
-                    <span asp-validation-for="PlanEstudioId" class="text-danger small"></span>
                 </div>
-            </div>
+            </div> *@
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary shadow-sm w-100">
-                    Registrar
+                    <i class="fas fa-user-plus me-2"></i><span>Registrar</span>
                 </button>
             </div>
         </form>
 
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('formRegistrar');
+            const btnSubmit = form.querySelector('button[type="submit"]');
+            const boton = bloqueadorBoton(btnSubmit);
+
+            // Evento submit
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                boton.bloquear();
+
+                try {
+                    const url = form.getAttribute('action');
+                    const formData = new FormData(form);
+                    const data = await executeFetch(url, 'POST', formData);
+                    showGlobalModal('success', data.message, {
+                        redirectUrl: '/',
+                        autoClose: false
+                    });
+                } catch (error) {
+                    showGlobalModal('error', error.message, {
+                        onClose: function() {
+                            boton.restaurar();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
