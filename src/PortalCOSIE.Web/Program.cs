@@ -41,7 +41,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Shared/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -66,10 +66,10 @@ using (var scope = app.Services.CreateScope())
 // En caso de tener areas, descomentar la siguiente linea
 //app.MapControllerRoute(
 //    name: "areas",
-//    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+//    pattern: "{area:exists}/{controller=Calendario}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Calendario}/{action=Index}/{id?}");
 
 app.Run();

@@ -9,6 +9,6 @@
         public string PeriodoIngreso { get; set; }
         public string NumeroBoleta { get; set; }
         public int CarreraId { get; set; }
-        public string? CarreraNombre { get; set; }
+        //public string? CarreraNombre { get; set; }
     }
 }

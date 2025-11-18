@@ -16,6 +16,11 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
 
             builder.Property(d => d.Observaciones)
                 .HasMaxLength(1000);
+
+            builder.HasOne(d => d.Tramite)
+                .WithMany(t => t.Documentos)
+                .HasForeignKey(d => d.TramiteId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

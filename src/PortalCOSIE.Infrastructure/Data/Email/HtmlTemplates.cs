@@ -351,5 +351,43 @@
                 </table>
             </body>";
         }
+        public static string ContrasenaCambiadaHtml() 
+        {
+            return $@"
+            <body style=""margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f6f9fc;"">
+                <table role=""presentation"" border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"">
+                    <tr>
+                        <td align=""center"" style=""padding: 40px 0;"">
+                            <table width=""600"" cellpadding=""0"" cellspacing=""0"" style=""background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 40px;"">
+                        
+                                <tr>
+                                    <td align=""center"" style=""padding-bottom: 20px;"">
+                                        <h1 style=""margin: 0; font-size: 24px; color: #333333;"">
+                                            Tu contraseña ha sido cambiada exitosamente
+                                        </h1>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style=""color: #555555; font-size: 16px; line-height: 1.5;"">
+                                        <p style=""margin-bottom: 20px;"">
+                                            Te informamos que la contraseña de tu cuenta ha sido cambiada exitosamente. 
+                                            Si fuiste tú quien realizó este cambio, no necesitas hacer nada más.
+                                        </p>
+                                        <p style=""margin-top: 20px;"">
+                                            Si no reconoces esta actividad, te recomendamos restablecer tu contraseña de inmediato o contactar a gestión escolar.
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style=""padding-top: 30px; text-align: center; font-size: 12px; color: #aaaaaa;"">
+                                        © {DateTime.Now.Year} - Portal COSIE.
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>";
+        }
     }
 }

@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PortalCOSIE.Web.Controllers
 {
+    [Authorize(Roles = "Administrador, Personal")]
     public class BitacoraController : Controller
     {
         [HttpGet]
-        [Authorize(Roles = "Administrador")]
         public IActionResult Index() => View();
     }
 }

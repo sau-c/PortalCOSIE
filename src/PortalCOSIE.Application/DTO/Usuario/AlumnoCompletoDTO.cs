@@ -12,6 +12,7 @@ namespace PortalCOSIE.Application.DTO.Usuario
         public string NumeroBoleta { get; set; }
         public Carrera Carrera { get; set; }
         public string Correo { get; set; }
+        public bool CorreoConfirmado { get; set; }
         public string Celular { get; set; }
         public string Rol { get; set; }
     }

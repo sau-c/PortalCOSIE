@@ -4,11 +4,11 @@ using PortalCOSIE.Application.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
 {
-    public class HomeController : Controller
+    public class CalendarioController : Controller
     {
         private readonly ICatalogoService _catalogoService;
 
-        public HomeController(
+        public CalendarioController(
             ICatalogoService catalogoService
             )
         {
@@ -17,7 +17,6 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        //[Authorize(Roles = "Administrador, Personal, Alumno")]
         public async Task<IActionResult> Index()
         {
             if (User.IsInRole("Administrador") || User.IsInRole("Personal"))

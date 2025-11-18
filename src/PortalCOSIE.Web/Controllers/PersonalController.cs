@@ -7,6 +7,7 @@ using PortalCOSIE.Application.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class PersonalController : Controller
     {
         private readonly ISecurityService _securityService;
@@ -21,21 +22,18 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index()
         {
             return View(await _securityService.ListarPersonal());
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrador")]
         public IActionResult Crear()
         {
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Crear(PersonalDTO dto)
         {
             if (!ModelState.IsValid)
@@ -61,35 +59,35 @@ namespace PortalCOSIE.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Editar(string id)
-        {
-            return View(await _usuarioService.BuscarPersonal(id));
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
-        public async Task<IActionResult> Editar(AlumnoDTO dto)
+        public async Task<IActionResult> Editar(PersonalDTO dto)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-                
-                return View(dto);
-            }
-            var result = await _usuarioService.EditarAlumno(dto);
-
+            var result = await _usuarioService.EditarPersonal(dto);
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
-                return View(dto);
+                return Json(new { success = false, message = result.Errors });
             }
+            return Json(new { success = true, message = result.Value });
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ActualizarRol(string userId, string rol)
+        {
+            var result = await _securityService.ToggleRol(userId, rol);
             return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerificarCorreo(string userId, string correo)
+        {
+            var result = await _securityService.VerificarCorreoAsync(userId, correo);
+            if (!result.Succeeded)
+            {
+                return Json(new { success = false, message = result.Errors });
+            }
+            return Json(new { success = true, message = result.Value });
         }
     }
 }

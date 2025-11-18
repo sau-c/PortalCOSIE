@@ -10,7 +10,7 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
         public string PeriodoIngreso { get; private set; }
         public int CarreraId { get; private set; }
 
-        // Navegaciones EF
+        // Navegaciones
         public Carrera Carrera { get; private set; }
         public Usuario Usuario { get; private set; }
 

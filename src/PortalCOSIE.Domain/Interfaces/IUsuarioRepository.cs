@@ -7,8 +7,8 @@ namespace PortalCOSIE.Domain.Interfaces
         Task<Usuario> BuscarPorIdentityId(string identityUserId);
         Task<Usuario> BuscarConAlumno(string identityUserId);
         Task<Usuario> BuscarConAlumnoYCarrera(string identityUserId);
+        Task<Usuario> BuscarAlumnoPorBoleta(string boleta);
         Task<IEnumerable<Usuario>> ListarConAlumnoYCarrera();
         Task<IEnumerable<Usuario>> ListarConPersonal();
-        Task<Usuario> BuscarAlumnoPorBoleta(string boleta);
     }
 }

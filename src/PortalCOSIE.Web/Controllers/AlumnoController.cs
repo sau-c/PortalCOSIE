@@ -6,6 +6,7 @@ using PortalCOSIE.Application.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
 {
+    [Authorize(Roles = "Administrador, Personal")]
     public class AlumnoController : Controller
     {
         private readonly ISecurityService _securityService;
@@ -27,7 +28,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Index()
         {
             ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
@@ -35,18 +35,8 @@ namespace PortalCOSIE.Web.Controllers
             return View(await _securityService.ListarAlumnos());
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Administrador, Personal")]
-        //public async Task<IActionResult> Crear([FromBody] RegistrarAlumnoDTO dto)
-        //{
-        //    var result = await _securityService.RegistrarAlumnoPendiente(dto);
-        //    return Json(new { success = true, message = result});
-        //}
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> Editar(AlumnoDTO dto)
         {
             var result = await _usuarioService.EditarAlumno(dto);
@@ -59,7 +49,6 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> ActualizarRol(string userId, string rol)
         {
             var result = await _securityService.ToggleRol(userId, rol);
@@ -68,7 +57,6 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> ActualizarCelular(string userId, string celular)
         {
             var result = await _securityService.ActualizarCelularAsync(userId, celular);
@@ -81,7 +69,6 @@ namespace PortalCOSIE.Web.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
         public async Task<IActionResult> VerificarCorreo(string userId, string correo)
         {
             var result = await _securityService.VerificarCorreoAsync(userId, correo);

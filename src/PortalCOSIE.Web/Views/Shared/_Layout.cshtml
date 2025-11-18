@@ -1,5 +1,9 @@
 ﻿@{
     var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+    var Rol = User.Claims.FirstOrDefault(c =>
+        c.Type == System.Security.Claims.ClaimTypes.Role)?.Value;
+    bool isAdmin = User.IsInRole("Administrador");
+    bool isPersonal = User.IsInRole("Personal");
 }
 
 <!DOCTYPE html>
@@ -58,10 +62,18 @@
                 <!-- Botón de usuario -->
                 <div class="dropdown">
                     <button class="dropdown-toggle border-0 rounded-3 px-2 py-1" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-circle-user"></i>
+                        <i class="fas fa-circle-user me-1"></i>
+                        @if (isAdmin)
+                        {
+                            <text>Administrador</text>
+                        }
+                        else
+                        {
+                            @User?.Identity?.Name
+                        }
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><h6 class="dropdown-header">@User?.Identity?.Name</h6></li>
+                        <li><h6 class="dropdown-header">@Rol</h6></li>
                         <li><a class="dropdown-item" href="@Url.Action("MisDatos", "Cuenta")"><i class="fas fa-id-badge me-2"></i>Mis datos</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
@@ -81,15 +93,24 @@
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
         <div class="accordion" id="accordionSidebar">
-            <!-- Dashboard -->
             <div class="accordion-item bg-transparent border-0">
-                <a href="@Url.Action("Index", "Dashboard")" class="nav-link text-white">
-                    <i class="fas fa-chart-pie"></i>
-                    <span class="nav-link-text">Dashboard</span>
+                <a href="@Url.Action("Index", "Calendario")" class="nav-link text-white">
+                    <i class="fas fa-calendar"></i>
+                    <span class="nav-link-text">Calendario</span>
                 </a>
             </div>
+            <!-- Dashboard: Admin + Personal -->
+            @if (isAdmin || isPersonal)
+            {
+                <div class="accordion-item bg-transparent border-0">
+                    <a href="@Url.Action("Index", "Dashboard")" class="nav-link text-white">
+                        <i class="fas fa-chart-pie"></i>
+                        <span class="nav-link-text">Dashboard</span>
+                    </a>
+                </div>
+            }
 
-            <!-- Trámites -->
+            <!-- Trámites: Todos ven -->
             <div class="accordion-item bg-transparent border-0">
                 <h2 class="accordion-header" id="headingGestion">
                     <button class="accordion-button collapsed shadow-none" type="button"
@@ -114,46 +135,67 @@
                 </div>
             </div>
 
-            <!-- Usuarios -->
-            <div class="accordion-item bg-transparent border-0">
-                <h2 class="accordion-header" id="headingUsuarios">
-                    <button class="accordion-button collapsed shadow-none" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#collapseUsuarios"
-                            aria-expanded="false" aria-controls="collapseUsuarios">
-                        <i class="fas fa-users"></i>
-                        <span class="nav-link-text">Autorización y autenticación</span>
-                    </button>
-                </h2>
-                <div id="collapseUsuarios" class="accordion-collapse collapse" aria-labelledby="headingUsuarios"
-                     data-bs-parent="#accordionSidebar">
-                    <div class="accordion-body">
-                        <a href="@Url.Action("Index", "Personal")" class="nav-link text-white">
-                            <i class="fas fa-user-lock"></i>
-                            <span class="nav-link-text">Personal</span>
-                        </a>
-                        <a href="@Url.Action("Index", "Alumno")" class="nav-link text-white">
-                            <i class="fas fa-user-lock"></i>
-                            <span class="nav-link-text">Alumnos</span>
-                        </a>
+            <!-- Autorización y autenticación -->
+            @if (isAdmin || isPersonal)
+            {
+                <div class="accordion-item bg-transparent border-0">
+                    <h2 class="accordion-header" id="headingUsuarios">
+                        <button class="accordion-button collapsed shadow-none" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapseUsuarios"
+                                aria-expanded="false" aria-controls="collapseUsuarios">
+                            <i class="fas fa-users"></i>
+                            <span class="nav-link-text">Autorización y autenticación</span>
+                        </button>
+                    </h2>
+                    <div id="collapseUsuarios" class="accordion-collapse collapse" aria-labelledby="headingUsuarios"
+                         data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+
+                            <!-- Personal: Solo Admin -->
+                            @if (isAdmin)
+                            {
+                                <a href="@Url.Action("Index", "Personal")" class="nav-link text-white">
+                                    <i class="fas fa-user-lock"></i>
+                                    <span class="nav-link-text">Personal</span>
+                                </a>
+                            }
+
+                            <!-- Alumnos: Admin + Personal -->
+                            @if (isAdmin || isPersonal)
+                            {
+                                <a href="@Url.Action("Index", "Alumno")" class="nav-link text-white">
+                                    <i class="fas fa-user-graduate"></i>
+                                    <span class="nav-link-text">Alumnos</span>
+                                </a>
+                            }
+
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
 
-            <!-- Configuracion -->
-            <div class="accordion-item bg-transparent border-0">
-                <a href="@Url.Action("Index", "Configuracion")" class="nav-link text-white">
-                    <i class="fas fa-cogs"></i>
-                    <span class="nav-link-text">Configuración</span>
-                </a>
-            </div>
+            <!-- Configuración: Solo Admin -->
+            @if (isAdmin)
+            {
+                <div class="accordion-item bg-transparent border-0">
+                    <a href="@Url.Action("Index", "Configuracion")" class="nav-link text-white">
+                        <i class="fas fa-cogs"></i>
+                        <span class="nav-link-text">Configuración</span>
+                    </a>
+                </div>
+            }
 
-            <!-- Bitacora -->
-            <div class="accordion-item bg-transparent border-0">
-                <a href="@Url.Action("Index", "Bitacora")" class="nav-link text-white">
-                    <i class="fas fa-clipboard-list px-1"></i>
-                    <span class="nav-link-text">Bitácora</span>
-                </a>
-            </div>
+            <!-- Bitácora: Admin + Personal -->
+            @if (isAdmin || isPersonal)
+            {
+                <div class="accordion-item bg-transparent border-0">
+                    <a href="@Url.Action("Index", "Bitacora")" class="nav-link text-white">
+                        <i class="fas fa-clipboard-list px-1"></i>
+                        <span class="nav-link-text">Bitácora</span>
+                    </a>
+                </div>
+            }
+
         </div>
 
         <!-- Botón para colapsar/expandir sidebar (siempre visible) -->
@@ -218,7 +260,7 @@
             $('[title]:not([title=""])').tooltip();
         });
 
-        
+
         // Ajustar tooltips cuando cambia el estado del sidebar (No sirven)
         $(document).on('click', '#sidebarToggle', function() {
             if ($('#sidebar').hasClass('sidebar-collapsed')) {

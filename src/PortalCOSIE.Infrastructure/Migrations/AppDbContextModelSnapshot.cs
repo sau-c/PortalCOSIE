@@ -1867,9 +1867,6 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<byte>("Blob")
                         .HasColumnType("tinyint");
 
-                    b.Property<int>("DocumentoEstadoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("EstadoDocumentoId")
                         .HasColumnType("int");
 
@@ -2172,6 +2169,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("IdentityUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
@@ -2273,7 +2271,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.HasOne("PortalCOSIE.Domain.Entities.Tramites.Tramite", "Tramite")
                         .WithMany("Documentos")
                         .HasForeignKey("TramiteId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("EstadoDocumento");
@@ -2289,7 +2287,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PortalCOSIE.Domain.Entities.Tramites.EstadoTramite", "EstadoTramite")
+                    b.HasOne("PortalCOSIE.Domain.Entities.Tramites.EstadoDocumento", "EstadoTramite")
                         .WithMany()
                         .HasForeignKey("EstadoTramiteId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2350,7 +2348,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
-                        .HasForeignKey("IdentityUserId");
+                        .HasForeignKey("IdentityUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Calendario.SesionCOSIE", b =>

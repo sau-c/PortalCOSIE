@@ -129,6 +129,28 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
 
             return Result<string>.Success("Contraseña restablecida con éxito.");
         }
+        public async Task<Result<string>> CambiarContrasena(CambiarContrasenaDTO dto)
+        {
+            if (dto.NuevaContrasena != dto.ConfirmarContrasena)
+                return Result<string>.Failure("Las contraseñas no coinciden.");
+            var user = await _userManager.FindByIdAsync(dto.IdentityUserId);
+            if (user == null)
+                return Result<string>.Failure("Usuario no encontrado");
+            var resultado = await _userManager.ChangePasswordAsync(user, dto.Contrasena, dto.NuevaContrasena);
+            if (!resultado.Succeeded)
+            {
+                var errors = resultado.Errors.Select(e => e.Description);
+                return Result<string>.Failure(errors);
+            }
+            var envio = await _emailSender.SendEmailAsync(
+                user.Email,
+                "Contraseña cambiada con éxito",
+                HtmlTemplates.ContrasenaCambiadaHtml()
+            );
+            if (!envio.Succeeded)
+                return Result<string>.Failure("No se pudo enviar el correo de aviso.");
+            return Result<string>.Success("Contraseña restablecida con éxito.");
+        }
         public async Task<Result<string>> VerificarCorreoAsync(string userId, string correo)
         {
             // Validaciones básicas
@@ -320,6 +342,35 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 });
             }
             return personalDTO;
+        }
+        public async Task<AlumnoCompletoDTO?> BuscarAlumnoCompleto(string identityUserId)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+                throw new ArgumentException("El ID del usuario es obligatorio", nameof(identityUserId));
+
+            var usuario = await _usuarioRepo.BuscarConAlumnoYCarrera(identityUserId)
+                           ?? throw new ApplicationException("No se encontró el usuario");
+
+            if (usuario.Alumno == null)
+                throw new ApplicationException("No se encontró registro del alumno");
+
+            // Obtener IdentityUser para el celular
+            var identityUser = await _userManager.FindByIdAsync(identityUserId)
+                               ?? throw new ApplicationException("No se encontró el IdentityUser");
+
+            return new AlumnoCompletoDTO
+            {
+                IdentityUserId = identityUserId,
+                Nombre = usuario.Nombre,
+                ApellidoPaterno = usuario.ApellidoPaterno,
+                ApellidoMaterno = usuario.ApellidoMaterno,
+                NumeroBoleta = usuario.Alumno.NumeroBoleta,
+                Correo = identityUser.Email,
+                CorreoConfirmado = identityUser.EmailConfirmed,
+                PeriodoIngreso = usuario.Alumno.PeriodoIngreso,
+                Carrera = usuario.Alumno.Carrera,
+                Celular = identityUser.PhoneNumber
+            };
         }
 
     }

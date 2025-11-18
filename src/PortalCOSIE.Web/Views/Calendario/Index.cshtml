@@ -22,8 +22,20 @@
     </div>
 
     <div class="card-body p-4 overflow-auto" style="height: calc(100vh - 164px);">
+        @if (!(User.IsInRole("Alumno") || User.IsInRole("Administrador") || User.IsInRole("Personal")))
+        {
+            <div class="alert alert-danger shadow-sm border-0 d-flex align-items-center p-3">
+                <i class="fas fa-user-slash fs-4 me-3"></i>
+                <div>
+                    <h6 class="mb-1 fw-bold">Usuario inactivo</h6>
+                    <p class="mb-0 small">
+                        Tu cuenta no tiene un rol asignado.
+                        Acude a gestión escolar con tu credencial para activarla.
+                    </p>
+                </div>
+            </div>
+        }
         <p class="text-secondary">Consulta las fechas de recepción y sesión correspondientes a cada periodo.</p>
-
         <table id="tblSesiones" class="table table-hover table-bordered">
             <thead class="table-secondary">
                 <tr class="small">

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.DTO.Cuenta;
@@ -35,7 +36,7 @@ namespace PortalCOSIE.Web.Controllers
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Calendario");
             }
             return View();
         }
@@ -58,7 +59,7 @@ namespace PortalCOSIE.Web.Controllers
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Calendario");
             }
 
             var result = await _securityService.ConfirmarCorreoAsync(correo, token);
@@ -82,7 +83,7 @@ namespace PortalCOSIE.Web.Controllers
 
             if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) != null)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Calendario");
             }
             ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
             ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
@@ -109,7 +110,7 @@ namespace PortalCOSIE.Web.Controllers
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Calendario");
             }
             return View();
         }
@@ -128,7 +129,7 @@ namespace PortalCOSIE.Web.Controllers
             {
                 return RedirectToAction(nameof(Registrar));
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Calendario");
         }
 
         //[HttpPost]
@@ -162,7 +163,7 @@ namespace PortalCOSIE.Web.Controllers
         //        return View(dto);
         //    }
 
-        //    return RedirectToAction("Index", "Home");
+        //    return RedirectToAction("Index", "Calendario");
         //}
 
         [HttpGet]
@@ -205,12 +206,25 @@ namespace PortalCOSIE.Web.Controllers
             return Json(new { success = true, message = result.Value });
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CambiarContrasena(CambiarContrasenaDTO dto) 
+        {
+            var result = await _securityService.CambiarContrasena(dto);
+            if (!result.Succeeded)
+            {
+                return Json(new { success = false, message = result.Errors });
+            }
+            return Json(new { success = true, message = result.Value });
+        }
+
         [HttpGet]
         public async Task<IActionResult> ActualizarCorreo(string id, string correo, string token)
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Calendario");
             }
 
             var result = await _securityService.ActualizarCorreoAsync(id, correo, token);
@@ -227,21 +241,32 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        //[Authorize(Roles = "Personal, Alumno")]
         public async Task<IActionResult> MisDatos()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var alumno = await _usuarioService.BuscarAlumno(userId);
-            if (alumno == null)
+            if (User.IsInRole("Administrador"))
             {
-                return RedirectToAction("Index", "Home");
+                var admin = await _securityService.ListarAlumnos();
+                return View("MisDatosAdmin", admin);
             }
 
-            return View(alumno);
+            if (User.IsInRole("Personal"))
+            {
+                var personal = await _usuarioService.BuscarPersonal(userId);
+                return View("MisDatosPersonal", personal);
+            }
+
+            if (User.IsInRole("Alumno")) {
+                var alumno = await _securityService.BuscarAlumnoCompleto(userId);
+                return View("MisDatosAlumno", alumno);
+            }
+            return Json(new { success = false, message = "No tienes un rol valido" });
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Salir()
         {
             await _authService.CerrarSesionAsync();
@@ -249,6 +274,7 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Denegado()
         {
             return View();

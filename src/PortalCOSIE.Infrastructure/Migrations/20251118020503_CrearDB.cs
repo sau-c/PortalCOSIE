@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Nueva : Migration
+    public partial class CrearDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -252,7 +252,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -265,7 +265,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         name: "FK_Usuario_AspNetUsers_IdentityUserId",
                         column: x => x.IdentityUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -384,9 +385,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Tramite_EstadoTramite_EstadoTramiteId",
+                        name: "FK_Tramite_EstadoDocumento_EstadoTramiteId",
                         column: x => x.EstadoTramiteId,
-                        principalTable: "EstadoTramite",
+                        principalTable: "EstadoDocumento",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -412,9 +413,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Observaciones = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     TramiteId = table.Column<int>(type: "int", nullable: false),
-                    DocumentoEstadoId = table.Column<int>(type: "int", nullable: false),
-                    Blob = table.Column<byte>(type: "tinyint", nullable: false),
                     EstadoDocumentoId = table.Column<int>(type: "int", nullable: false),
+                    Blob = table.Column<byte>(type: "tinyint", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -431,7 +431,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         column: x => x.TramiteId,
                         principalTable: "Tramite",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -829,6 +829,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "Documento");
 
             migrationBuilder.DropTable(
+                name: "EstadoTramite");
+
+            migrationBuilder.DropTable(
                 name: "FechaRecepcion");
 
             migrationBuilder.DropTable(
@@ -841,9 +844,6 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "EstadoDocumento");
-
-            migrationBuilder.DropTable(
                 name: "Tramite");
 
             migrationBuilder.DropTable(
@@ -853,7 +853,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "Alumno");
 
             migrationBuilder.DropTable(
-                name: "EstadoTramite");
+                name: "EstadoDocumento");
 
             migrationBuilder.DropTable(
                 name: "Personal");

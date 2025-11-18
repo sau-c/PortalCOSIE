@@ -5,7 +5,7 @@
         public string Nombre { get; private set; }
         public string Observaciones { get; private set; } = string.Empty;
         public int TramiteId { get; private set; }
-        public int DocumentoEstadoId { get; private set; }
+        public int EstadoDocumentoId { get; private set; }
         public byte Blob { get; private set; }
 
         // Propiedades de navegación
@@ -19,14 +19,14 @@
         public Documento(
             string nombre,
             int tramiteId,
-            int documentoEstadoId,
+            int estadoDocumentoId,
             byte blob,
             string observaciones = "")
         {
             SetNombre(nombre);
             SetObservaciones(observaciones);
             TramiteId = tramiteId;
-            DocumentoEstadoId = documentoEstadoId;
+            EstadoDocumentoId = estadoDocumentoId;
             Blob = blob;
         }
 
@@ -53,7 +53,7 @@
         {
             if (nuevoEstado == null)
                 throw new DomainException("El estado del documento no puede ser nulo.");
-            DocumentoEstadoId = nuevoEstado.Id;
+            EstadoDocumentoId = nuevoEstado.Id;
         }
 
         //public void AsociarTramite(Tramite tramite)

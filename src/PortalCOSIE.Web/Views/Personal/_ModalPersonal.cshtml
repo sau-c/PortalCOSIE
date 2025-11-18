@@ -1,8 +1,8 @@
-﻿<!-- Modal para Crear/Editar alumno -->
-<div class="modal fade" id="modalAlumno" tabindex="-1">
+﻿<!-- Modal para Crear/Editar personal -->
+<div class="modal fade" id="modalPersonal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <form id="alumnoForm" method="post">
+            <form id="formPersonal" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="identityUserId" name="identityUserId" />
                 <div class="modal-header bg-primary text-white">
@@ -37,53 +37,12 @@
                             </div>
                         </div>
                     </fieldset>
-
-                    <fieldset class="border rounded px-3 mb-3">
-                        <legend class="float-none w-auto px-2 text-primary fs-6">
-                            <i class="fas fa-graduation-cap me-2"></i>Datos académicos
-                        </legend>
-                        <div class="row mb-3">
-                            <div class="col-lg-4 col-md-4">
-                                <label for="numeroBoleta" class="form-label">No. de boleta:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-id-card"></i>
-                                    </span>
-                                    <input type="text" id="numeroBoleta" name="numeroBoleta" class="form-control" required
-                                           placeholder="Ej. 2020640595"
-                                           maxlength="10"
-                                           pattern="\d*"
-                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4">
-                                <label for="carreraId" class="form-label">Carrera:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-university"></i>
-                                    </span>
-                                    <select asp-items="ViewBag.Carreras" id="carreraId" name="carreraId" class="form-select" required>
-                                        <option value="">- Carrera -</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4">
-                                <label for="periodoIngreso" class="form-label">Periodo ingreso:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                                    <select asp-items="ViewBag.Periodos" id="periodoIngreso" name="periodoIngreso" class="form-select" required>
-                                        <option value="">- Periodo ingreso -</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
-                    <button id="btnModalAlumno" type="submit" class="btn btn-primary">
+                    <button id="btnModalPersonal" type="submit" class="btn btn-primary">
                         <i id="btnIcon" class="fas fa-save me-2"></i><span></span>
                     </button>
                 </div>
@@ -93,22 +52,22 @@
 </div>
 
 <script>
-    function inicializarModalAlumno() {
+    function inicializarModalPersonal() {
         const MODOS = {
             crear: {
-                titulo: 'Crear alumno',
+                titulo: 'Crear personal',
                 btnTexto: 'Enviar correo',
-                action: '@Url.Action("Crear", "Alumno")'
+                action: '@Url.Action("Crear", "Personal")'
             },
             editar: {
-                titulo: 'Editar alumno',
+                titulo: 'Editar personal',
                 btnTexto: 'Guardar cambios',
-                action: '@Url.Action("Editar", "Alumno")'
+                action: '@Url.Action("Editar", "Personal")'
             }
         };
 
-        const modal = document.getElementById('modalAlumno');
-        const form = modal.querySelector('#alumnoForm');
+        const modal = document.getElementById('modalPersonal');
+        const form = modal.querySelector('#formPersonal');
         const btnSubmit = form.querySelector('button[type="submit"]');
         const btnIcon = btnSubmit.querySelector('i');
         const btnText = btnSubmit.querySelector('span');
@@ -153,9 +112,6 @@
                 form.querySelector('#nombre').value = data.nombre || '';
                 form.querySelector('#apellidoPaterno').value = data.apellidopaterno || '';
                 form.querySelector('#apellidoMaterno').value = data.apellidomaterno || '';
-                form.querySelector('#numeroBoleta').value = data.numeroboleta || '';
-                form.querySelector('#carreraId').value = data.carreraid || '';
-                form.querySelector('#periodoIngreso').value = data.periodoingreso || '';
             }
         };
 
