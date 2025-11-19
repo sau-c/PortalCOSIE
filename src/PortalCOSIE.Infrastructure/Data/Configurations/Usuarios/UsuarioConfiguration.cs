@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PortalCOSIE.Domain.Entities.Usuarios;
 
-namespace PortalCOSIE.Infrastructure.Data.Configurations
+namespace PortalCOSIE.Infrastructure.Data.Configurations.Usuarios
 {
     public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
     {

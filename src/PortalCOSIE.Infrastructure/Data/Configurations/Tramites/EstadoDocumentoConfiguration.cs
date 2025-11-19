@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PortalCOSIE.Domain.Entities.Tramites;
 
-namespace PortalCOSIE.Infrastructure.Data.Configurations
+namespace PortalCOSIE.Infrastructure.Data.Configurations.Tramites
 {
     public class EstadoDocumentoConfiguration : IEntityTypeConfiguration<EstadoDocumento>
     {

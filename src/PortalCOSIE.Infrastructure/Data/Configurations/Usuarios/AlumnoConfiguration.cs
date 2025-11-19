@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PortalCOSIE.Domain.Entities.Usuarios;
 
-namespace PortalCOSIE.Infrastructure.Data.Configurations
+namespace PortalCOSIE.Infrastructure.Data.Configurations.Usuarios
 {
     public class AlumnoConfiguration : IEntityTypeConfiguration<Alumno>
     {
@@ -12,7 +12,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
 
             builder.Property(a => a.NumeroBoleta)
                 .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(10);
 
             builder.HasIndex(a => a.NumeroBoleta)
                 .IsUnique();

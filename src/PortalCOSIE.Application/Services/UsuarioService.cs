@@ -10,14 +10,17 @@ namespace PortalCOSIE.Application
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioRepository _usuarioRepo;
+        private readonly IEmailSender _emailSender;
 
         public UsuarioService(
             IUnitOfWork unitOfWork,
-            IUsuarioRepository usuarioRepo
+            IUsuarioRepository usuarioRepo,
+            IEmailSender emailSender
             )
         {
             _unitOfWork = unitOfWork;
             _usuarioRepo = usuarioRepo;
+            _emailSender = emailSender;
         }
 
         public async Task<Result<string>> RegistrarAlumno(RegistrarDTO dto, string userId)
@@ -62,42 +65,6 @@ namespace PortalCOSIE.Application
                 throw new ApplicationException("No se puede buscar un Id nulo");
             return await _usuarioRepo.BuscarPorIdentityId(id);
         }
-        public async Task<Result<string>> EditarAlumno(AlumnoDTO dto)
-        {
-            try
-            {
-                await _unitOfWork.BeginTransactionAsync();
-                var usuario = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
-                if (usuario != null && (usuario.IdentityUserId != dto.IdentityUserId))
-                    throw new ApplicationException("El número de boleta ya existe");
-
-                //var usuario = await _usuarioRepo.BuscarConAlumno(dto.IdentityUserId);
-                //if (usuario == null)
-                //    throw new ApplicationException("Usuario no encontrado");
-                if (usuario.Alumno == null)
-                    throw new ApplicationException("Registro de alumno no encontrado");
-
-                usuario.SetNombre(dto.Nombre);
-                usuario.SetApellidoPaterno(dto.ApellidoPaterno);
-                usuario.SetApellidoMaterno(dto.ApellidoMaterno);
-
-                usuario.Alumno.SetNumeroBoleta(dto.NumeroBoleta);
-                usuario.Alumno.SetPeriodoIngreso(dto.PeriodoIngreso);
-                usuario.Alumno.SetCarrera(dto.CarreraId);
-
-                var cambios = await _unitOfWork.SaveChangesAsync();
-                await _unitOfWork.CommitTransactionAsync();
-
-                return cambios > 0
-                    ? Result<string>.Success("Usuario actualizado con éxito")
-                    : Result<string>.Success("No se detectaron cambios para guardar");
-            }
-            catch (Exception)
-            {
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
-            }
-        }
         public async Task<Result<string>> EditarPersonal(PersonalDTO dto)
         {
             try
@@ -121,6 +88,45 @@ namespace PortalCOSIE.Application
                 return cambios > 0
                     ? Result<string>.Success("Usuario actualizado con éxito")
                     : Result<string>.Success("No se detectaron cambios para guardar");
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+        }
+        public async Task<Result<string>> EditarAlumno(AlumnoDTO dto)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+                var usuario = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
+                if (usuario != null && (usuario.IdentityUserId != dto.IdentityUserId))
+                    throw new ApplicationException("El número de boleta ya existe");
+
+                if (usuario.Alumno == null)
+                    throw new ApplicationException("Registro de alumno no encontrado");
+
+                usuario.SetNombre(dto.Nombre);
+                usuario.SetApellidoPaterno(dto.ApellidoPaterno);
+                usuario.SetApellidoMaterno(dto.ApellidoMaterno);
+
+                usuario.Alumno.SetNumeroBoleta(dto.NumeroBoleta);
+                usuario.Alumno.SetPeriodoIngreso(dto.PeriodoIngreso);
+                usuario.Alumno.SetCarrera(dto.CarreraId);
+
+                var cambios = await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                if (cambios > 0)
+                    Result<string>.Success("No se detectaron cambios para guardar");
+
+                //var identityUser = await _userManager.FindByIdAsync(dto.IdentityUserId);
+                //var envio = await _emailSender.SendEmailAsync(
+                //    identityUser.Email,
+                //    "Actualizamos tu información",
+                //    HtmlTemplates.ActualizamosTuInformacion()
+                //    );
+                return Result<string>.Success("Usuario actualizado con éxito");
             }
             catch (Exception)
             {

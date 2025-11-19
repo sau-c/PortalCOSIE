@@ -11,8 +11,11 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="text-center mb-3">
+                    <div class="text-center">
                         <div id="modalMessage" class="alert" role="alert"></div>
+                    </div>
+                    <div class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i>Se enviará un correo de aviso al usuario
                     </div>
                     <input type="hidden" id="userId" name="userId" />
                     <input type="hidden" id="rol" name="rol" />
@@ -70,7 +73,7 @@
                     .removeClass('alert-warning')
                     .addClass('alert-success')
                     .html(`<strong>¿Activar usuario?</strong><br>
-                            El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema. 
+                            El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema.
                             <strong>Verifica que los datos sean correctos con su credencial</strong>`);
                 $('#confirmButton')
                     .removeClass('btn-warning')

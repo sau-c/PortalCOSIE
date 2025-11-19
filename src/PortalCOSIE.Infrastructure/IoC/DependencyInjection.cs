@@ -42,6 +42,7 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IEstadoDocumentoService, EstadoDocumentoService>();
             services.AddScoped<IEstadoTramiteService, EstadoTramiteService>();
             services.AddScoped<ITipoTramiteService, TipoTramiteService>();
+            services.AddScoped<IBitacoraService, BitacoraService>();
 
             //Repositorios
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Bitacora>
+@{
     ViewData["Title"] = "Bitácora del portal";
 }
 
@@ -15,18 +16,61 @@
             <thead class="table-secondary">
                 <tr class="small">
                     <th>Id</th>
-                    <th>IdEntidad</th>
-                    <th>Tabla</th>
                     <th>Acción</th>
+                    <th>Entidad</th>
+                    <th>Entidad ID</th>
                     <th>Usuario</th>
-                    <th>Fecha</th>
+                    <th>IP</th>
+                    <th>Fecha registro</th>
                 </tr>
             </thead>
             <tbody>
-            
-                @* ForEach *@
-            
+
+                @foreach (var bitacora in Model)
+                {
+                    <tr class="small">
+                        <td>@bitacora.Id</td>
+                        <td>@bitacora.Accion</td>
+                        <td>@bitacora.Entidad</td>
+                        <td>@bitacora.EntidadId</td>
+                        <td>@bitacora.IdentityUserId</td>
+                        <td>@bitacora.IpAddress</td>
+                        <td>@bitacora.FechaRegistro</td>
+                    </tr>
+                }
+
             </tbody>
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tblBitacora').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
+                },
+                paging: false,
+                scrollCollapse: true,
+                scrollY: '50vh',
+                columnDefs:
+                [
+                    {
+                        targets: 0,
+                        width: "1%"
+                    },
+                    {
+                        targets: 3,
+                        width: "1%"
+                    },
+                    {
+                        targets: 2,
+                        width: "1%"
+                    }
+                ]
+            });
+
+        });
+    </script>
+}
