@@ -2,7 +2,7 @@
 <div class="modal fade" id="modalAlumno" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <form id="alumnoForm" method="post">
+            <form id="formAlumno" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="identityUserId" name="identityUserId" />
                 <div class="modal-header bg-primary text-white">
@@ -78,17 +78,19 @@
                             </div>
                         </div>
                     </fieldset>
-                    <div class="form-text text-muted">
-                        <i class="fas fa-info-circle me-1"></i>Se enviará un correo de aviso al usuario
-                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Cancelar
-                    </button>
-                    <button id="btnModalAlumno" type="submit" class="btn btn-primary">
-                        <i id="btnIcon" class="fas fa-save me-2"></i><span></span>
-                    </button>
+                <div class="modal-footer justify-content-between">
+                    @* <div class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i>Los cambios serán notificados vía correo
+                    </div> *@
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i id="btnIcon" class="fas fa-save me-2"></i><span></span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -97,72 +99,77 @@
 
 <script>
     function inicializarModalAlumno() {
+        const modal = document.getElementById('modalAlumno');
+        const form = document.getElementById('formAlumno');
+        const modalTitle = document.getElementById('modalTitle');
+        const btnSubmit = form.querySelector('button[type="submit"]');
+        const btnIcon = btnSubmit.querySelector('i');
+        const btnText = btnSubmit.querySelector('span');
+        const boton = bloqueadorBoton(btnSubmit);
+
         const MODOS = {
             crear: {
                 titulo: 'Crear alumno',
                 btnTexto: 'Enviar correo',
-                action: '@Url.Action("Crear", "Alumno")'
+                action: form.dataset.createAction || '@Url.Action("Crear", "Alumno")'
             },
             editar: {
                 titulo: 'Editar alumno',
                 btnTexto: 'Guardar cambios',
-                action: '@Url.Action("Editar", "Alumno")'
+                action: form.dataset.editAction || '@Url.Action("Editar", "Alumno")'
             }
         };
 
-        const modal = document.getElementById('modalAlumno');
-        const form = modal.querySelector('#alumnoForm');
-        const btnSubmit = form.querySelector('button[type="submit"]');
-        const btnIcon = btnSubmit.querySelector('i');
-        const btnText = btnSubmit.querySelector('span');
-
-        // Estado original del botón
-        const btnOriginalState = {
-            iconClass: btnIcon.className,
-            text: '' // se setea según el modo
+        // Mapeo del formulario
+        const campos = {
+            identityUserId: form.querySelector('#identityUserId'),
+            nombre: form.querySelector('#nombre'),
+            apellidoPaterno: form.querySelector('#apellidoPaterno'),
+            apellidoMaterno: form.querySelector('#apellidoMaterno'),
+            numeroBoleta: form.querySelector('#numeroBoleta'),
+            carreraId: form.querySelector('#carreraId'),
+            periodoIngreso: form.querySelector('#periodoIngreso')
         };
 
-        // Funciones para bloquear/restaurar botón
-        const bloquearBoton = () => {
-            btnIcon.className = 'fas fa-spinner fa-spin me-2';
-            btnText.textContent = 'Cargando...';
-            btnSubmit.disabled = true;
+        const limpiarFormulario = () => {
+            form.reset();
+            campos.identityUserId.value = '';
         };
 
-        const restaurarBoton = () => {
-            btnIcon.className = btnOriginalState.iconClass;
-            btnText.textContent = btnOriginalState.text;
-            btnSubmit.disabled = false;
-        };
-
-        // Configurar modal según modo
         const configurarModal = (modo, data = {}) => {
             const config = MODOS[modo];
 
-            // Resetear formulario
-            form.reset();
+            if (!config) {
+                console.error(`Modo inválido: ${modo}`);
+                return;
+            }
 
-            // Configurar título y botón
-            modal.querySelector('.modal-title').textContent = config.titulo;
-            btnText.textContent = config.btnTexto;
+            // Limpiar formulario
+            limpiarFormulario();
+
+            // Configurar título y acción
+            modalTitle.textContent = config.titulo;
             form.action = config.action;
-            btnOriginalState.text = config.btnTexto;
 
-            restaurarBoton();
+            // Configurar botón submit
+            btnText.textContent = config.btnTexto;
+            btnIcon.className = 'fas fa-save me-2';
+            btnSubmit.disabled = false;
 
-            // Llenar datos si es edición
+            // Llenar datos en modo edición
             if (modo === 'editar') {
-                form.querySelector('input[name="identityUserId"]').value = data.userid || '';
-                form.querySelector('#nombre').value = data.nombre || '';
-                form.querySelector('#apellidoPaterno').value = data.apellidopaterno || '';
-                form.querySelector('#apellidoMaterno').value = data.apellidomaterno || '';
-                form.querySelector('#numeroBoleta').value = data.numeroboleta || '';
-                form.querySelector('#carreraId').value = data.carreraid || '';
-                form.querySelector('#periodoIngreso').value = data.periodoingreso || '';
+                campos.identityUserId.value = data.userid || '';
+                campos.nombre.value = data.nombre || '';
+                campos.apellidoPaterno.value = data.apellidopaterno || '';
+                campos.apellidoMaterno.value = data.apellidomaterno || '';
+                campos.numeroBoleta.value = data.numeroboleta || '';
+                campos.carreraId.value = data.carreraid || '';
+                campos.periodoIngreso.value = data.periodoingreso || '';
             }
         };
 
-        // Evento botones crear/editar usando delegation
+        // ========= REGISTRO DE EVENTOS =========
+        // Abrir modal (delegación de eventos)
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('button[data-mode]');
             if (!btn) return;
@@ -171,36 +178,28 @@
             configurarModal(modo, btn.dataset);
         });
 
-        // Limpiar al cerrar modal
-        modal.addEventListener('hidden.bs.modal', () => {
-            form.reset();
-            form.querySelector('input[name="identityUserId"]').value = '';
-            restaurarBoton();
-        });
-
         // Submit del formulario
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             e.stopPropagation();
 
-            bloquearBoton();
+            boton.bloquear();
             try {
                 const url = form.action;
                 const formData = new FormData(form);
                 const resultado = await executeFetch(url, 'POST', formData);
-
-                // Cerrar modal
-                if (bootstrap?.Modal) {
-                    const bsModal = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
-                    bsModal.hide();
-                }
                 showGlobalModal('success', resultado.message);
-                form.reset();
             } catch (error) {
                 showGlobalModal('error', error.message, {
-                    onClose: restaurarBoton
+                    onClose: () => boton.restaurar()
                 });
             }
+        });
+
+        // Limpiar al cerrar modal
+        modal.addEventListener('hidden.bs.modal', () => {
+            limpiarFormulario();
+            boton.restaurar();
         });
     }
 </script>

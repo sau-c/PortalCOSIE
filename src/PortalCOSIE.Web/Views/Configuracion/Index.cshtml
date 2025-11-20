@@ -17,11 +17,9 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h6 class="mb-0 py-1"><i class="fas fa-cogs me-2"></i>@ViewData["Title"]</h6>
     </div>
-
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
         <!-- Tabs -->
         <ul class="nav nav-tabs small" id="configTabs" role="tablist">
-
             @foreach (var tab in tabs)
             {
                 <li class="nav-item">
@@ -46,44 +44,7 @@
     </div>
 </div>
 
-<!-- Modal Genérico para Crear/Editar -->
-<div class="modal fade" id="modalNombre" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form id="formNombre" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" id="hiddenNombreId" name="id" />
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="hdrNombre">
-                        <i class="fas fa-edit me-2"></i>
-                        @* Titulo dinamico *@
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="txtNombre" class="form-label fw-semibold">
-                            <i class="fas fa-tag me-1"></i>Nombre:
-                        </label>
-                        <input type="text" id="txtNombre" name="nombre" class="form-control" required
-                               maxlength="100">
-                        <div class="form-text text-muted">
-                            <i class="fas fa-info-circle me-1"></i>Máximo 100 caracteres
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>Cancelar
-                    </button>
-                    <button id="btnSubmitNombre" type="submit" class="btn btn-primary">
-                        <i id="iconBtnNombre" class="fas fa-save me-2"></i>Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<partial name="_ModalNombre" />
 
 <!-- Modal Genérico para Toggle (Activar/Desactivar) -->
 <div class="modal fade" id="modalToggle" tabindex="-1">
@@ -153,29 +114,6 @@
 
 @section Scripts {
     <script>
-        // Modal Genérico Crear/Editar
-        const openModalNombre = (options) => {
-            const config = {
-                title: 'Crear/Editar',
-                action: '',
-                id: '',
-                nombre: '',
-                placeholder: 'Ingrese el nombre',
-                icon: 'fas fa-edit',
-                ...options
-            };
-
-            $('#hdrNombre').html(`<i class="${config.icon} me-2"></i>${config.title}`);
-            $('#formNombre').attr('action', config.action);
-            $('#hiddenNombreId').val(config.id);
-            $('#txtNombre').val(config.nombre).attr('placeholder', config.placeholder);
-            // Mostrar y focus en input
-            $('#modalNombre').modal('show');
-            $('#modalNombre').on('shown.bs.modal', function () {
-                $('#txtNombre').trigger('focus');
-            });
-        };
-
         // Modal Genérico Toggle
         const openModalToggle = (options) => {
             const config = {
@@ -230,33 +168,7 @@
             $('#modalToggle').modal('show');
         };
 
-        // Event Handlers - Estilo limpio y directo
-        $('#formNombre').on('submit', async function(e) {
-            e.preventDefault();
-
-            const form = this;
-            const url = $(form).attr('action');
-            const formData = new FormData(form);
-
-            // Deshabilitar botón y cambiar contenido
-            const originalIconClass = $('#iconBtnNombre').attr('class');
-            const originalText = $('#btnSubmitNombre').text();
-            $("#btnSubmitNombre").prop('disabled', true);
-            $('#iconBtnNombre').attr('class', 'fas fa-spinner fa-spin me-2');
-            $('#btnSubmitNombre').text('Cargando...');
-
-            const resultado = await executeFetch(url, 'POST', formData);
-            if (resultado.success) {
-                showGlobalModal('success', resultado.message);
-                $('#modalNombre').modal('hide');
-            } else {
-                showGlobalModal('error', resultado.message);
-                // Reactivar boton
-                $("#btnSubmitNombre").prop('disabled', false)
-                $('#iconBtnNombre').attr('class', originalIconClass);
-                $('#btnSubmitNombre').text(originalText);
-            }
-        });
+       
 
         $('#formToggle').on('submit', async function(e) {
             e.preventDefault();
@@ -279,34 +191,20 @@
         });
 
         // Event Handlers para abrir modales
-        $(document)
-            .on('click', '.generic-edit, .generic-create', function() {
-                const $btn = $(this);
-                const isEdit = $btn.hasClass('generic-edit');
+        $(document).on('click', '.generic-toggle', function() {
+            const $btn = $(this);
 
-                openModalNombre({
-                    title: $btn.data('title'),
-                    action: $btn.data('action'),
-                    id: isEdit ? $btn.data('id') : '',
-                    nombre: isEdit ? $btn.data('nombre') : '',
-                    placeholder: $btn.data('placeholder'),
-                    icon: $btn.data('icon')
-                });
-            })
-            .on('click', '.generic-toggle', function() {
-                const $btn = $(this);
-
-                openModalToggle({
-                    title: 'Cambiar estado',
-                    action: $btn.data('action'),
-                    id: $btn.data('id'),
-                    name: $btn.data('name'),
-                    estadoActual: $btn.data('estado-actual'),
-                    entityName: $btn.data('entity') || 'elemento'
-                });
+            openModalToggle({
+                title: 'Cambiar estado',
+                action: $btn.data('action'),
+                id: $btn.data('id'),
+                name: $btn.data('name'),
+                estadoActual: $btn.data('estado-actual'),
+                entityName: $btn.data('entity') || 'elemento'
             });
+        });
 
-        $(document).ready(function () {
+        document.addEventListener('DOMContentLoaded', () => {
             const loadTabConfig = async (tabButton) => {
                 const $button = $(tabButton);
                 const target = $button.data('bs-target');
@@ -326,9 +224,9 @@
 
             // Cargar tab activo inicial
             loadTabConfig($('.nav-link.active')[0]);
-
             // Cargar tabs al cambiar
             $('.nav-link').on('shown.bs.tab', e => loadTabConfig(e.target));
+            inicializarModalNombre();
         });
     </script>
 }

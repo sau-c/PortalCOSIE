@@ -11,7 +11,7 @@
         public string? UserAgent { get; private set; }
         public DateTime FechaRegistro { get; private set; }
 
-        private EntradaBitacora() { } // Para EF
+        private EntradaBitacora() { }
 
         public EntradaBitacora(string accion, string entidad, string entidadId, string valorNuevo, string identityUserId, string ipAddress, string userAgent)
         {

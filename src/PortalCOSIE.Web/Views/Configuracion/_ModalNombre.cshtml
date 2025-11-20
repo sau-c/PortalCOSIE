@@ -1,0 +1,95 @@
+﻿<!-- Modal Genérico para Crear/Editar -->
+<div class="modal fade" id="modalNombre" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formNombre" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="hiddenNombreId" name="id" />
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalTitle">
+                        <i class="fas fa-edit me-2"></i>
+                        @* Titulo dinamico *@
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="txtNombre" class="form-label fw-semibold">
+                            <i class="fas fa-tag me-1"></i>Nombre:
+                        </label>
+                        <input type="text" id="txtNombre" name="nombre" class="form-control" required
+                               maxlength="100">
+                        <div class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>Máximo 100 caracteres
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button id="btnSubmitNombre" type="submit" class="btn btn-primary">
+                        <i id="iconBtnNombre" class="fas fa-save me-2"></i>Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function inicializarModalNombre() {
+        const modal = document.getElementById('modalNombre');
+        const form = document.getElementById('formNombre');
+        const boton = bloqueadorBoton(document.getElementById('btnSubmitNombre'));
+
+        const campos = {
+            id: document.getElementById('hiddenNombreId'),
+            nombre: document.getElementById('txtNombre')
+        };
+
+        // Abrir modal
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.generic-edit, .generic-create');
+            if (!btn) return;
+
+            const isEdit = btn.classList.contains('generic-edit');
+
+            // Resetear y configurar
+            form.reset();
+            document.getElementById('modalTitle').innerHTML = `<i class="${btn.dataset.icon || 'fas fa-edit'} me-2"></i>${btn.dataset.title || 'Crear/Editar'}`;
+            form.action = btn.dataset.action || '';
+            campos.id.value = isEdit ? (btn.dataset.id || '') : '';
+            campos.nombre.value = isEdit ? (btn.dataset.nombre || '') : '';
+            campos.nombre.placeholder = btn.dataset.placeholder || 'Ingrese el nombre';
+
+            boton.restaurar();
+            new bootstrap.Modal(modal).show();
+        });
+
+        // Submit
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            boton.bloquear();
+
+            try {
+                const resultado = await executeFetch(form.action, 'POST', new FormData(form));
+                showGlobalModal('success', resultado.message);
+            } catch (error) {
+                showGlobalModal('error', error.message, {
+                    onClose: () => boton.restaurar()
+                });
+            }
+        });
+
+        // Focus al mostrar
+        modal.addEventListener('shown.bs.modal', () => campos.nombre.focus());
+
+        // Limpiar al cerrar
+        modal.addEventListener('hidden.bs.modal', () => {
+            form.reset();
+            campos.id.value = '';
+            boton.restaurar();
+        });
+    }
+</script>

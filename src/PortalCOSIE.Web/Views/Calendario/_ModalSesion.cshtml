@@ -46,14 +46,12 @@
 
 <script>
     function inicializarModalSesion() {
-        // ELEMENTOS BASE
         const modal = document.getElementById("modalSesion");
         const form = document.getElementById("formSesion");
         const fechasContainer = modal.querySelector(".fejas-container") ?? modal.querySelector(".fechas-container");
         const submitBtn = form.querySelector('button[type="submit"]');
         const boton = bloqueadorBoton(submitBtn);
 
-        // CONFIGURACIÓN DE MODOS
         const MODOS = {
             crear: {
                 titulo: "Crear nueva sesión",

@@ -10,36 +10,42 @@
         </div>
     </div>
 
-    <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
+    <div class="card-body overflow-auto px-4" style="height: calc(100vh - 164px);">
 
-        <table id="tblBitacora" class="table table-hover table-bordered">
+        <table id="tblBitacora" class="table table-hover table-bordered compact">
             <thead class="table-secondary">
                 <tr class="small">
-                    <th>Id</th>
-                    <th>Acción</th>
-                    <th>Entidad</th>
-                    <th>Entidad ID</th>
-                    <th>Valor nuevo</th>
-                    <th>Usuario</th>
-                    <th>IP</th>
-                    <th>UserAgent</th>
-                    <th>Fecha registro</th>
+                    <th class="small">Id</th>
+                    <th class="small">Acción</th>
+                    <th class="small">Entidad</th>
+                    <th class="small">Entidad ID</th>
+                    <th class="small">Valor nuevo</th>
+                    <th class="small">Usuario</th>
+                    <th class="small">IP</th>
+                    <th class="small">UserAgent</th>
+                    <th class="small">Fecha registro</th>
                 </tr>
+                <tr class="small filters">
+                    <th></th>
+                    @for (int i = 0; i < 8; i++)
+                    {
+                        <th><input type="text" class="form-control form-control-sm" placeholder="Buscar" /></th>
+                    }
             </thead>
             <tbody>
 
                 @foreach (var bitacora in Model)
                 {
                     <tr class="small">
-                        <td>@bitacora.Id</td>
-                        <td>@bitacora.Accion</td>
-                        <td>@bitacora.Entidad</td>
-                        <td>@bitacora.EntidadId</td>
-                        <td>@bitacora.ValorNuevo</td>
-                        <td>@bitacora.IdentityUserId</td>
-                        <td>@bitacora.IpAddress</td>
-                        <td>@bitacora.UserAgent</td>
-                        <td>@bitacora.FechaRegistro</td>
+                        <td class="small">@bitacora.Id</td>
+                        <td class="small">@bitacora.Accion</td>
+                        <td class="small">@bitacora.Entidad</td>
+                        <td class="small">@bitacora.EntidadId</td>
+                        <td class="small">@bitacora.ValorNuevo</td>
+                        <td class="small">@bitacora.IdentityUserId</td>
+                        <td class="small">@bitacora.IpAddress</td>
+                        <td class="small">@bitacora.UserAgent</td>
+                        <td class="small">@bitacora.FechaRegistro</td>
                     </tr>
                 }
 
@@ -51,30 +57,38 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#tblBitacora').DataTable({
+            var table = $('#tblBitacora').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
                 },
-                paging: false,
+                paging: true,
                 scrollCollapse: true,
-                scrollY: '50vh',
-                columnDefs:
-                [
-                    {
-                        targets: 0,
-                        width: "1%"
-                    },
-                    {
-                        targets: 3,
-                        width: "1%"
-                    },
-                    {
-                        targets: 2,
-                        width: "1%"
+                scrollY: 'calc(100vh - 430px)',
+                orderCellsTop: true,
+                fixedHeader: true,
+                autoWidth: true
+                // columnDefs: [
+                //     { targets: 0, width: "1%" },
+                //     { targets: 1, width: "1%" },
+                //     { targets: 2, width: "1%" },
+                //     { targets: 3, width: "5%" },
+                //     { targets: 5, width: "1%" },
+                //     { targets: 6, width: "5%" },
+                //     { targets: 7, width: "1%" },
+                //     { targets: 8, width: "1%" }
+                // ]
+            });
+
+            // Activar búsqueda por columna
+            $('#tblBitacora thead tr.filters th').each(function (i) {
+                $('input', this).on('keyup change', function () {
+                    if (table.column(i).search() !== this.value) {
+                        table.column(i).search(this.value).draw();
                     }
-                ]
+                });
             });
 
         });
     </script>
+
 }

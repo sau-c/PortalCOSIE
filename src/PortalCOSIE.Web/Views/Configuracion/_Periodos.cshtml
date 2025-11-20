@@ -1,9 +1,7 @@
-﻿@using PortalCOSIE.Domain.Entities
-@using PortalCOSIE.Domain.Entities.Calendario
-@model PeriodoConfig
+﻿@model PortalCOSIE.Domain.Entities.PeriodoConfig
 
 <div class="container mt-4">
-    <form asp-action="Periodos" method="post">
+    <form id="formPeriodos" asp-action="Periodos" method="post">
         <div class="row">
             <div class="col-md-6">
                 <div class="card shadow-sm">
@@ -90,6 +88,9 @@
 
 <script>
     $(document).ready(function () {
+        const form = document.getElementById('formPeriodos');
+        const btnSubmit = form.querySelector('button[type="submit"]');
+        const boton = bloqueadorBoton(btnSubmit);
 
         function generarPreview() {
             var anioInicio = parseInt($('[name="anioInicio"]').val());
@@ -111,6 +112,21 @@
             }
             $('#totalPeriodos').text(total);
         }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            boton.bloquear();
+
+            try {
+                const resultado = await executeFetch(form.action, 'POST', new FormData(form));
+                showGlobalModal('success', resultado.message);
+            } catch (error) {
+                showGlobalModal('error', error.message, {
+                    onClose: () => boton.restaurar()
+                });
+            }
+        });
+
 
         $('select').on('change', generarPreview);
         generarPreview();
