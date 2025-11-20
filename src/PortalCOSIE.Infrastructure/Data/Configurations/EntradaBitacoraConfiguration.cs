@@ -5,9 +5,9 @@ using PortalCOSIE.Domain.Entities;
 
 namespace PortalCOSIE.Infrastructure.Data.Configurations
 {
-    public class BItacoraConfiguration : IEntityTypeConfiguration<Bitacora>
+    public class EntradaBitacoraConfiguration : IEntityTypeConfiguration<EntradaBitacora>
     {
-        public void Configure(EntityTypeBuilder<Bitacora> builder)
+        public void Configure(EntityTypeBuilder<EntradaBitacora> builder)
         {
             builder.ToTable("Bitacora");
 

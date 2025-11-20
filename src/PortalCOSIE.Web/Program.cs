@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Infrastructure.Data;
 using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.IoC;
@@ -59,9 +60,8 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-    await DataSeeder.SeedIdentityAsync(userManager, roleManager, configuration);
+    await DataSeeder.SeedIdentityAsync(userManager, configuration);
 }
 // En caso de tener areas, descomentar la siguiente linea
 //app.MapControllerRoute(

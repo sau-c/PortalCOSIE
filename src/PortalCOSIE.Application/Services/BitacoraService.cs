@@ -5,10 +5,10 @@ namespace PortalCOSIE.Application.Interfaces
 {
     public class BitacoraService : IBitacoraService
     {
-        private readonly IBaseRepository<Bitacora> _bitacoraRepo;
+        private readonly IBaseRepository<EntradaBitacora> _bitacoraRepo;
         private readonly IUnitOfWork _unitOfWork;
         public BitacoraService(
-            IBaseRepository<Bitacora> bitacoraRepo,
+            IBaseRepository<EntradaBitacora> bitacoraRepo,
             IUnitOfWork unitOfWork
             )
         {
@@ -16,24 +16,9 @@ namespace PortalCOSIE.Application.Interfaces
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<Bitacora>> ListarBitacoraAsync()
+        public async Task<IEnumerable<EntradaBitacora>> ListarBitacoraAsync()
         {
             return await _bitacoraRepo.GetAllAsync(false);
-        }
-
-        public async Task RegistrarAsync(string identityUserId, string accion, string entidad, string? entidadId, string ip, string userAgent)
-        {
-            var registro = new Bitacora (
-                identityUserId,
-                accion,
-                entidad,
-                entidadId,
-                ip,
-                userAgent
-            );
-
-            await _bitacoraRepo.AddAsync(registro);
-            await _unitOfWork.SaveChangesAsync();
         }
     }
 

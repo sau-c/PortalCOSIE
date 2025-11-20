@@ -4,8 +4,7 @@ namespace PortalCOSIE.Application.Interfaces
 {
     public interface IBitacoraService
     {
-        Task<IEnumerable<Bitacora>> ListarBitacoraAsync();
-        Task RegistrarAsync(string identityUserId, string accion, string entidad, string? entidadId, string ip, string userAgent);
+        Task<IEnumerable<EntradaBitacora>> ListarBitacoraAsync();
     }
 
 }

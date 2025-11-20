@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CrearDB : Migration
+    public partial class CreaBase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -247,6 +247,32 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bitacora",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Accion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Entidad = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EntidadId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ValorNuevo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserAgent = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaRegistro = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bitacora", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bitacora_AspNetUsers_IdentityUserId",
+                        column: x => x.IdentityUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Usuario",
                 columns: table => new
                 {
@@ -317,7 +343,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    NumeroBoleta = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    NumeroBoleta = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     PeriodoIngreso = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CarreraId = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -432,6 +458,16 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         principalTable: "Tramite",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "11111111-1111-1111-1111-111111111111", null, "Administrador", "ADMINISTRADOR" },
+                    { "22222222-2222-2222-2222-222222222222", null, "Personal", "PERSONAL" },
+                    { "33333333-3333-3333-3333-333333333333", null, "Alumno", "ALUMNO" }
                 });
 
             migrationBuilder.InsertData(
@@ -732,6 +768,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bitacora_IdentityUserId",
+                table: "Bitacora",
+                column: "IdentityUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Carrera_Nombre",
                 table: "Carrera",
                 column: "Nombre",
@@ -824,6 +865,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Bitacora");
 
             migrationBuilder.DropTable(
                 name: "Documento");

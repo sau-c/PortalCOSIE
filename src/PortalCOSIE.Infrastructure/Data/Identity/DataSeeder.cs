@@ -5,29 +5,11 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
 {
     public static class DataSeeder
     {
-        public static async Task SeedIdentityAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public static async Task SeedIdentityAsync(UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             var adminEmail = configuration["AdminUser:Email"];
             var adminPassword = configuration["AdminUser:Password"];
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
-            var adminRole = await roleManager.RoleExistsAsync("Administrador");
-
-            var roles = new[] { "Administrador", "Personal", "Alumno" };
-
-            // Crear roles si no existen
-            foreach (var roleName in roles)
-            {
-                var roleExists = await roleManager.RoleExistsAsync(roleName);
-                if (!roleExists)
-                {
-                    await roleManager.CreateAsync(new IdentityRole
-                    {
-                        Name = roleName,
-                        NormalizedName = roleName.ToUpper(),
-                        ConcurrencyStamp = Guid.NewGuid().ToString()
-                    });
-                }
-            }
 
             if (adminUser == null)
             {
