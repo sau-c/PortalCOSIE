@@ -1,159 +1,112 @@
-﻿@model PortalCOSIE.Application.DTO.Tramite.SolicitarCteDTO
+﻿@model PortalCOSIE.Application.DTO.Tramites.SolicitudCtceDTO
 @{
     ViewData["Title"] = "Dictamen interno (CTCE)";
-    var periodos = new[] { "2026/1", "2025/2", "2025/1", "2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2" };
 }
 
 <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 py-1">@ViewData["Title"]</h6>
+        <h6 class="mb-0 py-1"><i class="fas fa-file me-2"></i>@ViewData["Title"]</h6>
         <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left me-2"></i>Volver
         </a>
     </div>
 
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
-        <form asp-action="SolicitarCTCE" asp-controller="Tramite" enctype="multipart/form-data" method="post">
+        <form id="formSolicitud" asp-action="SolicitarCTCE" enctype="multipart/form-data" method="post">
 
             <!-- === DATOS GENERALES === -->
-            <fieldset class="border rounded p-3 mb-3">
-                <legend class="float-none w-auto px-2 text-primary fs-5">
+            <fieldset class="border rounded pb-3 px-3 mb-3">
+                <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
                     <i class="fas fa-user-edit me-2"></i>Datos generales del solicitante
                 </legend>
 
-                <div class="row align-items-center">
-                    <div class="col-lg-10">
-                        <label for="txtSituacion" class="form-label">
-                            <i class="fas fa-info-circle me-1 text-muted"></i>Escriba claramente su situación:
-                        </label>
-                        <textarea class="form-control" id="txtSituacion" name="txtSituacion" rows="3"></textarea>
+                <div class="row g-4">
+                    <div class="col-md-8">
+                        <div class="form-floating">
+                            <textarea asp-for="Situacion" class="form-control" style="height: 100px" placeholder="Describa su situación" required></textarea>
+                            <label asp-for="Situacion">Describa claramente su situación académica</label>
+                        </div>
                     </div>
-
-                    <div class="col-lg-2 text-center mt-3 mt-lg-0">
-                        <label for="chkAnterior" class="form-label d-block">
-                            <i class="fas fa-history me-1 text-muted"></i>Dictámenes anteriores
-                        </label>
-                        <div class="form-check form-switch d-inline-block">
-                            <input class="form-check-input" type="checkbox" id="chkAnterior" name="chkAnterior">
-                            <label class="form-check-label" for="chkAnterior">Sí</label>
+                    <div class="col-md-4">
+                        <div class="h-100 d-flex align-items-center p-3 border rounded bg-light">
+                            <div class="form-check form-switch w-100">
+                                <input asp-for="TieneDictamenesAnteriores" class="form-check-input" type="checkbox" role="switch">
+                                <label class="form-check-label fw-bold text-secondary ms-2" for="TieneDictamenesAnteriores">
+                                    ¿Tiene dictámenes anteriores?
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </fieldset>
 
-            <!-- === UNIDADES REPROBADAS === -->
-            <fieldset class="border rounded p-3 mb-3">
-                <legend class="float-none w-auto px-2 text-primary fs-5">
-                    <i class="fas fa-book me-2"></i>Unidades de aprendizaje reprobadas
-                </legend>
-
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle text-center" id="tabla-unidades">
-                        <thead class="table-secondary">
-                            <tr class="small">
-                                <th>Unidad reprobada</th>
-                                <th>Semestre</th>
-                                <th>Cuándo cursó</th>
-                                <th>Cuándo recursó</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <button type="button" class="btn btn-success mt-2" id="agregarFila">
-                    <i class="fas fa-plus me-2"></i>Agregar
-                </button>
-
-                <!-- Template para clonar -->
-                <template id="filaTemplate">
-                    <tr class="small">
-                        <td>
-                            @* <select class="form-select" name="unidad[]">
-                                <option value="">Seleccione...</option>
-                                <option>Matemáticas</option>
-                                <option>Física</option>
-                                <option>Programación</option>
-                            </select> *@
-                            <select asp-for="UnidadesAprendizaje" asp-items="ViewBag.Unidades" class="form-select" required>
-                                <option value="">Seleccione...</option>
-                            </select>
-                            <span asp-validation-for="UnidadesAprendizaje" class="text-danger small"></span>
-                        </td>
-                        <td>
-                            <select class="form-select" name="semestre[]">
-                                <option value="">Seleccione...</option>
-                                @for (int i = 1; i <= 10; i++)
-                                {
-                                    <option>@i°</option>
-                                }
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-select" name="periodoCursado[]">
-                                <option value="">Seleccione...</option>
-                                @foreach (var p in periodos)
-                                {
-                                    <option>@p</option>
-                                }
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-select" name="periodoRecursado[]">
-                                <option value="">Seleccione...</option>
-                                @foreach (var p in periodos)
-                                {
-                                    <option>@p</option>
-                                }
-                            </select>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm eliminarFila" title="Eliminar fila">
-                                <i class="fas fa-times"></i>
+            <div class="row g-4">
+                <!-- === UNIDADES REPROBADAS === -->
+                <div class="col">
+                    <fieldset class="border rounded pb-3 px-3 mb-3">
+                        <legend class="d-flex justify-content-between float-none w-auto px-2 text-primary fs-6 fw-bold">
+                            <div>
+                                <i class="fas fa-book me-2"></i>Unidades de aprendizaje reprobadas
+                            </div>
+                            <button id="btnAgregarFila" type="button" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-2"></i>Agregar
                             </button>
-                        </td>
-                    </tr>
-                </template>
-            </fieldset>
-
-            <!-- === DOCUMENTOS === -->
-            <fieldset class="border rounded p-3 mb-4">
-                <legend class="float-none w-auto px-2 text-primary fs-5">
-                    <i class="fas fa-file-upload me-2"></i>Documentos
-                </legend>
-
-                <div class="row mb-3">
-                    <div class="col-lg-6">
-                        <label for="fileMotivos" class="form-label">
-                            <i class="fas fa-file-alt me-1 text-muted"></i>Carta exposición de motivos
-                        </label>
-                        <input type="file" class="form-control" id="fileMotivos" name="fileMotivos" accept=".pdf" />
-                    </div>
-                    <div class="col-lg-6">
-                        <label for="fileProbatorios" class="form-label">
-                            <i class="fas fa-clipboard-check me-1 text-muted"></i>Probatorios
-                        </label>
-                        <input type="file" class="form-control" id="fileProbatorios" name="fileProbatorios" accept=".pdf" />
-                    </div>
+                        </legend>
+                        <div class="table-responsive">
+                            <table class="table table-bordered small" id="tblUnidades">
+                                <thead class="table-secondary">
+                                    <tr class="small">
+                                        <th style="width: 50%">Unidad de aprendizaje</th>
+                                        <th>Cuándo cursó</th>
+                                        <th>Cuándo recursó</th>
+                                        <th style="width: 50px; text-align: center"><i class="fas fa-trash"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-unidades">
+                                    <!-- Filas dinámicas se agregarán aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="empty-state" class="text-center py-4 mb-3 text-muted small bg-light rounded">
+                            No ha agregado materias reprobadas aún.
+                        </div>
+                    </fieldset>
                 </div>
+                <!-- === DOCUMENTOS === -->
+                <div class="col">
+                    <fieldset class="border rounded pb-3 px-3 mb-3">
+                        <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
+                            <i class="fas fa-file-upload me-2"></i>Documentos
+                        </legend>
+                        <div class="text-muted small pb-2">
+                            <i class="fas fa-info-circle me-2"></i>Solo se permiten archivos PDF (Máx 5MB).
+                        </div>
 
-                <div class="row mb-3">
-                    <div class="col-lg-6">
-                        <label for="fileIdentificacion" class="form-label">
-                            <i class="fas fa-id-card me-1 text-muted"></i>Identificación
-                        </label>
-                        <input type="file" class="form-control" id="fileIdentificacion" name="fileIdentificacion" accept=".pdf" />
-                    </div>
-                    <div class="col-lg-6">
-                        <label for="fileBoleta" class="form-label">
-                            <i class="fas fa-id-card me-1 text-muted"></i>Boleta global
-                        </label>
-                        <input type="file" class="form-control" id="fileBoleta" name="fileBoleta" accept=".pdf" />
-                    </div>
+                        <div class="row mb-3">
+                            <div class="col-lg-6">
+                                <label asp-for="CartaExposicionMotivos" class="form-label">Carta exposición de motivos</label>
+                                <input asp-for="CartaExposicionMotivos" type="file" class="form-control form-control-sm" accept=".pdf" required />
+                                @* <span asp-validation-for="CartaExposicionMotivos" class="text-danger small"></span> *@
+                            </div>
+                            <div class="col-lg-6">
+                                <label asp-for="Identificacion" class="form-label">Identificación</label>
+                                <input asp-for="Identificacion" type="file" class="form-control form-control-sm" accept=".pdf" required/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-lg-6">
+                                <label asp-for="BoletaGlobal" class="form-label">Boleta global</label>
+                                <input asp-for="BoletaGlobal" type="file" class="form-control form-control-sm" accept=".pdf" required />
+                            </div>
+                            <div class="col-lg-6">
+                                <label asp-for="Probatorios" class="form-label">Probatorios</label>
+                                <input asp-for="Probatorios" type="file" class="form-control form-control-sm" accept=".pdf" required />
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
-            </fieldset>
-
+            </div>
             <p class="text-muted">
                 <i>
                     Que enterado bajo protesta de decir la verdad que lo asentado en esta solicitud y sus anexos son
@@ -163,7 +116,7 @@
 
             <!-- BOTÓN FINAL -->
             <div class="text-end">
-                <button type="submit" class="btn btn-primary">
+                <button id="btnSubmit" type="submit" class="btn btn-primary">
                     <i class="fas fa-paper-plane me-2"></i>Solicitar trámite
                 </button>
             </div>
@@ -171,19 +124,100 @@
     </div>
 </div>
 
+<template id="rowTemplate">
+    <tr class="align-middle">
+        <input type="hidden" name="UnidadesReprobadas.Index" value="{INDEX}" />
+
+        <td>
+            <select name="UnidadesReprobadas[{INDEX}].UnidadId" class="form-select border-0 bg-light" required>
+                <option value="">Seleccione unidad...</option>
+                @foreach (var item in (SelectList)ViewBag.Unidades)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </td>
+        <td>
+            <select name="UnidadesReprobadas[{INDEX}].PeriodoCursado" class="form-select form-select-sm border-0 bg-light text-center" required>
+                <option value="">- Periodo -</option>
+                @foreach (var item in (SelectList)ViewBag.Periodos)
+                {
+                    <option value="@item.Text">@item.Text</option>
+                }
+            </select>
+        </td>
+        <td>
+            <select name="UnidadesReprobadas[{INDEX}].PeriodoRecursado" class="form-select form-select-sm border-0 bg-light text-center" required>
+                <option value="">- Periodo -</option>
+                @foreach (var item in (SelectList)ViewBag.Periodos)
+                {
+                    <option value="@item.Text">@item.Text</option>
+                }
+            </select>
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-link text-danger p-0 btn-eliminar" title="Quitar">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
+
+
 @section Scripts {
     <script>
         $(document).ready(function () {
-            const $tabla = $('#tabla-unidades tbody');
-            const template = $('#filaTemplate')[0].content;
+            const form = document.getElementById("formSolicitud");
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const boton = bloqueadorBoton(submitBtn);
 
-            $('#agregarFila').on('click', function () {
-                const $nuevaFila = $(document.importNode(template, true));
-                $tabla.append($nuevaFila);
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                boton.bloquear();
+
+                try {
+                    const url = form.getAttribute("action");
+                    const formData = new FormData(form);
+                    await executeFetch(url, "POST", formData);
+                } catch (error) {
+                    showGlobalModal("error", error.message, {
+                        onClose: () => boton.restaurar()
+                    });
+                }
             });
 
-            $tabla.on('click', '.eliminarFila', function () {
-                $(this).closest('tr').remove();
+            // === LÓGICA DE TABLA DINÁMICA ===
+            const btnAgregar = document.getElementById("btnAgregarFila");
+            const tbody = document.getElementById("tbody-unidades");
+            const emptyState = document.getElementById("empty-state");
+            const template = document.getElementById("rowTemplate").innerHTML;
+
+            // Usamos un contador que siempre incrementa para garantizar índices únicos
+            // No importa si los números no son seguidos (ej: 1, 5, 8) gracias al input .Index
+            let rowIndex = 0;
+
+            const toggleEmptyState = () => {
+                if(tbody.children.length === 0) emptyState.style.display = 'block';
+                else emptyState.style.display = 'none';
+            };
+
+            btnAgregar.addEventListener("click", function () {
+                // Reemplazamos todas las ocurrencias de {INDEX}
+                let newRowHtml = template.replaceAll("{INDEX}", rowIndex);
+
+                tbody.insertAdjacentHTML('beforeend', newRowHtml);
+
+                rowIndex++; // Incrementamos siempre, nunca disminuimos
+                toggleEmptyState();
+            });
+
+            tbody.addEventListener("click", function (e) {
+                if (e.target.closest(".btn-eliminar")) {
+                    e.target.closest("tr").remove();
+                    toggleEmptyState();
+                    // NOTA: No necesitamos re-indexar gracias a UnidadesReprobadas.Index
+                }
             });
         });
     </script>

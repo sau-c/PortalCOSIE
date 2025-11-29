@@ -6,10 +6,10 @@ namespace PortalCOSIE.Web.Controllers
 {
     public class CalendarioController : Controller
     {
-        private readonly ICatalogoService _catalogoService;
+        private readonly IPeriodosService _catalogoService;
 
         public CalendarioController(
-            ICatalogoService catalogoService
+            IPeriodosService catalogoService
             )
         {
             _catalogoService = catalogoService;

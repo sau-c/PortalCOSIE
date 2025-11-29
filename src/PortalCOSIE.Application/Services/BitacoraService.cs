@@ -1,24 +1,20 @@
-﻿using PortalCOSIE.Domain.Entities;
-using PortalCOSIE.Domain.Interfaces;
+﻿using PortalCOSIE.Domain.Entities.Bitacoras;
 
 namespace PortalCOSIE.Application.Interfaces
 {
     public class BitacoraService : IBitacoraService
     {
-        private readonly IBaseRepository<EntradaBitacora> _bitacoraRepo;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBitacoraRepository _bitacoraRepo;
         public BitacoraService(
-            IBaseRepository<EntradaBitacora> bitacoraRepo,
-            IUnitOfWork unitOfWork
+            IBitacoraRepository bitacoraRepo
             )
         {
             _bitacoraRepo = bitacoraRepo;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<EntradaBitacora>> ListarBitacoraAsync()
         {
-            return await _bitacoraRepo.GetAllAsync(false);
+            return await _bitacoraRepo.ListarConCorreo();
         }
     }
 

@@ -1,32 +1,14 @@
-﻿using System.Text.RegularExpressions;
+﻿using PortalCOSIE.Domain.Common;
 
 namespace PortalCOSIE.Domain.Entities.Tramites
 {
-    public class TipoTramite : BaseEntity
+    public class TipoTramite : Enumeration
     {
-        public string Nombre { get; private set; } = string.Empty;
+        public static readonly TipoTramite DictamenInterno = new(1, "Dictamen interno (CTCE)");
+        public static readonly TipoTramite DictamenExterno = new(2, "Dictamen externo (CGC)");
 
-        private const int LongitudMaxima = 100;
-        private static readonly Regex SoloLetras =
-            new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\(\)]+$", RegexOptions.Compiled);
-
-        private TipoTramite() { }
-
-        public TipoTramite(string nombre)
+        private TipoTramite(int id, string nombre) : base(id, nombre)
         {
-            ActualizarNombre(nombre);
-        }
-
-        public void ActualizarNombre(string nombre)
-        {
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new DomainException("El nombre no puede estar vacío.");
-            nombre = nombre?.Trim() ?? string.Empty;
-            if (!SoloLetras.IsMatch(nombre))
-                throw new DomainException("El nombre solo puede contener letras y espacios.");
-            if (nombre.Length > LongitudMaxima)
-                throw new DomainException($"El nombre no puede tener más de {LongitudMaxima} caracteres.");
-            Nombre = nombre;
         }
     }
 }

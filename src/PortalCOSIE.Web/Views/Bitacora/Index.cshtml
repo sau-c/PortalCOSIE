@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PortalCOSIE.Domain.Entities.EntradaBitacora>
+﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Bitacoras.EntradaBitacora>
 @{
     ViewData["Title"] = "Bitácora del portal";
 }
@@ -62,21 +62,10 @@
                     url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
                 },
                 paging: true,
-                scrollCollapse: true,
                 scrollY: 'calc(100vh - 430px)',
                 orderCellsTop: true,
-                fixedHeader: true,
+                "order": [],
                 autoWidth: true
-                // columnDefs: [
-                //     { targets: 0, width: "1%" },
-                //     { targets: 1, width: "1%" },
-                //     { targets: 2, width: "1%" },
-                //     { targets: 3, width: "5%" },
-                //     { targets: 5, width: "1%" },
-                //     { targets: 6, width: "5%" },
-                //     { targets: 7, width: "1%" },
-                //     { targets: 8, width: "1%" }
-                // ]
             });
 
             // Activar búsqueda por columna

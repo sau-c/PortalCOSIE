@@ -34,20 +34,16 @@ namespace PortalCOSIE.Application
                 if (await _usuarioRepo.BuscarPorIdentityId(userId) != null)
                     throw new ApplicationException("Este id de usuario ya existe");
 
-                var alumno = new Alumno(
+                var usuario = new Alumno(
+                    userId,
+                    dto.Nombre,
+                    dto.ApellidoPaterno,
+                    dto.ApellidoMaterno,
                     dto.NumeroBoleta,
                     dto.PeriodoIngreso,
                     dto.CarreraId
                     );
 
-                var usuario = new Usuario(
-                    userId,
-                    dto.Nombre,
-                    dto.ApellidoPaterno,
-                    dto.ApellidoMaterno
-                );
-
-                usuario.SetAlumno(alumno);
                 await _usuarioRepo.AddAsync(usuario);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
@@ -75,9 +71,6 @@ namespace PortalCOSIE.Application
                 if (usuario == null)
                     throw new ApplicationException("Usuario no encontrado");
 
-                if (usuario.Personal == null)
-                    throw new ApplicationException("Registro de personal no encontrado");
-
                 usuario.SetNombre(dto.Nombre);
                 usuario.SetApellidoPaterno(dto.ApellidoPaterno);
                 usuario.SetApellidoMaterno(dto.ApellidoMaterno);
@@ -100,24 +93,20 @@ namespace PortalCOSIE.Application
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                var usuario = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
-                if (usuario != null && (usuario.IdentityUserId != dto.IdentityUserId))
+                var alumno = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
+                if (alumno != null && (alumno.IdentityUserId != dto.IdentityUserId))
                     throw new ApplicationException("El número de boleta ya existe");
 
-                if (usuario.Alumno == null)
-                    throw new ApplicationException("Registro de alumno no encontrado");
-
-                usuario.SetNombre(dto.Nombre);
-                usuario.SetApellidoPaterno(dto.ApellidoPaterno);
-                usuario.SetApellidoMaterno(dto.ApellidoMaterno);
-
-                usuario.Alumno.SetNumeroBoleta(dto.NumeroBoleta);
-                usuario.Alumno.SetPeriodoIngreso(dto.PeriodoIngreso);
-                usuario.Alumno.SetCarrera(dto.CarreraId);
+                alumno.SetNombre(dto.Nombre);
+                alumno.SetApellidoPaterno(dto.ApellidoPaterno);
+                alumno.SetApellidoMaterno(dto.ApellidoMaterno);
+                alumno.SetNumeroBoleta(dto.NumeroBoleta);
+                alumno.SetPeriodoIngreso(dto.PeriodoIngreso);
+                alumno.SetCarrera(dto.CarreraId);
 
                 var cambios = await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
-                if (cambios > 0)
+                if (cambios < 0)
                     Result<string>.Success("No se detectaron cambios para guardar");
 
                 //var identityUser = await _userManager.FindByIdAsync(dto.IdentityUserId);

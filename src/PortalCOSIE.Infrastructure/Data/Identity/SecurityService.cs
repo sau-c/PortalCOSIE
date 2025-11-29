@@ -1,29 +1,78 @@
-﻿using PortalCOSIE.Domain.Interfaces;
-using PortalCOSIE.Application;
+﻿using PortalCOSIE.Application;
 using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 using System.Net;
 using Microsoft.AspNetCore.Identity;
+using PortalCOSIE.Domain.Entities.Usuarios;
 
 namespace PortalCOSIE.Infrastructure.Data.Identity
 {
     public class SecurityService : ISecurityService
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IEmailSender _emailSender;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
             IUsuarioRepository usuarioRepo,
             IEmailSender emailSender)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _usuarioRepo = usuarioRepo;
             _emailSender = emailSender;
         }
 
+        public async Task<Result<string>> IngresarUsuarioAsync(IngresarDTO dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Correo);
+
+            if (user == null)
+            {
+                throw new ApplicationException("Usuario no encontrado.");
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                //En caso de que el ususario borre el email de confirmacion que?
+                return Result<string>.Failure("Revisa tu correo electrónico para confirmar tu cuenta.");
+            }
+
+            //RememberMe false para mayor seguridad
+            var login = await _signInManager.PasswordSignInAsync(user, dto.Contrasena, false, lockoutOnFailure: true);
+
+            if (login.IsLockedOut)
+            {
+                var lockoutEnd = await _userManager.GetLockoutEndDateAsync(user);
+                var restante = lockoutEnd.Value.UtcDateTime - DateTime.UtcNow;
+                int minutos = (int)restante.TotalMinutes;
+                int segundos = restante.Seconds;
+
+                string tiempo;
+                if (minutos > 0)
+                    tiempo = $"{minutos} minuto{(minutos > 1 ? "s" : "")} y {segundos} segundo{(segundos != 1 ? "s" : "")}";
+                else
+                    tiempo = $"{segundos} segundo{(segundos != 1 ? "s" : "")}";
+
+                return Result<string>.Failure($"Cuenta bloqueada por múltiples intentos fallidos. Intenta de nuevo en {tiempo}.");
+            }
+            if (login.IsNotAllowed)
+            {
+                return Result<string>.Failure("Ingreso no permitido");
+            }
+
+            return login.Succeeded
+                ? Result<string>.Success("Inicio de sesión exitoso.")
+                : Result<string>.Failure("Contraseña incorrecta.");
+        }
+        public async Task CerrarSesionAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
         public async Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto)
         {
             if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Contrasena) || string.IsNullOrEmpty(dto.ConfirmarContrasena))
@@ -292,12 +341,12 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         }
         public async Task<IEnumerable<AlumnoCompletoDTO>> ListarAlumnos()
         {
-            var usuarios = await _usuarioRepo.ListarConAlumnoYCarrera();
+            var alumnos = await _usuarioRepo.ListarAlumnoConCarrera();
             var alumnosDTO = new List<AlumnoCompletoDTO>();
 
-            foreach (var usuario in usuarios)
+            foreach (var alumno in alumnos)
             {
-                var identityUser = await _userManager.FindByIdAsync(usuario.IdentityUserId);
+                var identityUser = await _userManager.FindByIdAsync(alumno.IdentityUserId);
                 if (identityUser == null) continue;
 
                 var roles = await _userManager.GetRolesAsync(identityUser);
@@ -305,12 +354,12 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 alumnosDTO.Add(new AlumnoCompletoDTO
                 {
                     IdentityUserId = identityUser.Id,
-                    NumeroBoleta = usuario.Alumno?.NumeroBoleta ?? "N/A",
-                    Nombre = usuario.Nombre,
-                    ApellidoPaterno = usuario.ApellidoPaterno,
-                    ApellidoMaterno = usuario.ApellidoMaterno,
-                    Carrera = usuario.Alumno.Carrera,
-                    PeriodoIngreso = usuario.Alumno.PeriodoIngreso,
+                    NumeroBoleta = alumno?.NumeroBoleta ?? "N/A",
+                    Nombre = alumno.Nombre,
+                    ApellidoPaterno = alumno.ApellidoPaterno,
+                    ApellidoMaterno = alumno.ApellidoMaterno,
+                    Carrera = alumno.Carrera,
+                    PeriodoIngreso = alumno.PeriodoIngreso,
                     Correo = identityUser.Email,
                     Celular = identityUser.PhoneNumber,
                     Rol = roles.FirstOrDefault()
@@ -348,11 +397,8 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             if (string.IsNullOrWhiteSpace(identityUserId))
                 throw new ArgumentException("El ID del usuario es obligatorio", nameof(identityUserId));
 
-            var usuario = await _usuarioRepo.BuscarConAlumnoYCarrera(identityUserId)
+            var alumno = await _usuarioRepo.BuscarAlumnoConCarrera(identityUserId)
                            ?? throw new ApplicationException("No se encontró el usuario");
-
-            if (usuario.Alumno == null)
-                throw new ApplicationException("No se encontró registro del alumno");
 
             // Obtener IdentityUser para el celular
             var identityUser = await _userManager.FindByIdAsync(identityUserId)
@@ -361,14 +407,14 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             return new AlumnoCompletoDTO
             {
                 IdentityUserId = identityUserId,
-                Nombre = usuario.Nombre,
-                ApellidoPaterno = usuario.ApellidoPaterno,
-                ApellidoMaterno = usuario.ApellidoMaterno,
-                NumeroBoleta = usuario.Alumno.NumeroBoleta,
+                Nombre = alumno.Nombre,
+                ApellidoPaterno = alumno.ApellidoPaterno,
+                ApellidoMaterno = alumno.ApellidoMaterno,
+                NumeroBoleta = alumno.NumeroBoleta,
                 Correo = identityUser.Email,
                 CorreoConfirmado = identityUser.EmailConfirmed,
-                PeriodoIngreso = usuario.Alumno.PeriodoIngreso,
-                Carrera = usuario.Alumno.Carrera,
+                PeriodoIngreso = alumno.PeriodoIngreso,
+                Carrera = alumno.Carrera,
                 Celular = identityUser.PhoneNumber
             };
         }

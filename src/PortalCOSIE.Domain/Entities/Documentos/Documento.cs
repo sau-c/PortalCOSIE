@@ -1,4 +1,6 @@
-﻿namespace PortalCOSIE.Domain.Entities.Tramites
+﻿using PortalCOSIE.Domain.Entities.Tramites;
+
+namespace PortalCOSIE.Domain.Entities.Documentos
 {
     public class Documento : BaseEntity
     {
@@ -6,7 +8,7 @@
         public string Observaciones { get; private set; } = string.Empty;
         public int TramiteId { get; private set; }
         public int EstadoDocumentoId { get; private set; }
-        public byte Blob { get; private set; }
+        public byte[] Contenido { get; private set; }
 
         // Propiedades de navegación
         public EstadoDocumento EstadoDocumento { get; private set; }
@@ -15,22 +17,20 @@
         // Constructor privado para EF Core
         private Documento() { }
 
-        // Constructor público seguro
         public Documento(
             string nombre,
             int tramiteId,
             int estadoDocumentoId,
-            byte blob,
+            byte[] contenido,
             string observaciones = "")
         {
             SetNombre(nombre);
             SetObservaciones(observaciones);
             TramiteId = tramiteId;
             EstadoDocumentoId = estadoDocumentoId;
-            Blob = blob;
+            Contenido = contenido;
         }
 
-        // Método de negocio para actualizar nombre
         public void SetNombre(string nombre)
         {
             if (string.IsNullOrWhiteSpace(nombre))
@@ -56,18 +56,9 @@
             EstadoDocumentoId = nuevoEstado.Id;
         }
 
-        //public void AsociarTramite(Tramite tramite)
-        //{
-        //    if (tramite == null)
-        //        throw new DomainException("El trámite no puede ser nulo.");
-
-        //    Tramite = tramite;
-        //    TramiteId = tramite.Id;
-        //}
-
-        public void SetBlob(byte blob)
+        public void SetContenido(byte[] contenido)
         {
-            Blob = blob;
+            Contenido = contenido;
         }
     }
 }

@@ -21,7 +21,7 @@
       <FileName>Entities\Carrera.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="PortalCOSIE.Domain.Entities.Documento">
+  <Class Name="PortalCOSIE.Domain.Entities.Documentos">
     <Position X="8.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAACAAAAAAAAAAAAAgAAAEAAAAAAAAAAAACAAAAA=</HashCode>

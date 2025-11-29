@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PortalCOSIE.Domain.Entities;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Interfaces;
@@ -13,6 +12,9 @@ using PortalCOSIE.Infrastructure.Data.Email;
 using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.Repositories;
 using Infrastructure.Data;
+using PortalCOSIE.Domain.Entities.Carreras;
+using PortalCOSIE.Domain.Entities.Calendario;
+using PortalCOSIE.Domain.Entities.Bitacoras;
 
 namespace PortalCOSIE.Infrastructure.IoC
 {
@@ -33,17 +35,15 @@ namespace PortalCOSIE.Infrastructure.IoC
 
             //Servicios Infraestructura
             services.AddScoped<ISecurityService, SecurityService>();
-            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
 
             //Servicios Aplicacion
+            services.AddScoped(typeof(ICatalogoService<>), typeof(CatalogoService<>));
+
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<ITramiteService, TramiteService>();
-            services.AddScoped<ICatalogoService, CatalogoService>();
+            services.AddScoped<IPeriodosService, PeriodosService>();
             services.AddScoped<ICarreraService, CarreraService>();
-            services.AddScoped<IEstadoDocumentoService, EstadoDocumentoService>();
-            services.AddScoped<IEstadoTramiteService, EstadoTramiteService>();
-            services.AddScoped<ITipoTramiteService, TipoTramiteService>();
             services.AddScoped<IBitacoraService, BitacoraService>();
 
             //Repositorios
@@ -51,15 +51,11 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IBitacoraRepository, BitacoraRepository>();
             services.AddScoped<ISesionRepository, SesionRepository>();
             services.AddScoped<ICarreraRepository, CarreraRepository>();
-            services.AddScoped<IBaseRepository<Alumno>, BaseRepository<Alumno>>();
-            services.AddScoped<IBaseRepository<Tramite>, BaseRepository<Tramite>>();
-            services.AddScoped<IBaseRepository<EstadoDocumento>, BaseRepository<EstadoDocumento>>();
-            services.AddScoped<IBaseRepository<TipoTramite>, BaseRepository<TipoTramite>>();
-            services.AddScoped<IBaseRepository<Documento>, BaseRepository<Documento>>();
-            services.AddScoped<IBaseRepository<EstadoDocumento>, BaseRepository<EstadoDocumento>>();
-            services.AddScoped<IBaseRepository<PeriodoConfig>, BaseRepository<PeriodoConfig>>();
+            services.AddScoped<ITramiteRepository, TramiteRepository>();
+            services.AddScoped<IDocumentoRepository, DocumentoRepository>();
 
             return services;
         }

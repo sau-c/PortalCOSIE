@@ -18,12 +18,12 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Tramites
                 .IsUnique();
 
             builder.HasData(
-                new { Id = 1, Nombre = "Solicitado", IsDeleted = false },
-                new { Id = 2, Nombre = "En revision", IsDeleted = false },
-                new { Id = 3, Nombre = "Documentos pendientes", IsDeleted = false },
-                new { Id = 4, Nombre = "Concluido", IsDeleted = false },
-                new { Id = 5, Nombre = "Cancelado", IsDeleted = false }
-                );
+               new { EstadoTramite.Solicitado.Id, EstadoTramite.Solicitado.Nombre, IsDeleted = false },
+               new { EstadoTramite.EnRevision.Id, EstadoTramite.EnRevision.Nombre, IsDeleted = false },
+               new { EstadoTramite.DocumentosPendientes.Id, EstadoTramite.DocumentosPendientes.Nombre, IsDeleted = false },
+               new { EstadoTramite.Concluido.Id, EstadoTramite.Concluido.Nombre, IsDeleted = false },
+               new { EstadoTramite.Cancelado.Id, EstadoTramite.Cancelado.Nombre, IsDeleted = false }
+           );
         }
     }
 }

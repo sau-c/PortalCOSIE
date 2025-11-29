@@ -1,30 +1,21 @@
-﻿using System.Text.RegularExpressions;
+﻿using PortalCOSIE.Domain.Common;
 
 namespace PortalCOSIE.Domain.Entities.Tramites
 {
-    public class EstadoTramite : BaseEntity
+    public class EstadoTramite : Enumeration
     {
-        public string Nombre { get; private set; } = string.Empty;
-        
-        private const int LongitudMaxima = 100;
-        private static readonly Regex SoloLetras =
-            new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\(\)]+$", RegexOptions.Compiled);
+        public static readonly EstadoTramite Solicitado = new(1, "Solicitado");
+        public static readonly EstadoTramite EnRevision = new(2, "En revision");
+        public static readonly EstadoTramite DocumentosPendientes = new(3, "Documentos pendientes");
+        public static readonly EstadoTramite Concluido = new(4, "Concluido");
+        public static readonly EstadoTramite Cancelado = new(5, "Cancelado");
 
-        private EstadoTramite() { }
-
-        public EstadoTramite(string nombre) {
-            ActualizarNombre(nombre);        
+        private EstadoTramite(int id, string nombre) : base(id, nombre)
+        {
         }
 
-        public void ActualizarNombre(string nombre) {
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new DomainException("El nombre no puede estar vacío.");
-            nombre = nombre.Trim();
-            if (!SoloLetras.IsMatch(nombre))
-                throw new DomainException("El nombre solo puede contener letras y espacios.");
-            if (nombre.Length > LongitudMaxima)
-                throw new DomainException($"El nombre no puede tener más de {LongitudMaxima} caracteres.");
-            Nombre = nombre;
-        }
+        // Ejemplo de lógica de dominio
+        public bool PermiteEdicion() =>
+            this == Solicitado || this == EnRevision;
     }
 }

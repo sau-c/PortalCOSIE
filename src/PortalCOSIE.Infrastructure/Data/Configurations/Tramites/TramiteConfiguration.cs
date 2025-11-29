@@ -9,11 +9,9 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Tramites
         public void Configure(EntityTypeBuilder<Tramite> builder)
         {
             builder.ToTable("Tramite");
+            builder.UseTptMappingStrategy();
 
             builder.Property(t => t.AlumnoId)
-                .IsRequired();
-
-            builder.Property(t => t.PersonalId)
                 .IsRequired();
 
             builder.Property(t => t.FechaSolicitud)
@@ -28,6 +26,11 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Tramites
                 .WithMany()
                 .HasForeignKey(t => t.PersonalId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(t => t.Documentos)
+               .WithOne(d => d.Tramite)
+               .HasForeignKey(d => d.TramiteId)
+               .IsRequired();
         }
     }
 }

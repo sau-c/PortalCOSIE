@@ -6,7 +6,7 @@
         private readonly List<FechaRecepcion> _fechasRecepcion = new();
         public DateTime? FechaSesion { get; private set; }
 
-        // Navegación EF CORE
+        // Navegación
         public IReadOnlyCollection<FechaRecepcion> FechasRecepcion => _fechasRecepcion.AsReadOnly();
 
         // Constructor requerido por EF Core

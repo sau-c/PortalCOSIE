@@ -1,6 +1,6 @@
-﻿using PortalCOSIE.Domain.Entities.Carreras;
+﻿using PortalCOSIE.Domain.Interfaces;
 
-namespace PortalCOSIE.Domain.Interfaces
+namespace PortalCOSIE.Domain.Entities.Carreras
 {
     public interface ICarreraRepository : IBaseRepository<Carrera>
     {

@@ -1,115 +1,40 @@
-using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain.Entities.Calendario;
-using PortalCOSIE.Domain.Interfaces;
-using PortalCOSIE.Domain.Entities.Tramites;
+ï»¿using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities;
+using PortalCOSIE.Domain.Interfaces;
 
-namespace PortalCOSIE.Application
+namespace PortalCOSIE.Application.Services
 {
-    public class CatalogoService : ICatalogoService
+    public class CatalogoService<T> : ICatalogoService<T> where T : BaseEntity
     {
-        private readonly IBaseRepository<PeriodoConfig> _periodoRepo;
-        private readonly ISesionRepository _sesionRepo;
+        private readonly IBaseRepository<T> _catalogoRepo;
         private readonly IUnitOfWork _unitOfWork;
 
         public CatalogoService(
-            ISesionRepository sesionRepo,
-            IBaseRepository<PeriodoConfig> periodoRepo,
+            IBaseRepository<T> catalogoRepo,
             IUnitOfWork unitOfWork)
         {
-            _sesionRepo = sesionRepo;
-            _periodoRepo = periodoRepo;
+            _catalogoRepo = catalogoRepo;
             _unitOfWork = unitOfWork;
         }
 
-        #region PERIODO_CONFIG
-        public async Task<PeriodoConfig> BuscarPeriodoConfig()
+        public async Task<IEnumerable<T>> ListarActivosAsync()
         {
-            if (await _periodoRepo.GetByIdAsync(1) == null)
-            {
-                var nuevo = new PeriodoConfig(2010, 1, DateTime.Now.Year + 1, 1);
-                await _periodoRepo.AddAsync(nuevo);
-                await _unitOfWork.SaveChangesAsync();
-                return nuevo;
-            }
-            return await _periodoRepo.GetByIdAsync(1);
+            return await _catalogoRepo.GetAllAsync(true);
         }
-        public async Task<IEnumerable<string>> ListarPeriodos()
+
+        public async Task<IEnumerable<T>> ListarAsync()
         {
-            var periodoConfig = await _periodoRepo.GetByIdAsync(1);
-
-            if (periodoConfig == null)
-                throw new Exception("No existe configuración de periodos.");
-
-            var periodos = new List<string>();
-
-            int anioInicio = periodoConfig.AnioInicio;
-            int anioFin = periodoConfig.AnioFin;
-
-            for (int anio = anioInicio; anio <= anioFin; anio++)
-            {
-                int periodoInicio = (anio == anioInicio) ? periodoConfig.PeriodoInicio : 1;
-                int periodoFin = (anio == anioFin) ? periodoConfig.PeriodoFin : 2;
-
-                for (int p = periodoInicio; p <= periodoFin; p++)
-                {
-                    periodos.Add($"{anio}/{p}");
-                }
-            }
-            return periodos;
+            return await _catalogoRepo.GetAllAsync(false);
         }
-        public async Task EditarPeriodoConfig(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
-        {
-            var periodo = await _periodoRepo.GetByIdAsync(1);
-            if (periodo == null)
-                throw new Exception("Configuracion de periodo no encontrada");
-            periodo.SetAnioInicio(anioInicio);
-            periodo.SetPeriodoInicio(periodoInicio);
-            periodo.SetAnioFin(anioFin);
-            periodo.SetPeriodoFin(periodoFin);
-            await _unitOfWork.SaveChangesAsync();
-        }
-        #endregion
 
-        #region SESION_COSIE
-        public async Task<IEnumerable<SesionCOSIE>> ListarSesiones()
+        public async Task ToggleAsync(int id)
         {
-            return await _sesionRepo.ListarSesiones(false);
-        }
-        public async Task<IEnumerable<SesionCOSIE>> ListarSesionesActivas()
-        {
-            return await _sesionRepo.ListarSesiones(true);
-        }
-        public async Task CrearSesion(string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
-        {
-            var sesion = new SesionCOSIE(
-                numeroSesion,
-                fechaSesion
-                );
-            sesion.SetFechasRecepcion(fechasRecepcion);
-            await _sesionRepo.AddAsync(sesion);
-            await _unitOfWork.SaveChangesAsync();
-        }
-        public async Task EditarSesion(int id, string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
-        {
-            var sesion = await _sesionRepo.ObtenerConFechasRecepcion(id);
-
-            if (sesion == null)
-                throw new Exception("No se encontro el registro");
-            sesion.SetNumeroSesion(numeroSesion);
-            sesion.SetFechaSesion(fechaSesion);
-            sesion.SetFechasRecepcion(fechasRecepcion);
-            await _unitOfWork.SaveChangesAsync();
-        }
-        public async Task ToggleSesion(int id)
-        {
-            var sesion = await _sesionRepo.GetByIdAsync(id);
-            if (sesion.IsDeleted)
-                sesion.Restore();
+            var entidad = await _catalogoRepo.GetByIdAsync(id);
+            if (entidad.IsDeleted)
+                entidad.Restore();
             else
-                sesion.SoftDelete();
+                entidad.SoftDelete();
             await _unitOfWork.SaveChangesAsync();
         }
-        #endregion
     }
 }

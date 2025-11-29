@@ -5,6 +5,8 @@ namespace PortalCOSIE.Application.Interfaces
 {
     public interface ISecurityService
     {
+        Task<Result<string>> IngresarUsuarioAsync(IngresarDTO dto);
+        Task CerrarSesionAsync();
         Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto);
         Task<Result<string>> ConfirmarCorreoAsync(string correo, string token);
         Task<Result<string>> RecuperarContrasenaAsync(string correo);

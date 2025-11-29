@@ -1,16 +1,5 @@
 ﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Tramites.EstadoTramite>
 
-<div class="d-flex justify-content-end mt-3">
-    <button type="button"
-            class="btn btn-sm btn-primary generic-create"
-            data-title="Crear estado"
-            data-action="@Url.Action("Estados", "Configuracion")"
-            data-placeholder="Nombre del estado del tramite"
-            data-icon="fas fas fa-clipboard-check">
-        <i class="fas fa-plus me-1"></i> Crear
-    </button>
-</div>
-
 <table id="tblEstados" class="table table-hover table-bordered">
     <thead class="table-secondary">
         <tr class="small">
@@ -32,17 +21,6 @@
                     </span>
                 </td>
                 <td>
-                    <button type="button"
-                            class="btn btn-sm btn-outline-primary generic-edit"
-                            title="Editar"
-                            data-title="Editar estado tramite"
-                            data-action="@Url.Action("EditarEstadoTramite", "Configuracion")"
-                            data-id="@estado.Id"
-                            data-nombre="@estado.Nombre"
-                            data-placeholder="Nombre del tramite"
-                            data-icon="fas fa-clipboard-check">
-                        <i class="fas fa-edit"></i>
-                    </button>
                     <button type="button"
                             class="btn btn-sm @(estado.IsDeleted ? "btn-outline-success" : "btn-outline-danger") generic-toggle"
                             title="@(estado.IsDeleted ? "Activar" : "Desactivar")"

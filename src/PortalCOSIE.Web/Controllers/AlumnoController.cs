@@ -12,13 +12,13 @@ namespace PortalCOSIE.Web.Controllers
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
         private readonly ICarreraService _carreraService;
-        private readonly ICatalogoService _catalogoService;
+        private readonly IPeriodosService _catalogoService;
 
         public AlumnoController(
             ISecurityService securityService,
             IUsuarioService usuarioService,
             ICarreraService carreraService,
-            ICatalogoService catalogoService
+            IPeriodosService catalogoService
             )
         {
             _securityService = securityService;

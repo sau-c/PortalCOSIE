@@ -1,6 +1,6 @@
-﻿using PortalCOSIE.Domain.Entities.Calendario;
+﻿using PortalCOSIE.Domain.Interfaces;
 
-namespace PortalCOSIE.Domain.Interfaces
+namespace PortalCOSIE.Domain.Entities.Calendario
 {
     public interface ISesionRepository : IBaseRepository<SesionCOSIE>
     {

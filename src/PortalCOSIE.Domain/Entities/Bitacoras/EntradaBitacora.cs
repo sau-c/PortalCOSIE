@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Domain.Entities
+﻿namespace PortalCOSIE.Domain.Entities.Bitacoras
 {
     public class EntradaBitacora : BaseEntity
     {
@@ -13,6 +13,7 @@
 
         private EntradaBitacora() { }
 
+        //Para crear registros
         public EntradaBitacora(string accion, string entidad, string entidadId, string valorNuevo, string identityUserId, string ipAddress, string userAgent)
         {
             Accion = accion;
@@ -23,6 +24,21 @@
             IpAddress = ipAddress;
             UserAgent = userAgent;
             FechaRegistro = DateTime.Now;
+        }
+
+
+        public EntradaBitacora(int id, string accion, string entidad, string entidadId, string valorNuevo,
+            string identityUserId, string ipAddress, string userAgent, DateTime fechaRegistro)
+        {
+            Id = id;
+            Accion = accion;
+            Entidad = entidad;
+            EntidadId = entidadId;
+            ValorNuevo = valorNuevo;
+            IdentityUserId = identityUserId;
+            IpAddress = ipAddress;
+            UserAgent = userAgent;
+            FechaRegistro = fechaRegistro;
         }
     }
 }

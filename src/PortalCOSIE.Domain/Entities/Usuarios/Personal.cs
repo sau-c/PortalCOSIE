@@ -1,6 +1,6 @@
 ﻿namespace PortalCOSIE.Domain.Entities.Usuarios
 {
-    public class Personal : BaseEntity
+    public class Personal : Usuario
     {
         public string IdPersonal { get; private set; } = string.Empty;
         public string Area { get; private set; } = string.Empty;
@@ -9,10 +9,17 @@
         public Usuario Usuario { get; private set; } = null!;
 
         // Constructor protegido para EF
-        protected Personal() { }
+        private Personal() { }
 
         // Constructor de dominio
-        public Personal(string idPersonal, string area)
+        public Personal(
+            string userId,
+            string idPersonal,
+            string nombre,
+            string apellidoPaterno,
+            string apellidoMaterno,
+            string area)
+            : base(userId, nombre, apellidoPaterno, apellidoMaterno)
         {
             SetIdPersonal(idPersonal);
             SetArea(area);

@@ -26,21 +26,21 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Calendario
                 {
                     Id = 1,
                     NumeroSesion = "PRIMERA",
-                    FechaSesion = (DateTime?)new DateTime(2025, 7, 20),
+                    FechaSesion = (DateTime?)new DateTime(2025, 12, 20),
                     IsDeleted = false
                 },
                 new
                 {
                     Id = 2,
                     NumeroSesion = "SEGUNDA",
-                    FechaSesion = (DateTime?)new DateTime(2025, 8, 21),
+                    FechaSesion = (DateTime?)new DateTime(2025, 12, 10),
                     IsDeleted = false
                 },
                 new
                 {
                     Id = 3,
                     NumeroSesion = "TERCERA",
-                    FechaSesion = (DateTime?)new DateTime(2025, 9, 22),
+                    FechaSesion = (DateTime?)new DateTime(2025, 12, 2),
                     IsDeleted = false
                 }
                 );

@@ -12,7 +12,7 @@ namespace PortalCOSIE.Domain.Entities.Carreras
         private static readonly Regex SoloLetras =
             new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\(\)]+$", RegexOptions.Compiled);
 
-        public IReadOnlyCollection<UnidadAprendizaje> UnidadesAprendizaje => _unidadesAprendizaje;
+        public IReadOnlyCollection<UnidadAprendizaje> UnidadesAprendizaje => _unidadesAprendizaje.AsReadOnly();
         private Carrera() { }
 
         public Carrera(string nombre)

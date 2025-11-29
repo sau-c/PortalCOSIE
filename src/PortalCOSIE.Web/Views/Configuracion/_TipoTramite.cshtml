@@ -1,16 +1,5 @@
 ﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Tramites.TipoTramite>
 
-<div class="d-flex justify-content-end mt-3">
-    <button type="button"
-            class="btn btn-sm btn-primary generic-create"
-            data-title="Crear tipo"
-            data-action="@Url.Action("Tipo", "Configuracion")"
-            data-placeholder="Nombre del tipo"
-            data-icon="fas fa-tasks">
-        <i class="fas fa-plus me-1"></i> Crear
-    </button>
-</div>
-
 <table id="tblTipo" class="table table-hover table-bordered">
     <thead class="table-secondary">
         <tr class="small">
@@ -32,17 +21,6 @@
                     </span>
                 </td>
                 <td>
-                    <button type="button"
-                            class="btn btn-sm btn-outline-primary generic-edit"
-                            title="Editar"
-                            data-title="Editar tipo tramite"
-                            data-action="@Url.Action("EditarTipo", "Configuracion")"
-                            data-id="@tipo.Id"
-                            data-nombre="@tipo.Nombre"
-                            data-placeholder="Nombre del tipo tramite"
-                            data-icon="fas fa-tasks">
-                        <i class="fas fa-edit"></i>
-                    </button>
                     <button type="button"
                             class="btn btn-sm @(tipo.IsDeleted ? "btn-outline-success" : "btn-outline-danger") generic-toggle"
                             title="@(tipo.IsDeleted ? "Activar" : "Desactivar")"

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace PortalCOSIE.Domain.Entities.Usuarios
 {
-    public class Alumno : BaseEntity
+    public class Alumno : Usuario
     {
         // Propiedades
         public string NumeroBoleta { get; private set; }
@@ -12,7 +12,7 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
 
         // Navegaciones
         public Carrera Carrera { get; private set; }
-        public Usuario Usuario { get; private set; }
+        //public Usuario Usuario { get; private set; }
 
         // Constantes de validación
         private static readonly Regex SoloNumeros10 = new(@"^\d{10}$", RegexOptions.Compiled);
@@ -22,7 +22,16 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
         private Alumno() { }
 
         // Constructor de dominio
-        public Alumno(string numeroBoleta, string periodoIngreso, int carreraId)
+        public Alumno(
+            string userId,
+            string nombre,
+            string apellidoPaterno,
+            string apellidoMaterno,
+            string numeroBoleta,
+            string periodoIngreso,
+            int carreraId)
+            : base(userId, nombre, apellidoPaterno, apellidoMaterno)
+
         {
             SetNumeroBoleta(numeroBoleta);
             SetPeriodoIngreso(periodoIngreso);

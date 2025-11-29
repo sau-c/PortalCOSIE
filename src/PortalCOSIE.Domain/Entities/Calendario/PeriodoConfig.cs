@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Domain.Entities
+﻿namespace PortalCOSIE.Domain.Entities.Calendario
 {
     public class PeriodoConfig : BaseEntity
     {

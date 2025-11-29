@@ -1,15 +1,4 @@
-﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Tramites.EstadoDocumento>
-
-<div class="d-flex justify-content-end mt-3">
-    <button type="button"
-            class="btn btn-sm btn-primary generic-create"
-            data-title="Crear estado de documento"
-            data-action="@Url.Action("EstadosDocumento", "Configuracion")"
-            data-placeholder="Nombre del estado"
-            data-icon="fas fa-file-alt">
-        <i class="fas fa-plus me-1"></i> Crear
-    </button>
-</div>
+﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Documentos.EstadoDocumento>
 
 <table id="tblEstadosDocumento" class="table table-hover table-bordered">
     <thead class="table-secondary">
@@ -32,17 +21,6 @@
                     </span>
                 </td>
                 <td class="text-end">
-                    <button type="button"
-                            class="btn btn-sm btn-outline-primary generic-edit"
-                            title="Editar"
-                            data-title="Editar estado documento"
-                            data-action="@Url.Action("EditarEstadoDocumento", "Configuracion")"
-                            data-id="@estado.Id"
-                            data-nombre="@estado.Nombre"
-                            data-placeholder="Nombre del estado"
-                            data-icon="fas fa-file-alt">
-                        <i class="fas fa-edit"></i>
-                    </button>
                     <button type="button"
                             class="btn btn-sm @(estado.IsDeleted ? "btn-outline-success" : "btn-outline-danger") generic-toggle"
                             title="@(estado.IsDeleted ? "Activar" : "Desactivar")"

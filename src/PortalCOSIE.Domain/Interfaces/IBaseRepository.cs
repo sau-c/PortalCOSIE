@@ -1,4 +1,5 @@
 ﻿using PortalCOSIE.Domain.Entities;
+
 namespace PortalCOSIE.Domain.Interfaces
 {
     /// <summary>

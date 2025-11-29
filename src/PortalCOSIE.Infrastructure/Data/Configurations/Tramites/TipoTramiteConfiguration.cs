@@ -18,9 +18,9 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Tramites
                 .IsUnique();
 
             builder.HasData(
-                new { Id = 1, Nombre = "Dictamen interno (CTCE)", IsDeleted = false },
-                new { Id = 2, Nombre = "Dictamen externo (CGC)", IsDeleted = false }
-                );
+               new { TipoTramite.DictamenInterno.Id, TipoTramite.DictamenInterno.Nombre, IsDeleted = false },
+               new { TipoTramite.DictamenExterno.Id, TipoTramite.DictamenExterno.Nombre, IsDeleted = false }
+            );
         }
     }
 }

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PortalCOSIE.Domain.Entities;
+using PortalCOSIE.Domain.Entities.Calendario;
 
 namespace PortalCOSIE.Infrastructure.Data.Configurations
 {
@@ -29,7 +29,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
             builder.HasData(
                 new { 
                     Id = 1,
-                    AnioInicio = 2010,
+                    AnioInicio = 1997,
                     PeriodoInicio = 1,
                     AnioFin = (DateTime.Now.Year + 1),
                     PeriodoFin = 2,

@@ -1,4 +1,4 @@
-﻿using PortalCOSIE.Domain.Entities;
+﻿using PortalCOSIE.Domain.Entities.Bitacoras;
 
 namespace PortalCOSIE.Application.Interfaces
 {

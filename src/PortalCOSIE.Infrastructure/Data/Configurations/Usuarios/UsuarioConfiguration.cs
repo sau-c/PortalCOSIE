@@ -10,6 +10,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Usuarios
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
             builder.ToTable("Usuario");
+            builder.UseTptMappingStrategy();
 
             builder.Property(u => u.Nombre)
                 .IsRequired()
@@ -28,16 +29,15 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Usuarios
             .WithMany()
             .HasForeignKey(a => a.IdentityUserId);
 
-            builder.HasOne(u => u.Alumno)
-                .WithOne(a => a.Usuario)
-                .HasForeignKey<Alumno>(a => a.Id)
-                .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne<Alumno>()
+            //    .HasForeignKey<Alumno>(a => a.Id)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(u => u.Personal)
-                .WithOne(p => p.Usuario)
-                .HasForeignKey<Personal>(p => p.Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            ;
+            //builder.HasOne(u => u.Personal)
+            //    .WithOne(p => p.Usuario)
+            //    .HasForeignKey<Personal>(p => p.Id)
+            //    .OnDelete(DeleteBehavior.Cascade);
+            //;
         }
     }
 }

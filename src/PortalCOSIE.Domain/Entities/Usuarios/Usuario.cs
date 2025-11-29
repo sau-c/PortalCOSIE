@@ -2,16 +2,12 @@
 
 namespace PortalCOSIE.Domain.Entities.Usuarios
 {
-    public class Usuario : BaseEntity
+    public abstract class Usuario : BaseEntity
     {
         public string IdentityUserId { get; private set; }
         public string Nombre { get; private set; }
         public string ApellidoPaterno { get; private set; }
         public string ApellidoMaterno { get; private set; }
-
-        // Relaciones — EF
-        public Alumno? Alumno { get; private set; }
-        public Personal? Personal { get; private set; }
 
         // Constantes de validación
         private const int LongitudMaxima = 100;
@@ -19,9 +15,9 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
             new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\(\)]+$", RegexOptions.Compiled);
 
         // Constructor privado para EF
-        private Usuario() { }
+        protected Usuario() { }
 
-        public Usuario(string identityUserId, string nombre, string apellidoPaterno, string apellidoMaterno)
+        protected Usuario(string identityUserId, string nombre, string apellidoPaterno, string apellidoMaterno)
         {
             SetIdentityUserId(identityUserId);
             SetNombre(nombre);
@@ -69,21 +65,6 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
         public string NombreCompleto()
         {
             return $"{Nombre} {ApellidoPaterno} {ApellidoMaterno}".Trim();
-        }
-
-        // Métodos para asociar entidades relacionadas
-        public void SetAlumno(Alumno alumno)
-        {
-            if (Personal != null)
-                throw new DomainException("Usuario no puede ser alumno si ya es personal.");
-            Alumno = alumno ?? throw new DomainException("El alumno no puede ser nulo.");
-        }
-
-        public void SetPersonal(Personal personal)
-        {
-            if (Alumno != null)
-                throw new DomainException("Usuario no puede ser personal si ya es alumno.");
-            Personal = personal ?? throw new DomainException("El personal no puede ser nulo.");
         }
     }
 }

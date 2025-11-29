@@ -10,21 +10,18 @@ namespace PortalCOSIE.Web.Controllers
 {
     public class CuentaController : Controller
     {
-        private readonly IAuthService _authService;
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
         private readonly ICarreraService _carreraService;
-        private readonly ICatalogoService _catalogoService;
+        private readonly IPeriodosService _catalogoService;
 
         public CuentaController(
-            IAuthService authService,
             ISecurityService securityService,
             IUsuarioService usuarioService,
             ICarreraService carreraService,
-            ICatalogoService catalogoService
+            IPeriodosService catalogoService
             )
         {
-            _authService = authService;
             _securityService = securityService;
             _usuarioService = usuarioService;
             _carreraService = carreraService;
@@ -119,7 +116,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Ingresar(IngresarDTO dto)
         {
-            var result = await _authService.IngresarUsuarioAsync(dto);
+            var result = await _securityService.IngresarUsuarioAsync(dto);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });
@@ -131,40 +128,6 @@ namespace PortalCOSIE.Web.Controllers
             }
             return RedirectToAction("Index", "Calendario");
         }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[Authorize]
-        //public async Task<IActionResult> Registrar(RegistrarAlumnoDTO dto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-        //        ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
-        //        return View(dto);
-        //    }
-
-        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    if (_usuarioService.BuscarUsuarioPorIdentityId(userId) != null || User.IsInRole("Administrador"))
-        //    {
-        //        ModelState.AddModelError(string.Empty, "No es posible registrar este usuario");
-        //    }
-
-        //    var result = await _usuarioService.RegistrarAlumnoPendiente(dto);
-
-        //    if (!result.Succeeded)
-        //    {
-        //        foreach (var error in result.Errors)
-        //        {
-        //            ModelState.AddModelError(string.Empty, error);
-        //            ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-        //            ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
-        //        }
-        //        return View(dto);
-        //    }
-
-        //    return RedirectToAction("Index", "Calendario");
-        //}
 
         [HttpGet]
         public IActionResult Recuperar()
@@ -269,7 +232,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Salir()
         {
-            await _authService.CerrarSesionAsync();
+            await _securityService.CerrarSesionAsync();
             return RedirectToAction("Ingresar", "Cuenta");
         }
 

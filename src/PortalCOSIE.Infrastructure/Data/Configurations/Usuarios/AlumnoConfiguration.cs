@@ -27,6 +27,11 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Usuarios
                 .WithMany()
                 .HasForeignKey(a => a.CarreraId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne<Usuario>()      // Alumno tiene un Usuario
+                .WithOne()              // Usuario tiene Alumno
+                .HasForeignKey<Alumno>(a => a.Id)  // PK de Alumno = FK a Usuario
+                .OnDelete(DeleteBehavior.Restrict); // Permite cascada
         }
     }
 }

@@ -8,35 +8,31 @@ namespace PortalCOSIE.Infrastructure.Repositories
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
     {
         protected readonly AppDbContext _context;
-        protected readonly DbSet<TEntity> _dbSet;
 
         public BaseRepository(AppDbContext context)
         {
             _context = context;
-            _dbSet = _context.Set<TEntity>();
         }
 
         public async Task<TEntity> GetByIdAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentOutOfRangeException(nameof(id), "El Id no puede ser menor o igual a 0");
-            return await _dbSet.FindAsync(id);
+            return await _context.Set<TEntity>().FindAsync(id);
         }
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool filtrarActivos)
         {
-            return await _dbSet
+            return await _context.Set<TEntity>()
                 .Where(e => filtrarActivos ? e.IsDeleted == false : true)
                 .AsNoTracking()
                 .ToListAsync();
         }
         public async Task<TEntity> AddAsync(TEntity entity)
         {
-            await _dbSet.AddAsync(entity);
+            await _context.Set<TEntity>().AddAsync(entity);
             return entity;
         }
         public TEntity Delete(TEntity entity)
         {
-            _dbSet.Remove(entity);
+            _context.Set<TEntity>().Remove(entity);
             return entity;
         }
     }
