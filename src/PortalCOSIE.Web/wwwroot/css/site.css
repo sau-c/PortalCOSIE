@@ -1,5 +1,10 @@
 /*Generales*/
 :root {
+    --primary: #5A1236;
+    --secondary: #721845;
+    --accent: #FF6B35;
+    
+    --radius: 10px;
     --sidebar-width: 220px;
     --sidebar-width-collapsed: 70px;
     --header-height: 61px;
@@ -13,14 +18,6 @@ body {
     display: flex;
     flex-direction: column;
     padding-top: var(--header-height);
-}
-
-/*Estilos de loader*/
-.global-loader {
-    z-index: 9999;
-    position: fixed;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(2px);
 }
 
 /*Estilos del logo*/
@@ -211,6 +208,20 @@ footer {
 .sidebar-collapsed .sidebar-toggle {
     left: 15px;
     transform: rotate(180deg);
+}
+
+/*Dashboard*/
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--accent);
+    overflow: hidden;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
 }
 
 /* Para pantallas pequeñas */

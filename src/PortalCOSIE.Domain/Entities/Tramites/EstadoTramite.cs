@@ -11,8 +11,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         public static readonly EstadoTramite Cancelado = new(5, "Cancelado");
 
         private EstadoTramite(int id, string nombre) : base(id, nombre)
-        {
-        }
+        { }
 
         // Ejemplo de lógica de dominio
         public bool PermiteEdicion() =>

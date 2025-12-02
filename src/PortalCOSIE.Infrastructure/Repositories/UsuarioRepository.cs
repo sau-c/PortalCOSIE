@@ -9,7 +9,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
         public UsuarioRepository(AppDbContext context) : base(context)
         { }
 
-        public async Task<Usuario> BuscarPorIdentityId(string identityUserId)
+        public async Task<Usuario> BuscarUsuario(string identityUserId)
         {
             return await _context.Set<Usuario>().FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
         }

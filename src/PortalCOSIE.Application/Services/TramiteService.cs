@@ -34,7 +34,7 @@ namespace PortalCOSIE.Application
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                var alumno = await _usuarioRepo.BuscarPorIdentityId(userId);
+                var alumno = await _usuarioRepo.BuscarUsuario(userId);
 
                 var unidadesReprobadasEntities = new List<UnidadReprobada>();
 

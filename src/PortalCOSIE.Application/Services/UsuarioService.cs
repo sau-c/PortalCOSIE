@@ -31,9 +31,7 @@ namespace PortalCOSIE.Application
 
                 if (await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta) != null)
                     return Result<string>.Failure("El número de boleta ya existe");
-                if (await _usuarioRepo.BuscarPorIdentityId(userId) != null)
-                    throw new ApplicationException("Este id de usuario ya existe");
-
+                
                 var usuario = new Alumno(
                     userId,
                     dto.Nombre,
@@ -59,7 +57,7 @@ namespace PortalCOSIE.Application
         {
             if (id == null)
                 throw new ApplicationException("No se puede buscar un Id nulo");
-            return await _usuarioRepo.BuscarPorIdentityId(id);
+            return await _usuarioRepo.BuscarUsuario(id);
         }
         public async Task<Result<string>> EditarPersonal(PersonalDTO dto)
         {
@@ -67,7 +65,7 @@ namespace PortalCOSIE.Application
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var usuario = await _usuarioRepo.BuscarPorIdentityId(dto.IdentityUserId);
+                var usuario = await _usuarioRepo.BuscarUsuario(dto.IdentityUserId);
                 if (usuario == null)
                     throw new ApplicationException("Usuario no encontrado");
 
@@ -93,9 +91,10 @@ namespace PortalCOSIE.Application
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                var alumno = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
-                if (alumno != null && (alumno.IdentityUserId != dto.IdentityUserId))
+                var alumnoPorBoleta = await _usuarioRepo.BuscarAlumnoPorBoleta(dto.NumeroBoleta);
+                if (alumnoPorBoleta != null && (alumnoPorBoleta.IdentityUserId != dto.IdentityUserId))
                     throw new ApplicationException("El número de boleta ya existe");
+                var alumno = await _usuarioRepo.BuscarAlumnoConCarrera(dto.IdentityUserId);
 
                 alumno.SetNombre(dto.Nombre);
                 alumno.SetApellidoPaterno(dto.ApellidoPaterno);
@@ -125,7 +124,7 @@ namespace PortalCOSIE.Application
         }
         public async Task<PersonalDTO?> BuscarPersonal(string id)
         {
-            var personal = await _usuarioRepo.BuscarPorIdentityId(id);
+            var personal = await _usuarioRepo.BuscarUsuario(id);
 
             if (personal == null)
                 return null;

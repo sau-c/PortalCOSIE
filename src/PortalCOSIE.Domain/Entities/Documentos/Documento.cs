@@ -5,7 +5,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
     public class Documento : BaseEntity
     {
         public string Nombre { get; private set; }
-        public string Observaciones { get; private set; } = string.Empty;
+        public string? Observaciones { get; private set; }
         public int TramiteId { get; private set; }
         public int EstadoDocumentoId { get; private set; }
         public byte[] Contenido { get; private set; }

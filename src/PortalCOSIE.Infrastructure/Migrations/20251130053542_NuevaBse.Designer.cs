@@ -12,7 +12,7 @@ using PortalCOSIE.Infrastructure.Data;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251129200459_NuevaBse")]
+    [Migration("20251130053542_NuevaBse")]
     partial class NuevaBse
     {
         /// <inheritdoc />
@@ -1948,7 +1948,6 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Observaciones")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 

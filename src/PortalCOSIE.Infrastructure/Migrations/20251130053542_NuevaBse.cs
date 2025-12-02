@@ -459,7 +459,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Observaciones = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Observaciones = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     TramiteId = table.Column<int>(type: "int", nullable: false),
                     EstadoDocumentoId = table.Column<int>(type: "int", nullable: false),
                     Contenido = table.Column<byte[]>(type: "varbinary(max)", nullable: false),

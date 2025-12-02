@@ -11,10 +11,10 @@ using PortalCOSIE.Infrastructure.Data;
 using PortalCOSIE.Infrastructure.Data.Email;
 using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.Repositories;
-using Infrastructure.Data;
 using PortalCOSIE.Domain.Entities.Carreras;
 using PortalCOSIE.Domain.Entities.Calendario;
 using PortalCOSIE.Domain.Entities.Bitacoras;
+using Infrastructure.Data;
 
 namespace PortalCOSIE.Infrastructure.IoC
 {
@@ -35,6 +35,7 @@ namespace PortalCOSIE.Infrastructure.IoC
 
             //Servicios Infraestructura
             services.AddScoped<ISecurityService, SecurityService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
 
             //Servicios Aplicacion

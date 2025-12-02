@@ -31,12 +31,12 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Index() => View();
 
         #region CARRERAS
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Carreras()
         {
             return PartialView("_Carreras", await _carreraService.ListarAsync());
@@ -44,7 +44,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Carreras([FromForm] string nombre)
         {
             await _carreraService.CrearCarreraAsync(nombre);
@@ -53,7 +53,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EditarCarrera([FromForm] int id, [FromForm] string nombre)
         {
             await _carreraService.EditarCarreraAsync(id, nombre);
@@ -62,7 +62,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ToggleCarrera([FromForm] int id)
         {
             await _carreraService.ToggleCarrrera(id);
@@ -70,14 +70,14 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Unidades(string id)
         {
             return View(await _carreraService.ListarConUnidadesAsync(id));
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Unidades([FromForm] string nombre, [FromForm] int carreraId, [FromForm] Semestre semestre)
         {
             await _carreraService.CrearUnidadAsync(nombre, carreraId, semestre);
@@ -85,7 +85,7 @@ namespace PortalCOSIE.Web.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EditarUnidad([FromForm] int id, [FromForm] string nombre, [FromForm] string carreraNombre, [FromForm] Semestre semestre)
         {
             await _carreraService.EditarUnidadAsync(carreraNombre, id, nombre, semestre);
@@ -93,7 +93,7 @@ namespace PortalCOSIE.Web.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ToggleUnidad([FromForm] string carreraNombre, [FromForm] int id)
         {
             await _carreraService.ToggleUnidad(carreraNombre, id);
@@ -103,7 +103,7 @@ namespace PortalCOSIE.Web.Controllers
 
         #region ESTADO_TRAMITE
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Estados()
         {
             return PartialView("_EstadoTramite", await _estadoTramiteService.ListarAsync());
@@ -111,7 +111,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ToggleEstado([FromForm] int id)
         {
             await _estadoTramiteService.ToggleAsync(id);
@@ -121,7 +121,7 @@ namespace PortalCOSIE.Web.Controllers
 
         #region ESTADO_DOCUMENTO
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EstadosDocumento()
         {
             return PartialView("_EstadoDocumento", await _estadoDocumentoService.ListarAsync());
@@ -129,7 +129,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ToggleEstadoDocumento([FromForm] int id)
         {
             await _estadoDocumentoService.ToggleAsync(id);
@@ -139,7 +139,7 @@ namespace PortalCOSIE.Web.Controllers
 
         #region TIPO_TRAMITE
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Tipo()
         {
             return PartialView("_TipoTramite", await _tipoTramiteService.ListarAsync());
@@ -147,7 +147,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ToggleTipo([FromForm] int id)
         {
             await _tipoTramiteService.ToggleAsync(id);
@@ -157,14 +157,14 @@ namespace PortalCOSIE.Web.Controllers
         #endregion
 
         [HttpGet]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Periodos()
         {
             return PartialView("_Periodos", await _periodoService.BuscarPeriodoConfig());
         }
 
         [HttpPost]
-        [Authorize(Roles = "Administrador, Personal")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Periodos(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
         {
             await _periodoService.EditarPeriodoConfig(anioInicio, periodoInicio, anioFin, periodoFin);

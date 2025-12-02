@@ -1,0 +1,118 @@
+﻿<div class="chart-card card shadow h-100">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div><h6 class="mb-0 py-1">Top 5 unidades mas reprobadas por solicitud CTCE</h6></div>
+
+        <select id="filtroReprobadas" class="form-select form-select-sm w-auto">
+            <option value="">Todas las carreras</option>
+            <option value="1">Mecatrónica</option>
+            <option value="2">Telemática</option>
+            <option value="3">Biónica</option>
+            <option value="4">Energía</option>
+            <option value="5">ISISA</option>
+        </select>
+    </div>
+
+    <div class="card-body">
+        <div class="chart-container">
+            <canvas id="chartMasReprobadas"></canvas>
+        </div>
+        <div id="loaderReprobadas" class="text-center d-none" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        let chartInstance = null;
+        const ctx = document.getElementById('chartMasReprobadas');
+        const selectFiltro = document.getElementById('filtroReprobadas');
+        const loader = document.getElementById('loaderReprobadas'); // <--- ID CORREGIDO
+
+        // Configuración estática del gráfico
+        const chartConfig = {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Solicitudes', // Etiqueta necesaria para el tooltip
+                    data: [],
+                    backgroundColor: 'darkred',
+                    borderRadius: 5, // Bordes redondeados modernos
+                    barThickness: 30, // Grosor fijo para consistencia
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Gráfico Horizontal
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { display: true, color: '#f0f0f0' },
+                        ticks: {
+                            precision: 0,  // Obliga a no mostrar decimales
+                            stepSize: 1    // Obliga a que los saltos sean de 1 en 1
+                        }
+                    },
+                    y: {
+                        grid: { display: false } // Limpieza visual
+                    }
+                },
+                plugins: {
+                    legend: { display: false } // Ocultamos leyenda porque es una sola serie
+                }
+            }
+        };
+
+        // Función principal de carga
+        async function cargarDatos() {
+            if (!ctx) return;
+
+            mostrarLoader(true);
+            try {
+                const carreraId = selectFiltro.value;
+                const url = `/Dashboard/MasReprobadas?carreraId=${carreraId}`;
+
+                const response = await executeFetch(url, 'GET');
+                actualizarGrafico(response.data.labels, response.data.values);
+                mostrarLoader(false);
+            } catch (error) {
+                showGlobalModal('error', error.message);
+                mostrarLoader(false);
+            }
+        }
+
+        function actualizarGrafico(labels, values) {
+            if (!chartInstance) {
+                chartConfig.data.labels = labels;
+                chartConfig.data.datasets[0].data = values;
+                chartInstance = new Chart(ctx, chartConfig);
+            } else {
+                chartInstance.data.labels = labels;
+                chartInstance.data.datasets[0].data = values;
+                chartInstance.update();
+            }
+        }
+
+        function mostrarLoader(visible) {
+            if (!loader) return;
+            if (visible) {
+                loader.classList.remove('d-none');
+                if(ctx) ctx.style.opacity = 0.3;
+            } else {
+                loader.classList.add('d-none');
+                if(ctx) ctx.style.opacity = 1;
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            if (selectFiltro) {
+                selectFiltro.addEventListener('change', cargarDatos);
+                cargarDatos(); // Carga inicial
+            }
+        });
+    })();
+</script>

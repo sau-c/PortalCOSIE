@@ -140,8 +140,8 @@ namespace PortalCOSIE.Infrastructure.Data
             foreach (var propiedad in entrada.OriginalValues.Properties)
             {
                 // Ignorar propiedades de navegación y shadow properties
-                if (propiedad.IsShadowProperty() || propiedad.IsForeignKey())
-                    continue;
+                //if (propiedad.IsShadowProperty() || propiedad.IsForeignKey())
+                //    continue;
 
                 var valorOriginal = entrada.OriginalValues[propiedad];
                 var valorActual = entrada.CurrentValues[propiedad];

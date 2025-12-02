@@ -1,75 +1,124 @@
-﻿@{
+﻿@model PortalCOSIE.Application.DTO.Dashboard.TarjetasDTO
+@{
     ViewData["Title"] = "Dashboard";
 }
 
-<style>
-    :root {
-        --primary: #5A1236;
-        --secondary: #721845;
-        --accent: #FF6B35;
-        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        --radius: 10px;
-    }
-
-    .stat-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: var(--radius);
-        border-left: 4px solid var(--accent);
-        overflow: hidden;
-    }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-        }
-
-    .chart-container {
-        position: relative;
-        height: 250px;
-        width: 100%;
-    }
-
-    .chart-card {
-        border-radius: var(--radius);
-        transition: box-shadow 0.3s ease;
-    }
-
-        .chart-card:hover {
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-    .doc-item {
-        border-left: 3px solid transparent;
-        transition: all 0.3s ease;
-    }
-
-        .doc-item:hover {
-            border-left-color: var(--accent);
-            background: rgba(90, 18, 54, 0.03);
-        }
-</style>
-
 <div class="dashboard">
-    <!-- Sección de Estadísticas Rápidas -->
+    <!-- Sección de Tarjetas contables -->
     <div class="row g-4 mb-4">
-        <div class="col-md-6 col-lg-3">
+        <div class="col-lg-3 col-md-6 col-sm-6">
             <div class="stat-card card shadow h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h6 class="text-muted mb-2">Alumnos registrados</h6>
-                            <h3 class="mb-0">2.3 <small>días</small></h3>
+                            <h6 class="text-uppercase text-muted fw-bold mb-0">Trámites CTCE</h6>
+                            <span class="h2 fw-bold text-dark">@((Model.TramitesSolicitados + Model.TramitesEnRevision + Model.TramitesConcluidos))</span>
+                            <span class="text-muted ms-1">Total</span>
                         </div>
-                        <i class="fas fa-user fa-2x text-info"></i>
+                        <div class="icon-shape bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                            <i class="fas fa-file-signature fa-lg"></i>
+                        </div>
                     </div>
-                    <div class="mt-3 text-danger">
-                        <i class="fas fa-arrow-down"></i> 1.2 días menos
+
+                    <div class="row text-center g-0">
+                        <div class="col border-end">
+                            <h5 class="mb-0 fw-bold text-secondary">@Model.TramitesSolicitados</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">Solicitados</small>
+                        </div>
+                        <div class="col border-end">
+                            <h5 class="mb-0 fw-bold text-warning">@Model.TramitesEnRevision</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">Revisión</small>
+                        </div>
+                        <div class="col">
+                            <h5 class="mb-0 fw-bold text-success">@Model.TramitesConcluidos</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">Concluidos</small>
+                        </div>
+                    </div>
+
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-secondary" style="width: 33%"></div>
+                        <div class="progress-bar bg-warning" style="width: 33%"></div>
+                        <div class="progress-bar bg-success" style="width: 34%"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-3">
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="stat-card card shadow h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h6 class="text-uppercase text-muted fw-bold mb-0">Documentos CTCE</h6>
+                            <span class="h2 fw-bold text-dark">@((Model.DocumentosConErrores + Model.DocumentosValidados + Model.DocumentosEnRevision))</span>
+                            <span class="text-muted ms-1">Total</span>
+                        </div>
+                        <div class="icon-shape bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                            <i class="fas fa-file-signature fa-lg"></i>
+                        </div>
+                    </div>
+
+                    <div class="row text-center g-0">
+                        <div class="col border-end">
+                            <h5 class="mb-0 fw-bold text-secondary">@Model.DocumentosConErrores</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">Con erorres</small>
+                        </div>
+                        <div class="col border-end">
+                            <h5 class="mb-0 fw-bold text-warning">@Model.DocumentosEnRevision</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">En revisión</small>
+                        </div>
+                        <div class="col">
+                            <h5 class="mb-0 fw-bold text-success">@Model.DocumentosValidados</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">Validados</small>
+                        </div>
+                    </div>
+
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-secondary" style="width: 33%"></div>
+                        <div class="progress-bar bg-warning" style="width: 33%"></div>
+                        <div class="progress-bar bg-success" style="width: 34%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="stat-card card shadow h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h6 class="text-uppercase text-muted fw-bold mb-0">Alumnos</h6>
+                            <span class="h2 fw-bold text-dark">@Model.TotalAlumnos</span>
+                            <span class="text-muted ms-1">Registrados</span>
+                        </div>
+                        <div class="icon-shape bg-info bg-opacity-10 text-info rounded-3 p-3">
+                            <i class="fas fa-users fa-lg"></i>
+                        </div>
+                    </div>
+
+                    <div class="row text-center g-0">
+                        <div class="col border-end">
+                            <h5 class="mb-0 fw-bold text-success">@Model.TotalAlumnosActivos</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">Activos</small>
+                        </div>
+                        <div class="col border-end">
+                            <h5 class="mb-0 fw-bold text-danger">@(Model.TotalAlumnos - Model.TotalAlumnosActivos)</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">Inactivos</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="progress flex-grow-1" style="height: 4px;">
+                            <div class="progress-bar bg-success" style="width: 50%"></div>
+                            <div class="progress-bar bg-danger" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
             <div class="stat-card card shadow h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
@@ -85,79 +134,15 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="stat-card card shadow h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="text-muted mb-2">PENDIENTES</h6>
-                            <h3 class="mb-0">128</h3>
-                        </div>
-                        <i class="fas fa-clock fa-2x text-warning"></i>
-                    </div>
-                    <div class="progress mt-3" style="height: 6px;">
-                        <div class="progress-bar bg-warning" style="width: 25%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="stat-card card shadow h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="text-muted mb-2">APROBADOS</h6>
-                            <h3 class="mb-0">1,502</h3>
-                        </div>
-                        <i class="fas fa-check-circle fa-2x text-success"></i>
-                    </div>
-                    <div class="mt-3 text-success">
-                        <i class="fas fa-arrow-up"></i> 8.7% vs mes anterior
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <!-- Gráficos Principales -->
     <div class="row g-4">
         <div class="col-lg-4">
-            <div class="chart-card card shadow h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0 py-1">Solicitud CTCE por carrera</h6>
-                    <select class="form-select form-select-sm w-auto">
-                        <option>Últimos 6 meses</option>
-                        <option>Últimos 3 meses</option>
-                        <option>Este año</option>
-                    </select>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="typeChart"></canvas>
-                    </div>
-                </div>
-            </div>
+            <partial name="_SolicitudesPorCarrera" />
         </div>
         <div class="col-lg-8">
-            <div class="chart-card card shadow h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <div><h6 class="mb-0 py-1">Actividad de documentos</h6></div>
-                    <select class="form-select form-select-sm w-auto">
-                        <option>Últimos 6 meses</option>
-                        <option>Últimos 3 meses</option>
-                        <option>Este año</option>
-                    </select>
-                </div>
-
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="activityChart"></canvas>
-                    </div>
-                </div>
-            </div>
+            <partial name="_MasReprobadasPorCarrera" />
         </div>
     </div>
 
@@ -165,98 +150,5 @@
 
 @section Scripts {
     <script>
-        // Gráficos responsivos con resizing automático
-        let activityChart, typeChart;
-
-        function initCharts() {
-            // Destruir gráficos existentes
-            if (activityChart) activityChart.destroy();
-            if (typeChart) typeChart.destroy();
-
-            // Gráfico de Actividad
-            activityChart = new Chart(document.getElementById('activityChart'), {
-                type: 'line',
-                data: {
-                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Documentos recibidos',
-                        data: [120, 190, 170, 200, 220, 180],
-                        borderColor: 'rgba(90, 18, 54, 1)',
-                        backgroundColor: 'rgba(90, 18, 54, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }, {
-                        label: 'Documentos procesados',
-                        data: [100, 160, 150, 180, 200, 160],
-                        borderColor: 'rgba(255, 107, 53, 1)',
-                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    }
-                }
-            });
-
-            // Gráfico de Tipos
-            typeChart = new Chart(document.getElementById('typeChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Mecatronica', 'Telematica', 'Bionica', 'Energia', 'ISISA'],
-                    datasets: [{
-                        data: [35, 45, 20, 30, 10],
-                        backgroundColor: [
-                            '#5A1236',
-                            '#85CB33',
-                            '#FF6B35',
-                            '#FFC107',
-                            '#1391FF'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
-                        datalabels: {
-                            color: '#fff',
-                            font: {
-                                weight: 'bold',
-                                size: 14
-                            },
-                            formatter: (value, context) => {
-                                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                const percentage = (value / total * 100).toFixed(1) + '%';
-                                return percentage;
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // Inicializar al cargar
-        document.addEventListener('DOMContentLoaded', initCharts);
-
-        // Redimensionar con debounce
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                initCharts();
-            }, 200);
-        });
     </script>
 }
