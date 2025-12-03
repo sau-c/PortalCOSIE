@@ -26,6 +26,7 @@
                     <th>Personal revisor</th>
                     <th>Estado</th>
                     <th>Fecha conclusion</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
 
@@ -53,7 +54,7 @@
                     </td>
                     <td>@tramite.FechaConclusion</td>
                     <td>
-                        <a asp-action="Editar" asp-route-id="@tramite.Id" class="btn btn-sm btn-primary d-inline-block">
+                        <a asp-action="Editar" asp-route-id="@tramite.Id" class="btn btn-sm btn-primary" title="Ver">
                             <i class="fas fa-eye"></i>
                         </a>
                     </td>

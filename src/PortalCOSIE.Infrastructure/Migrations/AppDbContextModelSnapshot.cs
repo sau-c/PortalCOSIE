@@ -317,7 +317,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AnioFin")
+                    b.Property<int>("AnioActual")
                         .HasMaxLength(4)
                         .HasColumnType("int");
 
@@ -328,7 +328,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PeriodoFin")
+                    b.Property<int>("PeriodoActual")
                         .HasMaxLength(1)
                         .HasColumnType("int");
 
@@ -344,10 +344,10 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            AnioFin = 2026,
+                            AnioActual = 2026,
                             AnioInicio = 1997,
                             IsDeleted = false,
-                            PeriodoFin = 2,
+                            PeriodoActual = 2,
                             PeriodoInicio = 1
                         });
                 });

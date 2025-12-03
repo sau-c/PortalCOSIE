@@ -1,3 +1,4 @@
+using PortalCOSIE.Application.DTO.Periodo;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities.Calendario;
 using PortalCOSIE.Domain.Interfaces;
@@ -21,50 +22,48 @@ namespace PortalCOSIE.Application
         }
 
         #region PERIODO_CONFIG
-        public async Task<PeriodoConfig> BuscarPeriodoConfig()
+        public async Task<PeriodoConfigDTO> BuscarPeriodoConfig()
         {
-            if (await _periodoRepo.GetByIdAsync(1) == null)
+            var config = await _periodoRepo.GetByIdAsync(1);
+            if (config == null)
+                throw new ApplicationException("No se encontró configuración de periodos.");
+            return new PeriodoConfigDTO()
             {
-                var nuevo = new PeriodoConfig(2010, 1, DateTime.Now.Year + 1, 1);
-                await _periodoRepo.AddAsync(nuevo);
-                await _unitOfWork.SaveChangesAsync();
-                return nuevo;
-            }
-            return await _periodoRepo.GetByIdAsync(1);
+                AnioInicio = config.AnioInicio,
+                PeriodoInicio = config.PeriodoInicio,
+                AnioActual = config.AnioActual,
+                PeriodoActual = config.PeriodoActual,
+            };
         }
         public async Task<IEnumerable<string>> ListarPeriodos()
         {
-            var periodoConfig = await _periodoRepo.GetByIdAsync(1);
-
-            if (periodoConfig == null)
-                throw new Exception("No existe configuración de periodos.");
-
+            var config = await _periodoRepo.GetByIdAsync(1);
+            if (config == null)
+                throw new ApplicationException("No se encontró configuración de periodos.");
             var periodos = new List<string>();
 
-            int anioInicio = periodoConfig.AnioInicio;
-            int anioFin = periodoConfig.AnioFin;
-
-            for (int anio = anioInicio; anio <= anioFin; anio++)
+            for (int anio = config.AnioInicio; anio <= config.AnioActual; anio++)
             {
-                int periodoInicio = (anio == anioInicio) ? periodoConfig.PeriodoInicio : 1;
-                int periodoFin = (anio == anioFin) ? periodoConfig.PeriodoFin : 2;
+                int periodoInicio = (anio == config.AnioInicio) ? config.PeriodoInicio : 1;
+                int periodoActual = (anio == config.AnioActual) ? config.PeriodoActual : 2;
 
-                for (int p = periodoInicio; p <= periodoFin; p++)
-                {
+                for (int p = periodoInicio; p <= periodoActual; p++)
                     periodos.Add($"{anio}/{p}");
-                }
             }
+
             return periodos;
         }
-        public async Task EditarPeriodoConfig(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
+
+        public async Task EditarPeriodoConfig(PeriodoConfigDTO dto)
         {
-            var periodo = await _periodoRepo.GetByIdAsync(1);
-            if (periodo == null)
-                throw new Exception("Configuracion de periodo no encontrada");
-            periodo.SetAnioInicio(anioInicio);
-            periodo.SetPeriodoInicio(periodoInicio);
-            periodo.SetAnioFin(anioFin);
-            periodo.SetPeriodoFin(periodoFin);
+            var config = await _periodoRepo.GetByIdAsync(1);
+            if (config == null)
+                throw new ApplicationException("No se encontró configuración de periodos.");
+            config.SetAnioInicio(dto.AnioInicio);
+            config.SetPeriodoInicio(dto.PeriodoInicio);
+            config.SetAnioActual(dto.AnioActual);
+            config.SetPeriodoActual(dto.PeriodoActual);
+
             await _unitOfWork.SaveChangesAsync();
         }
         #endregion

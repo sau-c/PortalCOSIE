@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PortalCOSIE.Application.DTO.Periodo;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
@@ -165,9 +166,9 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Periodos(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
+        public async Task<IActionResult> Periodos(PeriodoConfigDTO dto)
         {
-            await _periodoService.EditarPeriodoConfig(anioInicio, periodoInicio, anioFin, periodoFin);
+            await _periodoService.EditarPeriodoConfig(dto);
             return Json(new { success = true, message = "Cambios guardados" });
         }
     }

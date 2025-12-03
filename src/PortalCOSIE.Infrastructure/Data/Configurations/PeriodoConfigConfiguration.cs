@@ -18,11 +18,11 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(1);
 
-            builder.Property(t => t.AnioFin)
+            builder.Property(t => t.AnioActual)
                 .IsRequired()
                 .HasMaxLength(4);
 
-            builder.Property(t => t.PeriodoFin)
+            builder.Property(t => t.PeriodoActual)
                 .IsRequired()
                 .HasMaxLength(1);
 
@@ -31,8 +31,8 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
                     Id = 1,
                     AnioInicio = 1997,
                     PeriodoInicio = 1,
-                    AnioFin = (DateTime.Now.Year + 1),
-                    PeriodoFin = 2,
+                    AnioActual = (DateTime.Now.Year + 1),
+                    PeriodoActual = 2,
                     IsDeleted = false 
                 });
         }

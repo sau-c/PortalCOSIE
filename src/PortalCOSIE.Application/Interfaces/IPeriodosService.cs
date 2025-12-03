@@ -1,4 +1,5 @@
-﻿using PortalCOSIE.Domain.Entities.Calendario;
+﻿using PortalCOSIE.Application.DTO.Periodo;
+using PortalCOSIE.Domain.Entities.Calendario;
 
 namespace PortalCOSIE.Application.Interfaces
 {
@@ -6,8 +7,8 @@ namespace PortalCOSIE.Application.Interfaces
     {
         #region PERIODO_CONFIG
         Task<IEnumerable<string>> ListarPeriodos();
-        Task<PeriodoConfig> BuscarPeriodoConfig();
-        Task EditarPeriodoConfig(int anioInicio, int periodoInicio, int anioFin, int periodoFin);
+        Task<PeriodoConfigDTO> BuscarPeriodoConfig();
+        Task EditarPeriodoConfig(PeriodoConfigDTO dto);
         #endregion
 
         #region SESION_COSIE

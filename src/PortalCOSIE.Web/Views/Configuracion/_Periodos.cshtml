@@ -1,8 +1,7 @@
-﻿@using PortalCOSIE.Domain.Entities.Calendario
-@model PeriodoConfig
+﻿@model PortalCOSIE.Application.DTO.Periodo.PeriodoConfigDTO
 
 <div class="container mt-4">
-    <form id="formPeriodos" asp-action="Periodos" method="post">
+    <form id="formPeriodos" asp-action="Periodos" enctype="multipart/form-data" method="post">
         <div class="row">
             <div class="col-md-6">
                 <div class="card shadow-sm">
@@ -38,23 +37,23 @@
                         <!-- FIN -->
                         <fieldset class="border rounded px-3 pb-3 mb-3 bg-light">
                             <legend class="float-none w-auto px-2 text-primary fs-6">
-                                <i class="fas fa-stop-circle me-1"></i>Fin
+                                <i class="fas fa-stop-circle me-1"></i>Actual
                             </legend>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <label class="form-label">Año:</label>
-                                    <select name="anioFin" class="form-select">
+                                    <select name="anioActual" class="form-select">
                                         @for (int año = DateTime.Now.Year; año <= DateTime.Now.Year + 1; año++)
                                         {
-                                            <option value="@año" selected="@(Model.AnioFin == año)">@año</option>
+                                            <option value="@año" selected="@(Model.AnioActual == año)">@año</option>
                                         }
                                     </select>
                                 </div>
                                 <div class="col-lg-6">
                                     <label class="form-label">Periodo:</label>
-                                    <select name="periodoFin" class="form-select">
-                                        <option value="1" selected="@(Model.PeriodoFin == 1)">1</option>
-                                        <option value="2" selected="@(Model.PeriodoFin == 2)">2</option>
+                                    <select name="periodoActual" class="form-select">
+                                        <option value="1" selected="@(Model.PeriodoActual == 1)">1</option>
+                                        <option value="2" selected="@(Model.PeriodoActual == 2)">2</option>
                                     </select>
                                 </div>
                             </div>
@@ -70,10 +69,16 @@
                         <h6 class="mb-0">Vista previa</h6>
                     </div>
                     <div class="card-body">
-                        <select id="previewSelect" class="form-select" size="10" multiple></select>
+                        <select id="previewSelect" class="form-select" size="7" multiple></select>
                         <small class="text-muted mt-2 d-block">
                             Total: <span id="totalPeriodos">0</span> periodos
                         </small>
+                        <div class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Esta lista será visible en todos los campos del sistema que la requieran. 
+                            Asimismo, la configuración del período actual se utilizará para el registro 
+                            de trámites, por lo que deberá actualizarse al finalizar cada ciclo escolar.
+                        </div>
                     </div>
                 </div>
 
@@ -96,15 +101,15 @@
         function generarPreview() {
             var anioInicio = parseInt($('[name="anioInicio"]').val());
             var periodoInicio = parseInt($('[name="periodoInicio"]').val());
-            var anioFin = parseInt($('[name="anioFin"]').val());
-            var periodoFin = parseInt($('[name="periodoFin"]').val());
+            var anioActual = parseInt($('[name="anioActual"]').val());
+            var periodoActual = parseInt($('[name="periodoActual"]').val());
 
             $('#previewSelect').empty();
             var total = 0;
 
-            for (var año = anioInicio; año <= anioFin; año++) {
+            for (var año = anioInicio; año <= anioActual; año++) {
                 var inicio = (año === anioInicio) ? periodoInicio : 1;
-                var fin = (año === anioFin) ? periodoFin : 2;
+                var fin = (año === anioActual) ? periodoActual : 2;
 
                 for (var periodo = inicio; periodo <= fin; periodo++) {
                     $('#previewSelect').append('<option>' + año + '/' + periodo + '</option>');

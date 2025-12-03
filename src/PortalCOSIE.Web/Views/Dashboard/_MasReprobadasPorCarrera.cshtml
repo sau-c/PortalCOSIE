@@ -27,19 +27,18 @@
         let chartInstance = null;
         const ctx = document.getElementById('chartMasReprobadas');
         const selectFiltro = document.getElementById('filtroReprobadas');
-        const loader = document.getElementById('loaderReprobadas'); // <--- ID CORREGIDO
+        const loader = document.getElementById('loaderReprobadas');
 
-        // Configuración estática del gráfico
         const chartConfig = {
             type: 'bar',
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Solicitudes', // Etiqueta necesaria para el tooltip
+                    label: 'Solicitudes', // Etiqueta para el tooltip
                     data: [],
                     backgroundColor: 'darkred',
-                    borderRadius: 5, // Bordes redondeados modernos
-                    barThickness: 30, // Grosor fijo para consistencia
+                    borderRadius: 5,
+                    barThickness: 30,
                     borderWidth: 0
                 }]
             },
@@ -66,7 +65,6 @@
             }
         };
 
-        // Función principal de carga
         async function cargarDatos() {
             if (!ctx) return;
 

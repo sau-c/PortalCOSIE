@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class NuevaBse : Migration
+    public partial class CrearBase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -102,8 +102,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AnioInicio = table.Column<int>(type: "int", maxLength: 4, nullable: false),
                     PeriodoInicio = table.Column<int>(type: "int", maxLength: 1, nullable: false),
-                    AnioFin = table.Column<int>(type: "int", maxLength: 4, nullable: false),
-                    PeriodoFin = table.Column<int>(type: "int", maxLength: 1, nullable: false),
+                    AnioActual = table.Column<int>(type: "int", maxLength: 4, nullable: false),
+                    PeriodoActual = table.Column<int>(type: "int", maxLength: 1, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -558,7 +558,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "PeriodoConfig",
-                columns: new[] { "Id", "AnioFin", "AnioInicio", "IsDeleted", "PeriodoFin", "PeriodoInicio" },
+                columns: new[] { "Id", "AnioActual", "AnioInicio", "IsDeleted", "PeriodoActual", "PeriodoInicio" },
                 values: new object[] { 1, 2026, 1997, false, 2, 1 });
 
             migrationBuilder.InsertData(

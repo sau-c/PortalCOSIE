@@ -4,19 +4,19 @@
     {
         public int AnioInicio { get; private set; }
         public int PeriodoInicio { get; private set; }
-        public int AnioFin { get; private set; }
-        public int PeriodoFin { get; private set; }
+        public int AnioActual { get; private set; }
+        public int PeriodoActual { get; private set; }
 
         // Constructor protegido para EF
         protected PeriodoConfig() { }
 
         // Constructor principal
-        public PeriodoConfig(int anioInicio, int periodoInicio, int anioFin, int periodoFin)
+        public PeriodoConfig(int anioInicio, int periodoInicio, int anioActual, int periodoActual)
         {
             SetAnioInicio(anioInicio);
             SetPeriodoInicio(periodoInicio);
             SetAnioInicio(anioInicio);
-            SetPeriodoFin(periodoFin);
+            SetPeriodoActual(periodoActual);
         }
 
         public void SetAnioInicio(int anioInicio)
@@ -26,25 +26,25 @@
             AnioInicio = anioInicio;
         }
         
-        public void SetPeriodoInicio(int inicio)
+        public void SetPeriodoInicio(int periodoInicio)
         {
-            if (inicio < 0 || inicio > 2)
+            if (periodoInicio < 0 || periodoInicio > 2)
                 throw new DomainException("Periodo de inicio debe estar entre 1 y 2.");
-            PeriodoInicio = inicio;
+            PeriodoInicio = periodoInicio;
         }
 
-        public void SetAnioFin(int anioFin)
+        public void SetAnioActual(int anioActual)
         {
-            if (anioFin < 1995 || anioFin > 2100)
+            if (anioActual < 1995 || anioActual > 2100)
                 throw new DomainException("El año de fin debe estar entre 1995 y 2100.");
-            AnioFin = anioFin;
+            AnioActual = anioActual;
         }
 
-        public void SetPeriodoFin(int fin)
+        public void SetPeriodoActual(int periodoActual)
         {
-            if (fin < 0 || fin > 2)
+            if (periodoActual < 0 || periodoActual > 2)
                 throw new DomainException("Periodo de inicio debe estar entre 1 y 2.");
-            PeriodoFin = fin;
+            PeriodoActual = periodoActual;
         }
     }
 }

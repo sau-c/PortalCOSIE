@@ -92,9 +92,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
 
             // Paso 2: Filtramos usando la carrera de la UNIDAD DE APRENDIZAJE.
             if (carreraId.HasValue && carreraId.Value > 0)
-            {
                 query = query.Where(ur => ur.UnidadAprendizaje.CarreraId == carreraId.Value);
-            }
 
             // Paso 3: Agrupamos y seleccionamos
             var ranking = await query
