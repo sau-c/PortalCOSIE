@@ -54,21 +54,10 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 GetCount(docsDict, EstadoDocumento.EnRevision.Id)
             );
         }
-
-        public async Task<ChartDTO> ObtenerSolicitudesPorCarrera(string rango)
+        public async Task<ChartDTO> ObtenerSolicitudesPorCarrera(string periodo)
         {
-            // 1. Determinar la fecha de corte
-            DateTime fechaInicio = rango switch
-            {
-                "3" => DateTime.Now.AddMonths(-3),
-                "6" => DateTime.Now.AddMonths(-6),
-                "12" => new DateTime(DateTime.Now.Year, 1, 1), // Year to Date
-                _ => DateTime.Now.AddMonths(-6) // Default
-            };
-
-            // 2. Consulta optimizada con Filtro
             var data = await _context.Set<Tramite>()
-                .Where(t => t.FechaSolicitud >= fechaInicio)
+                .Where(t => t.PeriodoSolicitud == periodo)
                 .GroupBy(t => t.Alumno.Carrera.Nombre)
                 .Select(g => new
                 {
@@ -83,14 +72,14 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 Values = data.Select(x => x.Cantidad).ToList()
             };
         }
-
-        public async Task<ChartDTO> ObtenerUnidadesMasReprobadasPorCarrera(int? carreraId)
+        public async Task<ChartDTO> ObtenerUnidadesMasReprobadasPorCarrera(int? carreraId, string periodo)
         {
-            // Esto le dice a EF: "Ve a DetalleCTCE y dame todas las UnidadesReprobadas".
+            // Dame todas las UnidadesReprobadas.
             var query = _context.Set<DetalleCTCE>()
+                .Where(d => d.PeriodoSolicitud == periodo)
                 .SelectMany(d => d.UnidadesReprobadas);
 
-            // Paso 2: Filtramos usando la carrera de la UNIDAD DE APRENDIZAJE.
+            // Paso 2: Filtramos la carrera de la UNIDAD DE APRENDIZAJE.
             if (carreraId.HasValue && carreraId.Value > 0)
                 query = query.Where(ur => ur.UnidadAprendizaje.CarreraId == carreraId.Value);
 
@@ -108,7 +97,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
                     Total = g.Count()
                 })
                 .OrderByDescending(x => x.Total)
-                .Take(5)
+                .Take(10)
                 .ToListAsync();
 
             return new ChartDTO

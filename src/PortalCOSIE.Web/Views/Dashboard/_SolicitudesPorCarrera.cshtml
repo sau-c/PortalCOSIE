@@ -1,20 +1,14 @@
 ﻿<div class="chart-card card shadow h-100" id="cardSolicitudesPorCarrera">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h6 class="mb-0 py-1">Solicitud CTCE por carrera</h6>
-        
-        <select id="filtroSolicitudesCarreras" class="form-select form-select-sm w-auto">
-            <option value="6">Últimos 6 meses</option>
-            <option value="3">Últimos 3 meses</option>
-            <option value="12">Este año</option>
+        <select asp-items="ViewBag.Periodos" id="filtroSolicitudesCarreras" name="periodo" class="form-select form-select-sm w-auto">
         </select>
     </div>
     <div class="card-body">
         <div class="chart-container">
             <canvas id="chartSolicitudesPorCarrera"></canvas>
         </div>
-        <div id="loaderCarreras" class="text-center d-none" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)">
-            <div class="spinner-border text-primary" role="status"></div>
-        </div>
+        <div id="loaderCarreras" class="text-center d-none" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)"></div>
     </div>
 </div>
 
@@ -60,10 +54,9 @@
 
             mostrarLoader(true);
             try {
-                const rango = selectFiltro.value;
-                const url = `/Dashboard/SolicitudesPorCarrera?rango=${rango}`;
+                const periodo = selectFiltro.value;
+                const url = `/Dashboard/SolicitudesPorCarrera?periodo=${periodo}`;
                 const response = await executeFetch(url, 'GET');
-                // const data = await response.json();
                 actualizarGrafico(response.data.labels, response.data.values);
                 mostrarLoader(false);
             } catch (error) {
@@ -71,7 +64,7 @@
                 mostrarLoader(false);
             }
         }
-        
+
         function actualizarGrafico(labels, values) {
             // Si no existe, lo creamos
             if (!chartInstance) {

@@ -12,7 +12,7 @@ namespace PortalCOSIE.Web.Controllers
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
         private readonly ICarreraService _carreraService;
-        private readonly IPeriodosService _catalogoService;
+        private readonly IPeriodosService _periodoService;
 
         public AlumnoController(
             ISecurityService securityService,
@@ -24,14 +24,14 @@ namespace PortalCOSIE.Web.Controllers
             _securityService = securityService;
             _usuarioService = usuarioService;
             _carreraService = carreraService;
-            _catalogoService = catalogoService;
+            _periodoService = catalogoService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-            ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
+            ViewBag.Periodos = new SelectList(await _periodoService.ListarPeriodos(), "Periodo");
             return View(await _securityService.ListarAlumnos());
         }
 

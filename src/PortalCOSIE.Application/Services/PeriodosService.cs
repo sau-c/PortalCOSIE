@@ -51,7 +51,7 @@ namespace PortalCOSIE.Application
                     periodos.Add($"{anio}/{p}");
             }
 
-            return periodos;
+            return periodos.OrderDescending();
         }
 
         public async Task EditarPeriodoConfig(PeriodoConfigDTO dto)

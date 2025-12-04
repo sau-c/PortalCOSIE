@@ -1,5 +1,6 @@
 using PortalCOSIE.Application.DTO.Tramites;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Domain.Entities.Calendario;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
@@ -9,17 +10,20 @@ namespace PortalCOSIE.Application
     public class TramiteService : ITramiteService
     {
         private readonly ITramiteRepository _tramiteRepo;
+        private readonly IBaseRepository<PeriodoConfig, int> _periodoRepo;
         private readonly IDocumentoRepository _docRepo;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IUnitOfWork _unitOfWork;
 
         public TramiteService(
             ITramiteRepository tramiteRepo,
+            IBaseRepository<PeriodoConfig, int> periodoRepo,
             IDocumentoRepository docRepo,
             IUsuarioRepository usuarioRepo,
             IUnitOfWork unitOfWork)
         {
             _tramiteRepo = tramiteRepo;
+            _periodoRepo = periodoRepo;
             _docRepo = docRepo;
             _usuarioRepo = usuarioRepo;
             _unitOfWork = unitOfWork;
@@ -35,7 +39,8 @@ namespace PortalCOSIE.Application
             {
                 await _unitOfWork.BeginTransactionAsync();
                 var alumno = await _usuarioRepo.BuscarUsuario(userId);
-
+                var periodoConfig = await _periodoRepo.GetByIdAsync(1);
+                string periodo = $"{periodoConfig.AnioActual}/{periodoConfig.PeriodoActual}";
                 var unidadesReprobadasEntities = new List<UnidadReprobada>();
 
                 foreach (var itemDto in dto.UnidadesReprobadas)
@@ -54,6 +59,7 @@ namespace PortalCOSIE.Application
                 var tramite = new DetalleCTCE(
                     alumno.Id,
                     TipoTramite.DictamenInterno.Id,
+                    periodo,
                     dto.Situacion,
                     dto.TieneDictamenesAnteriores,
                     unidadesReprobadasEntities

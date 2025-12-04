@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PortalCOSIE.Application.DTO.Carreras;
 using PortalCOSIE.Application.DTO.Periodo;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
-using PortalCOSIE.Domain.Enums;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -79,17 +79,17 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Unidades([FromForm] string nombre, [FromForm] int carreraId, [FromForm] Semestre semestre)
+        public async Task<IActionResult> Unidades(UnidadAprendizajeDTO dto)
         {
-            await _carreraService.CrearUnidadAsync(nombre, carreraId, semestre);
+            await _carreraService.CrearUnidadAsync(dto);
             return Json(new { success = true, message = "Cambios guardados" });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> EditarUnidad([FromForm] string id, [FromForm] string nombre, [FromForm] string carreraNombre, [FromForm] Semestre semestre)
+        public async Task<IActionResult> EditarUnidad(UnidadAprendizajeDTO dto)
         {
-            await _carreraService.EditarUnidadAsync(carreraNombre, id, nombre, semestre);
+            await _carreraService.EditarUnidadAsync(dto);
             return Json(new { success = true, message = "Cambios guardados" });
         }
         [HttpPost]

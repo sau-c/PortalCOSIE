@@ -5,7 +5,7 @@ namespace PortalCOSIE.Application.Interfaces
     public interface IDashboardService
     {
         Task<TarjetasDTO> ObtenerTarjetasContables();
-        Task<ChartDTO> ObtenerSolicitudesPorCarrera(string rango);
-        Task<ChartDTO> ObtenerUnidadesMasReprobadasPorCarrera(int? carreraId);
+        Task<ChartDTO> ObtenerSolicitudesPorCarrera(string periodo);
+        Task<ChartDTO> ObtenerUnidadesMasReprobadasPorCarrera(int? carreraId, string periodo);
     }
 }

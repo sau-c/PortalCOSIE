@@ -1,4 +1,5 @@
-﻿using PortalCOSIE.Domain.Entities.Documentos;
+﻿using PortalCOSIE.Domain.Entities.Calendario;
+using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Usuarios;
 
 namespace PortalCOSIE.Domain.Entities.Tramites
@@ -23,6 +24,8 @@ namespace PortalCOSIE.Domain.Entities.Tramites
 
         /// <summary>Fecha de solicitud del trámite</summary>
         public DateTime FechaSolicitud { get; private set; }
+        /// <summary>Periodo de solicitud del trámite (2020/1, 2023/2, etc...)</summary>
+        public string PeriodoSolicitud { get; private set; }
 
         /// <summary>Fecha de conclusión del trámite (cuando aplica)</summary>
         public DateTime? FechaConclusion { get; private set; }
@@ -45,15 +48,17 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         /// <param name="alumnoId">ID del alumno solicitante</param>
         /// <param name="tipoId">ID del tipo de trámite</param>
         /// <exception cref="DomainException">Cuando los parámetros son inválidos</exception>
-        protected Tramite(int alumnoId, int tipoId)
+        protected Tramite(int alumnoId, int tipoId, string periodoSolicitud)
         {
             if (alumnoId <= 0) throw new DomainException("El AlumnoId debe ser válido.");
             if (tipoId <= 0) throw new DomainException("El TipoId debe ser válido.");
+            if (string.IsNullOrWhiteSpace(periodoSolicitud)) throw new DomainException("El periodo de solicitud no puede estar vacío.");
 
             AlumnoId = alumnoId;
             TipoTramiteId = tipoId;
             EstadoTramiteId = EstadoTramite.Solicitado.Id;
             FechaSolicitud = DateTime.UtcNow;
+            PeriodoSolicitud = periodoSolicitud;
         }
 
         /// <summary>Asigna personal responsable para la revisión del trámite</summary>

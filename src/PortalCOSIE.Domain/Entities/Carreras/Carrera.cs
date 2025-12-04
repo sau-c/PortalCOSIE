@@ -44,20 +44,13 @@ namespace PortalCOSIE.Domain.Entities.Carreras
             Nombre = nombre;
         }
 
-        public void AgregarUnidad(string nombre, Semestre semestre)
+        public void AgregarUnidad(string id, string nombre, Semestre semestre)
         {
             if (_unidadesAprendizaje.Any(u => u.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase)))
                 throw new DomainException($"Ya existe una unidad con el nombre '{nombre}'.");
 
-            var unidad = new UnidadAprendizaje(nombre, Id, semestre);
+            var unidad = new UnidadAprendizaje(id, nombre, this.Id, semestre);
             _unidadesAprendizaje.Add(unidad);
         }
-
-        //public void RemoverUnidad(int id)
-        //{
-        //    var unidad = _unidadesAprendizaje.FirstOrDefault(u => u.Id == id)
-        //    ?? throw new DomainException("Unidad no encontrada.");
-        //    _unidadesAprendizaje.Remove(unidad);
-        //}
     }
 }

@@ -19,8 +19,15 @@
         /// <summary>Constructor privado para migraciones</summary>
         private DetalleCTCE() { }
 
-        public DetalleCTCE(int alumnoId, int tipoId, string situacion, bool tieneDictamenesAnteriores, List<UnidadReprobada> unidadesReprobadas)
-            : base(alumnoId, tipoId)
+        public DetalleCTCE(
+            int alumnoId,
+            int tipoId,
+            string periodoSolicitud,
+            string situacion,
+            bool tieneDictamenesAnteriores,
+            List<UnidadReprobada> unidadesReprobadas
+            ) 
+            : base(alumnoId, tipoId, periodoSolicitud)
         {
             SetSituacion(situacion);
             TieneDictamenesAnteriores = tieneDictamenesAnteriores;
@@ -28,7 +35,7 @@
             if (unidadesReprobadas != null)
                 _unidadesReprobadas.AddRange(unidadesReprobadas);
         }
-        
+
         private void SetSituacion(string situacion)
         {
             if (string.IsNullOrWhiteSpace(situacion))

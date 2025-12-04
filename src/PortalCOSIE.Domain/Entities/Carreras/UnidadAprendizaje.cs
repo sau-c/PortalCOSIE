@@ -1,4 +1,5 @@
 ﻿using PortalCOSIE.Domain.Enums;
+using System.Text.RegularExpressions;
 
 namespace PortalCOSIE.Domain.Entities.Carreras
 {
@@ -11,6 +12,11 @@ namespace PortalCOSIE.Domain.Entities.Carreras
     /// </remarks>
     public class UnidadAprendizaje : BaseEntity<string>
     {
+        /// <summary>
+        /// Patroon para validar el formato del Id
+        /// </summary>
+        private static readonly Regex IdPattern = new(@"^[A-Z][0-9]{3}$", RegexOptions.Compiled);
+
         /// <summary>Nombre completo de la unidad de aprendizaje en mayusculas</summary>
         public string Nombre { get; private set; }
 
@@ -26,11 +32,26 @@ namespace PortalCOSIE.Domain.Entities.Carreras
         /// <summary>Constructor protegido para migraciones</summary>
         protected UnidadAprendizaje() { }
 
-        public UnidadAprendizaje(string nombre, int carreraId, Semestre semestre)
+        public UnidadAprendizaje(string id, string nombre, int carreraId, Semestre semestre)
         {
+            SetId(id);
+            SetCarreraId(carreraId);
             SetNombre(nombre);
             SetCarreraId(carreraId);
             SetSemestre(semestre);
+        }
+
+        /// <summary>
+        /// Valida y establece que el id de la unidad cumpla la nomenclatura
+        /// </summary>
+        public void SetId(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("El ID de la unidad de aprendizaje no puede estar vacío.", nameof(id));
+            id = id.Trim();
+            if (!IdPattern.IsMatch(id))
+                throw new ArgumentException("Formato inválido. El ID debe comenzar con una letra mayúscula seguida de 3 dígitos (Ej: A123).", nameof(id));
+            Id = id;
         }
 
         /// <summary>

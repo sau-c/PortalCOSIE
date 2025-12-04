@@ -10,8 +10,4 @@
     <ProjectReference Include="..\PortalCOSIE.Domain\PortalCOSIE.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTO\Bitacora\" />
-  </ItemGroup>
-
 </Project>

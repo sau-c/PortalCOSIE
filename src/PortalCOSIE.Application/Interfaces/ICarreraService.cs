@@ -1,5 +1,5 @@
-﻿using PortalCOSIE.Domain.Entities.Carreras;
-using PortalCOSIE.Domain.Enums;
+﻿using PortalCOSIE.Application.DTO.Carreras;
+using PortalCOSIE.Domain.Entities.Carreras;
 
 namespace PortalCOSIE.Application.Interfaces
 {
@@ -13,8 +13,8 @@ namespace PortalCOSIE.Application.Interfaces
         Task ToggleCarrrera(int id);
 
         Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAsync(string carrera);
-        Task CrearUnidadAsync(string nombre, int carreraId, Semestre semestre);
-        Task EditarUnidadAsync(string carreraNombre, string id, string nombre, Semestre semestre);
+        Task CrearUnidadAsync(UnidadAprendizajeDTO dto);
+        Task EditarUnidadAsync(UnidadAprendizajeDTO dto);
         Task ToggleUnidad(string carreraNombre, string id);
     }
 }

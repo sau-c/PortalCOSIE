@@ -1,4 +1,5 @@
-﻿using PortalCOSIE.Application.Interfaces;
+﻿using PortalCOSIE.Application.DTO.Carreras;
+using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities.Carreras;
 using PortalCOSIE.Domain.Enums;
 using PortalCOSIE.Domain.Interfaces;
@@ -17,6 +18,7 @@ namespace PortalCOSIE.Application.Services
             _carreraRepo = carreraRepo;
             _unitOfWork = unitOfWork;
         }
+        
         #region CARRERA
         public async Task<IEnumerable<Carrera>> ListarActivasAsync()
         {
@@ -61,27 +63,26 @@ namespace PortalCOSIE.Application.Services
         {
             return await _carreraRepo.ListarUnidadesPorCarreraAsync(carrera);
         }
-
-        public async Task CrearUnidadAsync(string nombre, int carreraId, Semestre semestre)
+        public async Task CrearUnidadAsync(UnidadAprendizajeDTO dto)
         {
-            var carrera = await _carreraRepo.GetByIdAsync(carreraId);
-            carrera.AgregarUnidad(nombre, semestre);
+            var carrera = await _carreraRepo.GetByIdAsync(dto.carreraId);
+            carrera.AgregarUnidad(dto.id, dto.nombre, dto.semestre);
             await _unitOfWork.SaveChangesAsync();
         }
-        public async Task EditarUnidadAsync(string carreraNombre, string id, string nombre, Semestre semestre)
+        public async Task EditarUnidadAsync(UnidadAprendizajeDTO dto)
         {
-            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(carreraNombre);
+            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(dto.nombre);
             if (carrera == null)
                 throw new ApplicationException("Carrera no encontrada");
             
             var unidad = carrera.UnidadesAprendizaje
-                .FirstOrDefault(u => u.Id == id);
+                .FirstOrDefault(u => u.Id == dto.id);
             
             if (unidad == null)
                 throw new ApplicationException("Unidad de aprendizaje no encontrada");
 
-            unidad.SetNombre(nombre);
-            unidad.SetSemestre(semestre);
+            unidad.SetNombre(dto.nombre);
+            unidad.SetSemestre(dto.semestre);
 
             await _unitOfWork.SaveChangesAsync();
         }

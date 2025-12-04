@@ -1,22 +1,35 @@
 ﻿<div class="chart-card card shadow h-100">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <div><h6 class="mb-0 py-1">Top 5 unidades mas reprobadas por solicitud CTCE</h6></div>
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h6 class="mb-0 py-1 text-truncate" title="Top 10 unidades mas reprobadas por periodo de solicitud CTCE">
+            Top 10 unidades más reprobadas
+        </h6>
 
-        <select id="filtroReprobadas" class="form-select form-select-sm w-auto">
-            <option value="">Todas las carreras</option>
-            <option value="1">Mecatrónica</option>
-            <option value="2">Telemática</option>
-            <option value="3">Biónica</option>
-            <option value="4">Energía</option>
-            <option value="5">ISISA</option>
-        </select>
+        <div class="d-flex gap-2">
+            <select asp-items="ViewBag.Carreras"
+                    id="filtroReprobadas"
+                    name="carreraId"
+                    class="form-select form-select-sm"
+                    aria-label="Filtrar por carrera">
+                <option value="">Todas las carreras</option>
+            </select>
+
+            <select asp-items="ViewBag.Periodos"
+                    id="filtroReprobadasPeriodo"
+                    name="periodo"
+                    class="form-select form-select-sm"
+                    aria-label="Filtrar por periodo">
+            </select>
+        </div>
     </div>
 
-    <div class="card-body">
-        <div class="chart-container">
+    <div class="card-body position-relative">
+        <div class="chart-container" style="height: 300px;">
             <canvas id="chartMasReprobadas"></canvas>
         </div>
-        <div id="loaderReprobadas" class="text-center d-none" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)">
+
+        <div id="loaderReprobadas"
+             class="d-none position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+             style="background: rgba(255,255,255,0.7); z-index: 10;">
             <div class="spinner-border text-primary" role="status"></div>
         </div>
     </div>
@@ -24,93 +37,135 @@
 
 <script>
     (function () {
-        let chartInstance = null;
-        const ctx = document.getElementById('chartMasReprobadas');
-        const selectFiltro = document.getElementById('filtroReprobadas');
-        const loader = document.getElementById('loaderReprobadas');
+        // Cacheo de elementos del DOM
+        const elements = {
+            ctx: document.getElementById('chartMasReprobadas'),
+            selectCarrera: document.getElementById('filtroReprobadas'),
+            selectPeriodo: document.getElementById('filtroReprobadasPeriodo'),
+            loader: document.getElementById('loaderReprobadas')
+        };
 
-        const chartConfig = {
+        let chartInstance = null;
+
+        // Configuración del gráfico separada para mayor limpieza
+        const getChartConfig = (labels, data) => ({
             type: 'bar',
             data: {
-                labels: [],
+                labels: labels,
                 datasets: [{
-                    label: 'Solicitudes', // Etiqueta para el tooltip
-                    data: [],
-                    backgroundColor: 'darkred',
-                    borderRadius: 5,
-                    barThickness: 30,
-                    borderWidth: 0
+                    label: 'Solicitudes',
+                    data: data,
+                    backgroundColor: 'rgba(139, 0, 0, 0.8)', // Darkred con transparencia
+                    borderColor: 'darkred',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    barThickness: 20, // Un poco más grueso para legibilidad
                 }]
             },
             options: {
-                indexAxis: 'y', // Gráfico Horizontal
+                indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => ` ${context.raw} Solicitudes`
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: { display: true, color: '#f0f0f0' },
-                        ticks: {
-                            precision: 0,  // Obliga a no mostrar decimales
-                            stepSize: 1    // Obliga a que los saltos sean de 1 en 1
-                        }
+                        grid: { color: '#f0f0f0' },
+                        ticks: { precision: 0 }
                     },
                     y: {
-                        grid: { display: false } // Limpieza visual
+                        grid: { display: false }
                     }
-                },
-                plugins: {
-                    legend: { display: false } // Ocultamos leyenda porque es una sola serie
                 }
             }
-        };
+        });
 
         async function cargarDatos() {
-            if (!ctx) return;
+            if (!elements.ctx) return;
 
-            mostrarLoader(true);
+            toggleLoader(true);
+
             try {
-                const carreraId = selectFiltro.value;
-                const url = `/Dashboard/MasReprobadas?carreraId=${carreraId}`;
+                const carreraId = elements.selectCarrera.value;
+                const periodo = elements.selectPeriodo.value;
 
+                // Aseguramos que la URL maneje strings vacíos correctamente
+                const params = new URLSearchParams({
+                    carreraId: carreraId || '',
+                    periodo: periodo || ''
+                });
+
+                const url = `/Dashboard/MasReprobadas?${params.toString()}`;
+
+                // Asumo que executeFetch existe en tu entorno global
                 const response = await executeFetch(url, 'GET');
-                actualizarGrafico(response.data.labels, response.data.values);
-                mostrarLoader(false);
+
+                // Validación defensiva de la respuesta
+                const labels = response?.data?.labels || [];
+                const values = response?.data?.values || [];
+
+                renderChart(labels, values);
+
             } catch (error) {
-                showGlobalModal('error', error.message);
-                mostrarLoader(false);
+                console.error("Error cargando gráfica:", error);
+                if (typeof showGlobalModal === 'function') {
+                    showGlobalModal('error', 'No se pudieron cargar los datos de reprobación.');
+                }
+            } finally {
+                toggleLoader(false);
             }
         }
 
-        function actualizarGrafico(labels, values) {
-            if (!chartInstance) {
-                chartConfig.data.labels = labels;
-                chartConfig.data.datasets[0].data = values;
-                chartInstance = new Chart(ctx, chartConfig);
-            } else {
+        function renderChart(labels, values) {
+            if (chartInstance) {
+                // Actualización optimizada
                 chartInstance.data.labels = labels;
                 chartInstance.data.datasets[0].data = values;
                 chartInstance.update();
-            }
-        }
-
-        function mostrarLoader(visible) {
-            if (!loader) return;
-            if (visible) {
-                loader.classList.remove('d-none');
-                if(ctx) ctx.style.opacity = 0.3;
             } else {
-                loader.classList.add('d-none');
-                if(ctx) ctx.style.opacity = 1;
+                // Primera carga
+                chartInstance = new Chart(elements.ctx, getChartConfig(labels, values));
             }
         }
 
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', () => {
-            if (selectFiltro) {
-                selectFiltro.addEventListener('change', cargarDatos);
-                cargarDatos(); // Carga inicial
+        function toggleLoader(isVisible) {
+            if (!elements.loader) return;
+
+            if (isVisible) {
+                elements.loader.classList.remove('d-none');
+            } else {
+                elements.loader.classList.add('d-none');
             }
-        });
+        }
+
+        function init() {
+            // Verificar que los elementos existan antes de asignar eventos
+            if (elements.selectCarrera && elements.selectPeriodo) {
+
+                // 1. Evento para Carrera
+                elements.selectCarrera.addEventListener('change', cargarDatos);
+
+                // 2. Evento para Periodo (EL QUE FALTABA)
+                elements.selectPeriodo.addEventListener('change', cargarDatos);
+
+                // Carga inicial
+                cargarDatos();
+            }
+        }
+
+        // Ejecutar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
     })();
 </script>
