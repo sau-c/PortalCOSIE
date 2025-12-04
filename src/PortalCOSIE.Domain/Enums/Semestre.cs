@@ -1,16 +1,21 @@
 ﻿namespace PortalCOSIE.Domain.Enums
 {
+    /// <summary>
+    /// Enumeración que representa los semestres/niveles de las unidades de 
+    /// aprendizaje en las carreras.
+    /// </summary>
+    /// <remarks>
     public enum Semestre
     {
         PRIMERO = 1,
         SEGUNDO = 2,
         TERCERO = 3,
         CUARTO = 4,
-        QUINTO = 5
-        //SEXTO = 6,
-        //SEPTIMO = 7,
-        //OCTAVO = 8,
-        //NOVENO = 9,
-        //DECIMO = 10
+        QUINTO = 5,
+        SEXTO = 6,
+        SEPTIMO = 7,
+        OCTAVO = 8,
+        NOVENO = 9,
+        DECIMO = 10
     }
 }

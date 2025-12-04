@@ -7,13 +7,13 @@ namespace PortalCOSIE.Application
 {
     public class PeriodosService : IPeriodosService
     {
-        private readonly IBaseRepository<PeriodoConfig> _periodoRepo;
+        private readonly IBaseRepository<PeriodoConfig, int> _periodoRepo;
         private readonly ISesionRepository _sesionRepo;
         private readonly IUnitOfWork _unitOfWork;
 
         public PeriodosService(
             ISesionRepository sesionRepo,
-            IBaseRepository<PeriodoConfig> periodoRepo,
+            IBaseRepository<PeriodoConfig, int> periodoRepo,
             IUnitOfWork unitOfWork)
         {
             _sesionRepo = sesionRepo;

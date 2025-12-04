@@ -4,30 +4,30 @@ using PortalCOSIE.Domain.Interfaces;
 
 namespace PortalCOSIE.Application.Services
 {
-    public class CatalogoService<T> : ICatalogoService<T> where T : BaseEntity
+    public class CatalogoService<TEntity, TId> : ICatalogoService<TEntity, TId> where TEntity : BaseEntity<TId>
     {
-        private readonly IBaseRepository<T> _catalogoRepo;
+        private readonly IBaseRepository<TEntity, TId> _catalogoRepo;
         private readonly IUnitOfWork _unitOfWork;
 
         public CatalogoService(
-            IBaseRepository<T> catalogoRepo,
+            IBaseRepository<TEntity, TId> catalogoRepo,
             IUnitOfWork unitOfWork)
         {
             _catalogoRepo = catalogoRepo;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<T>> ListarActivosAsync()
+        public async Task<IEnumerable<TEntity>> ListarActivosAsync()
         {
             return await _catalogoRepo.GetAllAsync(true);
         }
 
-        public async Task<IEnumerable<T>> ListarAsync()
+        public async Task<IEnumerable<TEntity>> ListarAsync()
         {
             return await _catalogoRepo.GetAllAsync(false);
         }
 
-        public async Task ToggleAsync(int id)
+        public async Task ToggleAsync(TId id)
         {
             var entidad = await _catalogoRepo.GetByIdAsync(id);
             if (entidad.IsDeleted)

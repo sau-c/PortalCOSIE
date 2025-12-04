@@ -36,8 +36,8 @@
             </div>
         }
         <p class="text-secondary">Consulta las fechas de recepción y sesión correspondientes a cada periodo.</p>
-        <table id="tblSesiones" class="table table-hover table-bordered">
-            <thead class="table-secondary">
+        <table id="tblSesiones" class="table table-hover">
+            <thead class="table-light">
                 <tr class="small">
                     <th>No. de Sesión</th>
                     <th>Recepción documental</th>
@@ -58,12 +58,14 @@
                             {
                                 @foreach (var fecha in sesion.FechasRecepcion)
                                 {
-                                    <span class="badge p-2 bg-warning text-black me-1">@fecha.Fecha.ToString("dd/MM/yyyy")</span>
+                                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary p-2">
+                                        @fecha.Fecha.ToString("dd/MM/yyyy")
+                                    </span>
                                 }
                             }
                             else
                             {
-                                <span class="badge p-2 bg-secondary">No definida</span>
+                                <span class="text-muted">- Sin fechas -</span>
                             }
                         </td>
                         <td class="fw-semibold text-center">
@@ -139,10 +141,10 @@
             // Agregar configuración para columna de acciones si puede editar
             @if (puedeEditar)
             {
-                @:config.columnDefs.push({ targets: 3, width: "95px", className: "text-center", orderable: false });
-                // Inicializar modales
-                @:inicializarModalSesion();
-                @:inicializarModalToggle();
+                    @:config.columnDefs.push({ targets: 3, width: "95px", className: "text-center", orderable: false });
+                    // Inicializar modales
+                    @:inicializarModalSesion();
+                    @:inicializarModalToggle();
             }
 
             $('#tblSesiones').DataTable(config);

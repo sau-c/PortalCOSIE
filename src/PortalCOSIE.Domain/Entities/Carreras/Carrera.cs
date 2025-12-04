@@ -3,23 +3,35 @@ using System.Text.RegularExpressions;
 
 namespace PortalCOSIE.Domain.Entities.Carreras
 {
-    public class Carrera : BaseEntity
+    /// <summary>
+    /// Representa una carrera dentro del sistema.
+    /// </summary>
+    /// <remarks>
+    /// Las carreras definen programas de estudio completos y contienen
+    /// el catálogo de unidades de aprendizaje organizadas por semestres.
+    /// </remarks>
+    public class Carrera : BaseEntity<int>
     {
-        public string Nombre { get; private set; } = string.Empty;
+        /// <summary>Nombre corto de la carrera</summary>
+        public string Nombre { get; private set; }
+
         private readonly List<UnidadAprendizaje> _unidadesAprendizaje = new();
 
         private const int LongitudMaxima = 100;
         private static readonly Regex SoloLetras =
             new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\(\)]+$", RegexOptions.Compiled);
 
+        /// <summary>Colección de unidades de aprendizaje que componen la carrera</summary>
         public IReadOnlyCollection<UnidadAprendizaje> UnidadesAprendizaje => _unidadesAprendizaje.AsReadOnly();
+
+        /// <summary>Constructor privado para migraciones</summary>
         private Carrera() { }
 
         public Carrera(string nombre)
         {
             ActualizarNombre(nombre);
         }
-
+        
         public void ActualizarNombre(string nombre)
         {
             if (string.IsNullOrWhiteSpace(nombre))

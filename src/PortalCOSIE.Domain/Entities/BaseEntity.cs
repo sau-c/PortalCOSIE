@@ -4,12 +4,12 @@
     /// Clase base abstracta para todas las entidades del dominio.
     /// Define un identificador genérico y soporte para eliminación lógica (soft delete).
     /// </summary>
-    public abstract class BaseEntity
+    public abstract class BaseEntity<TId>
     {
         /// <summary>
         /// Identificador único de la entidad.
         /// </summary>
-        public int Id { get; protected set; }
+        public TId Id { get; protected set; }
 
         /// <summary>
         /// Indica si la entidad está marcada como eliminada lógicamente.

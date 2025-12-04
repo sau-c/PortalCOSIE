@@ -2,10 +2,10 @@
 
 namespace PortalCOSIE.Domain.Entities.Usuarios
 {
-    public interface IUsuarioRepository : IBaseRepository<Usuario>
+    public interface IUsuarioRepository : IBaseRepository<Usuario, int>
     {
-        Task<Usuario> BuscarUsuario(string identityUserId);
-        Task<Alumno> BuscarAlumnoConCarrera(string identityUserId);
+        Task<Usuario> BuscarUsuario(string id);
+        Task<Alumno> BuscarAlumnoConCarrera(string id);
         Task<Alumno> BuscarAlumnoPorBoleta(string boleta);
         Task<IEnumerable<Alumno>> ListarAlumnoConCarrera();
         Task<IEnumerable<Personal>> ListarConPersonal();

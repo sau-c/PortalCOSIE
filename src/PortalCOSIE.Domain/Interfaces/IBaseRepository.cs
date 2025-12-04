@@ -9,9 +9,9 @@ namespace PortalCOSIE.Domain.Interfaces
     /// Está diseñada para abstraer el mecanismo subyacente de acceso a datos,
     /// permitiendo una implementación flexible.</remarks>
     /// <typeparam name="TEntity">El tipo de entidad gestionada por el repositorio. Debe ser un tipo de referencia.</typeparam>
-    public interface IBaseRepository<TEntity> where TEntity : BaseEntity
+    public interface IBaseRepository<TEntity, TId> where TEntity : BaseEntity<TId>
     {
-        Task<TEntity> GetByIdAsync(int id);
+        Task<TEntity> GetByIdAsync(TId id);
         Task<IEnumerable<TEntity>> GetAllAsync(bool filtrarActivos);
         Task<TEntity> AddAsync(TEntity entity);
         TEntity Delete(TEntity entity);

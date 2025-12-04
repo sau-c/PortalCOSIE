@@ -4,7 +4,7 @@ using PortalCOSIE.Infrastructure.Data;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class CarreraRepository : BaseRepository<Carrera>, ICarreraRepository
+    public class CarreraRepository : BaseRepository<Carrera, int>, ICarreraRepository
     {
         public CarreraRepository(AppDbContext context) : base(context)
         { }

@@ -5,7 +5,7 @@ using PortalCOSIE.Infrastructure.Data;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
+    public class BaseRepository<TEntity, TId> : IBaseRepository<TEntity,TId> where TEntity : BaseEntity<TId>
     {
         protected readonly AppDbContext _context;
 
@@ -14,7 +14,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<TEntity> GetByIdAsync(int id)
+        public async Task<TEntity> GetByIdAsync(TId id)
         {
             return await _context.Set<TEntity>().FindAsync(id);
         }

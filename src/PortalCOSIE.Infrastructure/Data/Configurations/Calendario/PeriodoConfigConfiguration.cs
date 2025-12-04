@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PortalCOSIE.Domain.Entities.Calendario;
 
-namespace PortalCOSIE.Infrastructure.Data.Configurations
+namespace PortalCOSIE.Infrastructure.Data.Configurations.Calendario
 {
     public class PeriodoConfigConfiguration : IEntityTypeConfiguration<PeriodoConfig>
     {
@@ -31,7 +31,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations
                     Id = 1,
                     AnioInicio = 1997,
                     PeriodoInicio = 1,
-                    AnioActual = (DateTime.Now.Year + 1),
+                    AnioActual = DateTime.Now.Year + 1,
                     PeriodoActual = 2,
                     IsDeleted = false 
                 });

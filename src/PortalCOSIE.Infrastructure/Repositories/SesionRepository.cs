@@ -4,7 +4,7 @@ using PortalCOSIE.Infrastructure.Data;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class SesionRepository : BaseRepository<SesionCOSIE>, ISesionRepository
+    public class SesionRepository : BaseRepository<SesionCOSIE, int>, ISesionRepository
     {
         public SesionRepository(AppDbContext context) : base(context)
         { }

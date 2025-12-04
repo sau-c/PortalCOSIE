@@ -2,7 +2,6 @@
 using PortalCOSIE.Domain.Entities.Carreras;
 using PortalCOSIE.Domain.Enums;
 using PortalCOSIE.Domain.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PortalCOSIE.Application.Services
 {
@@ -69,7 +68,7 @@ namespace PortalCOSIE.Application.Services
             carrera.AgregarUnidad(nombre, semestre);
             await _unitOfWork.SaveChangesAsync();
         }
-        public async Task EditarUnidadAsync(string carreraNombre, int id, string nombre, Semestre semestre)
+        public async Task EditarUnidadAsync(string carreraNombre, string id, string nombre, Semestre semestre)
         {
             var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(carreraNombre);
             if (carrera == null)
@@ -86,7 +85,7 @@ namespace PortalCOSIE.Application.Services
 
             await _unitOfWork.SaveChangesAsync();
         }
-        public async Task ToggleUnidad(string carreraNombre, int id)
+        public async Task ToggleUnidad(string carreraNombre, string id)
         {
             var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(carreraNombre);
             if (carrera == null)

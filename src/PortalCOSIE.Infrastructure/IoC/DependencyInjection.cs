@@ -39,7 +39,7 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IEmailSender, SmtpEmailSender>();
 
             //Servicios Aplicacion
-            services.AddScoped(typeof(ICatalogoService<>), typeof(CatalogoService<>));
+            services.AddScoped(typeof(ICatalogoService<,>), typeof(CatalogoService<,>));
 
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<ITramiteService, TramiteService>();
@@ -48,7 +48,7 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IBitacoraService, BitacoraService>();
 
             //Repositorios
-            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();

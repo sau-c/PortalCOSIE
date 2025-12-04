@@ -2,9 +2,9 @@
 
 namespace PortalCOSIE.Domain.Entities.Usuarios
 {
-    public abstract class Usuario : BaseEntity
+    public abstract class Usuario : BaseEntity<int>
     {
-        public string IdentityUserId { get; private set; }
+        public string IdentityUserId { get; set; }
         public string Nombre { get; private set; }
         public string ApellidoPaterno { get; private set; }
         public string ApellidoMaterno { get; private set; }

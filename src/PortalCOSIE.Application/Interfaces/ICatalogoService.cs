@@ -2,10 +2,10 @@
 
 namespace PortalCOSIE.Application.Interfaces
 {
-    public interface ICatalogoService<T> where T : BaseEntity
+    public interface ICatalogoService<TEntity, TId> where TEntity : BaseEntity<TId>
     {
-        Task<IEnumerable<T>> ListarActivosAsync();
-        Task<IEnumerable<T>> ListarAsync();
-        Task ToggleAsync(int id);
+        Task<IEnumerable<TEntity>> ListarActivosAsync();
+        Task<IEnumerable<TEntity>> ListarAsync();
+        Task ToggleAsync(TId id);
     }
 }

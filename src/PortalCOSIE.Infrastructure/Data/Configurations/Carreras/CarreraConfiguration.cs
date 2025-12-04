@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PortalCOSIE.Domain.Entities.Carreras;
 
-namespace PortalCOSIE.Infrastructure.Data.Configurations
+namespace PortalCOSIE.Infrastructure.Data.Configurations.Carreras
 {
     public class CarreraConfiguration : IEntityTypeConfiguration<Carrera>
     {

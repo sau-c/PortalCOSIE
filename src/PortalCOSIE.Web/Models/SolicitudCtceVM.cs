@@ -13,7 +13,7 @@
 
     public class UnidadReprobadaVM
     {
-        public int UnidadId { get; set; }
+        public string UnidadId { get; set; }
         public string PeriodoCursado { get; set; }
         public string PeriodoRecursado { get; set; }
     }

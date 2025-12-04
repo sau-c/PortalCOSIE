@@ -4,27 +4,32 @@ public static class EstadoTramiteExtensions
 {
     public static string ToBadgeClass(this EstadoTramite estado)
     {
-        return estado.Nombre switch
+        if (estado is null) return "bg-light text-dark";
+
+        return estado switch
         {
-            "Solicitado" => "bg-secondary",
-            "EnRevision" => "bg-warning text-dark",
-            "DocumentosPendientes" => "bg-secondary",
-            "Concluido" => "bg-primary",
-            "Cancelado" => "bg-danger",
-            _ => "bg-light text-dark" // Default
-        };
-    }
-    public static string ToIconClass(this EstadoTramite estado)
-    {
-        return estado.Nombre switch
-        {
-            "Solicitado" => "fa-solid fa-inbox",
-            "EnRevision" => "fa-solid fa-eye",
-            "DocumentosPendientes" => "fa-solid fa-file-circle-exclamation",
-            "Cancelado" => "fa-solid fa-circle-xmark",
-            "Concluido" => "fa-solid fa-flag",
-            _ => "fa-solid fa-circle-question"
+            // Usamos .Equals() porque compara por ID, no por referencia de memoria
+            _ when estado.Equals(EstadoTramite.Solicitado) => "bg-light text-black",
+            _ when estado.Equals(EstadoTramite.EnRevision) => "bg-secondary",
+            _ when estado.Equals(EstadoTramite.DocumentosPendientes) => "bg-warning text-black",
+            _ when estado.Equals(EstadoTramite.Concluido) => "bg-success",
+            _ when estado.Equals(EstadoTramite.Cancelado) => "bg-danger",
+            _ => "bg-light text-dark"
         };
     }
 
+    public static string ToIconClass(this EstadoTramite estado)
+    {
+        if (estado is null) return "fas fa-circle-question";
+
+        return estado switch
+        {
+            _ when estado.Equals(EstadoTramite.Solicitado) => "fas fa-inbox",
+            _ when estado.Equals(EstadoTramite.EnRevision) => "fas fa-eye",
+            _ when estado.Equals(EstadoTramite.DocumentosPendientes) => "fas fa-file-circle-exclamation",
+            _ when estado.Equals(EstadoTramite.Cancelado) => "fas fa-circle-xmark",
+            _ when estado.Equals(EstadoTramite.Concluido) => "fas fa-flag",
+            _ => "fas fa-circle-question"
+        };
+    }
 }

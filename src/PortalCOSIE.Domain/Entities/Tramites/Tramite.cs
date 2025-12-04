@@ -3,14 +3,28 @@ using PortalCOSIE.Domain.Entities.Usuarios;
 
 namespace PortalCOSIE.Domain.Entities.Tramites
 {
-    public abstract class Tramite : BaseEntity
+    /// <summary>
+    /// Clase base abstracta que representa un trámite académico en el sistema.
+    /// Define el comportamiento común para todos los tipos de trámites.
+    /// </summary>
+    public abstract class Tramite : BaseEntity<int>
     {
+        /// <summary>Identificador del estado actual del trámite</summary>
         public int EstadoTramiteId { get; private set; }
+
+        /// <summary>Identificador del alumno solicitante</summary>
         public int AlumnoId { get; private set; }
+
+        /// <summary>Identificador del personal asignado</summary>
         public int? PersonalId { get; private set; }
+
+        /// <summary>Identificador del tipo de trámite</summary>
         public int TipoTramiteId { get; private set; }
-        
+
+        /// <summary>Fecha de solicitud del trámite</summary>
         public DateTime FechaSolicitud { get; private set; }
+
+        /// <summary>Fecha de conclusión del trámite (cuando aplica)</summary>
         public DateTime? FechaConclusion { get; private set; }
 
         // Propiedades de navegación
@@ -22,57 +36,55 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         private readonly List<Documento> _documentos = new();
         public IReadOnlyCollection<Documento> Documentos => _documentos.AsReadOnly();
 
-        // Constructor privado (EF Core)
+        /// <summary>Constructor privado para migraciones</summary>
         protected Tramite() { }
 
-        // Constructor de dominio
+        /// <summary>
+        /// Constructor principal para crear un nuevo trámite
+        /// </summary>
+        /// <param name="alumnoId">ID del alumno solicitante</param>
+        /// <param name="tipoId">ID del tipo de trámite</param>
+        /// <exception cref="DomainException">Cuando los parámetros son inválidos</exception>
         protected Tramite(int alumnoId, int tipoId)
         {
             if (alumnoId <= 0) throw new DomainException("El AlumnoId debe ser válido.");
-            if (tipoId <= 0)
-                throw new DomainException("El TipoId debe ser válido.");
-            
+            if (tipoId <= 0) throw new DomainException("El TipoId debe ser válido.");
+
             AlumnoId = alumnoId;
             TipoTramiteId = tipoId;
-            EstadoTramiteId = EstadoTramite.Solicitado.Id; // podria usar enum: EstadosTramite.Solicitado
+            EstadoTramiteId = EstadoTramite.Solicitado.Id;
             FechaSolicitud = DateTime.UtcNow;
         }
 
+        /// <summary>Asigna personal responsable para la revisión del trámite</summary>
         public void AsignarPersonal(int personalId)
         {
             if (personalId <= 0) throw new DomainException("Personal inválido.");
             PersonalId = personalId;
-            EstadoTramiteId = 2;
+            EstadoTramiteId = EstadoTramite.EnRevision.Id;
         }
 
+        /// <summary>Agrega un documento al trámite</summary>
         public void AgregarDocumento(Documento documento)
         {
-            if (documento == null)
-                throw new DomainException("El documento no puede ser nulo.");
+            if (documento == null) throw new DomainException("El documento no puede ser nulo.");
             _documentos.Add(documento);
         }
 
-        /// <summary>
-        /// Cambia el estado del trámite (por ejemplo: En Proceso → Concluido)
-        /// </summary>
+        /// <summary>Actualiza el estado del trámite</summary>
         public void CambiarEstado(EstadoTramite nuevoEstado)
         {
-            if (nuevoEstado == null)
-                throw new DomainException("El nuevo estado no puede ser nulo.");
-
+            if (nuevoEstado == null) throw new DomainException("El nuevo estado no puede ser nulo.");
             EstadoTramite = nuevoEstado;
             EstadoTramiteId = nuevoEstado.Id;
         }
 
-        /// <summary>
-        /// Marca el trámite como concluido.
-        /// </summary>
+        /// <summary>Marca el trámite como concluido y registra la fecha de conclusión</summary>
         public void Concluir()
         {
-            if (FechaConclusion != null)
-                throw new DomainException("El trámite ya fue concluido.");
-
+            if (FechaConclusion != null) throw new DomainException("El trámite ya fue concluido.");
             FechaConclusion = DateTime.UtcNow;
+            EstadoTramiteId = EstadoTramite.Concluido.Id;
         }
     }
 }

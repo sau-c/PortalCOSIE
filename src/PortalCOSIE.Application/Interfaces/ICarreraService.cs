@@ -14,7 +14,7 @@ namespace PortalCOSIE.Application.Interfaces
 
         Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAsync(string carrera);
         Task CrearUnidadAsync(string nombre, int carreraId, Semestre semestre);
-        Task EditarUnidadAsync(string carreraNombre, int id, string nombre, Semestre semestre);
-        Task ToggleUnidad(string carreraNombre, int unidadId);
+        Task EditarUnidadAsync(string carreraNombre, string id, string nombre, Semestre semestre);
+        Task ToggleUnidad(string carreraNombre, string id);
     }
 }

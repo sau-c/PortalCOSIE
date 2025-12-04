@@ -12,16 +12,16 @@ namespace PortalCOSIE.Web.Controllers
     {
         private readonly IPeriodosService _periodoService;
         private readonly ICarreraService _carreraService;
-        private readonly ICatalogoService<EstadoTramite> _estadoTramiteService;
-        private readonly ICatalogoService<EstadoDocumento> _estadoDocumentoService;
-        private readonly ICatalogoService<TipoTramite> _tipoTramiteService;
+        private readonly ICatalogoService<EstadoTramite, int> _estadoTramiteService;
+        private readonly ICatalogoService<EstadoDocumento, int> _estadoDocumentoService;
+        private readonly ICatalogoService<TipoTramite, int> _tipoTramiteService;
 
         public ConfiguracionController(
             IPeriodosService periodoService,
             ICarreraService carreraService,
-            ICatalogoService<EstadoTramite> estadoTramiteService,
-            ICatalogoService<EstadoDocumento> estadoDocumentoService,
-            ICatalogoService<TipoTramite> tipoTramiteService
+            ICatalogoService<EstadoTramite, int> estadoTramiteService,
+            ICatalogoService<EstadoDocumento, int> estadoDocumentoService,
+            ICatalogoService<TipoTramite, int> tipoTramiteService
             )
         {
             _periodoService = periodoService;
@@ -87,7 +87,7 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> EditarUnidad([FromForm] int id, [FromForm] string nombre, [FromForm] string carreraNombre, [FromForm] Semestre semestre)
+        public async Task<IActionResult> EditarUnidad([FromForm] string id, [FromForm] string nombre, [FromForm] string carreraNombre, [FromForm] Semestre semestre)
         {
             await _carreraService.EditarUnidadAsync(carreraNombre, id, nombre, semestre);
             return Json(new { success = true, message = "Cambios guardados" });
@@ -95,7 +95,7 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> ToggleUnidad([FromForm] string carreraNombre, [FromForm] int id)
+        public async Task<IActionResult> ToggleUnidad([FromForm] string carreraNombre, [FromForm] string id)
         {
             await _carreraService.ToggleUnidad(carreraNombre, id);
             return Json(new { success = true, message = "Cambios guardados" });

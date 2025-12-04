@@ -2,19 +2,34 @@
 
 namespace PortalCOSIE.Domain.Entities.Documentos
 {
-    public class Documento : BaseEntity
+    /// <summary>
+    /// Representa un documento adjunto a un trámite académico.
+    /// </summary>
+    /// <remarks>
+    /// El contenido se almacena como binario y debe ser PDF.
+    /// </remarks>
+    public class Documento : BaseEntity<int>
     {
+        /// <summary>Nombre original del archivo</summary>
         public string Nombre { get; private set; }
+
+        /// <summary>Comentarios del personal sobre validación o rechazo</summary>
         public string? Observaciones { get; private set; }
+
+        /// <summary>Identificador del trámite asociado</summary>
         public int TramiteId { get; private set; }
+
+        /// <summary>Identificador del estado actual del documento</summary>
         public int EstadoDocumentoId { get; private set; }
+
+        /// <summary>Contenido binario del archivo (blob)</summary>
         public byte[] Contenido { get; private set; }
 
         // Propiedades de navegación
         public EstadoDocumento EstadoDocumento { get; private set; }
         public Tramite Tramite { get; private set; }
 
-        // Constructor privado para EF Core
+        /// <summary>Constructor privado para migraciones</summary>
         private Documento() { }
 
         public Documento(
@@ -41,6 +56,9 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             Nombre = nombre;
         }
 
+        /// <summary>
+        /// El revisor establece observaciones sobre el estado del documento
+        /// </summary>
         public void SetObservaciones(string observaciones)
         {
             observaciones = observaciones?.Trim() ?? string.Empty;
@@ -49,6 +67,9 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             Observaciones = observaciones;
         }
 
+        /// <summary>
+        /// Actualiza el estado del documento durante el proceso de validación
+        /// </summary>
         public void SetEstado(EstadoDocumento nuevoEstado)
         {
             if (nuevoEstado == null)
@@ -56,6 +77,9 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             EstadoDocumentoId = nuevoEstado.Id;
         }
 
+        /// <summary>
+        /// Reemplaza el contenido del documento (solo para correcciones o actualizaciones)
+        /// </summary>
         public void SetContenido(byte[] contenido)
         {
             Contenido = contenido;

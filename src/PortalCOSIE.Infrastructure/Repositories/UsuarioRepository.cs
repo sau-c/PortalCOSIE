@@ -4,7 +4,7 @@ using PortalCOSIE.Infrastructure.Data;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
+    public class UsuarioRepository : BaseRepository<Usuario, int>, IUsuarioRepository
     {
         public UsuarioRepository(AppDbContext context) : base(context)
         { }

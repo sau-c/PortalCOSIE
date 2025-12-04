@@ -2,29 +2,55 @@
 
 namespace PortalCOSIE.Domain.Entities.Tramites
 {
-    public class UnidadReprobada : BaseEntity
+    /// <summary>
+    /// Representa una unidad de aprendizaje que ha sido reprobada por un alumno en un tramite CTCE.
+    /// </summary>
+    public class UnidadReprobada : BaseEntity<int>
     {
+        /// <summary>
+        /// Identificador del detalle CTCE asociado a esta unidad reprobada
+        /// </summary>
         public int DetalleCTCEId { get; set; }
-        public int UnidadAprendizajeId { get; set; }
+
+        /// <summary>
+        /// Identificador de la unidad de aprendizaje reprobada
+        /// </summary>
+        public string UnidadAprendizajeId { get; set; }
+
+        /// <summary>
+        /// Período académico en que se cursó originalmente la unidad
+        /// </summary>
         public string PeriodoCurso { get; set; }
+
+        /// <summary>
+        /// Período académico en que se intentó recursar la unidad
+        /// </summary>
         public string PeriodoRecurse { get; set; }
 
-        // Navegación (EF Core)
+        /// <summary>
+        /// Navegación al detalle CTCE que contiene esta unidad reprobada
+        /// </summary>
         public DetalleCTCE DetalleCTCE { get; private set; }
+
+        /// <summary>
+        /// Navegación a la unidad de aprendizaje reprobada
+        /// </summary>
         public UnidadAprendizaje UnidadAprendizaje { get; private set; }
 
-        // Constructor para EF Core
+        /// <summary>
+        /// Constructor privado requerido para migraciones
+        /// </summary>
         private UnidadReprobada() { }
 
-        // Constructor público para tu lógica de negocio
-        public UnidadReprobada(int unidadId, string periodoCurso, string periodoRecurse)
+        public UnidadReprobada(string unidadAprendizajeId, string periodoCurso, string periodoRecurse)
         {
-            if (unidadId <= 0) throw new ArgumentException("ID de unidad inválido");
+            if (string.IsNullOrEmpty(unidadAprendizajeId)) throw new ArgumentException("ID de unidad inválido");
             if (string.IsNullOrEmpty(periodoCurso)) throw new ArgumentException("El periodo de cursado es requerido");
+            if (string.IsNullOrEmpty(periodoRecurse)) throw new ArgumentException("El periodo de recurse es requerido");
 
-            UnidadAprendizajeId = unidadId;
+            this.UnidadAprendizajeId = unidadAprendizajeId;
             PeriodoCurso = periodoCurso;
-            PeriodoRecurse = periodoRecurse ?? string.Empty; // Puede ser opcional dependiendo de tu regla
+            PeriodoRecurse = periodoRecurse;
         }
     }
 }

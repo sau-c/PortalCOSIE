@@ -4,7 +4,7 @@ using PortalCOSIE.Infrastructure.Data;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class TramiteRepository : BaseRepository<Tramite>, ITramiteRepository
+    public class TramiteRepository : BaseRepository<Tramite, int>, ITramiteRepository
     {
         public TramiteRepository(AppDbContext context) : base(context) { }
 

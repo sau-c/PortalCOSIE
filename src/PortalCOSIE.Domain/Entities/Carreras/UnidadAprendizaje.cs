@@ -2,19 +2,30 @@
 
 namespace PortalCOSIE.Domain.Entities.Carreras
 {
-    public class UnidadAprendizaje : BaseEntity
+    /// <summary>
+    /// Representa una unidad de aprendizaje dentro de un plan de estudios.
+    /// </summary>
+    /// <remarks>
+    /// El ID de la unidad utiliza el formato: [Caracter carrera][Semestre o Nivel][Secuencia]
+    /// Las unidades definen la base para análisis de casos CTCE.
+    /// </remarks>
+    public class UnidadAprendizaje : BaseEntity<string>
     {
+        /// <summary>Nombre completo de la unidad de aprendizaje en mayusculas</summary>
         public string Nombre { get; private set; }
+
+        /// <summary>Identificador de la carrera a la que pertenece</summary>
         public int CarreraId { get; private set; }
+
+        /// <summary>Semestre/Nivel en que se cursa según el plan de estudios</summary>
         public Semestre Semestre { get; private set; }
 
         // Navegación
         public Carrera Carrera { get; private set; } = null!;
 
-        // Constructor EF
+        /// <summary>Constructor protegido para migraciones</summary>
         protected UnidadAprendizaje() { }
 
-        // Constructor de dominio
         public UnidadAprendizaje(string nombre, int carreraId, Semestre semestre)
         {
             SetNombre(nombre);
@@ -22,6 +33,9 @@ namespace PortalCOSIE.Domain.Entities.Carreras
             SetSemestre(semestre);
         }
 
+        /// <summary>
+        /// Valida y establece el nombre de la unidad
+        /// </summary>
         public void SetNombre(string nombre)
         {
             if (string.IsNullOrWhiteSpace(nombre))
@@ -29,6 +43,9 @@ namespace PortalCOSIE.Domain.Entities.Carreras
             Nombre = nombre.Trim();
         }
 
+        /// <summary>
+        /// Asigna la carrera a la que pertenece la unidad
+        /// </summary>
         private void SetCarreraId(int carreraId)
         {
             if (carreraId <= 0)
@@ -36,6 +53,9 @@ namespace PortalCOSIE.Domain.Entities.Carreras
             CarreraId = carreraId;
         }
 
+        /// <summary>
+        /// Establece el semestre/nivel de la unidad
+        /// </summary>
         public void SetSemestre(Semestre semestre)
         {
             if (!Enum.IsDefined(typeof(Semestre), semestre))

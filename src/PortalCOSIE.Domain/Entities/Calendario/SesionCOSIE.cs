@@ -1,26 +1,34 @@
 ﻿namespace PortalCOSIE.Domain.Entities.Calendario
 {
-    public class SesionCOSIE : BaseEntity
+    /// <summary>
+    /// Representa una sesión programada de la Comisión de Situación Escolar (COSIE).
+    /// </summary>
+    /// <remarks>
+    /// Cada sesión define el período de recepción de trámites y la fecha de reunión.
+    /// Los trámites deben ser recibidos en las fechas establecidas para ser incluidos en la sesión.
+    /// </remarks>
+    public class SesionCOSIE : BaseEntity<int>
     {
+        /// <summary>Identificador único de la sesión</summary>
         public string NumeroSesion { get; private set; }
+
         private readonly List<FechaRecepcion> _fechasRecepcion = new();
+
+        /// <summary>Fecha programada para la reunión</summary>
         public DateTime? FechaSesion { get; private set; }
 
-        // Navegación
+        /// <summary>Colección de fechas límite para recepción de trámites</summary>
         public IReadOnlyCollection<FechaRecepcion> FechasRecepcion => _fechasRecepcion.AsReadOnly();
 
-        // Constructor requerido por EF Core
+        /// <summary>Constructor protegido para migraciones</summary>
         protected SesionCOSIE() { }
-
-        // Constructor principal para crear nuevas sesiones
+        
         public SesionCOSIE(string orden, DateTime fechaSesion)
         {
             SetNumeroSesion(orden);
             SetFechaSesion(fechaSesion);
-            //SetFechasRecepcion(fechasRecepcion);
         }
 
-        // Métodos para modificar el estado (Domain-Driven Design)
         public void SetNumeroSesion(string orden)
         {
             if (string.IsNullOrWhiteSpace(orden))
@@ -35,10 +43,18 @@
             FechaSesion = fechaSesion;
         }
 
-        // Métodos para manejar la colección de FechaRecepcion
+        /// <summary>
+        /// Define las fechas límite para recepción de trámites
+        /// </summary>
+        /// <exception cref="DomainException">
+        /// Cuando alguna fecha de recepción es posterior a la fecha de sesión
+        /// </exception>
+        /// <remarks>
+        /// Las fechas se ordenan automáticamente y se eliminan duplicados.
+        /// Cada fecha representa un día hábil en que se pueden recibir trámites.
+        /// </remarks>
         public void SetFechasRecepcion(List<DateTime> fechasRecepcion)
         {
-            // Validar que las fechas sean anteriores a la fecha de sesión
             if (FechaSesion.HasValue)
             {
                 foreach (var fecha in fechasRecepcion)
@@ -48,22 +64,13 @@
                 }
             }
 
-            // Limpiar fechas existentes si las hay
             _fechasRecepcion.Clear();
 
-            // Crear y agregar las nuevas fechas
             foreach (var fecha in fechasRecepcion.Distinct().OrderBy(f => f))
             {
                 var fechaRecepcion = new FechaRecepcion(fecha);
                 _fechasRecepcion.Add(fechaRecepcion);
             }
-        }
-
-        public void RemoverFechasRecepcion(FechaRecepcion fechaRecepcion)
-        {
-            if (fechaRecepcion == null)
-                throw new DomainException("No se enviaron fechas a remover");
-            _fechasRecepcion.Remove(fechaRecepcion);
         }
     }
 }

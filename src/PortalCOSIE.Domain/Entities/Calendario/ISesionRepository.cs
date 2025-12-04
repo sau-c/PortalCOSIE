@@ -2,9 +2,20 @@
 
 namespace PortalCOSIE.Domain.Entities.Calendario
 {
-    public interface ISesionRepository : IBaseRepository<SesionCOSIE>
+    /// <summary>
+    /// Define operaciones específicas del repositorio para la entidad SesionCOSIE.
+    /// Extiende las operaciones de BaseRepository.
+    /// </summary>
+    public interface ISesionRepository : IBaseRepository<SesionCOSIE, int>
     {
+        /// <summary>
+        /// Obtiene una sesión específica con todas sus fechas de recepción.
+        /// </summary>
         Task<SesionCOSIE?> ObtenerConFechasRecepcion(int id);
+
+        /// <summary>
+        /// Lista sesiones del calendario académico con opción de filtrado para la propiedad IsDeleted.
+        /// </summary>
         Task<IEnumerable<SesionCOSIE>> ListarSesiones(bool filtrarActivos);
     }
 }
