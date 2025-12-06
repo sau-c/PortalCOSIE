@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Application.Services;
 
 namespace PortalCOSIE.Web.Controllers
 {

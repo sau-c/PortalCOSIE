@@ -210,20 +210,6 @@ footer {
     transform: rotate(180deg);
 }
 
-/*Dashboard*/
-.stat-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: var(--radius);
-    border-left: 4px solid var(--accent);
-    overflow: hidden;
-}
-
-.chart-container {
-    position: relative;
-    height: 250px;
-    width: 100%;
-}
-
 /* Para pantallas pequeñas */
 @media (max-width: 991.98px) {
     .sidebar {
@@ -246,4 +232,37 @@ footer {
     .sidebar-toggle {
         display: none;
     }
+}
+
+
+/*Dashboard*/
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--accent);
+    overflow: hidden;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}
+
+/*Personal y Alumno*/
+.editable-cell {
+    cursor: pointer;
+}
+
+    .editable-cell:hover {
+        color: #0d6efd;
+    }
+
+.toggle-role-btn:hover .badge {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
+.badge-role {
+    transition: all 0.2s;
 }

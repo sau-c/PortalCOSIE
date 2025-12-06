@@ -42,24 +42,6 @@
             </a>
 
             <div class="ms-auto d-flex align-items-center gap-3">
-                <!-- Botón de notificaciones -->
-                @* <div class="dropdown">
-                    <button class="border-0 rounded-3 px-2 py-1" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-bell"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            3
-                        </span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-                        <li><h6 class="dropdown-header">Notificaciones</h6></li>
-                        <li><a class="dropdown-item" href="#">Nueva solicitud recibida</a></li>
-                        <li><a class="dropdown-item" href="#">Cambio en estado de trámite</a></li>
-                        <li><a class="dropdown-item" href="#">Mensaje del administrador</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-center" href="#">Ver todas</a></li>
-                    </ul>
-                </div>*@
-
                 <!-- Botón de usuario -->
                 <div class="dropdown">
                     <button class="dropdown-toggle border-0 rounded-3 px-2 py-1" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -95,7 +77,7 @@
     <nav class="sidebar" id="sidebar">
         <div class="accordion" id="accordionSidebar">
             <div class="accordion-item bg-transparent border-0">
-                <a href="@Url.Action("Index", "Calendario")" class="nav-link text-white">
+                <a href="@Url.Action("Index", "Calendario")" class="nav-link text-white" title="Calendario">
                     <i class="fas fa-calendar"></i>
                     <span class="nav-link-text">Calendario</span>
                 </a>
@@ -104,7 +86,7 @@
             @if (isAdmin || isPersonal)
             {
                 <div class="accordion-item bg-transparent border-0">
-                    <a href="@Url.Action("Index", "Dashboard")" class="nav-link text-white">
+                    <a href="@Url.Action("Index", "Dashboard")" class="nav-link text-white" title="Dashboard">
                         <i class="fas fa-chart-pie"></i>
                         <span class="nav-link-text">Dashboard</span>
                     </a>
@@ -124,13 +106,13 @@
                 <div id="collapseTramites" class="accordion-collapse collapse" aria-labelledby="headingGestion"
                      data-bs-parent="#accordionSidebar">
                     <div class="accordion-body">
-                        <a href="@Url.Action("Index", "Tramite")" class="nav-link text-white">
+                        <a href="@Url.Action("Index", "Tramite")" class="nav-link text-white" title=" Tramites">
                             <i class="fas fa-search"></i>
                             <span class="nav-link-text">Trámites</span>
                         </a>
                         @if (isAlumno)
                         {
-                            <a href="@Url.Action("SolicitarCTCE", "Tramite")" class="nav-link text-white">
+                            <a href="@Url.Action("SolicitarCTCE", "Tramite")" class="nav-link text-white" title="Dictamen interno (CTCE)">
                                 <i class="fas fa-file-alt"></i>
                                 <span class="nav-link-text">Dictamen interno (CTCE)</span>
                             </a>
@@ -159,7 +141,7 @@
                             <!-- Personal: Solo Admin -->
                             @if (isAdmin)
                             {
-                                <a href="@Url.Action("Index", "Personal")" class="nav-link text-white">
+                                <a href="@Url.Action("Index", "Personal")" class="nav-link text-white" title="Personal">
                                     <i class="fas fa-user-lock"></i>
                                     <span class="nav-link-text">Personal</span>
                                 </a>
@@ -168,7 +150,7 @@
                             <!-- Alumnos: Admin + Personal -->
                             @if (isAdmin || isPersonal)
                             {
-                                <a href="@Url.Action("Index", "Alumno")" class="nav-link text-white">
+                                <a href="@Url.Action("Index", "Alumno")" class="nav-link text-white" title="Alumnos">
                                     <i class="fas fa-user-graduate me-1"></i>
                                     <span class="nav-link-text">Alumnos</span>
                                 </a>
@@ -183,7 +165,7 @@
             @if (isAdmin)
             {
                 <div class="accordion-item bg-transparent border-0">
-                    <a href="@Url.Action("Index", "Configuracion")" class="nav-link text-white">
+                    <a href="@Url.Action("Index", "Configuracion")" class="nav-link text-white" title="Configuración">
                         <i class="fas fa-cogs"></i>
                         <span class="nav-link-text">Configuración</span>
                     </a>
@@ -194,7 +176,7 @@
             @if (isAdmin || isPersonal)
             {
                 <div class="accordion-item bg-transparent border-0">
-                    <a href="@Url.Action("Index", "Bitacora")" class="nav-link text-white">
+                    <a href="@Url.Action("Index", "Bitacora")" class="nav-link text-white" title="Bitácora">
                         <i class="fas fa-clipboard-list px-1"></i>
                         <span class="nav-link-text">Bitácora</span>
                     </a>
