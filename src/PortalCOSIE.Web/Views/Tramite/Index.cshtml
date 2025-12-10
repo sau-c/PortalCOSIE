@@ -69,7 +69,7 @@
                     </td>
 
                     <td class="text-center text-nowrap">
-                        @if (tramite.PersonalId == null)
+                        @if (tramite.PersonalId == null && User.IsInRole("Personal"))
                         {
                             <form asp-action="TomarTramite" asp-route-tramiteId="@tramite.Id" method="post" class="d-inline">
                                 <button type="submit" class="btn btn-sm btn-success py-0 px-2 shadow-sm" style="font-size: 0.8rem;" title="Asignarme este trámite">

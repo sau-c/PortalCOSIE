@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class NUEVABASE : Migration
+    public partial class CreaBASE : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -124,6 +124,20 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SesionCOSIE", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TipoDocumento",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipoDocumento", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -461,6 +475,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Observaciones = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     TramiteId = table.Column<int>(type: "int", nullable: false),
+                    TipoDocumentoId = table.Column<int>(type: "int", nullable: false),
                     EstadoDocumentoId = table.Column<int>(type: "int", nullable: false),
                     Contenido = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -472,6 +487,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         name: "FK_Documento_EstadoDocumento_EstadoDocumentoId",
                         column: x => x.EstadoDocumentoId,
                         principalTable: "EstadoDocumento",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Documento_TipoDocumento_TipoDocumentoId",
+                        column: x => x.TipoDocumentoId,
+                        principalTable: "TipoDocumento",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -538,7 +559,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 columns: new[] { "Id", "IsDeleted", "Nombre" },
                 values: new object[,]
                 {
-                    { 1, false, "En Revisión" },
+                    { 1, false, "En revisión" },
                     { 2, false, "Validado" },
                     { 3, false, "Con errores" },
                     { 4, false, "Documento incorrecto" }
@@ -569,6 +590,17 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     { 1, new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "PRIMERA" },
                     { 2, new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "SEGUNDA" },
                     { 3, new DateTime(2025, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "TERCERA" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "TipoDocumento",
+                columns: new[] { "Id", "IsDeleted", "Nombre" },
+                values: new object[,]
+                {
+                    { 1, false, "Identificación" },
+                    { 2, false, "Boleta global" },
+                    { 3, false, "Carta exposición de motivos" },
+                    { 4, false, "Probatorios" }
                 });
 
             migrationBuilder.InsertData(
@@ -1141,6 +1173,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 column: "EstadoDocumentoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Documento_TipoDocumentoId",
+                table: "Documento",
+                column: "TipoDocumentoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Documento_TramiteId",
                 table: "Documento",
                 column: "TramiteId");
@@ -1171,6 +1208,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "IX_SesionCOSIE_NumeroSesion",
                 table: "SesionCOSIE",
                 column: "NumeroSesion",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TipoDocumento_Nombre",
+                table: "TipoDocumento",
+                column: "Nombre",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -1258,6 +1301,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "EstadoDocumento");
+
+            migrationBuilder.DropTable(
+                name: "TipoDocumento");
 
             migrationBuilder.DropTable(
                 name: "SesionCOSIE");

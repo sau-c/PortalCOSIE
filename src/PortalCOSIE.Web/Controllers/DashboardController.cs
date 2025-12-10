@@ -8,12 +8,12 @@ namespace PortalCOSIE.Web.Controllers
     [Authorize(Roles = "Administrador, Personal")]
     public class DashboardController : Controller
     {
-        private readonly IDashboardService _dashboardService;
+        private readonly IDashboardQueryService _dashboardService;
         private readonly IPeriodosService _periodoService;
         private readonly ICarreraService _carreraService;
 
         public DashboardController(
-            IDashboardService dashboardService,
+            IDashboardQueryService dashboardService,
             IPeriodosService periodoService,
             ICarreraService carreraService)
         {

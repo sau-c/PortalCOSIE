@@ -10,6 +10,11 @@ namespace PortalCOSIE.Domain.Entities.Documentos
     /// </remarks>
     public class Documento : BaseEntity<int>
     {
+        /// <summary>
+        /// Representa el tamano maximo
+        /// </summary>
+        private const int MAX_FILE_SIZE = 3 * 1024 * 1024;
+
         /// <summary>Nombre original del archivo</summary>
         public string Nombre { get; private set; }
 
@@ -18,6 +23,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
 
         /// <summary>Identificador del trámite asociado</summary>
         public int TramiteId { get; private set; }
+        public int TipoDocumentoId { get; private set; }
 
         /// <summary>Identificador del estado actual del documento</summary>
         public int EstadoDocumentoId { get; private set; }
@@ -28,13 +34,14 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         // Propiedades de navegación
         public EstadoDocumento EstadoDocumento { get; private set; }
         public Tramite Tramite { get; private set; }
-
+        public TipoDocumento TipoDocumento { get; private set; }
         /// <summary>Constructor privado para migraciones</summary>
         private Documento() { }
 
         public Documento(
             string nombre,
             int tramiteId,
+            int tipoDocumentoId,
             int estadoDocumentoId,
             byte[] contenido,
             string observaciones = "")
@@ -42,8 +49,9 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             SetNombre(nombre);
             SetObservaciones(observaciones);
             TramiteId = tramiteId;
+            TipoDocumentoId = tipoDocumentoId;
             EstadoDocumentoId = estadoDocumentoId;
-            Contenido = contenido;
+            SetContenido(contenido);
         }
 
         public void SetNombre(string nombre)
@@ -80,8 +88,14 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         /// <summary>
         /// Reemplaza el contenido del documento (solo para correcciones o actualizaciones)
         /// </summary>
-        public void SetContenido(byte[] contenido)
+        private void SetContenido(byte[] contenido)
         {
+            if (contenido == null || contenido.Length == 0)
+                throw new DomainException("El contenido del documento no puede estar vacío.");
+
+            if (contenido.Length > MAX_FILE_SIZE)
+                throw new DomainException($"El archivo no puede superar los {MAX_FILE_SIZE} MB.");
+
             Contenido = contenido;
         }
     }

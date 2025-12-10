@@ -1,6 +1,7 @@
 using PortalCOSIE.Application.DTO.Tramites;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities.Calendario;
+using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
@@ -11,16 +12,19 @@ namespace PortalCOSIE.Application
     {
         private readonly ITramiteRepository _tramiteRepo;
         private readonly IBaseRepository<PeriodoConfig, int> _periodoRepo;
+        private readonly IDocumentoQueryService _documentoService;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IUnitOfWork _unitOfWork;
 
         public TramiteService(
             ITramiteRepository tramiteRepo,
             IBaseRepository<PeriodoConfig, int> periodoRepo,
+            IDocumentoQueryService documentoService,
             IUsuarioRepository usuarioRepo,
             IUnitOfWork unitOfWork)
         {
             _tramiteRepo = tramiteRepo;
+            _documentoService = documentoService;
             _periodoRepo = periodoRepo;
             _usuarioRepo = usuarioRepo;
             _unitOfWork = unitOfWork;
@@ -81,7 +85,11 @@ namespace PortalCOSIE.Application
                     periodo,
                     dto.Peticion,
                     dto.TieneDictamenesAnteriores,
-                    unidadesReprobadasEntities
+                    unidadesReprobadasEntities,
+                    ToDocumeto(dto.Identificacion, TipoDocumento.Identificacion),
+                    ToDocumeto(dto.BoletaGlobal, TipoDocumento.BoletaGlobal),
+                    ToDocumeto(dto.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos),
+                    ToDocumeto(dto.Probatorios, TipoDocumento.Probatorios)
                 );
 
                 await _tramiteRepo.AddAsync(tramite);
@@ -95,10 +103,21 @@ namespace PortalCOSIE.Application
                 throw;
             }
         }
+        private Documento ToDocumeto(ArchivoDescargaDTO DocumentoDto, TipoDocumento tipo)
+        {
+            return new Documento(
+                    DocumentoDto.Nombre,
+                    0, // Se pone 0, EF Core asignará el ID real al guardar
+                    tipo.Id,
+                    EstadoDocumento.EnRevision.Id,
+                    DocumentoDto.Contenido
+                );
+        }
         public async Task<DetalleCTCE?> BuscarDetalleCTCEPorId(int tramiteId, string identityUserId)
         {
             var personal = await _usuarioRepo.BuscarPersonal(identityUserId);
             var tramite = await _tramiteRepo.BuscarDetalleCTCEPorId(tramiteId);
+
             if (tramite.PersonalId != personal.Id)
                 throw new ApplicationException("No puedes acceder a este tramite");
 
@@ -122,6 +141,13 @@ namespace PortalCOSIE.Application
                 await _unitOfWork.RollbackTransactionAsync();
                 throw;
             }
+        }
+        public async Task<ArchivoDescargaDTO> ObtenerDocumentoPorId(int documentoId, string identityUserId)
+        {
+            // Primero, obtener el trámiteId del documento
+            var tramiteId = await _tramiteRepo.ObtenerTramiteIdPorDocumentoId(documentoId);
+
+            return await _documentoService.ObtenerBytesParaDescarga(tramiteId, documentoId, identityUserId);
         }
     }
 }

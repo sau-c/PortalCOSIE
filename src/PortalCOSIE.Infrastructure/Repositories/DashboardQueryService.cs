@@ -8,11 +8,11 @@ using PortalCOSIE.Infrastructure.Data;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
-    public class DashboardService : IDashboardService
+    public class DashboardQueryService : IDashboardQueryService
     {
         private readonly AppDbContext _context;
 
-        public DashboardService(AppDbContext context)
+        public DashboardQueryService(AppDbContext context)
         {
             _context = context;
         }

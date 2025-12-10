@@ -9,5 +9,6 @@ namespace PortalCOSIE.Application.Interfaces
         Task SolicitarCTCE(SolicitudCtceDTO dto, string userId);
         Task<DetalleCTCE?> BuscarDetalleCTCEPorId(int tramiteId, string identityUserId);
         Task AsignarPersonal(int tramiteId, string identityUserId);
+        Task<ArchivoDescargaDTO> ObtenerDocumentoPorId(int documentoId, string identityUserId);
     }
 }

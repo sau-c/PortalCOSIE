@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Infrastructure.Data;
 
@@ -45,8 +46,17 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 .ThenInclude(a => a.Carrera)
                 .Include(d => d.UnidadesReprobadas)
                 .ThenInclude(d => d.UnidadAprendizaje)
+                .Include(d => d.Documentos)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(d => d.Id == tramiteId);
+        }
+
+        public async Task<int> ObtenerTramiteIdPorDocumentoId(int documentoId)
+        {
+            return await _context.Set<Tramite>()
+                .Where(t => t.Documentos.Any(d => d.Id == documentoId))
+                .Select(t => t.Id)
+                .FirstOrDefaultAsync();
         }
     }
 }

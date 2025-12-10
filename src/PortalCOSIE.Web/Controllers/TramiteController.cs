@@ -58,43 +58,46 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> SolicitarCTCE(SolicitudCtceVM model)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            //var alumno = await _securityService.BuscarAlumnoCompleto(userId);
 
+            // Mapeo a DTO (Convirtiendo a Bytes aquí para liberar el IFormFile)
             var solicitudDto = new SolicitudCtceDTO
             {
                 Peticion = model.Peticion,
                 TieneDictamenesAnteriores = model.TieneDictamenesAnteriores,
+
                 UnidadesReprobadas = model.UnidadesReprobadas.Select(u => new UnidadReprobadaDto
                 {
                     UnidadId = u.UnidadId,
                     PeriodoCursado = u.PeriodoCursado,
                     PeriodoRecursado = u.PeriodoRecursado
                 }).ToList(),
-                CartaExposicionMotivos = new DocumentoDto
-                {
-                    Nombre = model.CartaExposicionMotivos.FileName,
-                    Contenido = model.CartaExposicionMotivos.OpenReadStream()
-                },
-                Probatorios = new DocumentoDto
-                {
-                    Nombre = model.CartaExposicionMotivos.FileName,
-                    Contenido = model.CartaExposicionMotivos.OpenReadStream()
-                },
-                Identificacion = new DocumentoDto
-                {
-                    Nombre = model.CartaExposicionMotivos.FileName,
-                    Contenido = model.CartaExposicionMotivos.OpenReadStream()
-                },
-                BoletaGlobal = new DocumentoDto
-                {
-                    Nombre = model.CartaExposicionMotivos.FileName,
-                    Contenido = model.CartaExposicionMotivos.OpenReadStream()
-                }
+
+                CartaExposicionMotivos = ConvertirArchivo(model.CartaExposicionMotivos),
+                Identificacion = ConvertirArchivo(model.Identificacion),
+                BoletaGlobal = ConvertirArchivo(model.BoletaGlobal),
+                Probatorios = ConvertirArchivo(model.Probatorios)
             };
 
-            // 2. Llamar al servicio. El servicio NO sabe qué es un IFormFile.
+            // Ahora el servicio recibe datos puros (DTOs con byte[]) y no sabe nada de HTTP.
             await _tramiteService.SolicitarCTCE(solicitudDto, userId);
             return Json(new { success = true, message = "Solicitud enviada con éxito." });
+        }
+
+        // === Helper para convertir IFormFile a DTO ===
+        private ArchivoDescargaDTO ConvertirArchivo(IFormFile archivo)
+        {
+            if (archivo == null || archivo.Length == 0)
+                throw new ArgumentException("El archivo no puede estar vacío.");
+
+            using (var memoryStream = new MemoryStream())
+            {
+                archivo.CopyTo(memoryStream);
+                return new ArchivoDescargaDTO
+                {
+                    Nombre = archivo.FileName,
+                    Contenido = memoryStream.ToArray() // Aquí obtenemos el byte[] desconectado del HTTP
+                };
+            }
         }
 
         [HttpGet]
@@ -106,6 +109,21 @@ namespace PortalCOSIE.Web.Controllers
             ViewBag.EstadoDocumento = new SelectList(await _catalogoService.ListarActivosAsync(), "Id", "Nombre");
 
             return View(tramite);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> Documento(int id)
+        {
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var archivo = await _tramiteService.ObtenerDocumentoPorId(id, userId);
+
+            // Opción A: Devolver como archivo para visualizar (Inline)
+            // El navegador intentará mostrarlo (Chrome/Edge tienen visor PDF nativo)
+            return File(archivo.Contenido, archivo.TipoContenido);
+
+            // Opción B (Si quisiera forzar descarga):
+            // return File(archivo.Contenido, archivo.TipoContenido, archivo.Nombre);
         }
 
         [HttpPost]

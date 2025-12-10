@@ -1,4 +1,6 @@
-﻿namespace PortalCOSIE.Domain.Entities.Tramites
+﻿using PortalCOSIE.Domain.Entities.Documentos;
+
+namespace PortalCOSIE.Domain.Entities.Tramites
 {
     /// <summary>
     /// Representa datos específicos de un trámite del Consejo Técnico Consultivo Escolar (CTCE).
@@ -28,17 +30,23 @@
             string periodoSolicitud,
             string peticion,
             bool tieneDictamenesAnteriores,
-            List<UnidadReprobada> unidadesReprobadas
+            List<UnidadReprobada> unidadesReprobadas,
+            Documento identificacion,
+            Documento cartaMotivos,
+            Documento boletaGlobal,
+            Documento probatorios
             ) 
             : base(alumnoId, tipoId, periodoSolicitud)
         {
             SetPeticion(peticion);
             TieneDictamenesAnteriores = tieneDictamenesAnteriores;
-
             if (unidadesReprobadas != null)
                 _unidadesReprobadas.AddRange(unidadesReprobadas);
+            SetDocumentoObligatorio(identificacion, TipoDocumento.Identificacion);
+            SetDocumentoObligatorio(cartaMotivos, TipoDocumento.CartaExposicionMotivos);
+            SetDocumentoObligatorio(boletaGlobal, TipoDocumento.BoletaGlobal);
+            SetDocumentoObligatorio(probatorios, TipoDocumento.Probatorios);
         }
-
         private void SetPeticion(string peticion)
         {
             if (string.IsNullOrWhiteSpace(peticion))
@@ -47,10 +55,13 @@
                 throw new DomainException("El motivo de solicitud no puede exceder los 1000 caracteres.");
             Peticion = peticion;
         }
-        //public void AgregarUnidadReprobada(UnidadReprobada unidad)
-        //{
-        //    if (unidad == null) throw new ArgumentNullException(nameof(unidad));
-        //    _unidadesReprobadas.Add(unidad);
-        //}
+        private void SetDocumentoObligatorio(Documento documento, TipoDocumento tipo)
+        {
+            if (documento == null || documento.Contenido.Length == 0)
+                throw new DomainException($"El documento {tipo.Nombre} es obligatorio.");
+
+            // Usamos el método de la clase base Tramite
+            AgregarDocumento(documento);
+        }
     }
 }

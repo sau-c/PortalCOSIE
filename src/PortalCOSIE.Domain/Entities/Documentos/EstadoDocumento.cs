@@ -10,7 +10,7 @@
     public class EstadoDocumento : Enumeration
     {
         /// <summary>Estado inicial cuando el documento ha sido cargado y está pendiente de revisión</summary>
-        public static readonly EstadoDocumento EnRevision = new(1, "En Revisión");
+        public static readonly EstadoDocumento EnRevision = new(1, "En revisión");
 
         /// <summary>Estado cuando el documento cumple con todos los requisitos establecidos</summary>
         public static readonly EstadoDocumento Validado = new(2, "Validado");

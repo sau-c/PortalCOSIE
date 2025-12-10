@@ -1,4 +1,4 @@
-﻿@model PortalCOSIE.Application.DTO.Tramites.SolicitudCtceDTO
+﻿@model PortalCOSIE.Web.Models.SolicitudCtceVM
 @{
     ViewData["Title"] = "Dictamen interno (CTCE)";
 }
@@ -78,7 +78,7 @@
                         <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
                             <i class="fas fa-file-upload me-2"></i>Documentos
                             <span class="badge bg-light text-secondary border fw-bold" >
-                                PDF Máx 5MB por archivo
+                                PDF Máx 3MB por archivo
                             </span>
                         </legend>
 
@@ -167,6 +167,36 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+
+
+            // === VALIDACION DE ARCHIVOS ===
+            const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+            // Selecciona todos los inputs file que existan en la vista
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+
+            fileInputs.forEach(input => {
+                input.addEventListener('change', function () {
+                    const file = this.files[0];
+
+                    if (!file) return;
+
+                    // Validación de tamaño
+                    if (file.size > MAX_SIZE) {
+                        alert("El archivo '" + file.name + "' excede el límite de 3 MB.");
+                        this.value = ""; // limpia el input
+                        return;
+                    }
+
+                    // Validación de tipo PDF
+                    if (file.type !== "application/pdf") {
+                        alert("Solo se permiten archivos PDF.");
+                        this.value = "";
+                        return;
+                    }
+                });
+            });
+
             const form = document.getElementById("formSolicitud");
             const submitBtn = form.querySelector('button[type="submit"]');
             const boton = bloqueadorBoton(submitBtn);

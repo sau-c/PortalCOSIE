@@ -2,7 +2,7 @@
 
 namespace PortalCOSIE.Application.Interfaces
 {
-    public interface IDashboardService
+    public interface IDashboardQueryService
     {
         Task<ChartDTO> ObtenerEstadoTramitesCTCE(string periodo);
         Task<ChartDTO> ObtenerEstadoDocumentosCTCE(string periodo);

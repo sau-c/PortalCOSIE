@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Data;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251210060338_NUEVABASE")]
-    partial class NUEVABASE
+    [Migration("20251210160833_CreaBASE")]
+    partial class CreaBASE
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4346,12 +4346,17 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<int>("TipoDocumentoId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TramiteId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EstadoDocumentoId");
+
+                    b.HasIndex("TipoDocumentoId");
 
                     b.HasIndex("TramiteId");
 
@@ -4386,7 +4391,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         {
                             Id = 1,
                             IsDeleted = false,
-                            Nombre = "En Revisión"
+                            Nombre = "En revisión"
                         },
                         new
                         {
@@ -4405,6 +4410,56 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             Id = 4,
                             IsDeleted = false,
                             Nombre = "Documento incorrecto"
+                        });
+                });
+
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Documentos.TipoDocumento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("TipoDocumento", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsDeleted = false,
+                            Nombre = "Identificación"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsDeleted = false,
+                            Nombre = "Boleta global"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsDeleted = false,
+                            Nombre = "Carta exposición de motivos"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsDeleted = false,
+                            Nombre = "Probatorios"
                         });
                 });
 
@@ -4772,6 +4827,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PortalCOSIE.Domain.Entities.Documentos.TipoDocumento", "TipoDocumento")
+                        .WithMany()
+                        .HasForeignKey("TipoDocumentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PortalCOSIE.Domain.Entities.Tramites.Tramite", "Tramite")
                         .WithMany("Documentos")
                         .HasForeignKey("TramiteId")
@@ -4779,6 +4840,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("EstadoDocumento");
+
+                    b.Navigation("TipoDocumento");
 
                     b.Navigation("Tramite");
                 });
