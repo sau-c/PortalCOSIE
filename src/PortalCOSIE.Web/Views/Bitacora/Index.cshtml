@@ -37,11 +37,11 @@
                 @foreach (var bitacora in Model)
                 {
                     <tr class="small">
-                        <td class="small">@bitacora.Id</td>
+                        <td class="small fw-bold">@bitacora.Id</td>
                         <td class="small">@bitacora.Accion</td>
                         <td class="small">@bitacora.Entidad</td>
                         <td class="small">@bitacora.EntidadId</td>
-                        <td class="small">@bitacora.ValorNuevo</td>
+                        <td class="small text-wrap">@bitacora.ValorNuevo</td>
                         <td class="small">@bitacora.IdentityUserId</td>
                         <td class="small">@bitacora.IpAddress</td>
                         <td class="small">@bitacora.UserAgent</td>
@@ -62,10 +62,11 @@
                     url: '//cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json',
                 },
                 paging: true,
+                scrollX: false,
                 scrollY: 'calc(100vh - 430px)',
                 orderCellsTop: true,
                 "order": [],
-                autoWidth: true
+                autoWidth: false
             });
 
             // Activar búsqueda por columna

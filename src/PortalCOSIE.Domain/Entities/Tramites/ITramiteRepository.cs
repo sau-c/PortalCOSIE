@@ -13,6 +13,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         /// Incluye navegaciones a alumno, personal y estado.
         /// </summary>
         /// <returns>Colección de trámites con toda su información relacionada</returns>
-        Task<IEnumerable<Tramite>> ListarConDatosCompletos();
+        Task<IEnumerable<Tramite>> ListarConDatosCompletos(int? alumnoId = null, int? personalId = null);
+        Task<DetalleCTCE> BuscarDetalleCTCEPorId(int tramiteId);
     }
 }

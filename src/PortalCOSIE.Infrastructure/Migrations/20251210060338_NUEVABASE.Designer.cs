@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Data;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251204035932_CrearBase")]
-    partial class CrearBase
+    [Migration("20251210060338_NUEVABASE")]
+    partial class NUEVABASE
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -310,6 +310,43 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.HasIndex("SesionId");
 
                     b.ToTable("FechaRecepcion", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Fecha = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            SesionId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Fecha = new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            SesionId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Fecha = new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            SesionId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Fecha = new DateTime(2025, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            SesionId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Fecha = new DateTime(2025, 1, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            SesionId = 3
+                        });
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Calendario.PeriodoConfig", b =>
@@ -350,7 +387,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             AnioActual = 2026,
                             AnioInicio = 1997,
                             IsDeleted = false,
-                            PeriodoActual = 2,
+                            PeriodoActual = 1,
                             PeriodoInicio = 1
                         });
                 });
@@ -385,21 +422,21 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            FechaSesion = new DateTime(2025, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaSesion = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             NumeroSesion = "PRIMERA"
                         },
                         new
                         {
                             Id = 2,
-                            FechaSesion = new DateTime(2025, 12, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaSesion = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             NumeroSesion = "SEGUNDA"
                         },
                         new
                         {
                             Id = 3,
-                            FechaSesion = new DateTime(2025, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaSesion = new DateTime(2025, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             NumeroSesion = "TERCERA"
                         });
@@ -2226,7 +2263,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = "b307",
+                            Id = "B307",
                             CarreraId = 3,
                             IsDeleted = false,
                             Nombre = "COMUNICACION ORAL Y ESCRITA",
@@ -4488,6 +4525,10 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PeriodoSolicitud")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("PersonalId")
                         .HasColumnType("int");
 
@@ -4587,7 +4628,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     b.HasBaseType("PortalCOSIE.Domain.Entities.Tramites.Tramite");
 
-                    b.Property<string>("Situacion")
+                    b.Property<string>("Peticion")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");

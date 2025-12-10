@@ -9,19 +9,24 @@ namespace PortalCOSIE.Infrastructure.Repositories
         public CarreraRepository(AppDbContext context) : base(context)
         { }
 
-        public async Task<Carrera> ObtenerCarreraConUnidadesAsync(string carrera)
+        public async Task<Carrera> ObtenerCarreraConUnidadesAsync(int carreraId)
         {
             return await _context.Set<Carrera>()
                 .Include(c => c.UnidadesAprendizaje)
-                .FirstOrDefaultAsync(c => c.Nombre == carrera);
+                .FirstOrDefaultAsync(c => c.Id == carreraId);
         }
 
-        public async Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesPorCarreraAsync(string carrera)
+        public async Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesPorCarreraAsync(int carreraId)
         {
-            var carreraEntity = await _context.Set<Carrera>()
-                .Include(c => c.UnidadesAprendizaje)
-                .FirstOrDefaultAsync(c => c.Nombre == carrera);
-            return carreraEntity?.UnidadesAprendizaje ?? Enumerable.Empty<UnidadAprendizaje>();
+            return await _context.Set<Carrera>()
+                .Where(c => c.Id == carreraId)
+                .SelectMany(c => c.UnidadesAprendizaje)
+                .Where(u => !u.IsDeleted)
+                .Select(u => new UnidadAprendizaje(
+                    u.Id, u.Nombre, u.CarreraId, u.Semestre
+                    ))
+                .ToListAsync();
+            //return carreraEntity?.UnidadesAprendizaje ?? Enumerable.Empty<UnidadAprendizaje>();
         }
     }
 }

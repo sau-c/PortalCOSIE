@@ -30,7 +30,7 @@
                 <tbody>
                     @foreach (var personal in Model)
                     {
-                        <tr class="small">
+                        <tr class="@(personal.Rol == null ? "table-danger text-muted opacity-75" : "") small">
                             <td>@personal.Nombre</td>
                             <td>@personal.ApellidoPaterno</td>
                             <td>@personal.ApellidoMaterno</td>

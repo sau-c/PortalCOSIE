@@ -1,123 +1,47 @@
-﻿@model PortalCOSIE.Application.DTO.Dashboard.TarjetasDTO
-@{
+﻿@{
     ViewData["Title"] = "Dashboard";
 }
 
 <div class="dashboard">
     <!-- Sección de Tarjetas contables -->
     <div class="row g-4 mb-4">
-        <div class="col-lg-3">
-            <partial name="_SolicitudesPorCarrera" />
+        <div class="col-lg-3 col-md-6">
+            <chart-card title="Solicitud CTCE por carrera"
+                        chart-id="chartCarreras"
+                        loader-id="loaderCarreras"
+                        api-url="@Url.Action("SolicitudesPorCarrera")"
+                        chart-type="doughnut"
+                        filtro1-items="@ViewBag.Periodos"
+                        filtro1-name="periodo">
+            </chart-card>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="stat-card card shadow h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h6 class="text-uppercase text-muted fw-bold mb-0">Trámites CTCE</h6>
-                            <span class="h2 fw-bold text-dark">@((Model.TramitesSolicitados + Model.TramitesEnRevision + Model.TramitesConcluidos))</span>
-                            <span class="text-muted ms-1">Total</span>
-                        </div>
-                        <div class="icon-shape bg-primary bg-opacity-10 text-primary rounded-3 p-3">
-                            <i class="fas fa-file-signature fa-lg"></i>
-                        </div>
-                    </div>
-
-                    <div class="row text-center g-0">
-                        <div class="col border-end">
-                            <h5 class="mb-0 fw-bold text-secondary">@Model.TramitesSolicitados</h5>
-                            <small class="text-muted" style="font-size: 0.7rem;">Solicitados</small>
-                        </div>
-                        <div class="col border-end">
-                            <h5 class="mb-0 fw-bold text-warning">@Model.TramitesEnRevision</h5>
-                            <small class="text-muted" style="font-size: 0.7rem;">Revisión</small>
-                        </div>
-                        <div class="col">
-                            <h5 class="mb-0 fw-bold text-success">@Model.TramitesConcluidos</h5>
-                            <small class="text-muted" style="font-size: 0.7rem;">Concluidos</small>
-                        </div>
-                    </div>
-
-                    <div class="progress mt-3" style="height: 4px;">
-                        <div class="progress-bar bg-secondary" style="width: 33%"></div>
-                        <div class="progress-bar bg-warning" style="width: 33%"></div>
-                        <div class="progress-bar bg-success" style="width: 34%"></div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-lg-3 col-md-6">
+            <chart-card title="Estado tramite CTCE"
+                        chart-id="chartEstadoTramiteCTCE"
+                        loader-id="loaderEstadoTramiteCTCE"
+                        api-url="@Url.Action("ObtenerEstadoTramitesCTCE")"
+                        chart-type="doughnut"
+                        filtro1-items="ViewBag.Periodos"
+                        filtro1-name="periodo">
+            </chart-card>
         </div>
-
-        <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="stat-card card shadow h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h6 class="text-uppercase text-muted fw-bold mb-0">Documentos CTCE</h6>
-                            <span class="h2 fw-bold text-dark">@((Model.DocumentosConErrores + Model.DocumentosValidados + Model.DocumentosEnRevision))</span>
-                            <span class="text-muted ms-1">Total</span>
-                        </div>
-                        <div class="icon-shape bg-secondary bg-opacity-10 text-secondary rounded-3 p-3">
-                            <i class="fas fa-file-alt fa-lg"></i>
-                        </div>
-                    </div>
-
-                    <div class="row text-center g-0">
-                        <div class="col border-end">
-                            <h5 class="mb-0 fw-bold text-secondary">@Model.DocumentosConErrores</h5>
-                            <small class="text-muted" style="font-size: 0.7rem;">Con erorres</small>
-                        </div>
-                        <div class="col border-end">
-                            <h5 class="mb-0 fw-bold text-warning">@Model.DocumentosEnRevision</h5>
-                            <small class="text-muted" style="font-size: 0.7rem;">En revisión</small>
-                        </div>
-                        <div class="col">
-                            <h5 class="mb-0 fw-bold text-success">@Model.DocumentosValidados</h5>
-                            <small class="text-muted" style="font-size: 0.7rem;">Validados</small>
-                        </div>
-                    </div>
-
-                    <div class="progress mt-3" style="height: 4px;">
-                        <div class="progress-bar bg-secondary" style="width: 33%"></div>
-                        <div class="progress-bar bg-warning" style="width: 33%"></div>
-                        <div class="progress-bar bg-success" style="width: 34%"></div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-lg-3 col-md-6">
+            <chart-card title="Estado documento CTCE"
+                        chart-id="chartEstadoDocumentoCTCE"
+                        loader-id="loaderEstadoDocumentoCTCE"
+                        api-url="@Url.Action("ObtenerEstadoDocumentosCTCE")"
+                        chart-type="doughnut"
+                        filtro1-items="ViewBag.Periodos"
+                        filtro1-name="periodo">
+            </chart-card>
         </div>
-
-        <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="stat-card card shadow h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h6 class="text-uppercase text-muted fw-bold mb-0">Alumnos</h6>
-                            <span class="h2 fw-bold text-dark">@Model.TotalAlumnos</span>
-                            <span class="text-muted ms-1">Registrados</span>
-                        </div>
-                        <div class="icon-shape bg-info bg-opacity-10 text-info rounded-3 p-3">
-                            <i class="fas fa-users fa-lg"></i>
-                        </div>
-                    </div>
-
-                    <div class="row text-center g-0">
-                        <div class="col border-end">
-                            <h5 class="mb-0 fw-bold text-success">@Model.TotalAlumnosActivos</h5>
-                            <small class="text-muted" style="font-size: 0.7rem;">Activos</small>
-                        </div>
-                        <div class="col border-end">
-                            <h5 class="mb-0 fw-bold text-danger">@(Model.TotalAlumnos - Model.TotalAlumnosActivos)</h5>
-                            <small class="text-muted" style="font-size: 0.7rem;">Inactivos</small>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center mt-3">
-                        <div class="progress flex-grow-1" style="height: 4px;">
-                            <div class="progress-bar bg-success" style="width: 50%"></div>
-                            <div class="progress-bar bg-danger" style="width: 50%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-lg-3 col-md-6">
+            <chart-card title="Alumnos"
+                        chart-id="chartAlumnos"
+                        loader-id="loaderAlumnos"
+                        api-url="@Url.Action("ObtenerRolesAlumnos")"
+                        chart-type="doughnut">
+            </chart-card>
         </div>
     </div>
 
@@ -126,7 +50,6 @@
         <div class="col-lg-12">
             <partial name="_MasReprobadasPorCarrera" />
         </div>
-        @* Mas elementos de ser necesarios en esta fila, solo cuidar las columnas de bootstrap*@
     </div>
 
 </div>

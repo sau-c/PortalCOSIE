@@ -11,11 +11,11 @@ namespace PortalCOSIE.Domain.Entities.Carreras
         /// <summary>
         /// Obtiene una carrera completa con todas sus unidades de aprendizaje cargadas.
         /// </summary>
-        Task<Carrera> ObtenerCarreraConUnidadesAsync(string carrera);
+        Task<Carrera> ObtenerCarreraConUnidadesAsync(int carreraId);
 
         /// <summary>
         /// Lista todas las unidades de aprendizaje pertenecientes a una carrera específica.
         /// </summary>
-        Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesPorCarreraAsync(string carrera);
+        Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesPorCarreraAsync(int carreraId);
     }
 }

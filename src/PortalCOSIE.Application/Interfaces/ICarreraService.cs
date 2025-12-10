@@ -7,14 +7,14 @@ namespace PortalCOSIE.Application.Interfaces
     {
         Task<IEnumerable<Carrera>> ListarAsync();
         Task<IEnumerable<Carrera>> ListarActivasAsync();
-        Task<Carrera?> ListarConUnidadesAsync(string carrera);
+        Task<Carrera?> ListarConUnidadesAsync(int carreraId);
         Task CrearCarreraAsync(string nombre);
         Task EditarCarreraAsync(int id, string nombre);
         Task ToggleCarrrera(int id);
 
-        Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAsync(string carrera);
+        Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAsync(int carreraId);
         Task CrearUnidadAsync(UnidadAprendizajeDTO dto);
         Task EditarUnidadAsync(UnidadAprendizajeDTO dto);
-        Task ToggleUnidad(string carreraNombre, string id);
+        Task ToggleUnidad(int carreraId, string id);
     }
 }

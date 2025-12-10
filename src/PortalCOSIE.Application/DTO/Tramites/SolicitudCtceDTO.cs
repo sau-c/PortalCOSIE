@@ -4,7 +4,7 @@ namespace PortalCOSIE.Application.DTO.Tramites
 {
     public class SolicitudCtceDTO
     {
-        public string Situacion { get; set; }
+        public string Peticion { get; set; }
         public bool TieneDictamenesAnteriores { get; set; }
         public List<UnidadReprobadaDto> UnidadesReprobadas { get; set; } = new List<UnidadReprobadaDto>();
         public DocumentoDto CartaExposicionMotivos { get; set; }

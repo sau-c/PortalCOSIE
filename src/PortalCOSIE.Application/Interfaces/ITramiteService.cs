@@ -5,8 +5,9 @@ namespace PortalCOSIE.Application.Interfaces
 {
     public interface ITramiteService
     {
-        Task<IEnumerable<Tramite>> ListarTodos();
+        Task<IEnumerable<Tramite>> ListarTodos(string rol, string identityUserId);
         Task SolicitarCTCE(SolicitudCtceDTO dto, string userId);
-        Task<Tramite?> BuscarPorId(int id);
+        Task<DetalleCTCE?> BuscarDetalleCTCEPorId(int tramiteId, string identityUserId);
+        Task AsignarPersonal(int tramiteId, string identityUserId);
     }
 }

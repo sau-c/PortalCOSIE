@@ -12,8 +12,8 @@
     <tbody>
         @foreach (var estado in Model)
         {
-            <tr class="small" style="@(estado.IsDeleted ? "background-color: #ffd4d4" : "")">
-                <td>@estado.Id</td>
+            <tr class="@(estado.IsDeleted ? "table-danger text-muted opacity-75" : "") small">
+                <td class="fw-bold">@estado.Id</td>
                 <td>@estado.Nombre</td>
                 <td>
                     <span class="badge @(estado.IsDeleted ? "bg-danger" : "bg-success") badge-role">

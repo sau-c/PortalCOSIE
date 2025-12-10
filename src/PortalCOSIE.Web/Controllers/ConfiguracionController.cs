@@ -46,7 +46,7 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Carreras([FromForm] string nombre)
+        public async Task<IActionResult> Carreras(string nombre)
         {
             await _carreraService.CrearCarreraAsync(nombre);
             return Json(new { success = true, message = "Cambios guardados" });
@@ -55,7 +55,7 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> EditarCarrera([FromForm] int id, [FromForm] string nombre)
+        public async Task<IActionResult> EditarCarrera(int id, string nombre)
         {
             await _carreraService.EditarCarreraAsync(id, nombre);
             return Json(new { success = true, message = "Cambios guardados" });
@@ -64,7 +64,7 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> ToggleCarrera([FromForm] int id)
+        public async Task<IActionResult> ToggleCarrera(int id)
         {
             await _carreraService.ToggleCarrrera(id);
             return Json(new { success = true, message = "Cambios guardados" });
@@ -72,9 +72,9 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Unidades(string id)
+        public async Task<IActionResult> Unidades(int carreraId)
         {
-            return View(await _carreraService.ListarConUnidadesAsync(id));
+            return View(await _carreraService.ListarConUnidadesAsync(carreraId));
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -95,9 +95,9 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> ToggleUnidad([FromForm] string carreraNombre, [FromForm] string id)
+        public async Task<IActionResult> ToggleUnidad(int carreraId, string unidadId)
         {
-            await _carreraService.ToggleUnidad(carreraNombre, id);
+            await _carreraService.ToggleUnidad(carreraId, unidadId);
             return Json(new { success = true, message = "Cambios guardados" });
         }
         #endregion

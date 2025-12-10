@@ -5,8 +5,8 @@
     /// </summary>
     public class DetalleCTCE : Tramite
     {
-        /// <summary>Descripción de la situación académica del alumno por la cual solicita este tramite</summary>
-        public string Situacion { get; private set; }
+        /// <summary>Descripción de la petición académica del alumno por la cual solicita este tramite</summary>
+        public string Peticion { get; private set; }
 
         public bool TieneDictamenesAnteriores { get; private set; }
 
@@ -19,30 +19,33 @@
         /// <summary>Constructor privado para migraciones</summary>
         private DetalleCTCE() { }
 
+        /// <summary>
+        /// Crear una nueva instancia de DetalleCTCE
+        /// </summary>
         public DetalleCTCE(
             int alumnoId,
             int tipoId,
             string periodoSolicitud,
-            string situacion,
+            string peticion,
             bool tieneDictamenesAnteriores,
             List<UnidadReprobada> unidadesReprobadas
             ) 
             : base(alumnoId, tipoId, periodoSolicitud)
         {
-            SetSituacion(situacion);
+            SetPeticion(peticion);
             TieneDictamenesAnteriores = tieneDictamenesAnteriores;
 
             if (unidadesReprobadas != null)
                 _unidadesReprobadas.AddRange(unidadesReprobadas);
         }
 
-        private void SetSituacion(string situacion)
+        private void SetPeticion(string peticion)
         {
-            if (string.IsNullOrWhiteSpace(situacion))
+            if (string.IsNullOrWhiteSpace(peticion))
                 throw new DomainException("El motivo de solicitud no puede estar vacío.");
-            if (situacion.Length > 1000)
+            if (peticion.Length > 1000)
                 throw new DomainException("El motivo de solicitud no puede exceder los 1000 caracteres.");
-            Situacion = situacion;
+            Peticion = peticion;
         }
         //public void AgregarUnidadReprobada(UnidadReprobada unidad)
         //{

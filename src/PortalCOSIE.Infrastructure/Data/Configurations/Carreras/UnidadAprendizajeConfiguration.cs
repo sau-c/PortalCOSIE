@@ -255,7 +255,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Carreras
                 new { Id = "B304", Nombre = "TEORIA DEL CONTROL", CarreraId = 3, Semestre = Semestre.TERCERO, IsDeleted = false },
                 new { Id = "B305", Nombre = "BIOMATERIALES", CarreraId = 3, Semestre = Semestre.TERCERO, IsDeleted = false },
                 new { Id = "B306", Nombre = "CONTROL NEURODIFUSO", CarreraId = 3, Semestre = Semestre.TERCERO, IsDeleted = false },
-                new { Id = "b307", Nombre = "COMUNICACION ORAL Y ESCRITA", CarreraId = 3, Semestre = Semestre.TERCERO, IsDeleted = false },
+                new { Id = "B307", Nombre = "COMUNICACION ORAL Y ESCRITA", CarreraId = 3, Semestre = Semestre.TERCERO, IsDeleted = false },
                 new { Id = "B308", Nombre = "INGLES III", CarreraId = 3, Semestre = Semestre.TERCERO, IsDeleted = false },
                 new { Id = "B309", Nombre = "ELECTRONICA ANALOGICA Y DE POTENCIA", CarreraId = 3, Semestre = Semestre.TERCERO, IsDeleted = false },
                 new { Id = "B310", Nombre = "PROCESAMIENTO DE IMAGENES", CarreraId = 3, Semestre = Semestre.TERCERO, IsDeleted = false },

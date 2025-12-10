@@ -1,5 +1,4 @@
-﻿using PortalCOSIE.Domain.Entities.Calendario;
-using PortalCOSIE.Domain.Entities.Documentos;
+﻿using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Usuarios;
 
 namespace PortalCOSIE.Domain.Entities.Tramites
@@ -57,7 +56,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
             AlumnoId = alumnoId;
             TipoTramiteId = tipoId;
             EstadoTramiteId = EstadoTramite.Solicitado.Id;
-            FechaSolicitud = DateTime.UtcNow;
+            FechaSolicitud = DateTime.Now;
             PeriodoSolicitud = periodoSolicitud;
         }
 
@@ -88,7 +87,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         public void Concluir()
         {
             if (FechaConclusion != null) throw new DomainException("El trámite ya fue concluido.");
-            FechaConclusion = DateTime.UtcNow;
+            FechaConclusion = DateTime.Now;
             EstadoTramiteId = EstadoTramite.Concluido.Id;
         }
     }

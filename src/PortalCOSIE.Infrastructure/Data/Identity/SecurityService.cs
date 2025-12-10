@@ -369,7 +369,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         }
         public async Task<IEnumerable<PersonalCompletoDTO>> ListarPersonal()
         {
-            var usuarios = await _usuarioRepo.ListarConPersonal();
+            var usuarios = await _usuarioRepo.ListarPersonal();
 
             var personalDTO = new List<PersonalCompletoDTO>();
 

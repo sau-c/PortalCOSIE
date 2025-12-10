@@ -28,9 +28,9 @@ namespace PortalCOSIE.Application.Services
         {
             return await _carreraRepo.GetAllAsync(false);
         }
-        public async Task<Carrera?> ListarConUnidadesAsync(string carrera)
+        public async Task<Carrera?> ListarConUnidadesAsync(int carreraId)
         {
-            return await _carreraRepo.ObtenerCarreraConUnidadesAsync(carrera);
+            return await _carreraRepo.ObtenerCarreraConUnidadesAsync(carreraId);
         }
         public async Task CrearCarreraAsync(string nombre)
         {
@@ -59,24 +59,24 @@ namespace PortalCOSIE.Application.Services
         #endregion
 
         #region UNIDADES
-        public async Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAsync(string carrera)
+        public async Task<IEnumerable<UnidadAprendizaje>> ListarUnidadesAsync(int carreraId)
         {
-            return await _carreraRepo.ListarUnidadesPorCarreraAsync(carrera);
+            return await _carreraRepo.ListarUnidadesPorCarreraAsync(carreraId);
         }
         public async Task CrearUnidadAsync(UnidadAprendizajeDTO dto)
         {
             var carrera = await _carreraRepo.GetByIdAsync(dto.carreraId);
-            carrera.AgregarUnidad(dto.id, dto.nombre, dto.semestre);
+            carrera.AgregarUnidad(dto.unidadId, dto.nombre, dto.semestre);
             await _unitOfWork.SaveChangesAsync();
         }
         public async Task EditarUnidadAsync(UnidadAprendizajeDTO dto)
         {
-            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(dto.nombre);
+            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(dto.carreraId);
             if (carrera == null)
                 throw new ApplicationException("Carrera no encontrada");
             
             var unidad = carrera.UnidadesAprendizaje
-                .FirstOrDefault(u => u.Id == dto.id);
+                .FirstOrDefault(u => u.Id == dto.unidadId);
             
             if (unidad == null)
                 throw new ApplicationException("Unidad de aprendizaje no encontrada");
@@ -86,9 +86,9 @@ namespace PortalCOSIE.Application.Services
 
             await _unitOfWork.SaveChangesAsync();
         }
-        public async Task ToggleUnidad(string carreraNombre, string id)
+        public async Task ToggleUnidad(int carreraId, string id)
         {
-            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(carreraNombre);
+            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(carreraId);
             if (carrera == null)
                 throw new ApplicationException("Carrera no encontrada");
 

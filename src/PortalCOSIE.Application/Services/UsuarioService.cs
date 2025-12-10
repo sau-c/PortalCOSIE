@@ -122,20 +122,13 @@ namespace PortalCOSIE.Application
                 throw;
             }
         }
-        public async Task<PersonalDTO?> BuscarPersonal(string id)
+        public async Task<Personal> BuscarPersonal(string identityUserId)
         {
-            var personal = await _usuarioRepo.BuscarUsuario(id);
+            var personal = await _usuarioRepo.BuscarPersonal(identityUserId);
 
             if (personal == null)
-                return null;
-
-            return new PersonalDTO
-            {
-                IdentityUserId = id,
-                Nombre = personal.Nombre,
-                ApellidoPaterno = personal.ApellidoPaterno,
-                ApellidoMaterno = personal.ApellidoMaterno
-            };
+                throw new ApplicationException("No se encontro el personal");
+            return personal;
         }
     }
 }

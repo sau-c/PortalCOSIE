@@ -25,15 +25,16 @@ namespace PortalCOSIE.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            ViewBag.Periodos = new SelectList(await _periodoService.ListarPeriodos(), "Periodo");
+            var periodos = await _periodoService.ListarPeriodos();
+            ViewBag.Periodos = periodos
+                .Select(p => new SelectListItem
+                {
+                    Text = p,
+                    Value = p
+                })
+                .ToList();
             ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-            return View(await _dashboardService.ObtenerTarjetasContables());
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> MasReprobadas(int? carreraId, string periodo)
-        {
-            return Json(await _dashboardService.ObtenerUnidadesMasReprobadasPorCarrera(carreraId, periodo));
+            return View();
         }
 
         [HttpGet]
@@ -42,5 +43,32 @@ namespace PortalCOSIE.Web.Controllers
             var datos = await _dashboardService.ObtenerSolicitudesPorCarrera(periodo);
             return Json(datos);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerEstadoTramitesCTCE(string periodo)
+        {
+            var datos = await _dashboardService.ObtenerEstadoTramitesCTCE(periodo);
+            return Json(datos);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerEstadoDocumentosCTCE(string periodo)
+        {
+            var datos = await _dashboardService.ObtenerEstadoDocumentosCTCE(periodo);
+            return Json(datos);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerRolesAlumnos()
+        {
+            var datos = await _dashboardService.ObtenerRolesAlumnos();
+            return Json(datos);
+        }
+        [HttpGet]
+        public async Task<IActionResult> MasReprobadas(int? carreraId, string periodo)
+        {
+            return Json(await _dashboardService.ObtenerUnidadesMasReprobadasPorCarrera(carreraId, periodo));
+        }
+
     }
 }

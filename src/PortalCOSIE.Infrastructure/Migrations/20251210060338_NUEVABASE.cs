@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CrearBase : Migration
+    public partial class NUEVABASE : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -400,6 +400,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     PersonalId = table.Column<int>(type: "int", nullable: true),
                     TipoTramiteId = table.Column<int>(type: "int", nullable: false),
                     FechaSolicitud = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PeriodoSolicitud = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FechaConclusion = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -437,7 +438,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    Situacion = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Peticion = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     TieneDictamenesAnteriores = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -558,16 +559,16 @@ namespace PortalCOSIE.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "PeriodoConfig",
                 columns: new[] { "Id", "AnioActual", "AnioInicio", "IsDeleted", "PeriodoActual", "PeriodoInicio" },
-                values: new object[] { 1, 2026, 1997, false, 2, 1 });
+                values: new object[] { 1, 2026, 1997, false, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "SesionCOSIE",
                 columns: new[] { "Id", "FechaSesion", "IsDeleted", "NumeroSesion" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "PRIMERA" },
-                    { 2, new DateTime(2025, 12, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "SEGUNDA" },
-                    { 3, new DateTime(2025, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "TERCERA" }
+                    { 1, new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "PRIMERA" },
+                    { 2, new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "SEGUNDA" },
+                    { 3, new DateTime(2025, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "TERCERA" }
                 });
 
             migrationBuilder.InsertData(
@@ -577,6 +578,18 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     { 1, false, "Dictamen interno (CTCE)" },
                     { 2, false, "Dictamen externo (CGC)" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "FechaRecepcion",
+                columns: new[] { "Id", "Fecha", "IsDeleted", "SesionId" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1 },
+                    { 2, new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1 },
+                    { 3, new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 2 },
+                    { 4, new DateTime(2025, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 2 },
+                    { 5, new DateTime(2025, 1, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -630,7 +643,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     { "B304", 3, false, "TEORIA DEL CONTROL", 3 },
                     { "B305", 3, false, "BIOMATERIALES", 3 },
                     { "B306", 3, false, "CONTROL NEURODIFUSO", 3 },
-                    { "b307", 3, false, "COMUNICACION ORAL Y ESCRITA", 3 },
+                    { "B307", 3, false, "COMUNICACION ORAL Y ESCRITA", 3 },
                     { "B308", 3, false, "INGLES III", 3 },
                     { "B309", 3, false, "ELECTRONICA ANALOGICA Y DE POTENCIA", 3 },
                     { "B310", 3, false, "PROCESAMIENTO DE IMAGENES", 3 },

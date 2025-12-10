@@ -31,11 +31,16 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
-        public async Task<IEnumerable<Personal>> ListarConPersonal()
+        public async Task<IEnumerable<Personal>> ListarPersonal()
         {
             return await _context.Set<Personal>()
                 .AsNoTracking()
                 .ToListAsync();
+        }
+        public async Task<Personal> BuscarPersonal(string identityUserId)
+        {
+            return await _context.Set<Personal>()
+                .FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId);
         }
     }
 }

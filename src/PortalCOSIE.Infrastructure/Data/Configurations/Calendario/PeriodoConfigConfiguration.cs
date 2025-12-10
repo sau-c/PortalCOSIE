@@ -32,7 +32,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Calendario
                     AnioInicio = 1997,
                     PeriodoInicio = 1,
                     AnioActual = DateTime.Now.Year + 1,
-                    PeriodoActual = 2,
+                    PeriodoActual = 1,
                     IsDeleted = false 
                 });
         }

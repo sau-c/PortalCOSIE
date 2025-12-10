@@ -23,8 +23,8 @@
                 <div class="row g-4">
                     <div class="col-md-8">
                         <div class="form-floating">
-                            <textarea asp-for="Situacion" class="form-control" style="height: 100px" placeholder="Describa su situación" required></textarea>
-                            <label asp-for="Situacion">Describa claramente su situación académica</label>
+                            <textarea asp-for="Peticion" class="form-control" style="height: 100px" required></textarea>
+                            <label asp-for="Peticion">Describa claramente su petición</label>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -43,15 +43,15 @@
             <div class="row g-4">
                 <!-- === UNIDADES REPROBADAS === -->
                 <div class="col">
-                    <fieldset class="border rounded pb-3 px-3 mb-3">
-                        <legend class="d-flex justify-content-between float-none w-auto px-2 text-primary fs-6 fw-bold">
-                            <div>
-                                <i class="fas fa-book me-2"></i>Unidades de aprendizaje reprobadas
-                            </div>
-                            <button id="btnAgregarFila" type="button" class="btn btn-primary btn-sm">
+                    <fieldset class="border rounded px-3">
+                        <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
+                            <i class="fas fa-book me-2"></i>Unidades de aprendizaje reprobadas
+                        </legend>
+                        <div class="text-end">
+                            <button id="btnAgregarFila" type="button" class="btn btn-primary btn-sm mb-2">
                                 <i class="fas fa-plus me-2"></i>Agregar
                             </button>
-                        </legend>
+                        </div>
                         <div class="table-responsive">
                             <table class="table small" id="tblUnidades">
                                 <thead class="table-light table-bordered">
@@ -77,10 +77,10 @@
                     <fieldset class="border rounded pb-3 px-3 mb-3">
                         <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
                             <i class="fas fa-file-upload me-2"></i>Documentos
+                            <span class="badge bg-light text-secondary border fw-bold" >
+                                PDF Máx 5MB por archivo
+                            </span>
                         </legend>
-                        <div class="text-muted small pb-2">
-                            <i class="fas fa-info-circle me-2"></i>Solo se permiten archivos PDF (Máx 5MB).
-                        </div>
 
                         <div class="row mb-3">
                             <div class="col-lg-6">
@@ -90,7 +90,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <label asp-for="Identificacion" class="form-label">Identificación</label>
-                                <input asp-for="Identificacion" type="file" class="form-control form-control-sm" accept=".pdf" required/>
+                                <input asp-for="Identificacion" type="file" class="form-control form-control-sm" accept=".pdf" required />
                             </div>
                         </div>
 
@@ -105,20 +105,19 @@
                             </div>
                         </div>
                     </fieldset>
+                    <p class="text-muted small">
+                        <i>
+                            Que enterado bajo protesta de decir la verdad que lo asentado en esta solicitud y sus anexos son
+                            verdad, y que conozco las sanciones reglamentarias a que me hago acreedor en caso de incurrir en alguna falta.
+                        </i>
+                    </p>
+                    <!-- BOTÓN FINAL -->
+                    <div class="text-end">
+                        <button id="btnSubmit" type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Solicitar trámite
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <p class="text-muted">
-                <i>
-                    Que enterado bajo protesta de decir la verdad que lo asentado en esta solicitud y sus anexos son
-                    verdad, y que conozco las sanciones reglamentarias a que me hago acreedor en caso de incurrir en alguna falta.
-                </i>
-            </p>
-
-            <!-- BOTÓN FINAL -->
-            <div class="text-end">
-                <button id="btnSubmit" type="submit" class="btn btn-primary">
-                    <i class="fas fa-paper-plane me-2"></i>Solicitar trámite
-                </button>
             </div>
         </form>
     </div>
@@ -129,7 +128,7 @@
         <input type="hidden" name="UnidadesReprobadas.Index" value="{INDEX}" />
 
         <td>
-            <select name="UnidadesReprobadas[{INDEX}].UnidadId" class="form-select border-0 bg-light" required>
+            <select name="UnidadesReprobadas[{INDEX}].UnidadId" class="form-select form-select-sm border-0 bg-light" required>
                 <option value="">Seleccione unidad...</option>
                 @foreach (var item in (SelectList)ViewBag.Unidades)
                 {
@@ -179,7 +178,10 @@
                 try {
                     const url = form.getAttribute("action");
                     const formData = new FormData(form);
-                    await executeFetch(url, "POST", formData);
+                    const data = await executeFetch(url, "POST", formData);
+                    showGlobalModal("success", data.message, {
+                        redirectUrl: '/Tramite',
+                    });
                 } catch (error) {
                     showGlobalModal("error", error.message, {
                         onClose: () => boton.restaurar()

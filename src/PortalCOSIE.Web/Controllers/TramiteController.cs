@@ -1,31 +1,34 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PortalCOSIE.Application.DTO.Tramites;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Web.Models;
 using System.Security.Claims;
-using PortalCOSIE.Domain.Entities.Documentos;
-using PortalCOSIE.Application.DTO.Tramites;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class TramiteController : Controller
     {
         private readonly ITramiteService _tramiteService;
+        private readonly ICatalogoService<EstadoDocumento, int> _catalogoService;
         private readonly ICarreraService _carreraService;
-        private readonly IPeriodosService _catalogoService;
+        private readonly IPeriodosService _periodoService;
         private readonly ISecurityService _securityService;
 
         public TramiteController(
             ITramiteService tramiteService,
+            ICatalogoService<EstadoDocumento, int> catalogoService,
             ICarreraService carreraService,
-            IPeriodosService catalogoService,
+            IPeriodosService periodoService,
             ISecurityService securityService
             )
         {
             _tramiteService = tramiteService;
-            _carreraService = carreraService;
             _catalogoService = catalogoService;
+            _carreraService = carreraService;
+            _periodoService = periodoService;
             _securityService = securityService;
         }
 
@@ -33,7 +36,9 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Personal, Alumno")]
         public async Task<IActionResult> Index()
         {
-            return View(await _tramiteService.ListarTodos());
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var rol = User?.FindFirstValue(ClaimTypes.Role);
+            return View(await _tramiteService.ListarTodos(rol, userId));
         }
 
         [HttpGet]
@@ -43,13 +48,13 @@ namespace PortalCOSIE.Web.Controllers
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var alumno = await _securityService.BuscarAlumnoCompleto(userId);
 
-            ViewBag.Unidades = new SelectList(await _carreraService.ListarUnidadesAsync(alumno.Carrera.Nombre), "Id", "Nombre");
-            ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
+            ViewBag.Unidades = new SelectList(await _carreraService.ListarUnidadesAsync(alumno.Carrera.Id), "Id", "Nombre");
+            ViewBag.Periodos = new SelectList(await _periodoService.ListarPeriodos(), "Periodo");
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Administrador, Alumno")]
+        [Authorize(Roles = "Alumno")]
         public async Task<IActionResult> SolicitarCTCE(SolicitudCtceVM model)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -57,7 +62,7 @@ namespace PortalCOSIE.Web.Controllers
 
             var solicitudDto = new SolicitudCtceDTO
             {
-                Situacion = model.Situacion,
+                Peticion = model.Peticion,
                 TieneDictamenesAnteriores = model.TieneDictamenesAnteriores,
                 UnidadesReprobadas = model.UnidadesReprobadas.Select(u => new UnidadReprobadaDto
                 {
@@ -89,9 +94,28 @@ namespace PortalCOSIE.Web.Controllers
 
             // 2. Llamar al servicio. El servicio NO sabe qué es un IFormFile.
             await _tramiteService.SolicitarCTCE(solicitudDto, userId);
-
-            return Json(new { success = true, message = "Trámite solicitado con éxito." });
+            return Json(new { success = true, message = "Solicitud enviada con éxito." });
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Administrador, Personal, Alumno")]
+        public async Task<IActionResult> SeguimientoCTCE(int tramiteId)
+        {
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tramite = await _tramiteService.BuscarDetalleCTCEPorId(tramiteId, userId);
+            ViewBag.EstadoDocumento = new SelectList(await _catalogoService.ListarActivosAsync(), "Id", "Nombre");
+
+            return View(tramite);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Personal")]
+        public async Task<IActionResult> TomarTramite(int tramiteId)
+        {
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            await _tramiteService.AsignarPersonal(tramiteId, userId);
+            return Json(new { success = true, message = "Tomado con éxito." });
+        }
     }
 }

@@ -54,5 +54,20 @@ namespace PortalCOSIE.Web.Controllers
             await _catalogoService.ToggleSesion(id);
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public IActionResult Error(string message, int code = 500)
+        {
+            // Asignamos el código de estado HTTP real para que el navegador no crea que fue un éxito (200)
+            Response.StatusCode = code;
+
+            // Puedes usar ViewBag o un Modelo dedicado
+            ViewBag.ErrorMessage = message ?? "Ocurrió un error inesperado.";
+            ViewBag.ErrorCode = code;
+
+            // Si la vista espera un modelo específico (ej. ErrorViewModel), créalo aquí:
+            // var model = new ErrorViewModel { RequestId = User?.Id ?? HttpContext ...etc};
+            return View("Error");
+        }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Application.DTO.Dashboard;
 using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Infrastructure.Data;
 using PortalCOSIE.Domain.Entities.Documentos;
+using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;
+using PortalCOSIE.Infrastructure.Data;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {
@@ -17,43 +17,6 @@ namespace PortalCOSIE.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<TarjetasDTO> ObtenerTarjetasContables()
-        {
-            var rolAlumnoId = await _context.Roles
-                .Where(r => r.Name == "Alumno")
-                .Select(r => r.Id)
-                .FirstOrDefaultAsync();
-
-            var totalAlumnos = await _context.Set<Alumno>().CountAsync();
-            var alumnosActivos = await _context.UserRoles
-                .CountAsync(ur => ur.RoleId == rolAlumnoId);
-
-            var tramitesDict = await _context.Set<Tramite>()
-                .GroupBy(t => t.EstadoTramiteId)
-                .Select(g => new { EstadoId = g.Key, Cantidad = g.Count() })
-                .ToDictionaryAsync(k => k.EstadoId, v => v.Cantidad);
-
-            var docsDict = await _context.Set<Documento>()
-                .GroupBy(d => d.EstadoDocumentoId)
-                .Select(g => new { EstadoId = g.Key, Cantidad = g.Count() })
-                .ToDictionaryAsync(k => k.EstadoId, v => v.Cantidad);
-
-            // Helper local para leer del diccionario
-            int GetCount(Dictionary<int, int> dict, int id) => dict.TryGetValue(id, out int val) ? val : 0;
-
-            return new TarjetasDTO(
-                totalAlumnos,
-                alumnosActivos,
-
-                GetCount(tramitesDict, EstadoTramite.Solicitado.Id),
-                GetCount(tramitesDict, EstadoTramite.EnRevision.Id),
-                GetCount(tramitesDict, EstadoTramite.Concluido.Id),
-
-                GetCount(docsDict, EstadoDocumento.ConErrores.Id),
-                GetCount(docsDict, EstadoDocumento.Validado.Id),
-                GetCount(docsDict, EstadoDocumento.EnRevision.Id)
-            );
-        }
         public async Task<ChartDTO> ObtenerSolicitudesPorCarrera(string periodo)
         {
             var data = await _context.Set<Tramite>()
@@ -70,6 +33,70 @@ namespace PortalCOSIE.Infrastructure.Repositories
             {
                 Labels = data.Select(x => x.Carrera).ToList(),
                 Values = data.Select(x => x.Cantidad).ToList()
+            };
+        }
+        public async Task<ChartDTO> ObtenerEstadoTramitesCTCE(string periodo)
+        {
+            var data = await _context.Set<Tramite>()
+                .Where(t => t.PeriodoSolicitud == periodo)
+                .Where(t => t.TipoTramiteId == TipoTramite.DictamenInterno.Id)
+                .GroupBy(t => t.EstadoTramite.Nombre)
+                .Select(g => new
+                {
+                    Nombre = g.Key,
+                    Cantidad = g.Count()
+                })
+                .ToListAsync();
+
+            return new ChartDTO
+            {
+                Labels = data.Select(x => x.Nombre).ToList(),
+                Values = data.Select(x => x.Cantidad).ToList()
+            };
+        }
+        public async Task<ChartDTO> ObtenerEstadoDocumentosCTCE(string periodo)
+        {
+            var data = await _context.Set<Documento>()
+                .Where(d => d.Tramite.TipoTramiteId == TipoTramite.DictamenInterno.Id)
+                .Where(d => d.Tramite.PeriodoSolicitud == periodo)
+                .GroupBy(d => d.EstadoDocumento.Nombre)
+                .Select(g => new
+                {
+                    Estado = g.Key,
+                    Cantidad = g.Count()
+                })
+                .ToListAsync();
+
+            return new ChartDTO
+            {
+                Labels = data.Select(x => x.Estado).ToList(),
+                Values = data.Select(x => x.Cantidad).ToList()
+            };
+        }
+        public async Task<ChartDTO> ObtenerRolesAlumnos()
+        {
+            var rolAlumnoId = await _context.Roles
+                .Where(r => r.Name == "Alumno")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (rolAlumnoId == null)
+                return new ChartDTO();
+
+            var totalAlumnos = await _context.Set<Alumno>().CountAsync();
+            var alumnosActivos = await _context.Set<Alumno>()
+                .Join(_context.UserRoles,
+                      alumno => alumno.IdentityUserId,
+                      userRole => userRole.UserId,
+                      (alumno, userRole) => userRole)
+                .CountAsync(ur => ur.RoleId == rolAlumnoId);
+
+            var alumnosInactivos = totalAlumnos - alumnosActivos;
+
+            return new ChartDTO
+            {
+                Labels = new List<string> { "Activos", "Inactivos" },
+                Values = new List<int> { alumnosActivos, alumnosInactivos }
             };
         }
         public async Task<ChartDTO> ObtenerUnidadesMasReprobadasPorCarrera(int? carreraId, string periodo)

@@ -39,6 +39,8 @@ select * from Personal
 select * from Usuario
 select * from AspNetUsers
 
+EXEC poblarBase
+
 EXEC agregarAlumno
     @Email = 'sau.contacto@gmail.com',
     @PhoneNumber = '5512795297',
@@ -58,9 +60,9 @@ EXEC agregarAlumno
 --SET PasswordHash = 'AQAAAAIAAYagAAAAEEFVNy7BXpX/CAk6xy34b/DL+ArNM1nyqosz6s/D/s1nCGtfehBnilfy5KlZeJTZ0Q=='
 --WHERE Id = 'guid-personal-coord'
 
---UPDATE UnidadReprobada
---SET FechaSolicitud = '2025-06-01'
---WHERE Id = 10003
+--UPDATE PeriodoConfig
+--SET PeriodoActual = '1'
+--WHERE Id = 1
 
 
 --%%%%%%%%%%%%%%%%%%%%%%%%

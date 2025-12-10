@@ -1,22 +1,66 @@
 ﻿@{
-    ViewData["Title"] = "Error inesperado";
-    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+    ViewData["Title"] = "Error";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml"; // Asegura que use tu layout con fondo
+
+    // Datos recibidos del Controlador
+    var errorCode = ViewBag.ErrorCode as int? ?? 500;
+    var errorMessage = ViewBag.ErrorMessage as string ?? "Ha ocurrido un error inesperado.";
+
+    // Lógica visual simple según el código de error
+    string iconClass = "fa-exclamation-triangle";
+    string titleText = "¡Ups! Algo salió mal";
+    string textClass = "text-danger";
+
+    if (errorCode == 404)
+    {
+        iconClass = "fa-search-location";
+        titleText = "Página no encontrada";
+        textClass = "text-warning";
+    }
+    else if (errorCode == 403 || errorCode == 401)
+    {
+        iconClass = "fa-user-lock";
+        titleText = "Acceso Restringido";
+    }
+    else if (errorCode >= 500)
+    {
+        iconClass = "fa-server";
+        titleText = "Error del Servidor";
+    }
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card border-danger shadow-lg">
-                <div class="card-header bg-danger text-white">
-                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Error</h4>
-                </div>
-                <div class="card-body">
-                    <h5 class=" card-title accordion-body">Lo sentimos, ha ocurrido un error inesperado.</h5>
-                    <p class="card-text">Por favor, intenta nuevamente más tarde o contacta al soporte si el problema persiste.</p>
-                    <a href="javascript:history.back()" class="btn btn-danger mt-3"><i class="fas fa-arrow-left me-2"></i>Regresar</a>
-                </div>
-            </div>
+<div class="card border-0 shadow-lg" style="max-width: 500px; width: 90%; border-radius: 15px;">
+    <div class="card-body p-5 text-center">
+
+        <div class="mb-4 position-relative d-inline-block">
+            <i class="fas fa-circle fa-5x @textClass opacity-25" style="filter: blur(2px); opacity: 0.1 !important;"></i>
+            <i class="fas @iconClass fa-3x @textClass position-absolute top-50 start-50 translate-middle"></i>
         </div>
+
+        <h2 class="fw-bold mb-1" style="color: #444;">@titleText</h2>
+        <p class="badge bg-secondary mb-4">Código: @errorCode</p>
+
+        <div class="alert alert-light border-0" role="alert" style="background-color: #f8f9fa;">
+            <p class="text-muted mb-0 fs-6">
+                @errorMessage
+            </p>
+        </div>
+
+        <div class="mt-4 d-grid gap-2">
+            <a href="/" class="btn btn-lg text-white" style="background-color: #6A1B4D; border: none;">
+                <i class="fas fa-home me-2"></i> Volver al Inicio
+            </a>
+
+            <button onclick="window.history.back();" class="btn btn-outline-secondary btn-sm mt-2 border-0">
+                <i class="fas fa-arrow-left me-1"></i> Regresar a la página anterior
+            </button>
+        </div>
+
+    </div>
+
+    <div class="card-footer bg-white border-0 text-center pb-3">
+        <small class="text-muted" style="font-size: 0.75rem;">
+            Si el problema persiste, contacta a soporte técnico.
+        </small>
     </div>
 </div>
-

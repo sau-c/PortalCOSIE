@@ -23,8 +23,8 @@
     <tbody>
         @foreach (var carrera in Model)
         {
-            <tr class="small" style="@(carrera.IsDeleted ? "background-color: #ffd4d4" : "")">
-                <td>@carrera.Id</td>
+            <tr class="@(carrera.IsDeleted ? "table-danger text-muted opacity-75" : "") small">
+                <td class="fw-bold">@carrera.Id</td>
                 <td>@carrera.Nombre</td>
                 <td>
                     <span class="badge @(carrera.IsDeleted ? "bg-danger" : "bg-success") badge-role">
@@ -32,7 +32,7 @@
                     </span>
                 </td>
                 <td>
-                    <a asp-action="Unidades" asp-route-id="@carrera.Nombre" class="btn btn-sm btn-outline-secondary" title="Ver unidades de aprendizaje">
+                    <a asp-action="Unidades" asp-route-carreraId="@carrera.Id" class="btn btn-sm btn-outline-secondary" title="Ver unidades de aprendizaje">
                         <i class="fas fa-list"></i>
                     </a>
                     <button type="button"

@@ -10,7 +10,7 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Tramites
         {
             builder.ToTable("DetalleCTCE");
 
-            builder.Property(t => t.Situacion)
+            builder.Property(t => t.Peticion)
                 .HasMaxLength(1000)
                 .IsRequired();
 

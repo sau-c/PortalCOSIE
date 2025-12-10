@@ -51,15 +51,15 @@
             <tbody>
                 @foreach (var sesion in Model)
                 {
-                    <tr class="small" style="@(sesion.IsDeleted ? "background-color: #ffd4d4" : "")">
-                        <td class="fw-semibold">@sesion.NumeroSesion</td>
+                    <tr class="@(sesion.IsDeleted ? "table-danger text-muted opacity-75" : "") small">
+                        <td class="fw-bold">@sesion.NumeroSesion</td>
                         <td>
                             @if (sesion.FechasRecepcion?.Any() == true)
                             {
                                 @foreach (var fecha in sesion.FechasRecepcion)
                                 {
                                     <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary p-2">
-                                        @fecha.Fecha.ToString("dd/MM/yyyy")
+                                        @fecha.Fecha.ToString("dd MMM yyyy")
                                     </span>
                                 }
                             }
@@ -71,7 +71,7 @@
                         <td class="fw-semibold text-center">
                             @if (sesion.FechaSesion.HasValue)
                             {
-                                @sesion.FechaSesion?.ToString("dd/MM/yyyy")
+                                @sesion.FechaSesion?.ToString("dd MMM yyyy")
                             }
                             else
                             {

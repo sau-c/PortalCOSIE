@@ -2,7 +2,7 @@
 {
     public class SolicitudCtceVM
     {
-        public string Situacion { get; set; }
+        public string Peticion { get; set; }
         public bool TieneDictamenesAnteriores { get; set; }
         public List<UnidadReprobadaVM> UnidadesReprobadas { get; set; } = new List<UnidadReprobadaVM>();
         public IFormFile CartaExposicionMotivos { get; set; }

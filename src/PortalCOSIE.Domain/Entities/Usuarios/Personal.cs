@@ -13,13 +13,13 @@
 
         // Constructor de dominio
         public Personal(
-            string userId,
+            string identityUserId,
             string idPersonal,
             string nombre,
             string apellidoPaterno,
             string apellidoMaterno,
             string area)
-            : base(userId, nombre, apellidoPaterno, apellidoMaterno)
+            : base(identityUserId, nombre, apellidoPaterno, apellidoMaterno)
         {
             SetIdPersonal(idPersonal);
             SetArea(area);
