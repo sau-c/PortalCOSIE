@@ -163,135 +163,88 @@
 
                 <div style="height: 250px; overflow-y: auto; padding-right: 5px;">
 
+                    @{
+                        var listaDocumentos = new[]
+                        {
+                                        new {
+                                        Titulo = "Carta de motivos",
+                                        Doc = carta,
+                                        InputPrefix = "Carta"
+                                        },
+                                        new {
+                                        Titulo = "Identificación",
+                                        Doc = identificacion,
+                                        InputPrefix = "Identificacion"
+                                        },
+                                        new {
+                                        Titulo = "Boleta global",
+                                        Doc = boleta,
+                                        InputPrefix = "Boleta"
+                                        },
+                                        new {
+                                        Titulo = "Probatorios",
+                                        Doc = probatorio,
+                                        InputPrefix = "Probatorios"
+                                        }
+                                        };
+                    }
+
                     <div class="row row-cols-1 row-cols-xl-2 g-3">
 
-                        <div class="col">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body pb-0 pt-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
-                                                <i class="fas fa-file-pdf fs-4"></i>
-                                            </div>
-                                            <div class="overflow-hidden">
-                                                <h6 class="fw-bold text-dark mb-0 text-truncate">Carta de motivos</h6>
-                                                <small class="text-muted" style="font-size: 0.75rem;">@carta.Nombre</small>
-                                            </div>
-                                        </div>
-                                        @* <button class="btn btn-sm btn-outline-primary rounded-pill py-0 px-3 small">Ver</button> *@
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-primary rounded-pill px-0 px-3 small btn-ver-pdf"
-                                                data-url="@Url.Action("Documento", "Tramite", new { id = carta.Id })"
-                                                data-title="@carta.Nombre">
-                                            Ver
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-footer bg-light border-0 p-3 m-2 rounded-3">
-                                    <div class="mb-2">
-                                        <label class="text-secondary fw-bold small mb-1" style="font-size: 0.65rem;">ESTADO</label>
-                                        <select asp-items="ViewBag.EstadoDocumento" name="estadoDocumento" class="form-select form-select-sm shadow-none border-secondary border-opacity-25 bg-white"></select>
-                                    </div>
-                                    <textarea class="form-control form-control-sm shadow-none bg-white" rows="2" placeholder="Observaciones..."></textarea>
-                                </div>
-                            </div>
-                        </div>
+                        @foreach (var item in listaDocumentos)
+                        {
+                            // Solo renderizamos si el documento existe en la BD
+                            if (item.Doc != null)
+                            {
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
 
-                        <div class="col">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body pb-0 pt-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
-                                                <i class="fas fa-file-pdf fs-4"></i>
-                                            </div>
-                                            <div class="overflow-hidden">
-                                                <h6 class="fw-bold text-dark mb-0 text-truncate">Identificación</h6>
-                                                <small class="text-muted" style="font-size: 0.75rem;">@identificacion.Nombre</small>
-                                            </div>
-                                        </div>
-                                        @* <button class="btn btn-sm btn-outline-primary rounded-pill py-0 px-3 small">Ver</button> *@
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-primary rounded-pill px-0 px-3 small btn-ver-pdf"
-                                                data-url="@Url.Action("Documento", "Tramite", new { id = identificacion.Id })"
-                                                data-title="@identificacion.Nombre">
-                                            Ver
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-footer bg-light border-0 p-3 m-2 rounded-3">
-                                    <div class="mb-2">
-                                        <label class="text-secondary fw-bold small mb-1" style="font-size: 0.65rem;">ESTADO</label>
-                                        <select asp-items="ViewBag.EstadoDocumento" name="estadoDocumento" class="form-select form-select-sm shadow-none border-secondary border-opacity-25 bg-white"></select>
-                                    </div>
-                                    <textarea class="form-control form-control-sm shadow-none bg-white" rows="2" placeholder="Observaciones..."></textarea>
-                                </div>
-                            </div>
-                        </div>
+                                        <div class="card-body pb-0 pt-3">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
 
-                        <div class="col">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body pb-0 pt-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
-                                                <i class="fas fa-file-pdf fs-4"></i>
-                                            </div>
-                                            <div class="overflow-hidden">
-                                                <h6 class="fw-bold text-dark mb-0 text-truncate">Boleta global</h6>
-                                                <small class="text-muted" style="font-size: 0.75rem;">@boleta.Nombre</small>
-                                            </div>
-                                        </div>
-                                        @* <button class="btn btn-sm btn-outline-primary rounded-pill py-0 px-3 small">Ver</button> *@
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-primary rounded-pill px-0 px-3 small btn-ver-pdf"
-                                                data-url="@Url.Action("Documento", "Tramite", new { id = boleta.Id })"
-                                                data-title="@boleta.Nombre">
-                                            Ver
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-footer bg-light border-0 p-3 m-2 rounded-3">
-                                    <div class="mb-2">
-                                        <label class="text-secondary fw-bold small mb-1" style="font-size: 0.65rem;">ESTADO</label>
-                                        <select asp-items="ViewBag.EstadoDocumento" name="estadoDocumento" class="form-select form-select-sm shadow-none border-secondary border-opacity-25 bg-white"></select>
-                                    </div>
-                                    <textarea class="form-control form-control-sm shadow-none bg-white" rows="2" placeholder="Observaciones..."></textarea>
-                                </div>
-                            </div>
-                        </div>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
+                                                        <i class="fas fa-file-pdf fs-4"></i>
+                                                    </div>
+                                                    <div class="overflow-hidden">
+                                                        <h6 class="fw-bold text-dark mb-0 text-truncate">@item.Titulo</h6>
+                                                        <small class="text-muted" style="font-size: 0.75rem;" title="@item.Doc.Nombre">
+                                                            @item.Doc.Nombre
+                                                        </small>
+                                                    </div>
+                                                </div>
 
-                        <div class="col">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body pb-0 pt-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary bg-opacity-10 text-danger rounded p-2 me-3">
-                                                <i class="fas fa-file-pdf fs-4"></i>
-                                            </div>
-                                            <div class="overflow-hidden">
-                                                <h6 class="fw-bold text-dark mb-0 text-truncate">Probatorios</h6>
-                                                <small class="text-muted" style="font-size: 0.75rem;">@probatorio.Nombre</small>
+                                                <a href="@Url.Action("Documento", "Tramite", new { Id = item.Doc.Id })"
+                                                   target="_blank"
+                                                   rel="noopener noreferrer"
+                                                   class="btn btn-sm btn-outline-primary rounded-pill px-2 small">
+                                                    Ver
+                                                </a>
                                             </div>
                                         </div>
-                                        @* <button class="btn btn-sm btn-outline-primary rounded-pill py-0 px-3 small">Ver</button> *@
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-primary rounded-pill px-0 px-3 small btn-ver-pdf"
-                                                data-url="@Url.Action("Documento", "Tramite", new { id = probatorio.Id })"
-                                                data-title="@probatorio.Nombre">
-                                            Ver
-                                        </button>
+
+                                        <div class="card-footer bg-light border-0 p-3 m-2 rounded-3">
+
+                                            <input type="hidden" name="DocumentosValidacion[@item.Doc.Id].Id" value="@item.Doc.Id" />
+
+                                            <div class="mb-2">
+                                                <label class="text-secondary fw-bold small mb-1" style="font-size: 0.65rem;">ESTADO</label>
+                                                <select name="DocumentosValidacion[@item.Doc.Id].Estado"
+                                                        asp-items="ViewBag.EstadoDocumento"
+                                                        class="form-select form-select-sm shadow-none border-secondary border-opacity-25 bg-white">
+                                                </select>
+                                            </div>
+
+                                            <textarea name="DocumentosValidacion[@item.Doc.Id].Observaciones"
+                                              class="form-control form-control-sm shadow-none bg-white"
+                                              rows="2"
+                                              placeholder="Observaciones para el alumno..."></textarea>
+                                        </div>
+
                                     </div>
                                 </div>
-                                <div class="card-footer bg-light border-0 p-3 m-2 rounded-3">
-                                    <div class="mb-2">
-                                        <label class="text-secondary fw-bold small mb-1" style="font-size: 0.65rem;">ESTADO</label>
-                                        <select asp-items="ViewBag.EstadoDocumento" name="estadoDocumento" class="form-select form-select-sm shadow-none border-secondary border-opacity-25 bg-white"></select>
-                                    </div>
-                                    <textarea class="form-control form-control-sm shadow-none bg-white" rows="2" placeholder="Observaciones..."></textarea>
-                                </div>
-                            </div>
-                        </div>
+                            }
+                        }
 
                     </div>
                 </div>
@@ -301,74 +254,3 @@
         </div>
     </div>
 </div>
-
-
-<div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered" style="height: 90vh;">
-        <div class="modal-content h-100">
-            <div class="modal-header py-2 bg-light">
-                <h6 class="modal-title fw-bold text-primary" id="pdfModalLabel">
-                    <i class="fas fa-file-pdf me-2"></i>Visualizando documento
-                </h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0 bg-light d-flex justify-content-center align-items-center position-relative">
-
-                <div id="pdfLoader" class="text-center position-absolute">
-                    <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2 small text-muted">Cargando documento...</p>
-                </div>
-
-                <iframe id="pdfFrame" src="" class="w-100 h-100 border-0" style="display:none;"></iframe>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // 1. Obtener referencias
-            const pdfModalEl = document.getElementById('pdfModal');
-            const pdfModal = new bootstrap.Modal(pdfModalEl);
-            const pdfFrame = document.getElementById('pdfFrame');
-            const pdfLoader = document.getElementById('pdfLoader');
-            const modalTitle = document.getElementById('pdfModalLabel');
-
-            // 2. Escuchar clics en todos los botones con clase .btn-ver-pdf
-            document.querySelectorAll('.btn-ver-pdf').forEach(button => {
-                button.addEventListener('click', function () {
-                    const url = this.getAttribute('data-url');
-                    const title = this.getAttribute('data-title');
-
-                    // Resetear estado del modal
-                    pdfFrame.style.display = 'none';
-                    pdfLoader.style.display = 'block';
-                    pdfFrame.src = ''; // Limpiar anterior
-
-                    // Actualizar título
-                    modalTitle.innerHTML = `<i class="fas fa-file-pdf me-2"></i>${title}`;
-
-                    // Asignar URL al iframe
-                    pdfFrame.src = url;
-
-                    // Mostrar modal
-                    pdfModal.show();
-
-                    // Cuando el iframe carga, ocultar loader
-                    pdfFrame.onload = function() {
-                        pdfLoader.style.display = 'none';
-                        pdfFrame.style.display = 'block';
-                    };
-                });
-            });
-
-            // 3. Limpiar iframe al cerrar para ahorrar memoria
-            pdfModalEl.addEventListener('hidden.bs.modal', function () {
-                pdfFrame.src = '';
-            });
-        });
-    </script>
-}

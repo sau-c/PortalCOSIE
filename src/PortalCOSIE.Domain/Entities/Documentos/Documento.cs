@@ -94,7 +94,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
                 throw new DomainException("El contenido del documento no puede estar vacío.");
 
             if (contenido.Length > MAX_FILE_SIZE)
-                throw new DomainException($"El archivo no puede superar los {MAX_FILE_SIZE} MB.");
+                throw new DomainException($"El archivo no puede superar los {MAX_FILE_SIZE / (1024.0 * 1024.0)} MB.");
 
             Contenido = contenido;
         }

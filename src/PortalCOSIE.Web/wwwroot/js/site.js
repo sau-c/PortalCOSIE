@@ -91,6 +91,30 @@ function bloqueadorBoton(button) {
     return { bloquear, restaurar };
 }
 
+function limitarArchivos({ maxMB = 3, tiposPermitidos = ["application/pdf"] } = {}) {
+
+    const MAX_BYTES = maxMB * 1024 * 1024;
+
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener("change", () => {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > MAX_BYTES) {
+                showGlobalModal("error", `Tamaño máximo permitido: ${maxMB} MB`);
+                input.value = "";
+                return;
+            }
+
+            if (!tiposPermitidos.includes(file.type)) {
+                showGlobalModal("error", `Tipo de archivo no permitido. Solo: ${tiposPermitidos.join(", ")}`);
+                input.value = "";
+            }
+        });
+    });
+}
+
+
 /**
 * Componente Genérico para Chart Cards
 */
@@ -210,4 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Busca todos los elementos generados por el TagHelper
     const widgets = document.querySelectorAll('[data-component="chart-widget"]');
     widgets.forEach(el => new ChartWidget(el));
+
+    limitarArchivos();
 });
