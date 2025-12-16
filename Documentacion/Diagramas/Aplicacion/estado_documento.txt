@@ -1,0 +1,61 @@
+@startuml
+'--- Configuración de Estilo ---
+skinparam monochrome false
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #333333
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+
+skinparam state {
+    BackgroundColor #F4F6F6
+    BorderColor #5D6D7E
+    FontName Arial
+    FontSize 13
+    FontStyle Bold
+    AttributeFontColor #333333
+    AttributeFontSize 11
+}
+
+' Estilos semánticos
+skinparam state {
+    BackgroundColor<<Inicial>> #EBF5FB
+    BorderColor<<Inicial>> #2E86C1
+    
+    BackgroundColor<<Exito>> #D5F5E3
+    BorderColor<<Exito>> #196F3D
+    
+    BackgroundColor<<Warning>> #FCF3CF
+    BorderColor<<Warning>> #F1C40F
+    
+    BackgroundColor<<Error>> #FADBD8
+    BorderColor<<Error>> #943126
+}
+hide empty description
+
+' --- Definición de Estados (Basado en tu C#) ---
+state "En Revisión" as Revision <<Inicial>> : (ID: 1) Estado inicial.\nEl documento espera validación.
+
+state "Validado" as Validado <<Exito>> : (ID: 2) Cumple requisitos.\nFin del proceso para este doc.
+
+state "Con Errores" as ConErrores <<Warning>> : (ID: 3) Problemas corregibles:\nFirmas, sellos o fechas.
+
+state "Documento Incorrecto" as Incorrecto <<Error>> : (ID: 4) No es el solicitado.\nArchivo erróneo.
+
+' --- Flujo y Transiciones ---
+
+[*] --> Revision : Carga inicial \n(Alumno)
+
+' Caminos de decisión
+Revision -down-> Validado : Todo correcto
+Revision -right-> ConErrores : Detalles \nmenores
+Revision -left-> Incorrecto : Archivo no \ncorresponde
+
+' Ciclos de corrección (Vuelven a revisión)
+ConErrores --> Revision : Corrige y \nvuelve a subir
+Incorrecto --> Revision : Sube el archivo \ncorrecto
+
+' Final
+Validado --> [*]
+
+@enduml

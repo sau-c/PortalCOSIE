@@ -1,0 +1,197 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+' --- BASE ---
+abstract class BaseEntity {
+    + Id : int
+    + IsDeleted : bool
+    + SoftDelete()
+    + Restore()
+}
+
+class Enumeration {
+    + Id : int
+    + Nombre : string
+}
+
+' --- PAQUETE USUARIOS ---
+package "Módulo Usuarios" {
+    abstract class Usuario {
+        + IdentityUserId : string
+        + Nombre : string
+        + ApellidoPaterno : string
+        + ApellidoMaterno : string
+        + NombreCompleto() : string
+    }
+
+    class Alumno {
+        + NumeroBoleta : string
+        + PeriodoIngreso : string
+        + CarreraId : int
+    }
+
+    class Personal {
+        + IdEmpleado : string
+        + Area : string
+    }
+}
+
+' --- PAQUETE ACADEMICO ---
+package "Módulo Académico" {
+    class Carrera {
+        + Nombre : string
+        + AgregarUnidad()
+    }
+
+    class UnidadAprendizaje {
+        + Nombre : string
+        + Semestre : Semestre
+        + CarreraId : int
+    }
+
+    enum Semestre {
+        PRIMERO
+        SEGUNDO
+        TERCERO
+        CUARTO
+        QUINTO
+    }
+}
+
+' --- PAQUETE TRAMITES ---
+package "Módulo Trámites" {
+    abstract class Tramite {
+        + FechaSolicitud : DateTime
+        + FechaConclusion : DateTime?
+        + EstadoTramiteId : int
+        + TipoTramiteId : int
+        + AlumnoId : int
+        + PersonalId : int?
+        + AsignarPersonal()
+        + CambiarEstado()
+        + Concluir()
+    }
+
+    class TramiteCTCE {
+        + Situacion : string
+        + TieneDictamenesAnteriores : bool
+        + AgregarUnidadReprobada()
+    }
+
+    class UnidadReprobada {
+        + PeriodoCurso : string
+        + PeriodoRecurse : string
+        + UnidadAprendizajeId : int
+    }
+
+    class Documento {
+        + Nombre : string
+        + Observaciones : string
+        + Contenido : byte[]
+        + EstadoDocumentoId : int
+    }
+
+    class EstadoTramite <<Enumeration>> {
+        + Solicitado
+        + EnRevision
+        + DocumentosPendientes
+        + Concluido
+        + Cancelado
+    }
+
+    class TipoTramite <<Enumeration>> {
+        + DictamenInterno
+        + DictamenExterno
+    }
+
+    class EstadoDocumento <<Enumeration>> {
+        + EnRevision
+        + Validado
+        + ConErrores
+        + Incorrecto
+    }
+}
+
+' --- PAQUETE CALENDARIO ---
+package "Módulo Calendario" {
+    class PeriodoConfig {
+        + AnioInicio : int
+        + PeriodoInicio : int
+        + AnioFin : int
+        + PeriodoFin : int
+    }
+
+    class SesionCOSIE {
+        + NumeroSesion : string
+        + FechaSesion : DateTime?
+        + SetFechasRecepcion()
+    }
+
+    class FechaRecepcion {
+        + Fecha : DateTime
+        + SesionId : int
+    }
+}
+
+' --- PAQUETE SISTEMA ---
+package "Sistema" {
+    class EntradaBitacora {
+        + Accion : string
+        + Entidad : string
+        + EntidadId : string
+        + ValorNuevo : string
+        + IdentityUserId : string
+        + IpAddress : string
+        + FechaRegistro : DateTime
+    }
+}
+
+' --- HERENCIA ---
+BaseEntity <|-- Usuario
+BaseEntity <|-- Carrera
+BaseEntity <|-- UnidadAprendizaje
+BaseEntity <|-- Tramite
+BaseEntity <|-- UnidadReprobada
+BaseEntity <|-- Documento
+BaseEntity <|-- PeriodoConfig
+BaseEntity <|-- SesionCOSIE
+BaseEntity <|-- FechaRecepcion
+BaseEntity <|-- EntradaBitacora
+BaseEntity <|-- Enumeration
+
+Usuario <|-- Alumno
+Usuario <|-- Personal
+Tramite <|-- TramiteCTCE
+
+Enumeration <|-- EstadoTramite
+Enumeration <|-- TipoTramite
+Enumeration <|-- EstadoDocumento
+
+' --- RELACIONES ---
+
+' Usuarios -> Académico
+Alumno "1" --> "1" Carrera : Pertenece a
+Carrera "1" *-- "many" UnidadAprendizaje : Contiene
+UnidadAprendizaje --> Semestre : Usa
+
+' Trámites -> Usuarios
+Tramite "many" --> "1" Alumno : Solicitado por
+Tramite "many" --> "0..1" Personal : Asignado a
+
+' Trámites -> Enumeraciones
+Tramite --> EstadoTramite : Tiene estado
+Tramite --> TipoTramite : Es tipo
+Documento --> EstadoDocumento : Tiene estado
+
+' Composición interna de Trámites
+Tramite "1" *-- "many" Documento : Adjunta
+TramiteCTCE "1" *-- "many" UnidadReprobada : Detalla
+UnidadReprobada --> UnidadAprendizaje : Referencia
+
+' Calendario
+SesionCOSIE "1" *-- "many" FechaRecepcion : Define
+
+@enduml

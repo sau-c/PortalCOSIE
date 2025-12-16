@@ -1,0 +1,73 @@
+@startuml
+'--- Configuración de Estilo ---
+skinparam monochrome false
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #333333
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+
+skinparam state {
+    BackgroundColor #F4F6F6
+    BorderColor #5D6D7E
+    FontName Arial
+    FontSize 13
+    FontStyle Bold
+    AttributeFontColor #333333
+    AttributeFontSize 11
+}
+
+' Estilos semánticos
+skinparam state {
+    BackgroundColor<<Inicial>> #EBF5FB
+    BorderColor<<Inicial>> #2E86C1
+    
+    BackgroundColor<<Trabajo>> #FCF3CF
+    BorderColor<<Trabajo>> #F1C40F
+    
+    BackgroundColor<<Intervencion>> #D6EAF8
+    BorderColor<<Intervencion>> #5DADE2
+    
+    BackgroundColor<<Exito>> #D5F5E3
+    BorderColor<<Exito>> #196F3D
+    
+    BackgroundColor<<Termino>> #FADBD8
+    BorderColor<<Termino>> #943126
+}
+hide empty description
+
+' --- Definición de Estados (Basado en tu C#) ---
+state "Solicitado" as Solicitado <<Inicial>> : (ID: 1) Documentación subida.
+
+state "En Revisión" as EnRevision <<Trabajo>> : (ID: 2) Personal analiza los documentos.
+
+state "Documentos Pendientes" as Pendientes <<Intervencion>> : (ID: 3) Requiere acción del alumno\n(Subir o corregir documentos).
+
+state "Concluido" as Concluido <<Exito>> : (ID: 4) Trámite finalizado con éxito.
+
+state "Cancelado" as Cancelado <<Termino>> : (ID: 5) Trámite anulado.
+
+
+' --- Flujo y Transiciones ---
+
+' INICIO
+[*] -up-> Solicitado : Iniciar trámite\n(Alumno)
+
+' PERSONAL: TOMA DE DECISIÓN
+Solicitado -up-> EnRevision : Aceptación de la solicitud\n(Personal)
+
+' Personal revisa y tiene 3 opciones:
+EnRevision -down-> Concluido : Dictamen favorable\n(Personal)
+EnRevision -left-> Pendientes : Documentos erróneos\n(Personal)
+EnRevision -down-> Cancelado : El trámite no procede\n(Personal)
+
+' ALUMNO: CORRECCIÓN
+Pendientes -up-> EnRevision : Documentos corregidos\n(Alumno)
+
+' CANCELACIONES
+
+' FINAL
+Concluido --> [*]
+Cancelado --> [*]
+
+@enduml
