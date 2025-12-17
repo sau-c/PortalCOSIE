@@ -20,9 +20,9 @@ namespace PortalCOSIE.Infrastructure.Data.Configurations.Tramites
                 .WithMany().
                 HasForeignKey(m => m.UnidadAprendizajeId);
             
-            builder.HasOne(m => m.DetalleCTCE)
+            builder.HasOne(m => m.TramiteCTCE)
                 .WithMany(t => t.UnidadesReprobadas)
-                .HasForeignKey(m => m.DetalleCTCEId);
+                .HasForeignKey(m => m.TramiteCTCEId);
         }
     }
 }

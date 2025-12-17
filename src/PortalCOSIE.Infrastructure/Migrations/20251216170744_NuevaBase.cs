@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CreaBASE : Migration
+    public partial class NuevaBase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -382,9 +382,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    IdPersonal = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Area = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UsuarioId = table.Column<int>(type: "int", nullable: false)
+                    IdEmpleado = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Area = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -395,12 +394,6 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         principalTable: "Usuario",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Personal_Usuario_UsuarioId",
-                        column: x => x.UsuarioId,
-                        principalTable: "Usuario",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -448,25 +441,6 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DetalleCTCE",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Peticion = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    TieneDictamenesAnteriores = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DetalleCTCE", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DetalleCTCE_Tramite_Id",
-                        column: x => x.Id,
-                        principalTable: "Tramite",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Documento",
                 columns: table => new
                 {
@@ -504,12 +478,31 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TramiteCTCE",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Peticion = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    TieneDictamenesAnteriores = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TramiteCTCE", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TramiteCTCE_Tramite_Id",
+                        column: x => x.Id,
+                        principalTable: "Tramite",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UnidadReprobada",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DetalleCTCEId = table.Column<int>(type: "int", nullable: false),
+                    TramiteCTCEId = table.Column<int>(type: "int", nullable: false),
                     UnidadAprendizajeId = table.Column<string>(type: "nvarchar(4)", nullable: false),
                     PeriodoCurso = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PeriodoRecurse = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -519,9 +512,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_UnidadReprobada", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UnidadReprobada_DetalleCTCE_DetalleCTCEId",
-                        column: x => x.DetalleCTCEId,
-                        principalTable: "DetalleCTCE",
+                        name: "FK_UnidadReprobada_TramiteCTCE_TramiteCTCEId",
+                        column: x => x.TramiteCTCEId,
+                        principalTable: "TramiteCTCE",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -1200,11 +1193,6 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 column: "SesionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Personal_UsuarioId",
-                table: "Personal",
-                column: "UsuarioId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SesionCOSIE_NumeroSesion",
                 table: "SesionCOSIE",
                 column: "NumeroSesion",
@@ -1248,9 +1236,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 column: "CarreraId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UnidadReprobada_DetalleCTCEId",
+                name: "IX_UnidadReprobada_TramiteCTCEId",
                 table: "UnidadReprobada",
-                column: "DetalleCTCEId");
+                column: "TramiteCTCEId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UnidadReprobada_UnidadAprendizajeId",
@@ -1309,7 +1297,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "SesionCOSIE");
 
             migrationBuilder.DropTable(
-                name: "DetalleCTCE");
+                name: "TramiteCTCE");
 
             migrationBuilder.DropTable(
                 name: "UnidadAprendizaje");

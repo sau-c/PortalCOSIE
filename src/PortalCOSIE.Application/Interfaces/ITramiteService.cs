@@ -7,7 +7,7 @@ namespace PortalCOSIE.Application.Interfaces
     {
         Task<IEnumerable<Tramite>> ListarTodos(string rol, string identityUserId);
         Task SolicitarCTCE(SolicitudCtceDTO dto, string userId);
-        Task<DetalleCTCE?> BuscarDetalleCTCEPorId(int tramiteId, string identityUserId);
+        Task<TramiteCTCE?> BuscarTramiteCTCEPorId(int tramiteId, string identityUserId);
         Task AsignarPersonal(int tramiteId, string identityUserId);
         Task<ArchivoDescargaDTO> ObtenerDocumentoPorId(int documentoId, string identityUserId);
     }

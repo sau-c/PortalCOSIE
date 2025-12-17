@@ -105,7 +105,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> SeguimientoCTCE(int tramiteId)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            var tramite = await _tramiteService.BuscarDetalleCTCEPorId(tramiteId, userId);
+            var tramite = await _tramiteService.BuscarTramiteCTCEPorId(tramiteId, userId);
             ViewBag.EstadoDocumento = new SelectList(await _catalogoService.ListarActivosAsync(), "Id", "Nombre");
 
             return View(tramite);

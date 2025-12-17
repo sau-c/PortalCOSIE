@@ -5,7 +5,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
     /// <summary>
     /// Representa datos específicos de un trámite del Consejo Técnico Consultivo Escolar (CTCE).
     /// </summary>
-    public class DetalleCTCE : Tramite
+    public class TramiteCTCE : Tramite
     {
         /// <summary>Descripción de la petición académica del alumno por la cual solicita este tramite</summary>
         public string Peticion { get; private set; }
@@ -19,12 +19,12 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         public IReadOnlyCollection<UnidadReprobada> UnidadesReprobadas => _unidadesReprobadas.AsReadOnly();
 
         /// <summary>Constructor privado para migraciones</summary>
-        private DetalleCTCE() { }
+        private TramiteCTCE() { }
 
         /// <summary>
-        /// Crear una nueva instancia de DetalleCTCE
+        /// Crear una nueva instancia de TramiteCTCE
         /// </summary>
-        public DetalleCTCE(
+        public TramiteCTCE(
             int alumnoId,
             int tipoId,
             string periodoSolicitud,

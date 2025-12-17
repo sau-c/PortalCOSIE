@@ -1,30 +1,61 @@
 @startuml
-
+' --- CONFIGURACIÓN DE DISEÑO ---
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
-skinparam packageStyle rectangle
+skinparam nodesep 50
+skinparam ranksep 60
+skinparam shadowing true
 
-' --- BASE ---
-abstract class BaseEntity {
-    + Id : int
-    + IsDeleted : bool
-    + SoftDelete()
-    + Restore()
+' ==========================================
+' ESTILOS DE COLORES (VIBRANTE)
+' ==========================================
+
+' 1. Estilo para Entidades Raíz (Aggregate Roots) -> AZUL
+skinparam class {
+    BackgroundColor<<Root>> #E8F8F5
+    BorderColor<<Root>> #117864
+    BorderThickness<<Root>> 2
 }
 
-class Enumeration {
-    + Id : int
-    + Nombre : string
+' 4. Estilo para Paquetes (Agregados) -> GRIS LIMPIO
+skinparam package {
+    Style Rectangle
+    BackgroundColor<<Aggregate>> White
+    BorderColor<<Aggregate>> #616161
+    BorderStyle<<Aggregate>> Dashed
+    FontColor<<Aggregate>> #616161
+    FontSize 13
+    FontStyle Bold
 }
 
-' --- PAQUETE USUARIOS ---
-package "Módulo Usuarios" {
-    abstract class Usuario {
+' ==========================================
+' DEFINICIÓN DE PAQUETES Y CLASES
+' ==========================================
+
+' --- SHARED KERNEL ---
+package "Shared Kernel" {
+    abstract class BaseEntity {
+        + Id : int
+        + IsDeleted : bool
+        + SoftDelete()
+        + Restore()
+    }
+
+    class Enumeration <<Enumeration>> {
+        + Id : int
+        + Nombre : string
+    }
+    
+    BaseEntity -[hidden]right- Enumeration
+}
+
+' --- AGREGADO: IDENTIDAD ---
+package "Usuario Aggregate" <<Aggregate>> {
+    abstract class Usuario <<Root>> {
         + IdentityUserId : string
         + Nombre : string
         + ApellidoPaterno : string
         + ApellidoMaterno : string
-        + NombreCompleto() : string
     }
 
     class Alumno {
@@ -37,11 +68,14 @@ package "Módulo Usuarios" {
         + IdEmpleado : string
         + Area : string
     }
+    
+    Usuario <|-- Alumno
+    Usuario <|-- Personal
 }
 
-' --- PAQUETE ACADEMICO ---
-package "Módulo Académico" {
-    class Carrera {
+' --- AGREGADO: ACADÉMICO ---
+package "Carrera Aggregate" <<Aggregate>> {
+    class Carrera <<Root>> {
         + Nombre : string
         + AgregarUnidad()
     }
@@ -55,51 +89,49 @@ package "Módulo Académico" {
     enum Semestre {
         PRIMERO
         SEGUNDO
-        TERCERO
-        CUARTO
-        QUINTO
+        ...
     }
+    
+    Carrera "1" *-- "*" UnidadAprendizaje
+    UnidadAprendizaje .> Semestre
 }
 
-' --- PAQUETE TRAMITES ---
-package "Módulo Trámites" {
-    abstract class Tramite {
+' --- AGREGADO: TRÁMITES (CORE DOMAIN) ---
+package "Tramite Aggregate" <<Aggregate>> {
+    abstract class Tramite <<Root>> {
         + FechaSolicitud : DateTime
-        + FechaConclusion : DateTime?
+        + PeriodoSolicitud : string
         + EstadoTramiteId : int
         + TipoTramiteId : int
         + AlumnoId : int
-        + PersonalId : int?
         + AsignarPersonal()
         + CambiarEstado()
         + Concluir()
     }
 
     class TramiteCTCE {
-        + Situacion : string
+        + Peticion : string
         + TieneDictamenesAnteriores : bool
-        + AgregarUnidadReprobada()
+        + SetDocumentoObligatorio()
     }
 
     class UnidadReprobada {
         + PeriodoCurso : string
         + PeriodoRecurse : string
-        + UnidadAprendizajeId : int
+        + UnidadAprendizajeId : string
     }
 
     class Documento {
         + Nombre : string
         + Observaciones : string
         + Contenido : byte[]
-        + EstadoDocumentoId : int
+        + SetEstado()
     }
 
     class EstadoTramite <<Enumeration>> {
         + Solicitado
         + EnRevision
-        + DocumentosPendientes
         + Concluido
-        + Cancelado
     }
 
     class TipoTramite <<Enumeration>> {
@@ -111,20 +143,44 @@ package "Módulo Trámites" {
         + EnRevision
         + Validado
         + ConErrores
-        + Incorrecto
+    }
+
+    class TipoDocumento <<Enumeration>> {
+        + Identificacion
+        + BoletaGlobal
+        + Probatorios
+    }
+
+    ' Relaciones Internas Trámite
+    Tramite <|-- TramiteCTCE
+    Tramite "1" *-- "*" Documento
+    TramiteCTCE "1" *-- "*" UnidadReprobada
+    
+    Tramite .> EstadoTramite
+    Tramite .> TipoTramite
+    Documento .> EstadoDocumento
+    Documento .> TipoDocumento
+    
+    ' Layout Interno Vertical
+    Tramite -[hidden]down- TramiteCTCE
+    TramiteCTCE -[hidden]down- Documento
+    Documento -[hidden]down- UnidadReprobada
+}
+
+' --- AGREGADO: BITÁCORA ---
+package "Bitacora Aggregate" <<Aggregate>> {
+    class EntradaBitacora <<Root>> {
+        + Accion : string
+        + Entidad : string
+        + EntidadId : string
+        + IdentityUserId : string
+        + FechaRegistro : DateTime
     }
 }
 
-' --- PAQUETE CALENDARIO ---
-package "Módulo Calendario" {
-    class PeriodoConfig {
-        + AnioInicio : int
-        + PeriodoInicio : int
-        + AnioFin : int
-        + PeriodoFin : int
-    }
-
-    class SesionCOSIE {
+' --- AGREGADO: PLANEACIÓN (Al final) ---
+package "Planeación Aggregate" <<Aggregate>> {
+    class SesionCOSIE <<Root>> {
         + NumeroSesion : string
         + FechaSesion : DateTime?
         + SetFechasRecepcion()
@@ -134,64 +190,52 @@ package "Módulo Calendario" {
         + Fecha : DateTime
         + SesionId : int
     }
-}
 
-' --- PAQUETE SISTEMA ---
-package "Sistema" {
-    class EntradaBitacora {
-        + Accion : string
-        + Entidad : string
-        + EntidadId : string
-        + ValorNuevo : string
-        + IdentityUserId : string
-        + IpAddress : string
-        + FechaRegistro : DateTime
+    class PeriodoConfig <<Root>> {
+        + AnioInicio : int
+        + AnioActual : int
     }
+    
+    SesionCOSIE "1" *-- "*" FechaRecepcion
+    SesionCOSIE -[hidden]down- PeriodoConfig
 }
 
-' --- HERENCIA ---
-BaseEntity <|-- Usuario
-BaseEntity <|-- Carrera
-BaseEntity <|-- UnidadAprendizaje
-BaseEntity <|-- Tramite
-BaseEntity <|-- UnidadReprobada
-BaseEntity <|-- Documento
-BaseEntity <|-- PeriodoConfig
-BaseEntity <|-- SesionCOSIE
-BaseEntity <|-- FechaRecepcion
-BaseEntity <|-- EntradaBitacora
-BaseEntity <|-- Enumeration
+' ==========================================
+' RELACIONES EXTERNAS Y HERENCIA BASE
+' ==========================================
 
-Usuario <|-- Alumno
-Usuario <|-- Personal
-Tramite <|-- TramiteCTCE
+BaseEntity <|-- Usuario #line:silver
+BaseEntity <|-- Carrera #line:silver
+BaseEntity <|-- UnidadAprendizaje #line:silver
+BaseEntity <|-- Tramite #line:silver
+BaseEntity <|-- Documento #line:silver
+BaseEntity <|-- UnidadReprobada #line:silver
+BaseEntity <|-- SesionCOSIE #line:silver
+BaseEntity <|-- FechaRecepcion #line:silver
+BaseEntity <|-- EntradaBitacora #line:silver
+BaseEntity <|-- Enumeration #line:silver
+BaseEntity <|-- PeriodoConfig #line:silver
 
-Enumeration <|-- EstadoTramite
-Enumeration <|-- TipoTramite
-Enumeration <|-- EstadoDocumento
+Enumeration <|-- EstadoTramite #line:silver
+Enumeration <|-- TipoTramite #line:silver
+Enumeration <|-- EstadoDocumento #line:silver
+Enumeration <|-- TipoDocumento #line:silver
 
-' --- RELACIONES ---
+' Relaciones de Negocio Cruzadas
+Tramite --> Alumno : Solicitado por
+Tramite --> Personal : Asignado a
+Alumno --> Carrera : Inscrito en
+UnidadReprobada --> UnidadAprendizaje : Refiere a
 
-' Usuarios -> Académico
-Alumno "1" --> "1" Carrera : Pertenece a
-Carrera "1" *-- "many" UnidadAprendizaje : Contiene
-UnidadAprendizaje --> Semestre : Usa
+' ==========================================
+' LAYOUT MASTER (COLUMNA VERTICAL ESTRICTA)
+' ==========================================
+' Esta sección fuerza el orden: Shared -> Usuario -> Carrera -> Tramite -> Bitacora -> Planeación
 
-' Trámites -> Usuarios
-Tramite "many" --> "1" Alumno : Solicitado por
-Tramite "many" --> "0..1" Personal : Asignado a
-
-' Trámites -> Enumeraciones
-Tramite --> EstadoTramite : Tiene estado
-Tramite --> TipoTramite : Es tipo
-Documento --> EstadoDocumento : Tiene estado
-
-' Composición interna de Trámites
-Tramite "1" *-- "many" Documento : Adjunta
-TramiteCTCE "1" *-- "many" UnidadReprobada : Detalla
-UnidadReprobada --> UnidadAprendizaje : Referencia
-
-' Calendario
-SesionCOSIE "1" *-- "many" FechaRecepcion : Define
+BaseEntity -[hidden]down- Usuario
+Usuario -[hidden]down- Carrera
+Carrera -[hidden]down- Tramite
+Tramite -[hidden]down- EntradaBitacora
+EntradaBitacora -[hidden]down- SesionCOSIE
 
 @enduml

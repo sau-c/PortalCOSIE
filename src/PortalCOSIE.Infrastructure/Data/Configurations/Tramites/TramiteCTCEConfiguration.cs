@@ -4,11 +4,11 @@ using PortalCOSIE.Domain.Entities.Tramites;
 
 namespace PortalCOSIE.Infrastructure.Data.Configurations.Tramites
 {
-    public class DetalleCTCEConfiguration : IEntityTypeConfiguration<DetalleCTCE>
+    public class TramiteCTCEConfiguration : IEntityTypeConfiguration<TramiteCTCE>
     {
-        public void Configure(EntityTypeBuilder<DetalleCTCE> builder)
+        public void Configure(EntityTypeBuilder<TramiteCTCE> builder)
         {
-            builder.ToTable("DetalleCTCE");
+            builder.ToTable("TramiteCTCE");
 
             builder.Property(t => t.Peticion)
                 .HasMaxLength(1000)

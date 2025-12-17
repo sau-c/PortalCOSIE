@@ -39,9 +39,9 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
-        public async Task<DetalleCTCE> BuscarDetalleCTCEPorId(int tramiteId)
+        public async Task<TramiteCTCE> BuscarTramiteCTCEPorId(int tramiteId)
         {
-            return await _context.Set<DetalleCTCE>()
+            return await _context.Set<TramiteCTCE>()
                 .Include(d => d.Alumno)
                 .ThenInclude(a => a.Carrera)
                 .Include(d => d.UnidadesReprobadas)

@@ -102,7 +102,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
         public async Task<ChartDTO> ObtenerUnidadesMasReprobadasPorCarrera(int? carreraId, string periodo)
         {
             // Dame todas las UnidadesReprobadas.
-            var query = _context.Set<DetalleCTCE>()
+            var query = _context.Set<TramiteCTCE>()
                 .Where(d => d.PeriodoSolicitud == periodo)
                 .SelectMany(d => d.UnidadesReprobadas);
 

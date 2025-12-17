@@ -79,7 +79,7 @@ namespace PortalCOSIE.Application
                 }
 
                 // 2. Crear el Trámite
-                var tramite = new DetalleCTCE(
+                var tramite = new TramiteCTCE(
                     alumno.Id,
                     TipoTramite.DictamenInterno.Id,
                     periodo,
@@ -113,10 +113,10 @@ namespace PortalCOSIE.Application
                     DocumentoDto.Contenido
                 );
         }
-        public async Task<DetalleCTCE?> BuscarDetalleCTCEPorId(int tramiteId, string identityUserId)
+        public async Task<TramiteCTCE?> BuscarTramiteCTCEPorId(int tramiteId, string identityUserId)
         {
             var personal = await _usuarioRepo.BuscarPersonal(identityUserId);
-            var tramite = await _tramiteRepo.BuscarDetalleCTCEPorId(tramiteId);
+            var tramite = await _tramiteRepo.BuscarTramiteCTCEPorId(tramiteId);
 
             if (tramite.PersonalId != personal.Id)
                 throw new ApplicationException("No puedes acceder a este tramite");

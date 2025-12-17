@@ -19,7 +19,7 @@ select * from Carrera
 select * from UnidadAprendizaje
 -- Tramite
 select * from Tramite
-select * from DetalleCTCE
+select * from TramiteCTCE
 select * from UnidadReprobada
 select * from EstadoTramite
 select * from TipoTramite
@@ -68,9 +68,23 @@ EXEC agregarAlumno
 --%%%%%%%%%%%%%%%%%%%%%%%%
 --%%%% ELIMINAR TABLAS %%%
 --%%%%%%%%%%%%%%%%%%%%%%%%
+--DROP TABLE dbo.Bitacora
+--GO
+--DROP TABLE dbo.PeriodoConfig
+--GO
+--DROP TABLE dbo.FechaRecepcion
+--GO
+--DROP TABLE dbo.SesionCOSIE
+--GO
 --DROP TABLE dbo.Documento
 --GO
+--DROP TABLE dbo.TipoDocumento
+--GO
 --DROP TABLE dbo.EstadoDocumento
+--GO
+--DROP TABLE dbo.UnidadReprobada
+--GO
+--DROP TABLE dbo.TramiteCTCE
 --GO
 --DROP TABLE dbo.Tramite
 --GO
@@ -108,13 +122,13 @@ EXEC agregarAlumno
 --VALUES (1, '2025/11/11',0)
 
 SELECT * FROM Tramite
-SELECT * FROM DetalleCTCE
+SELECT * FROM TramiteCTCE
 SELECT * FROM UnidadReprobada
 
 
 SELECT T.ID, UA.Nombre, c.Nombre FROM Tramite AS T
-INNER JOIN DetalleCTCE AS D ON T.Id = D.Id
-INNER JOIN UnidadReprobada AS UR ON D.ID = UR.DetalleCTCEId
+INNER JOIN TramiteCTCE AS D ON T.Id = D.Id
+INNER JOIN UnidadReprobada AS UR ON D.ID = UR.TramiteCTCEId
 INNER JOIN UnidadAprendizaje AS UA ON UR.UnidadAprendizajeId = UA.Id
 INNER JOIN Carrera AS C ON UA.CarreraId = C.Id
 

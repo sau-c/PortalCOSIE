@@ -10,7 +10,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         /// <summary>
         /// Identificador del detalle CTCE asociado a esta unidad reprobada
         /// </summary>
-        public int DetalleCTCEId { get; set; }
+        public int TramiteCTCEId { get; set; }
 
         /// <summary>
         /// Identificador de la unidad de aprendizaje reprobada
@@ -30,7 +30,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         /// <summary>
         /// Navegación al detalle CTCE que contiene esta unidad reprobada
         /// </summary>
-        public DetalleCTCE DetalleCTCE { get; private set; }
+        public TramiteCTCE TramiteCTCE { get; private set; }
 
         /// <summary>
         /// Navegación a la unidad de aprendizaje reprobada

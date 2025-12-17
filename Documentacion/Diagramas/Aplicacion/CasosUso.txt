@@ -1,0 +1,102 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+    BackgroundColor White
+    BorderColor #1565C0
+    ArrowColor #1565C0
+}
+skinparam actor {
+    BackgroundColor White
+    BorderColor #1565C0
+}
+
+' ================= DEFINICIÓN DE ACTORES =================
+actor "Usuario sin rol" as Usuario #Gainsboro
+actor Alumno
+actor Personal
+actor Administrador
+
+' Herencia de Actores (Ambos son usuarios y deben autenticarse)
+Usuario <|-- Alumno
+Usuario <|-- Personal
+Usuario <|-- Administrador
+
+' ================= LÍMITE DEL SISTEMA =================
+rectangle "Portal web" {
+
+    ' --- CASOS DE USO COMUNES ---
+    usecase "Iniciar Sesión (Autenticación)" as UC_Login
+
+    ' --- MÓDULO DEL ALUMNO ---
+    package "Gestión de Solicitudes (Alumno)" {
+        usecase "Solicitar Trámite CTCE" as UC_Solicitar
+        usecase "Consultar Estado y Seguimiento" as UC_Consultar
+        usecase "Subir/Corregir Documentación" as UC_SubirDocs
+    }
+
+    ' --- MÓDULO DEL PERSONAL ---
+    package "Seguimiento (Personal)" {
+        usecase "Gestionar Trámites Asignados" as UC_GestionarTramites
+        usecase "Validar Documentos" as UC_ValidarDocs
+        usecase "Registrar Dictamen Final" as UC_Dictaminar
+    }
+
+    ' --- MÓDULO ACADÉMICO Y PLANEACIÓN ---
+    package "Administración Académica y Configuración" {
+        usecase "Gestionar Catálogo de Carreras/Unidades" as UC_GestionarCarreras
+        usecase "Configurar Periodos y Sesiones COSIE" as UC_ConfigurarPlaneacion
+        usecase "Consultar Bitácora de Auditoría" as UC_Auditoria
+    }
+
+    ' ================= RELACIONES =================
+
+    ' 1. Relaciones de Usuario Genérico
+    Usuario --> UC_Login
+
+    ' 2. Relaciones del Alumno
+    Alumno --> UC_Solicitar
+    Alumno --> UC_Consultar
+    
+    ' Si al consultar el estado hay docs rechazados, el alumno extiende el flujo para corregir
+    UC_Consultar <.. UC_SubirDocs : <<extend>> \n(Si hay observaciones)
+
+    ' Al solicitar, es obligatorio subir documentos iniciales
+    UC_Solicitar ..> UC_SubirDocs : <<include>>
+
+    ' 3. Relaciones del Personal
+    Personal --> UC_GestionarTramites
+    Personal --> UC_GestionarCarreras
+
+    ' Para gestionar un trámite, es obligatorio validar sus documentos
+    UC_GestionarTramites ..> UC_ValidarDocs : <<include>>
+    
+    ' Dictaminar es el paso final de la gestión
+    UC_GestionarTramites <.. UC_Dictaminar : <<extend>> \n(Al finalizar revisión)
+
+    ' 4. Relaciones del Administrador
+    Administrador --> UC_ConfigurarPlaneacion
+    Administrador --> UC_Auditoria
+    ' El administrador también puede gestionar carreras si es necesario
+    Administrador --> UC_GestionarCarreras 
+
+}
+
+' Notas explicativas
+note right of UC_Solicitar
+  Creación del Agregado Trámite.
+  El alumno especifica su situación.
+end note
+
+note right of UC_Dictaminar
+  Cambio de estado final del Trámite
+  (Concluido/Aprobado/Rechazado).
+end note
+
+note left of UC_ConfigurarPlaneacion
+  Define las fechas de recepción
+  (Agregado Planeación).
+end note
+
+@enduml

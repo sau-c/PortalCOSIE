@@ -7,13 +7,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Areas\Admin\**" />
 		<Compile Remove="Views\Rol\**" />
-		<Content Remove="Areas\Admin\**" />
 		<Content Remove="Views\Rol\**" />
-		<EmbeddedResource Remove="Areas\Admin\**" />
 		<EmbeddedResource Remove="Views\Rol\**" />
-		<None Remove="Areas\Admin\**" />
 		<None Remove="Views\Rol\**" />
 	</ItemGroup>
 
@@ -33,10 +29,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PortalCOSIE.Application\PortalCOSIE.Application.csproj" />
 		<ProjectReference Include="..\PortalCOSIE.Infrastructure\PortalCOSIE.Infrastructure.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Areas\" />
 	</ItemGroup>
 
 </Project>
