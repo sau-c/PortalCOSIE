@@ -28,7 +28,8 @@ namespace PortalCOSIE.Domain.Entities.Tramites
 
         /// <summary>Fecha de conclusión del trámite (cuando aplica)</summary>
         public DateTime? FechaConclusion { get; private set; }
-
+        /// <summary>Comentario generico del trámite</summary>
+        public string? Observaciones { get; private set; }
         // Propiedades de navegación
         public EstadoTramite EstadoTramite { get; private set; }
         public TipoTramite TipoTramite { get; private set; }

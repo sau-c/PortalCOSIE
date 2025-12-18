@@ -124,7 +124,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
                     Total = g.Count()
                 })
                 .OrderByDescending(x => x.Total)
-                .Take(10)
+                .Take(20)
                 .ToListAsync();
 
             return new ChartDTO

@@ -60,9 +60,9 @@ EXEC agregarAlumno
 --SET PasswordHash = 'AQAAAAIAAYagAAAAEEFVNy7BXpX/CAk6xy34b/DL+ArNM1nyqosz6s/D/s1nCGtfehBnilfy5KlZeJTZ0Q=='
 --WHERE Id = 'guid-personal-coord'
 
---UPDATE PeriodoConfig
---SET PeriodoActual = '1'
---WHERE Id = 1
+--UPDATE Tramite
+--SET PersonalId = NULL
+--WHERE PersonalId = 201
 
 
 --%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,10 +117,16 @@ EXEC agregarAlumno
 --DROP TABLE dbo.AspNetUsers
 --GO
 
-
---INSERT INTO FechaRecepcion(SesionId, Fecha, EsInactivo)
---VALUES (1, '2025/11/11',0)
-
+SET IDENTITY_INSERT [UnidadReprobada] ON;
+INSERT INTO UnidadReprobada(Id, TramiteCTCEId, UnidadAprendizajeId, PeriodoCurso, PeriodoRecurse, IsDeleted) VALUES
+(23, 1001, 'M102', '2023/1', '2023/2', 0),
+(24, 1001, 'M103', '2023/1', '2023/2', 0),
+(25, 1001, 'M104', '2023/1', '2023/2', 0),
+(26, 1001, 'M105', '2023/1', '2023/2', 0),
+(27, 1001, 'M106', '2023/1', '2023/2', 0),
+(28, 1001, 'M107', '2023/1', '2023/2', 0)
+SET IDENTITY_INSERT [UnidadReprobada] OFF;
+			
 SELECT * FROM Tramite
 SELECT * FROM TramiteCTCE
 SELECT * FROM UnidadReprobada
@@ -131,4 +137,3 @@ INNER JOIN TramiteCTCE AS D ON T.Id = D.Id
 INNER JOIN UnidadReprobada AS UR ON D.ID = UR.TramiteCTCEId
 INNER JOIN UnidadAprendizaje AS UA ON UR.UnidadAprendizajeId = UA.Id
 INNER JOIN Carrera AS C ON UA.CarreraId = C.Id
-

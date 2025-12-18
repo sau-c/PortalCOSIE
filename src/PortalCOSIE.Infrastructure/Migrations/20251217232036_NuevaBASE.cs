@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class NuevaBase : Migration
+    public partial class NuevaBASE : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -409,6 +409,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     FechaSolicitud = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PeriodoSolicitud = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FechaConclusion = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>

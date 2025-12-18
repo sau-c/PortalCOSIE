@@ -34,7 +34,7 @@
                     <div class="card border h-100 shadow-sm">
                         <div class="card-header bg-white border-bottom fw-bold text-primary">
                             <i class="fas fa-user-graduate me-2"></i>Datos del solicitante
-                            <span class="float-end badge bg-light text-secondary border fw-normal">
+                            <span class="float-end badge bg-success fw-normal">
                                 Solicitado: @Model.FechaSolicitud.ToString("dd/MMM/yyyy")
                             </span>
                         </div>
@@ -189,14 +189,31 @@
                     </div>
                 </div>
 
-                <div class="card-footer bg-white border-top p-3 text-end">
-                    <a asp-action="Index" class="btn btn-outline-secondary me-2">
-                        Cancelar
-                    </a>
-                    <button type="submit" class="btn btn-primary px-4">
-                        <i class="fas fa-save me-2"></i>Guardar revisión
-                    </button>
+                <div class="card-footer bg-white border-top p-3">
+                    <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-end justify-content-between gap-3">
+
+                        <div class="flex-grow-1">
+                            <textarea asp-for="@Model.Observaciones"
+                                      class="form-control form-control-sm shadow-none"
+                                      rows="2"
+                                      placeholder="Observaciones generales del trámite..."
+                                      style="font-size: 0.85rem; resize: none;">
+                                  </textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>Guardar revisión
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
+
             </div>
 
         </div>

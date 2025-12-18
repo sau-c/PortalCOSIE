@@ -1,24 +1,24 @@
 ﻿<div class="modal fade" id="modalConfirmarAsignacion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h6 class="modal-title fw-bold">
+                <h5 class="modal-title">
                     <i class="fas fa-question-circle me-2"></i>Confirmar acción
-                </h6>
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4 text-center">
                 <div class="mb-3 text-primary bg-primary bg-opacity-10 d-inline-block p-3 rounded-circle">
-                    <i class="fas fa-hand-holding-heart fa-2x"></i>
+                    <i class="fas fa-hand-holding fa-2x"></i>
                 </div>
                 <h5 class="fw-bold mb-2">¿Deseas tomar este trámite?</h5>
                 <p class="text-muted small mb-0">
                     Al confirmar, serás asignado como el responsable de dar seguimiento a esta solicitud.
                 </p>
             </div>
-            <div class="modal-footer bg-light border-0 justify-content-center pb-4">
-                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" id="btnConfirmarSi" class="btn btn-primary px-4 shadow-sm">
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnConfirmarSi" class="btn btn-primary">
                     <i class="fas fa-check me-2"></i>Sí, asignar a mí
                 </button>
             </div>
@@ -67,10 +67,7 @@
                 const url = formPendiente.action;
                 const formData = new FormData(formPendiente);
                 const resultado = await executeFetch(url, 'POST', formData);
-                showGlobalModal('success', resultado.message, {
-                    redirectUrl: '/'
-                });
-
+                showGlobalModal('success', resultado.message);
             } catch (error) {
                 showGlobalModal('error', error.message, {
                     onClose: () => control.restaurar()

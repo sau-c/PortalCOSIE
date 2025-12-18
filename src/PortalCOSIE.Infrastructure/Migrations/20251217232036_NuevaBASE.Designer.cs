@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Data;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251216170744_NuevaBase")]
-    partial class NuevaBase
+    [Migration("20251217232036_NuevaBASE")]
+    partial class NuevaBASE
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4579,6 +4579,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PeriodoSolicitud")
                         .IsRequired()

@@ -4577,6 +4577,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PeriodoSolicitud")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

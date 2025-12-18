@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Calendario.SesionCOSIE>
 @{
     ViewData["Title"] = "Calendario de sesiones COSIE CTCE";
-    var puedeEditar = User.IsInRole("Administrador") || User.IsInRole("Personal");
+    var puedeEditar = User.IsInRole("Administrador");
 }
 
 <div class="card shadow">

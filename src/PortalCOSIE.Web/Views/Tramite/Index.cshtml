@@ -72,6 +72,7 @@
                         @if (tramite.PersonalId == null && User.IsInRole("Personal"))
                         {
                             <form id="formTomar_@tramite.Id" asp-action="TomarTramite" asp-route-tramiteId="@tramite.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-sm btn-success py-0 px-2 shadow-sm" title="Asignarme">
                                     <i class="fas fa-hand-paper"></i>
                                 </button>
@@ -114,29 +115,6 @@
                     { targets: 7, width: "80px", className: "text-center", orderable: false }
                 ]
             });
-
-            // document.addEventListener('submit', async (e) => {
-            //     const form = e.target.closest('.form-tomar');
-            //     if (!form) return;
-            //     e.preventDefault();
-            //     e.stopPropagation();
-
-            //     const btnSubmit = form.querySelector('button[type="submit"]');
-            //     const control = bloqueadorBoton(btnSubmit);
-            //     control.bloquear();
-
-            //     try {
-            //         const url = form.action;
-            //         const formData = new FormData(form);
-            //         const resultado = await executeFetch(url, 'POST', formData);
-            //         showGlobalModal('success', resultado.message);
-            //     } catch (error) {
-            //         showGlobalModal('error', error.message, {
-            //             onClose: () => control.restaurar()
-            //         });
-            //     }
-            // });
-
         });
     </script>
 }
