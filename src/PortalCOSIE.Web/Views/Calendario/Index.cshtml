@@ -142,9 +142,6 @@
             @if (puedeEditar)
             {
                     @:config.columnDefs.push({ targets: 3, width: "95px", className: "text-center", orderable: false });
-                    // Inicializar modales
-                    @:inicializarModalSesion();
-                    @:inicializarModalToggle();
             }
 
             $('#tblSesiones').DataTable(config);

@@ -35,7 +35,7 @@
 </div>
 
 <script>
-    function inicializarModalToggle(){
+    document.addEventListener("DOMContentLoaded", function () {
         $('#modalToggle').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget);
             const userId = button.data('user-id');
@@ -89,5 +89,5 @@
             $('#confirmIcon').removeClass().addClass('fas fa-spinner fa-spin');
             $('#confirmText').text('Cargando...');
         });
-    }
+    });
 </script>

@@ -98,7 +98,7 @@
 </div>
 
 <script>
-    function inicializarModalAlumno() {
+    document.addEventListener("DOMContentLoaded", function () {
         const modal = document.getElementById('modalAlumno');
         const form = document.getElementById('formAlumno');
         const modalTitle = document.getElementById('modalTitle');
@@ -201,5 +201,5 @@
             limpiarFormulario();
             boton.restaurar();
         });
-    }
+    });
 </script>

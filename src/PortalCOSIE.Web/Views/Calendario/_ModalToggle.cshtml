@@ -30,7 +30,7 @@
 </div>
 
 <script>
-    function inicializarModalToggle() {
+    document.addEventListener("DOMContentLoaded", function () {
         const CONFIG = {
             activar: {
                 headerClass: 'modal-header bg-success text-white',
@@ -79,5 +79,5 @@
             $modal.find('.modal-body > p:last').text(config.detalle);
             $modal.find('button[type="submit"] > span').text(config.titulo.split(' ')[0]);
         });
-    }
+    });
 </script>

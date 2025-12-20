@@ -33,7 +33,7 @@
 </div>
 
 <script>
-    function inicializarModalCorreo() {
+    document.addEventListener("DOMContentLoaded", function () {
         const modal = document.getElementById('modalCorreo');
         const form = document.getElementById('formCorreo');
         const correo = document.getElementById('correo');
@@ -90,5 +90,5 @@
                 tooltip.dispose();
             }
         });
-    }
+    });
 </script>

@@ -39,7 +39,7 @@
 </div>
 
 <script>
-    function inicializarModalCelular() {
+    document.addEventListener("DOMContentLoaded", function () {
         const modal = document.getElementById('modalCelular');
         const form = document.getElementById('formCelular');
         const celular = document.getElementById('celular');
@@ -77,5 +77,5 @@
             form.reset();
             boton.restaurar();
         });
-    }
+    });
 </script>

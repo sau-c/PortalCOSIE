@@ -45,7 +45,7 @@
 </div>
 
 <script>
-    function inicializarModalSesion() {
+    document.addEventListener("DOMContentLoaded", function () {
         const modal = document.getElementById("modalSesion");
         const form = document.getElementById("formSesion");
         const fechasContainer = modal.querySelector(".fejas-container") ?? modal.querySelector(".fechas-container");
@@ -143,5 +143,5 @@
                 });
             }
         });
-    }
+    });
 </script>
