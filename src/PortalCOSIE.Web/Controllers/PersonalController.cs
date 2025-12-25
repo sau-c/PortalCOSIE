@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using PortalCOSIE.Application.DTO.Cuenta;
 using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 
@@ -12,13 +10,11 @@ namespace PortalCOSIE.Web.Controllers
     {
         private readonly ISecurityService _securityService;
         private readonly IUsuarioService _usuarioService;
-        private readonly ICarreraService _carreraService;
 
-        public PersonalController(ISecurityService securityService, IUsuarioService usuarioService, ICarreraService catalogoService)
+        public PersonalController(ISecurityService securityService, IUsuarioService usuarioService)
         {
             _securityService = securityService;
             _usuarioService = usuarioService;
-            _carreraService = catalogoService;
         }
 
         [HttpGet]
@@ -27,41 +23,21 @@ namespace PortalCOSIE.Web.Controllers
             return View(await _securityService.ListarPersonal());
         }
 
-        [HttpGet]
-        public IActionResult Crear()
-        {
-            return View();
-        }
-
         [HttpPost]
-        public async Task<IActionResult> Crear(PersonalDTO dto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Crear(CrearPersonalDTO dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
-
-            var result = await _securityService.CrearUsuarioAsync(new CrearCuentaDTO());
-
+            var result = await _securityService.CrearPersonalAsync(dto);
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                }
-                return View(dto);
+                return Json(new { success = false, message = result.Errors });
             }
-            else
-            {
-                TempData["Message"] = result.Value;
-            }
-
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = result.Value });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(PersonalDTO dto)
+        public async Task<IActionResult> Editar(EditarPersonalDTO dto)
         {
             var result = await _usuarioService.EditarPersonal(dto);
             if (!result.Succeeded)

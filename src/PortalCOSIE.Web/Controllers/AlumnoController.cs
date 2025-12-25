@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PortalCOSIE.Application.DTO.Cuenta;
+using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
@@ -37,7 +37,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(AlumnoDTO dto)
+        public async Task<IActionResult> Editar(EditarAlumnoDTO dto)
         {
             var result = await _usuarioService.EditarAlumno(dto);
             if (!result.Succeeded)

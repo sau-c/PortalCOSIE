@@ -1,20 +1,21 @@
-﻿<!-- Modal para Crear/Editar personal -->
-<div class="modal fade" id="modalPersonal" tabindex="-1">
+﻿<div class="modal fade" id="modalPersonal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <form id="formPersonal" method="post">
+            <form asp-action="Editar" id="formPersonal" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="identityUserId" name="identityUserId" />
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalTitle"></h5>
+                    <h6 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>Editar personal
+                    </h6>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <fieldset class="border rounded px-3 mb-3">
+                    <fieldset class="border rounded px-3 mb-1">
                         <legend class="float-none w-auto px-2 text-primary fs-6">
                             <i class="fas fa-user-circle me-2"></i>Datos personales
                         </legend>
-                        <div class="row mb-4">
+                        <div class="row mb-3">
                             <div class="col-lg-4 col-md-4">
                                 <label for="nombre" class="form-label">Nombre:</label>
                                 <input type="text" id="nombre" name="nombre" class="form-control"
@@ -43,7 +44,7 @@
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
                     <button id="btnModalPersonal" type="submit" class="btn btn-primary">
-                        <i id="btnIcon" class="fas fa-save me-2"></i><span></span>
+                        <i id="btnIcon" class="fas fa-save me-2"></i>Guardar
                     </button>
                 </div>
             </form>
@@ -53,105 +54,43 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const MODOS = {
-            crear: {
-                titulo: 'Crear personal',
-                btnTexto: 'Enviar correo',
-                action: '@Url.Action("Crear", "Personal")'
-            },
-            editar: {
-                titulo: 'Editar personal',
-                btnTexto: 'Guardar cambios',
-                action: '@Url.Action("Editar", "Personal")'
-            }
-        };
-
         const modal = document.getElementById('modalPersonal');
         const form = modal.querySelector('#formPersonal');
         const btnSubmit = form.querySelector('button[type="submit"]');
-        const btnIcon = btnSubmit.querySelector('i');
-        const btnText = btnSubmit.querySelector('span');
+        const boton = bloqueadorBoton(btnSubmit);
 
-        // Estado original del botón
-        const btnOriginalState = {
-            iconClass: btnIcon.className,
-            text: '' // se setea según el modo
-        };
+        modal.addEventListener('show.bs.modal', function (event) {
+            const btn = event.relatedTarget;
 
-        // Funciones para bloquear/restaurar botón
-        const bloquearBoton = () => {
-            btnIcon.className = 'fas fa-spinner fa-spin me-2';
-            btnText.textContent = 'Cargando...';
-            btnSubmit.disabled = true;
-        };
-
-        const restaurarBoton = () => {
-            btnIcon.className = btnOriginalState.iconClass;
-            btnText.textContent = btnOriginalState.text;
-            btnSubmit.disabled = false;
-        };
-
-        // Configurar modal según modo
-        const configurarModal = (modo, data = {}) => {
-            const config = MODOS[modo];
-
-            // Resetear formulario
-            form.reset();
-
-            // Configurar título y botón
-            modal.querySelector('.modal-title').textContent = config.titulo;
-            btnText.textContent = config.btnTexto;
-            form.action = config.action;
-            btnOriginalState.text = config.btnTexto;
-
-            restaurarBoton();
-
-            // Llenar datos si es edición
-            if (modo === 'editar') {
-                form.querySelector('input[name="identityUserId"]').value = data.userid || '';
-                form.querySelector('#nombre').value = data.nombre || '';
-                form.querySelector('#apellidoPaterno').value = data.apellidopaterno || '';
-                form.querySelector('#apellidoMaterno').value = data.apellidomaterno || '';
-            }
-        };
-
-        // Evento botones crear/editar usando delegation
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('button[data-mode]');
-            if (!btn) return;
-
-            const modo = btn.dataset.mode === 'create' ? 'crear' : 'editar';
-            configurarModal(modo, btn.dataset);
+            // Asignar valores
+            form.querySelector('#identityUserId').value = btn.dataset.userid || '';
+            form.querySelector('#nombre').value = btn.dataset.nombre || '';
+            form.querySelector('#apellidoPaterno').value = btn.dataset.apellidopaterno || '';
+            form.querySelector('#apellidoMaterno').value = btn.dataset.apellidomaterno || '';
         });
 
-        // Limpiar al cerrar modal
+        // Limpiar
         modal.addEventListener('hidden.bs.modal', () => {
             form.reset();
-            form.querySelector('input[name="identityUserId"]').value = '';
-            restaurarBoton();
+            boton.restaurar();
         });
 
-        // Submit del formulario
+        // 3. Submit
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             e.stopPropagation();
+            boton.bloquear();
 
-            bloquearBoton();
             try {
-                const url = form.action;
+                const url = form.getAttribute('action');
                 const formData = new FormData(form);
-                const resultado = await executeFetch(url, 'POST', formData);
-
-                // Cerrar modal
-                if (bootstrap?.Modal) {
-                    const bsModal = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
-                    bsModal.hide();
-                }
-                showGlobalModal('success', resultado.message);
-                form.reset();
+                const data = await executeFetch(url, 'POST', formData);
+                showGlobalModal('success', data.message);
             } catch (error) {
                 showGlobalModal('error', error.message, {
-                    onClose: restaurarBoton
+                    onClose: function() {
+                        boton.restaurar();
+                    }
                 });
             }
         });

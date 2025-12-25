@@ -1,0 +1,164 @@
+﻿<div class="modal fade" id="modalCrear" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form id="formCrear" asp-action="Crear" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-primary text-white">
+                    <h6 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>Crear personal
+                    </h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <fieldset class="border rounded px-3 pb-3 mb-2">
+                        <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
+                            <i class="fas fa-user-circle me-2"></i>Datos personales
+                        </legend>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="Nombre" class="form-label small mb-1">Nombre</label>
+                                <input type="text" class="form-control form-control-sm" id="Nombre" name="Nombre" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="ApellidoPaterno" class="form-label small mb-1">Apellido paterno</label>
+                                <input type="text" class="form-control form-control-sm" id="ApellidoPaterno" name="ApellidoPaterno" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="ApellidoMaterno" class="form-label small mb-1">Apellido materno</label>
+                                <input type="text" class="form-control form-control-sm" id="ApellidoMaterno" name="ApellidoMaterno" required>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="row">
+                        <div class="col-md-5 mb-2">
+                            <fieldset class="border rounded px-3 pb-3">
+                                <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
+                                    <i class="fas fa-envelope me-2"></i>Contacto
+                                </legend>
+
+                                <label for="correo" class="form-label small mb-1">
+                                    Correo electrónico
+                                    <i class="fas fa-info-circle text-info ms-1"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="top"
+                                       title="Se enviará una verificación a este correo.">
+                                    </i>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                    <input id="correoCrear" name="correo" class="form-control form-control-sm" type="email" placeholder="correo@@ipn.mx" required />
+                                </div>
+
+                                <label for="celular" class="form-label small mb-1">Celular</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                    <input id="celular" name="celular" class="form-control form-control-sm" type="text" required
+                                           maxlength="10"
+                                           pattern="\d*"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-md-7">
+                            <fieldset class="border rounded px-3 mb-1">
+                                <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
+                                    <i class="fas fa-shield me-2"></i>Seguridad
+                                </legend>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="contrasena" class="form-label small mb-1">Contraseña</label>
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                            <input type="password" id="contrasena" name="contrasena" class="form-control form-control-sm" required />
+                                        </div>
+
+                                        <label for="confirmarContrasena" class="form-label small mb-1">Confirmar contraseña</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                            <input type="password" id="confirmarContrasena" name="confirmarContrasena" class="form-control form-control-sm" minlength="8" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <!-- REQUISITOS DE IDENTITY -->
+                                        <small class="text-muted d-block">
+                                            <ul>
+                                                <li>Mínimo 8 caracteres.</li>
+                                                <li>Mínimo una mayúscula.</li>
+                                                <li>Mínimo una minúscula.</li>
+                                                <li>Mínimo un número.</li>
+                                                <li>Mínimo un carácter especial (<code>. ! @@ # $ % ^ & *</code>, etc.).</li>
+                                            </ul>
+                                        </small>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer py-1">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button id="btnSubmitCrear" type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa fa-save me-2"></i><span>Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById('modalCrear');
+        const form = document.getElementById('formCrear');
+        const btnSubmit = document.getElementById('btnSubmitCrear');
+        const boton = bloqueadorBoton(btnSubmit);
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // 1. Validaciones extra (Contraseñas)
+            const pass = document.getElementById('contrasena').value;
+            const confirm = document.getElementById('confirmarContrasena').value;
+
+            if (pass !== confirm) {
+                // Usamos showGlobalModal para consistencia
+                showGlobalModal('warning', 'Las contraseñas no coinciden. Por favor verifique.', {
+                    autoClose: true
+                });
+                return; // Detenemos la ejecución
+            }
+
+            // 2. Ejecución Fetch
+            boton.bloquear();
+
+            try {
+                const formData = new FormData(form);
+                const data = await executeFetch(form.action, 'POST', formData);
+
+                showGlobalModal('success', data.message);
+
+            } catch (error) {
+                showGlobalModal('error', error.message, {
+                    onClose: () => boton.restaurar()
+                });
+            }
+        });
+
+        // Limpiar al cerrar modal
+        modal.addEventListener('hidden.bs.modal', () => {
+            form.reset();
+            boton.restaurar();
+        });
+    });
+</script>

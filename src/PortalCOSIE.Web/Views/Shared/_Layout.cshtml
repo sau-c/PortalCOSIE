@@ -44,17 +44,20 @@
             <div class="ms-auto d-flex align-items-center gap-3">
                 <!-- Botón de usuario -->
                 <div class="dropdown">
-                    <button class="dropdown-toggle border-0 rounded-3 px-2 py-1" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-circle-user me-1"></i>
-                        @if (isAdmin)
-                        {
-                            <text>Administrador</text>
-                        }
-                        else
-                        {
-                            @User?.Identity?.Name
-                        }
+                    <button class="dropdown-toggle border-0 rounded-3 px-2 py-1 d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-circle-user fs-5"></i>
+                        <span class="d-none d-sm-inline ms-2">
+                            @if (isAdmin)
+                            {
+                                <text>Administrador</text>
+                            }
+                            else
+                            {
+                                @User?.Identity?.Name
+                            }
+                        </span>
                     </button>
+
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><h6 class="dropdown-header">@Rol</h6></li>
                         <li><a class="dropdown-item" href="@Url.Action("MisDatos", "Cuenta")"><i class="fas fa-id-badge me-2"></i>Mis datos</a></li>

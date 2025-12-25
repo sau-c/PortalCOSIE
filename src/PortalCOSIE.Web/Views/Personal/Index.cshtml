@@ -8,8 +8,7 @@
             <h6 class="mb-0 py-1">@ViewData["Title"]</h6>
             <button class="btn btn-primary btn-sm"
                     data-bs-toggle="modal"
-                    data-bs-target="#modalPersonal"
-                    data-mode="create">
+                    data-bs-target="#modalCrear">
                 <i class="fas fa-plus me-2"></i>Crear
             </button>
         </div>
@@ -60,7 +59,6 @@
                                 <button class="btn btn-sm btn-outline-primary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalPersonal"
-                                        data-mode="edit"
                                         data-userid="@personal.IdentityUserId"
                                         data-nombre="@personal.Nombre"
                                         data-apellidopaterno="@personal.ApellidoPaterno"
@@ -77,6 +75,8 @@
     </div>
 </div>
 
+<!-- Modal para crear personal -->
+<partial name="_ModalCrear" />
 <!-- Modal para editar datos -->
 <partial name="_ModalPersonal" />
 <!-- Modal para editar correo -->

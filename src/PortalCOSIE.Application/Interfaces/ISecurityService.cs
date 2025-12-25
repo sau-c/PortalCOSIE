@@ -8,6 +8,7 @@ namespace PortalCOSIE.Application.Interfaces
         Task<Result<string>> IngresarUsuarioAsync(IngresarDTO dto);
         Task CerrarSesionAsync();
         Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto);
+        Task<Result<string>> CrearPersonalAsync(CrearPersonalDTO dto);
         Task<Result<string>> ConfirmarCorreoAsync(string correo, string token);
         Task<Result<string>> RecuperarContrasenaAsync(string correo);
         Task<Result<string>> RestablecerContrasenaAsync(RestablecerDTO dto);

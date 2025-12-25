@@ -59,7 +59,7 @@ namespace PortalCOSIE.Application
                 throw new ApplicationException("No se puede buscar un Id nulo");
             return await _usuarioRepo.BuscarUsuario(id);
         }
-        public async Task<Result<string>> EditarPersonal(PersonalDTO dto)
+        public async Task<Result<string>> EditarPersonal(EditarPersonalDTO dto)
         {
             try
             {
@@ -86,7 +86,7 @@ namespace PortalCOSIE.Application
                 throw;
             }
         }
-        public async Task<Result<string>> EditarAlumno(AlumnoDTO dto)
+        public async Task<Result<string>> EditarAlumno(EditarAlumnoDTO dto)
         {
             try
             {

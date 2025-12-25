@@ -11,14 +11,14 @@
         // Constructor de dominio
         public Personal(
             string identityUserId,
-            string idPersonal,
+            string idEmpleado,
             string nombre,
             string apellidoPaterno,
             string apellidoMaterno,
             string area)
             : base(identityUserId, nombre, apellidoPaterno, apellidoMaterno)
         {
-            SetIdEmpleado(idPersonal);
+            SetIdEmpleado(idEmpleado);
             SetArea(area);
         }
 

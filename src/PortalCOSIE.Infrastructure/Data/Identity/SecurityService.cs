@@ -5,6 +5,7 @@ using PortalCOSIE.Application.Interfaces;
 using System.Net;
 using Microsoft.AspNetCore.Identity;
 using PortalCOSIE.Domain.Entities.Usuarios;
+using PortalCOSIE.Domain.Interfaces;
 
 namespace PortalCOSIE.Infrastructure.Data.Identity
 {
@@ -13,17 +14,20 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IUsuarioRepository _usuarioRepo;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSender _emailSender;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             IUsuarioRepository usuarioRepo,
+            IUnitOfWork unitOfWork,
             IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _usuarioRepo = usuarioRepo;
+            _unitOfWork = unitOfWork;
             _emailSender = emailSender;
         }
 
@@ -93,7 +97,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             if (!crear.Succeeded)
             {
                 var errors = crear.Errors.Select(e => e.Description);
-                return Result<string>.Failure(errors);
+                throw new ApplicationException("No se pudo crear el usuario: " + string.Join(", ", errors));
             }
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -110,6 +114,53 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 return Result<string>.Failure(errors);
             }
             return Result<string>.Success("Se ha enviado un enlace a tu correo para confirmar tu cuenta. No olvides revisar tu carpeta de spam.");
+        }
+        public async Task<Result<string>> CrearPersonalAsync(CrearPersonalDTO dto)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+                var user = await _userManager.FindByEmailAsync(dto.Correo);
+                if (user != null)
+                    return Result<string>.Failure("Este usuario ya existe.");
+
+                var cuentaDto = new CrearCuentaDTO
+                {
+                    Correo = dto.Correo,
+                    Celular = dto.Celular,
+                    Contrasena = dto.Contrasena,
+                    ConfirmarContrasena = dto.ConfirmarContrasena
+                };
+
+                var resultado = await CrearUsuarioAsync(cuentaDto);
+                var userCreado = await _userManager.FindByEmailAsync(dto.Correo);
+
+                var rolResult = await _userManager.AddToRoleAsync(userCreado, "Personal");
+                if (!rolResult.Succeeded)
+                {
+                    var errors = rolResult.Errors.Select(e => e.Description);
+                    return Result<string>.Failure(errors);
+                }
+
+                var usuario = new Personal(
+                    userCreado.Id,
+                    "EMP",
+                    dto.Nombre,
+                    dto.ApellidoPaterno,
+                    dto.ApellidoMaterno,
+                    "Gestion"
+                    );
+
+                await _usuarioRepo.AddAsync(usuario);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                return Result<string>.Success("Usuario de personal creado exitosamente.");
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
         public async Task<Result<string>> ConfirmarCorreoAsync(string correo, string token)
         {

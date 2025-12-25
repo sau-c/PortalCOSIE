@@ -1,6 +1,6 @@
-﻿namespace PortalCOSIE.Application.DTO.Cuenta
+﻿namespace PortalCOSIE.Application.DTO.Usuario
 {
-    public class AlumnoDTO
+    public class EditarAlumnoDTO
     {
         public string IdentityUserId { get; set; }
         public string Nombre { get; set; }
