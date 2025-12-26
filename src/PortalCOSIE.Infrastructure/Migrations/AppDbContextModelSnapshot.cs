@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PortalCOSIE.Infrastructure.Data;
+using PortalCOSIE.Infrastructure.Persistence;
 
 #nullable disable
 

@@ -9,11 +9,17 @@ namespace PortalCOSIE.Web.Controllers
     public class PersonalController : Controller
     {
         private readonly ISecurityService _securityService;
+        private readonly ICuentaCorreoService _cuentaCorreoService;
         private readonly IUsuarioService _usuarioService;
 
-        public PersonalController(ISecurityService securityService, IUsuarioService usuarioService)
+        public PersonalController(
+            ISecurityService securityService,
+            IUsuarioService usuarioService,
+            ICuentaCorreoService cuentaCorreoService
+            )
         {
             _securityService = securityService;
+            _cuentaCorreoService = cuentaCorreoService;
             _usuarioService = usuarioService;
         }
 
@@ -58,7 +64,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerificarCorreo(string userId, string correo)
         {
-            var result = await _securityService.VerificarCorreoAsync(userId, correo);
+            var result = await _cuentaCorreoService.VerificarCorreoAsync(userId, correo);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });

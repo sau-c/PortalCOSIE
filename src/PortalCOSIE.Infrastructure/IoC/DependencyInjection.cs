@@ -14,8 +14,8 @@ using PortalCOSIE.Infrastructure.Repositories;
 using PortalCOSIE.Domain.Entities.Carreras;
 using PortalCOSIE.Domain.Entities.Calendario;
 using PortalCOSIE.Domain.Entities.Bitacoras;
-using Infrastructure.Data;
 using PortalCOSIE.Domain.Entities.Documentos;
+using PortalCOSIE.Infrastructure.Persistence;
 
 namespace PortalCOSIE.Infrastructure.IoC
 {
@@ -36,6 +36,7 @@ namespace PortalCOSIE.Infrastructure.IoC
 
             //Servicios Infraestructura
             services.AddScoped<ISecurityService, SecurityService>();
+            services.AddScoped<ICuentaCorreoService, CuentaCorreoService>();
             services.AddScoped<IDashboardQueryService, DashboardQueryService>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
 

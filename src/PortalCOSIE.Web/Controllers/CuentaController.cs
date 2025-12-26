@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.DTO.Cuenta;
@@ -11,21 +10,49 @@ namespace PortalCOSIE.Web.Controllers
     public class CuentaController : Controller
     {
         private readonly ISecurityService _securityService;
+        private readonly ICuentaCorreoService _cuentaCorreoService;
         private readonly IUsuarioService _usuarioService;
         private readonly ICarreraService _carreraService;
         private readonly IPeriodosService _catalogoService;
 
         public CuentaController(
             ISecurityService securityService,
+            ICuentaCorreoService cuentaCorreoService,
             IUsuarioService usuarioService,
             ICarreraService carreraService,
             IPeriodosService catalogoService
             )
         {
             _securityService = securityService;
+            _cuentaCorreoService = cuentaCorreoService;
             _usuarioService = usuarioService;
             _carreraService = carreraService;
             _catalogoService = catalogoService;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Index()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (User.IsInRole("Administrador"))
+            {
+                var admin = await _securityService.ListarAlumnos();
+                return View("_Admin", admin);
+            }
+
+            if (User.IsInRole("Personal"))
+            {
+                var personal = await _usuarioService.BuscarPersonal(userId);
+                return View("_Personal", personal);
+            }
+
+            if (User.IsInRole("Alumno"))
+            {
+                var alumno = await _securityService.BuscarAlumnoCompleto(userId);
+                return View("_Alumno", alumno);
+            }
+            return Json(new { success = false, message = "No tienes un rol valido" });
         }
 
         [HttpGet]
@@ -59,7 +86,7 @@ namespace PortalCOSIE.Web.Controllers
                 return RedirectToAction("Index", "Calendario");
             }
 
-            var result = await _securityService.ConfirmarCorreoAsync(correo, token);
+            var result = await _cuentaCorreoService.ConfirmarCorreoAsync(correo, token);
 
             if (!result.Succeeded)
             {
@@ -190,7 +217,7 @@ namespace PortalCOSIE.Web.Controllers
                 return RedirectToAction("Index", "Calendario");
             }
 
-            var result = await _securityService.ActualizarCorreoAsync(id, correo, token);
+            var result = await _cuentaCorreoService.ActualizarCorreoAsync(id, correo, token);
             if (!result.Succeeded)
             {
                 TempData["MessageType"] = "error";
@@ -201,31 +228,6 @@ namespace PortalCOSIE.Web.Controllers
             TempData["Message"] = result.Value;
             return RedirectToAction(nameof(Ingresar));
         }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> MisDatos()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (User.IsInRole("Administrador"))
-            {
-                var admin = await _securityService.ListarAlumnos();
-                return View("MisDatosAdmin", admin);
-            }
-
-            if (User.IsInRole("Personal"))
-            {
-                var personal = await _usuarioService.BuscarPersonal(userId);
-                return View("MisDatosPersonal", personal);
-            }
-
-            if (User.IsInRole("Alumno")) {
-                var alumno = await _securityService.BuscarAlumnoCompleto(userId);
-                return View("MisDatosAlumno", alumno);
-            }
-            return Json(new { success = false, message = "No tienes un rol valido" });
-        }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

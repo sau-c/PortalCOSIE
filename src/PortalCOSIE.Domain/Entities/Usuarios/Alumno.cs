@@ -5,6 +5,10 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
 {
     public class Alumno : Usuario
     {
+        // Constantes de validación
+        private static readonly Regex SoloNumeros10 = new(@"^\d{10}$", RegexOptions.Compiled);
+        private const string FormatoPeriodo = @"^\d{4}/[1-3]$"; // YYYY-P (ej: 2024/1)
+
         // Propiedades
         public string NumeroBoleta { get; private set; }
         public string PeriodoIngreso { get; private set; }
@@ -12,12 +16,7 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
 
         // Navegaciones
         public Carrera Carrera { get; private set; }
-        //public Usuario Usuario { get; private set; }
-
-        // Constantes de validación
-        private static readonly Regex SoloNumeros10 = new(@"^\d{10}$", RegexOptions.Compiled);
-        private const string FormatoPeriodo = @"^\d{4}/[1-3]$"; // YYYY-P (ej: 2024/1)
-
+        
         // Constructor privado para EF
         private Alumno() { }
 
@@ -49,7 +48,6 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
                 throw new DomainException("El año en la boleta debe estar entre 1995 y 2100.");
             NumeroBoleta = numeroBoleta;
         }
-
         public void SetPeriodoIngreso(string periodoIngreso)
         {
             periodoIngreso = periodoIngreso.Trim();
@@ -59,7 +57,6 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
                 throw new DomainException("El formato del periodo de ingreso no es válido. Use: YYYY/P (ej: 2020/1)");
             PeriodoIngreso = periodoIngreso;
         }
-
         public void SetCarrera(int carreraId)
         {
             if (carreraId <= 0)

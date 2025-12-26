@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PortalCOSIE.Infrastructure.Data;
-using PortalCOSIE.Infrastructure.Data.Identity;
 using PortalCOSIE.Infrastructure.IoC;
+using PortalCOSIE.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 

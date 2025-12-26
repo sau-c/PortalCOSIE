@@ -2,7 +2,7 @@
 using PortalCOSIE.Application.DTO.Tramites;
 using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Domain.Entities.Tramites;
-using PortalCOSIE.Infrastructure.Data;
+using PortalCOSIE.Infrastructure.Persistence;
 
 public class DocumentoQueryService : IDocumentoQueryService
 {

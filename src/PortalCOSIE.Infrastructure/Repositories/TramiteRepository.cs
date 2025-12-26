@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
-using PortalCOSIE.Infrastructure.Data;
+using PortalCOSIE.Infrastructure.Persistence;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {

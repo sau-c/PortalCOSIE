@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Domain.Entities.Usuarios;
-using PortalCOSIE.Infrastructure.Data;
+using PortalCOSIE.Infrastructure.Persistence;
 
 namespace PortalCOSIE.Infrastructure.Repositories
 {

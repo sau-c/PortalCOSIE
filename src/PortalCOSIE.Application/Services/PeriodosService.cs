@@ -35,6 +35,18 @@ namespace PortalCOSIE.Application
                 PeriodoActual = config.PeriodoActual,
             };
         }
+        public async Task EditarPeriodoConfig(PeriodoConfigDTO dto)
+        {
+            var config = await _periodoRepo.GetByIdAsync(1);
+            if (config == null)
+                throw new ApplicationException("No se encontró configuración de periodos.");
+            config.SetAnioInicio(dto.AnioInicio);
+            config.SetPeriodoInicio(dto.PeriodoInicio);
+            config.SetAnioActual(dto.AnioActual);
+            config.SetPeriodoActual(dto.PeriodoActual);
+
+            await _unitOfWork.SaveChangesAsync();
+        }
         public async Task<IEnumerable<string>> ListarPeriodos()
         {
             var config = await _periodoRepo.GetByIdAsync(1);
@@ -52,19 +64,6 @@ namespace PortalCOSIE.Application
             }
 
             return periodos.OrderDescending();
-        }
-
-        public async Task EditarPeriodoConfig(PeriodoConfigDTO dto)
-        {
-            var config = await _periodoRepo.GetByIdAsync(1);
-            if (config == null)
-                throw new ApplicationException("No se encontró configuración de periodos.");
-            config.SetAnioInicio(dto.AnioInicio);
-            config.SetPeriodoInicio(dto.PeriodoInicio);
-            config.SetAnioActual(dto.AnioActual);
-            config.SetPeriodoActual(dto.PeriodoActual);
-
-            await _unitOfWork.SaveChangesAsync();
         }
         #endregion
 
