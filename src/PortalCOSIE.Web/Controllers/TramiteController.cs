@@ -2,37 +2,25 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.Features.Carreras.Queries.ListarUnidades;
-using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Features.Tramites.Commands.AsignarPersonal;
-using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
-using PortalCOSIE.Domain.Entities.Documentos;
+using PortalCOSIE.Application.Features.Tramites.Commands.AsignarPersonal;
+using PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE;
+using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Features.Tramites.Queries.ListarEstadosTramite;
+using PortalCOSIE.Application.Features.Tramites.Queries.ListarTramites;
+using PortalCOSIE.Application.Features.Tramites.Queries.ObtenerDocumentoPorId;
+using PortalCOSIE.Application.Features.Tramites.Queries.ObtenerTramiteCTCEPorId;
 using PortalCOSIE.Web.Models;
 using System.Security.Claims;
-using PortalCOSIE.Application.Features.Tramites.Queries.ObtenerTramiteCTCEPorId;
-using PortalCOSIE.Application.Features.Tramites.Queries.ListarTramites;
-using PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE;
-using PortalCOSIE.Application.Features.Tramites.Queries.ObtenerDocumentoPorId;
-using PortalCOSIE.Application.Services;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class TramiteController : Controller
     {
-        private readonly ICatalogoService<EstadoDocumento, int> _catalogoService;
-        private readonly ISecurityService _securityService;
         private readonly IMediator _mediator;
 
-        public TramiteController(
-            ICatalogoService<EstadoDocumento, int> catalogoService,
-            ISecurityService securityService,
-            IMediator mediator
-            )
-        {
-            _catalogoService = catalogoService;
-            _securityService = securityService;
-            _mediator = mediator;
-        }
+        public TramiteController(IMediator mediator)
+            => _mediator = mediator;
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal, Alumno")]
@@ -47,10 +35,8 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador, Alumno")]
         public async Task<IActionResult> SolicitarCTCE()
         {
-            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            var alumno = await _securityService.BuscarAlumnoCompleto(userId);
-
-            ViewBag.Unidades = new SelectList(await _mediator.Send(new ListarUnidadesQuery(alumno.Carrera.Id)), "Id", "Nombre");
+            string userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.Unidades = new SelectList(await _mediator.Send(new ListarUnidadesQuery(userId)), "Id", "Nombre");
             ViewBag.Periodos = new SelectList(await _mediator.Send(new ListarPeriodosQuery()), "Periodo");
             return View();
         }
@@ -108,7 +94,7 @@ namespace PortalCOSIE.Web.Controllers
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var tramite = await _mediator.Send(new ObtenerTramiteCTCEPorIdQuery(userId, tramiteId));
-            ViewBag.EstadoDocumento = new SelectList(await _catalogoService.ListarActivosAsync(), "Id", "Nombre");
+            ViewBag.EstadoDocumento = new SelectList(await _mediator.Send(new ListarEstadoDocumentoQuery()), "Id", "Nombre");
 
             return View(tramite);
         }

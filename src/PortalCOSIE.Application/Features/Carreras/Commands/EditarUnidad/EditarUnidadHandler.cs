@@ -13,20 +13,20 @@ namespace PortalCOSIE.Application.Features.Carreras.Commands.EditarUnidad
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<UnidadAprendizaje> Handle(EditarUnidadCommand request)
+        public async Task<UnidadAprendizaje> Handle(EditarUnidadCommand command)
         {
-            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(request.carreraId);
+            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(command.carreraId);
             if (carrera == null)
                 throw new ApplicationException("Carrera no encontrada");
 
             var unidad = carrera.UnidadesAprendizaje
-                .FirstOrDefault(u => u.Id == request.unidadId);
+                .FirstOrDefault(u => u.Id == command.unidadId);
 
             if (unidad == null)
                 throw new ApplicationException("Unidad de aprendizaje no encontrada");
 
-            unidad.SetNombre(request.nombre);
-            unidad.SetSemestre(request.semestre);
+            unidad.SetNombre(command.nombre);
+            unidad.SetSemestre(command.semestre);
 
             await _unitOfWork.SaveChangesAsync();
             return unidad;

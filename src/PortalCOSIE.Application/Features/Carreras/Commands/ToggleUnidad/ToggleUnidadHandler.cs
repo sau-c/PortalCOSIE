@@ -14,14 +14,14 @@ namespace PortalCOSIE.Application.Features.Carreras.Commands.ToggleUnidad
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<UnidadAprendizaje> Handle(ToggleUnidadCommand request)
+        public async Task<UnidadAprendizaje> Handle(ToggleUnidadCommand command)
         {
-            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(request.carreraId);
+            var carrera = await _carreraRepo.ObtenerCarreraConUnidadesAsync(command.carreraId);
             if (carrera == null)
                 throw new ApplicationException("Carrera no encontrada");
 
             var unidad = carrera.UnidadesAprendizaje
-                .FirstOrDefault(u => u.Id == request.unidadId);
+                .FirstOrDefault(u => u.Id == command.unidadId);
 
             if (unidad.IsDeleted)
                 unidad.Restore();

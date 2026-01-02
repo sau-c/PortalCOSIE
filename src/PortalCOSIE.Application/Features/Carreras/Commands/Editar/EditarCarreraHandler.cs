@@ -14,12 +14,12 @@ namespace PortalCOSIE.Application.Features.Carreras.Commands.Editar
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Carrera> Handle(EditarCarreraCommand request)
+        public async Task<Carrera> Handle(EditarCarreraCommand command)
         {
-            var carrera = await _carreraRepo.GetByIdAsync(request.carreraId);
+            var carrera = await _carreraRepo.GetByIdAsync(command.carreraId);
             if (carrera == null)
                 throw new ApplicationException("Carrera no encontrada");
-            carrera.ActualizarNombre(request.nombre);
+            carrera.ActualizarNombre(command.nombre);
             await _unitOfWork.SaveChangesAsync();
             return carrera;
         }

@@ -4,7 +4,7 @@ using PortalCOSIE.Application.Services;
 using System.Net;
 using System.Net.Mail;
 
-namespace PortalCOSIE.Infrastructure.Data.Email
+namespace PortalCOSIE.Infrastructure.QueryService
 {
     public class SmtpEmailSender : IEmailSender
     {

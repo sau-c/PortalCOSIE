@@ -3,5 +3,5 @@ using PortalCOSIE.Domain.Entities.EntradaBitacoras;
 
 namespace PortalCOSIE.Application.Features.Bitacoras.Queries.Listar
 {
-    public sealed class ListarBitacoraQuery() : IRequest<IEnumerable<EntradaBitacora>>;
+    public sealed record ListarBitacoraQuery() : IRequest<IEnumerable<EntradaBitacora>>;
 }

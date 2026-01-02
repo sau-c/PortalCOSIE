@@ -14,9 +14,9 @@ namespace PortalCOSIE.Application.Features.Carreras.Commands.Toggle
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Carrera> Handle(ToggleCarreraCommand request)
+        public async Task<Carrera> Handle(ToggleCarreraCommand command)
         {
-            var carrera = await _carreraRepo.GetByIdAsync(request.id);
+            var carrera = await _carreraRepo.GetByIdAsync(command.id);
             if (carrera.IsDeleted)
                 carrera.Restore();
             else

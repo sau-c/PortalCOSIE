@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Services;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Infrastructure.Persistence;
 
@@ -17,7 +17,6 @@ public class DocumentoQueryService : IDocumentoQueryService
     {
         // Usamos EF Core con AsNoTracking y Select (Proyección)
         // Esto NO crea entidades de dominio, crea un DTO directo desde SQL.
-        
         return await _context.Set<Tramite>()
             .Where(t => t.Id == tramiteId)
             .Where(t =>

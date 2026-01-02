@@ -1,13 +1,13 @@
 ﻿using PortalCOSIE.Application;
-using PortalCOSIE.Application.Interfaces;
 using System.Net;
 using Microsoft.AspNetCore.Identity;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Application.Services;
 using PortalCOSIE.Application.Features.Usuarios.DTO;
+using PortalCOSIE.Infrastructure.Email;
 
-namespace PortalCOSIE.Infrastructure.Data.Identity
+namespace PortalCOSIE.Infrastructure.Services
 {
     public class SecurityService : ISecurityService
     {
@@ -167,7 +167,7 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
             if (string.IsNullOrEmpty(correo))
                 throw new ApplicationException("El correo no puede ser nulo");
             var user = await _userManager.FindByEmailAsync(correo);
-            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
                 return Result<string>.Failure("No se puede recuperar la contraseña. Verifica que el correo sea correcto y esté confirmado.");
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
@@ -318,85 +318,77 @@ namespace PortalCOSIE.Infrastructure.Data.Identity
                 return Result<string>.Success($"Rol {rol} asignado correctamente");
             }
         }
-        public async Task<IEnumerable<AlumnoDTO>> ListarAlumnos()
+        public async Task<Result<string>> ConfirmarCorreoAsync(string correo, string token)
         {
-            var alumnos = await _usuarioRepo.ListarAlumnoConCarrera();
-            var alumnosDTO = new List<AlumnoDTO>();
-
-            foreach (var alumno in alumnos)
+            var user = await _userManager.FindByEmailAsync(correo);
+            if (user == null)
+                return Result<string>.Failure("Usuario no encontrado");
+            if (user.EmailConfirmed)
+                return Result<string>.Failure("Ya se ha confirmado tu correo");
+            if (token == null)
+                return Result<string>.Failure("Token vacio");
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
             {
-                var identityUser = await _userManager.FindByIdAsync(alumno.IdentityUserId);
-                if (identityUser == null) continue;
-
-                var roles = await _userManager.GetRolesAsync(identityUser);
-
-                alumnosDTO.Add(new AlumnoDTO
-                {
-                    IdentityUserId = identityUser.Id,
-                    NumeroBoleta = alumno?.NumeroBoleta ?? "N/A",
-                    Nombre = alumno.Nombre,
-                    ApellidoPaterno = alumno.ApellidoPaterno,
-                    ApellidoMaterno = alumno.ApellidoMaterno,
-                    Carrera = alumno.Carrera,
-                    PeriodoIngreso = alumno.PeriodoIngreso,
-                    Correo = identityUser.Email,
-                    Celular = identityUser.PhoneNumber,
-                    Rol = roles.FirstOrDefault()
-                });
+                var errors = result.Errors.Select(e => e.Description);
+                return Result<string>.Failure(errors);
             }
-            return alumnosDTO;
+            return Result<string>.Success("Correo confirmado");
         }
-        public async Task<IEnumerable<PersonalDTO>> ListarPersonal()
+        public async Task<Result<string>> VerificarCorreoAsync(string userId, string correo)
         {
-            var usuarios = await _usuarioRepo.ListarPersonal();
+            // Validaciones básicas
+            if (string.IsNullOrWhiteSpace(userId))
+                return Result<string>.Failure("El id no puede ser nulo o vacío");
+            if (string.IsNullOrWhiteSpace(correo))
+                return Result<string>.Failure("El correo no puede ser nulo o vacío");
 
-            var personalDTO = new List<PersonalDTO>();
+            // Buscar usuario
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result<string>.Failure("No se encontró el usuario a editar");
 
-            foreach (var usuario in usuarios)
-            {
-                var identityUser = await _userManager.FindByIdAsync(usuario.IdentityUserId);
-                if (identityUser == null) continue;
+            // Si es el mismo correo -> no hacer nada
+            if (user.NormalizedEmail == _userManager.NormalizeEmail(correo))
+                return Result<string>.Failure("No se detectaron cambios");
 
-                var roles = await _userManager.GetRolesAsync(identityUser);
+            // Validar si el correo ya está en uso
+            var correoExistente = await _userManager.FindByEmailAsync(correo);
+            if (correoExistente != null)
+                return Result<string>.Failure("Ese correo ya está en uso");
 
-                personalDTO.Add(new PersonalDTO
-                {
-                    IdentityUserId = identityUser.Id,
-                    Nombre = usuario.Nombre,
-                    ApellidoPaterno = usuario.ApellidoPaterno,
-                    ApellidoMaterno = usuario.ApellidoMaterno,
-                    Correo = identityUser.Email,
-                    Rol = roles.FirstOrDefault()
-                });
-            }
-            return personalDTO;
+            // 2. Envio correo
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, correo);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var envio = await _emailSender.SendEmailAsync(correo, "Cambio de correo", HtmlTemplates.VerificarCorreoHtml(userId, correo, encodedToken));
+            if (!envio.Succeeded)
+                return Result<string>.Failure("No se pudo enviar el correo.");
+
+            return Result<string>.Success($"Se envió una verificación a {correo}");
         }
-        public async Task<AlumnoDTO?> BuscarAlumnoCompleto(string identityUserId)
+        public async Task<Result<string>> ActualizarCorreoAsync(string id, string correo, string token)
         {
-            if (string.IsNullOrWhiteSpace(identityUserId))
-                throw new ArgumentException("El ID del usuario es obligatorio", nameof(identityUserId));
+            // 1. Validaciones
+            if (string.IsNullOrEmpty(correo))
+                return Result<string>.Failure("El nuevo correo no puede ser nulo o vacio");
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return Result<string>.Failure("Usuario no encontrado");
+            string correoViejo = user.Email;
 
-            var alumno = await _usuarioRepo.BuscarAlumnoConCarrera(identityUserId)
-                           ?? throw new ApplicationException("No se encontró el usuario");
+            var emailResult = await _userManager.ChangeEmailAsync(user, correo, token);
+            if (!emailResult.Succeeded)
+                return Result<string>.Failure(string.Join(", ", emailResult.Errors.Select(e => e.Description)));
 
-            // Obtener IdentityUser para el celular
-            var identityUser = await _userManager.FindByIdAsync(identityUserId)
-                               ?? throw new ApplicationException("No se encontró el IdentityUser");
+            var nameResult = await _userManager.SetUserNameAsync(user, correo);
+            if (!nameResult.Succeeded)
+                return Result<string>.Failure($"Error al actualizar nombre de usuario: {string.Join(", ", nameResult.Errors.Select(e => e.Description))}");
 
-            return new AlumnoDTO
-            {
-                IdentityUserId = identityUserId,
-                Nombre = alumno.Nombre,
-                ApellidoPaterno = alumno.ApellidoPaterno,
-                ApellidoMaterno = alumno.ApellidoMaterno,
-                NumeroBoleta = alumno.NumeroBoleta,
-                Correo = identityUser.Email,
-                CorreoConfirmado = identityUser.EmailConfirmed,
-                PeriodoIngreso = alumno.PeriodoIngreso,
-                Carrera = alumno.Carrera,
-                Celular = identityUser.PhoneNumber
-            };
+            var envio = await _emailSender.SendEmailAsync(correoViejo, "Correo actualizado", HtmlTemplates.CorreoActualizadoHtml(correo));
+            if (!envio.Succeeded)
+                return Result<string>.Failure("No se pudo enviar el correo.");
+
+            return Result<string>.Success("Se actualizó el correo con éxito");
         }
-
     }
 }

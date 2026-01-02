@@ -1,6 +1,6 @@
 ﻿using PortalCOSIE.Application.Features.Usuarios.DTO;
 
-namespace PortalCOSIE.Application.Interfaces
+namespace PortalCOSIE.Application.Services
 {
     public interface ISecurityService
     {
@@ -13,8 +13,9 @@ namespace PortalCOSIE.Application.Interfaces
         Task<Result<string>> CambiarContrasena(CambiarContrasenaDTO dto);
         Task<Result<string>> ToggleRol(string userId, string rol);
         Task<Result<string>> ActualizarCelularAsync(string userId, string celular);
-        Task<AlumnoDTO?> BuscarAlumnoCompleto(string identityUserId);
-        Task<IEnumerable<AlumnoDTO>> ListarAlumnos();
-        Task<IEnumerable<PersonalDTO>> ListarPersonal();
+
+        Task<Result<string>> ConfirmarCorreoAsync(string correo, string token);
+        Task<Result<string>> VerificarCorreoAsync(string userId, string correo);
+        Task<Result<string>> ActualizarCorreoAsync(string id, string correo, string token);
     }
 }

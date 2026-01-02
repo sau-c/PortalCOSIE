@@ -6,12 +6,9 @@ namespace PortalCOSIE.Application.Features.Bitacoras.Queries.Listar
     {
         private readonly IBitacoraRepository _bitacoraRepo;
         public ListarBitacoraHandler(IBitacoraRepository bitacoraRepo)
-        {
-            _bitacoraRepo = bitacoraRepo;
-        }
-        public async Task<IEnumerable<EntradaBitacora>> Handle(ListarBitacoraQuery request)
-        {
-            return await _bitacoraRepo.ListarConCorreo();
-        }
+            => _bitacoraRepo = bitacoraRepo;
+
+        public async Task<IEnumerable<EntradaBitacora>> Handle(ListarBitacoraQuery query)
+            => await _bitacoraRepo.ListarConCorreo();
     }
 }

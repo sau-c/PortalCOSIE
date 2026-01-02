@@ -14,9 +14,9 @@ namespace PortalCOSIE.Application.Features.Carreras.Commands.Crear
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Carrera> Handle(CrearCarreraCommand request)
+        public async Task<Carrera> Handle(CrearCarreraCommand command)
         {
-            Carrera carrera = new Carrera(request.nombre);
+            Carrera carrera = new Carrera(command.nombre);
             await _carreraRepo.AddAsync(carrera);
             await _unitOfWork.SaveChangesAsync();
             return carrera;

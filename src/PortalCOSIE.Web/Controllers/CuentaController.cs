@@ -1,30 +1,28 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 using PortalCOSIE.Application.Features.Carreras.Queries.Listar;
-using PortalCOSIE.Application.Interfaces;
 using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
 using PortalCOSIE.Application.Features.Usuarios.Commands.RegistrarAlumno;
 using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerPersonal;
 using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerUsuarioPorIdentityId;
-using System.Security.Claims;
 using PortalCOSIE.Application.Features.Usuarios.DTO;
+using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerAlumnoCompleto;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class CuentaController : Controller
     {
         private readonly ISecurityService _securityService;
-        private readonly ICuentaCorreoService _cuentaCorreoService;
         private readonly IMediator _mediator;
         public CuentaController(
             ISecurityService securityService,
-            ICuentaCorreoService cuentaCorreoService,
             IMediator mediator
             )
         {
             _securityService = securityService;
-            _cuentaCorreoService = cuentaCorreoService;
             _mediator = mediator;
         }
 
@@ -35,21 +33,20 @@ namespace PortalCOSIE.Web.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (User.IsInRole("Administrador"))
             {
-                var admin = await _securityService.ListarAlumnos();
+                var admin = await _mediator.Send(new ObtenerPersonalQuery(userId));//dummy
                 return View("_Admin", admin);
             }
 
             if (User.IsInRole("Personal"))
             {
-                //var personal = await _usuarioService.BuscarPersonal(userId);
                 var personal = await _mediator.Send(new ObtenerPersonalQuery(userId));
                 return View("_Personal", personal);
             }
 
             if (User.IsInRole("Alumno"))
             {
-                var alumno = await _securityService.BuscarAlumnoCompleto(userId);
-                return View("_Alumno", alumno);
+                var alumno = await _mediator.Send(new ObtenerAlumnoCompletoQuery(userId));
+                return View("MisDatosAlumno", alumno);
             }
             return Json(new { success = false, message = "No tienes un rol valido" });
         }
@@ -85,7 +82,7 @@ namespace PortalCOSIE.Web.Controllers
                 return RedirectToAction("Index", "Calendario");
             }
 
-            var result = await _cuentaCorreoService.ConfirmarCorreoAsync(correo, token);
+            var result = await _securityService.ConfirmarCorreoAsync(correo, token);
 
             if (!result.Succeeded)
             {
@@ -226,7 +223,7 @@ namespace PortalCOSIE.Web.Controllers
                 return RedirectToAction("Index", "Calendario");
             }
 
-            var result = await _cuentaCorreoService.ActualizarCorreoAsync(id, correo, token);
+            var result = await _securityService.ActualizarCorreoAsync(id, correo, token);
             if (!result.Succeeded)
             {
                 TempData["MessageType"] = "error";

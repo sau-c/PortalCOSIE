@@ -6,7 +6,7 @@ using PortalCOSIE.Domain.Entities.EntradaBitacoras;
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace PortalCOSIE.Infrastructure.Data
+namespace PortalCOSIE.Infrastructure.Persistence
 {
     public class AuditInterceptor : SaveChangesInterceptor
     {

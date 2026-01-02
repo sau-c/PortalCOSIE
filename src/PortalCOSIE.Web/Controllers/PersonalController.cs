@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PortalCOSIE.Application.Features.Usuarios.Commands.EditarPersonal;
 using PortalCOSIE.Application.Features.Usuarios.DTO;
-using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Features.Usuarios.Queries.ListarPersonal;
+using PortalCOSIE.Application.Services;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -10,25 +11,20 @@ namespace PortalCOSIE.Web.Controllers
     public class PersonalController : Controller
     {
         private readonly ISecurityService _securityService;
-        private readonly ICuentaCorreoService _cuentaCorreoService;
         private readonly IMediator _mediator;
 
         public PersonalController(
             ISecurityService securityService,
-            ICuentaCorreoService cuentaCorreoService,
             IMediator mediator
             )
         {
             _securityService = securityService;
-            _cuentaCorreoService = cuentaCorreoService;
             _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
-        {
-            return View(await _securityService.ListarPersonal());
-        }
+            => View(await _mediator.Send(new ListarPersonalQuery()));
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -65,7 +61,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerificarCorreo(string userId, string correo)
         {
-            var result = await _cuentaCorreoService.VerificarCorreoAsync(userId, correo);
+            var result = await _securityService.VerificarCorreoAsync(userId, correo);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });

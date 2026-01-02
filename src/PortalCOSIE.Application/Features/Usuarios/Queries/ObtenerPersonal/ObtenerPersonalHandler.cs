@@ -6,9 +6,8 @@ namespace PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerPersonal
     {
         private readonly IUsuarioRepository _usuarioRepo;
         public ObtenerPersonalHandler(IUsuarioRepository usuarioRepo)
-        {
-            _usuarioRepo = usuarioRepo;
-        }
+            => _usuarioRepo = usuarioRepo;
+
         public async Task<Personal> Handle(ObtenerPersonalQuery query)
         {
             var personal = await _usuarioRepo.BuscarPersonal(query.IdentityUserId);

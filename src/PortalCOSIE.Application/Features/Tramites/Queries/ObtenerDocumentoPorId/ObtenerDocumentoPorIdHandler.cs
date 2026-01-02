@@ -1,5 +1,5 @@
 ﻿using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Services;
 using PortalCOSIE.Domain.Entities.Tramites;
 
 namespace PortalCOSIE.Application.Features.Tramites.Queries.ObtenerDocumentoPorId

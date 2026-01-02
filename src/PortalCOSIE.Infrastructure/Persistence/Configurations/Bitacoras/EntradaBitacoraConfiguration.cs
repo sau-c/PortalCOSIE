@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PortalCOSIE.Domain.Entities.EntradaBitacoras;
 
-namespace PortalCOSIE.Infrastructure.Persistence.Configurations
+namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Bitacoras
 {
     public class EntradaBitacoraConfiguration : IEntityTypeConfiguration<EntradaBitacora>
     {

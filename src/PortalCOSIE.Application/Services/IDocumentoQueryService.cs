@@ -1,6 +1,6 @@
 ﻿using PortalCOSIE.Application.Features.Tramites.DTO;
 
-namespace PortalCOSIE.Application.Interfaces
+namespace PortalCOSIE.Application.Services
 {
     public interface IDocumentoQueryService
     {

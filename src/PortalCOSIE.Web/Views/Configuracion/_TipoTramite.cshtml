@@ -6,7 +6,6 @@
             <th>Id</th>
             <th>Nombre</th>
             <th>Estatus</th>
-            <th>Acción</th>
         </tr>
     </thead>
     <tbody>
@@ -19,17 +18,6 @@
                     <span class="badge @(tipo.IsDeleted ? "bg-danger" : "bg-success") badge-role">
                         @(tipo.IsDeleted ? "Inactivo" : "Activo")
                     </span>
-                </td>
-                <td>
-                    <button type="button"
-                            class="btn btn-sm @(tipo.IsDeleted ? "btn-outline-success" : "btn-outline-danger") generic-toggle"
-                            title="@(tipo.IsDeleted ? "Activar" : "Desactivar")"
-                            data-action="@Url.Action("ToggleTipo", "Configuracion")"
-                            data-id="@tipo.Id"
-                            data-name="@tipo.Nombre"
-                            data-estado-actual="@tipo.IsDeleted">
-                        <i class="fas @(tipo.IsDeleted ? "fa-eye" : "fa-eye-slash")"></i>
-                    </button>
                 </td>
             </tr>
         }
@@ -50,13 +38,7 @@
             columnDefs:
             [
                 { targets: 0, width: "1%" },
-                { targets: 2, width: "1%", className: "text-center",},
-                {
-                    targets: 3,
-                    width: "95px",
-                    className: "text-center",
-                    orderable: false
-                }
+                { targets: 2, width: "1%", className: "text-center"}
             ]
         });
     });

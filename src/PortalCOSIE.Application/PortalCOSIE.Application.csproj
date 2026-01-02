@@ -10,4 +10,8 @@
     <ProjectReference Include="..\PortalCOSIE.Domain\PortalCOSIE.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Security\" />
+  </ItemGroup>
+
 </Project>

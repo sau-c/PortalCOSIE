@@ -6,13 +6,12 @@ namespace PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerUsuarioPorIde
     {
         private readonly IUsuarioRepository _usuarioRepo;
         public ObtenerUsuarioPorIdentityIdHandler(IUsuarioRepository usuarioRepo)
-        {
-            _usuarioRepo = usuarioRepo;
-        }
+            => _usuarioRepo = usuarioRepo;
+        
         public async Task<Usuario> Handle(ObtenerUsuarioPorIdentityIdQuery query)
         {
             if (query.IdentityUserId == null)
-                throw new ApplicationException("No se puede buscar un Id nulo");
+                throw new NullReferenceException("Se necesita un Id");
             return await _usuarioRepo.BuscarUsuario(query.IdentityUserId);
         }
     }
