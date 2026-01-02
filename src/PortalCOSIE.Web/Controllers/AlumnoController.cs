@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Features.Carreras.Queries.Listar;
+using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
+using PortalCOSIE.Application.Features.Usuarios.Commands.EditarAlumno;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -11,43 +13,39 @@ namespace PortalCOSIE.Web.Controllers
     {
         private readonly ISecurityService _securityService;
         private readonly ICuentaCorreoService _cuentaCorreoService;
-        private readonly IUsuarioService _usuarioService;
-        private readonly ICarreraService _carreraService;
-        private readonly IPeriodosService _periodoService;
+        private readonly IMediator _mediator;
 
         public AlumnoController(
             ISecurityService securityService,
             ICuentaCorreoService cuentaCorreoService,
-            IUsuarioService usuarioService,
-            ICarreraService carreraService,
-            IPeriodosService catalogoService
+            IMediator mediator
             )
         {
             _securityService = securityService;
             _cuentaCorreoService = cuentaCorreoService;
-            _usuarioService = usuarioService;
-            _carreraService = carreraService;
-            _periodoService = catalogoService;
+            _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-            ViewBag.Periodos = new SelectList(await _periodoService.ListarPeriodos(), "Periodo");
+            ViewBag.Carreras = new SelectList(await _mediator.Send(new ListarCarrerasQuery()), "Id", "Nombre");
+            ViewBag.Periodos= new SelectList(await _mediator.Send(new ListarPeriodosQuery()), "Periodo");
             return View(await _securityService.ListarAlumnos());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(EditarAlumnoDTO dto)
+        public async Task<IActionResult> Editar(EditarAlumnoCommand command)
         {
-            var result = await _usuarioService.EditarAlumno(dto);
+            //var result = await _usuarioService.EditarAlumno(command);
+            var result = await _mediator.Send(command);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });
             }
             return Json(new { success = true, message = result.Value });
+
         }
 
         [HttpPost]

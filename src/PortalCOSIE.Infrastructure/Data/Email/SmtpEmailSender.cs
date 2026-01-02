@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using PortalCOSIE.Application;
-using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Services;
 using System.Net;
 using System.Net.Mail;
 

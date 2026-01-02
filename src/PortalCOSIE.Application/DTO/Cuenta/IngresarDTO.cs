@@ -1,8 +1,0 @@
-﻿namespace PortalCOSIE.Application.DTO.Cuenta
-{
-    public class IngresarDTO
-    {
-        public string Correo { get; set; }
-        public string Contrasena { get; set; }
-    }
-}

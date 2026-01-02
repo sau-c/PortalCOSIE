@@ -1,35 +1,37 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PortalCOSIE.Application.DTO.Tramites;
+using PortalCOSIE.Application.Features.Carreras.Queries.ListarUnidades;
+using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Features.Tramites.Commands.AsignarPersonal;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Web.Models;
 using System.Security.Claims;
+using PortalCOSIE.Application.Features.Tramites.Queries.ObtenerTramiteCTCEPorId;
+using PortalCOSIE.Application.Features.Tramites.Queries.ListarTramites;
+using PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE;
+using PortalCOSIE.Application.Features.Tramites.Queries.ObtenerDocumentoPorId;
+using PortalCOSIE.Application.Services;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class TramiteController : Controller
     {
-        private readonly ITramiteService _tramiteService;
         private readonly ICatalogoService<EstadoDocumento, int> _catalogoService;
-        private readonly ICarreraService _carreraService;
-        private readonly IPeriodosService _periodoService;
         private readonly ISecurityService _securityService;
+        private readonly IMediator _mediator;
 
         public TramiteController(
-            ITramiteService tramiteService,
             ICatalogoService<EstadoDocumento, int> catalogoService,
-            ICarreraService carreraService,
-            IPeriodosService periodoService,
-            ISecurityService securityService
+            ISecurityService securityService,
+            IMediator mediator
             )
         {
-            _tramiteService = tramiteService;
             _catalogoService = catalogoService;
-            _carreraService = carreraService;
-            _periodoService = periodoService;
             _securityService = securityService;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -38,7 +40,7 @@ namespace PortalCOSIE.Web.Controllers
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var rol = User?.FindFirstValue(ClaimTypes.Role);
-            return View(await _tramiteService.ListarTodos(rol, userId));
+            return View(await _mediator.Send(new ListarTramitesQuery(userId, rol)));
         }
 
         [HttpGet]
@@ -48,8 +50,8 @@ namespace PortalCOSIE.Web.Controllers
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var alumno = await _securityService.BuscarAlumnoCompleto(userId);
 
-            ViewBag.Unidades = new SelectList(await _carreraService.ListarUnidadesAsync(alumno.Carrera.Id), "Id", "Nombre");
-            ViewBag.Periodos = new SelectList(await _periodoService.ListarPeriodos(), "Periodo");
+            ViewBag.Unidades = new SelectList(await _mediator.Send(new ListarUnidadesQuery(alumno.Carrera.Id)), "Id", "Nombre");
+            ViewBag.Periodos = new SelectList(await _mediator.Send(new ListarPeriodosQuery()), "Periodo");
             return View();
         }
 
@@ -79,7 +81,7 @@ namespace PortalCOSIE.Web.Controllers
             };
 
             // Ahora el servicio recibe datos puros (DTOs con byte[]) y no sabe nada de HTTP.
-            await _tramiteService.SolicitarCTCE(solicitudDto, userId);
+            await _mediator.Send(new SolicitarCTCECommand(solicitudDto, userId));
             return Json(new { success = true, message = "Solicitud enviada con éxito." });
         }
 
@@ -105,7 +107,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> SeguimientoCTCE(int tramiteId)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            var tramite = await _tramiteService.BuscarTramiteCTCEPorId(tramiteId, userId);
+            var tramite = await _mediator.Send(new ObtenerTramiteCTCEPorIdQuery(userId, tramiteId));
             ViewBag.EstadoDocumento = new SelectList(await _catalogoService.ListarActivosAsync(), "Id", "Nombre");
 
             return View(tramite);
@@ -116,14 +118,8 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Documento(int id)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            var archivo = await _tramiteService.ObtenerDocumentoPorId(id, userId);
-
-            // Opción A: Devolver como archivo para visualizar (Inline)
-            // El navegador intentará mostrarlo (Chrome/Edge tienen visor PDF nativo)
+            var archivo = await _mediator.Send(new ObtenerDocumentoPorIdQuery(id, userId));
             return File(archivo.Contenido, archivo.TipoContenido);
-
-            // Opción B (Si quisiera forzar descarga):
-            // return File(archivo.Contenido, archivo.TipoContenido, archivo.Nombre);
         }
 
         [HttpPost]
@@ -132,7 +128,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> TomarTramite(int tramiteId)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _tramiteService.AsignarPersonal(tramiteId, userId);
+            await _mediator.Send(new AsignarPersonalCommand(userId, tramiteId));
             return Json(new { success = true, message = "Tomado con éxito." });
         }
     }

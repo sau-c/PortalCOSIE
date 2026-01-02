@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PortalCOSIE.Application.DTO.Usuario;
+using PortalCOSIE.Application.Features.Usuarios.Commands.EditarPersonal;
+using PortalCOSIE.Application.Features.Usuarios.DTO;
 using PortalCOSIE.Application.Interfaces;
 
 namespace PortalCOSIE.Web.Controllers
@@ -10,17 +11,17 @@ namespace PortalCOSIE.Web.Controllers
     {
         private readonly ISecurityService _securityService;
         private readonly ICuentaCorreoService _cuentaCorreoService;
-        private readonly IUsuarioService _usuarioService;
+        private readonly IMediator _mediator;
 
         public PersonalController(
             ISecurityService securityService,
-            IUsuarioService usuarioService,
-            ICuentaCorreoService cuentaCorreoService
+            ICuentaCorreoService cuentaCorreoService,
+            IMediator mediator
             )
         {
             _securityService = securityService;
             _cuentaCorreoService = cuentaCorreoService;
-            _usuarioService = usuarioService;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -43,9 +44,9 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(EditarPersonalDTO dto)
+        public async Task<IActionResult> Editar(EditarPersonalCommand command)
         {
-            var result = await _usuarioService.EditarPersonal(dto);
+            var result = await _mediator.Send(command);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });

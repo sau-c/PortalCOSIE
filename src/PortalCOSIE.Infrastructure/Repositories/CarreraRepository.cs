@@ -26,7 +26,6 @@ namespace PortalCOSIE.Infrastructure.Repositories
                     u.Id, u.Nombre, u.CarreraId, u.Semestre
                     ))
                 .ToListAsync();
-            //return carreraEntity?.UnidadesAprendizaje ?? Enumerable.Empty<UnidadAprendizaje>();
         }
     }
 }

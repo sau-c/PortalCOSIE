@@ -2,6 +2,7 @@
 using PortalCOSIE.Application.Interfaces;
 using System.Net;
 using Microsoft.AspNetCore.Identity;
+using PortalCOSIE.Application.Services;
 
 namespace PortalCOSIE.Infrastructure.Data.Identity
 {

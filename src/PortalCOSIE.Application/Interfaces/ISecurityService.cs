@@ -1,5 +1,4 @@
-﻿using PortalCOSIE.Application.DTO.Cuenta;
-using PortalCOSIE.Application.DTO.Usuario;
+﻿using PortalCOSIE.Application.Features.Usuarios.DTO;
 
 namespace PortalCOSIE.Application.Interfaces
 {

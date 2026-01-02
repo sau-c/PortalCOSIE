@@ -1,34 +1,39 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PortalCOSIE.Application.DTO.Carreras;
-using PortalCOSIE.Application.DTO.Periodo;
-using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Features.Carreras.Commands.Crear;
+using PortalCOSIE.Application.Features.Carreras.Commands.Editar;
+using PortalCOSIE.Application.Features.Carreras.Commands.Toggle;
+using PortalCOSIE.Application.Features.Carreras.Queries.Listar;
+using PortalCOSIE.Application.Features.Carreras.Queries.ObtenerDetalle;
+using PortalCOSIE.Application.Features.Carreras.Commands.AgregarUnidad;
+using PortalCOSIE.Application.Features.Carreras.Commands.EditarUnidad;
+using PortalCOSIE.Application.Features.Carreras.Commands.ToggleUnidad;
+using PortalCOSIE.Application.Features.PeriodosConfig.Commands.EditarPeriodoConfig;
+using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ObtenerPeriodoConfig;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
+using PortalCOSIE.Application.Services;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class ConfiguracionController : Controller
     {
-        private readonly IPeriodosService _periodoService;
-        private readonly ICarreraService _carreraService;
         private readonly ICatalogoService<EstadoTramite, int> _estadoTramiteService;
         private readonly ICatalogoService<EstadoDocumento, int> _estadoDocumentoService;
         private readonly ICatalogoService<TipoTramite, int> _tipoTramiteService;
+        private readonly IMediator _mediator;
 
         public ConfiguracionController(
-            IPeriodosService periodoService,
-            ICarreraService carreraService,
             ICatalogoService<EstadoTramite, int> estadoTramiteService,
             ICatalogoService<EstadoDocumento, int> estadoDocumentoService,
-            ICatalogoService<TipoTramite, int> tipoTramiteService
+            ICatalogoService<TipoTramite, int> tipoTramiteService,
+            IMediator mediator
             )
         {
-            _periodoService = periodoService;
-            _carreraService = carreraService;
             _estadoTramiteService = estadoTramiteService;
             _estadoDocumentoService = estadoDocumentoService;
             _tipoTramiteService = tipoTramiteService;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -40,7 +45,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Carreras()
         {
-            return PartialView("_Carreras", await _carreraService.ListarAsync());
+            return PartialView("_Carreras", await _mediator.Send(new ListarCarrerasQuery(true)));
         }
 
         [HttpPost]
@@ -48,7 +53,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Carreras(string nombre)
         {
-            await _carreraService.CrearCarreraAsync(nombre);
+            await _mediator.Send(new CrearCarreraCommand(nombre));
             return Json(new { success = true, message = "Cambios guardados" });
         }
 
@@ -57,7 +62,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EditarCarrera(int id, string nombre)
         {
-            await _carreraService.EditarCarreraAsync(id, nombre);
+            await _mediator.Send(new EditarCarreraCommand(id, nombre));
             return Json(new { success = true, message = "Cambios guardados" });
         }
 
@@ -66,7 +71,7 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ToggleCarrera(int id)
         {
-            await _carreraService.ToggleCarrrera(id);
+            await _mediator.Send(new ToggleCarreraCommand(id));
             return Json(new { success = true, message = "Cambios guardados" });
         }
 
@@ -74,30 +79,31 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Unidades(int carreraId)
         {
-            return View(await _carreraService.ListarConUnidadesAsync(carreraId));
+            return View(await _mediator.Send(new ObtenerCarreraDetalleQuery(carreraId)));
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Unidades(UnidadAprendizajeDTO dto)
+        public async Task<IActionResult> Unidades(AgregarUnidadCommand command)
         {
-            await _carreraService.CrearUnidadAsync(dto);
+            await _mediator.Send(command);
             return Json(new { success = true, message = "Cambios guardados" });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> EditarUnidad(UnidadAprendizajeDTO dto)
+        public async Task<IActionResult> EditarUnidad(EditarUnidadCommand command)
         {
-            await _carreraService.EditarUnidadAsync(dto);
+            await _mediator.Send(command);
             return Json(new { success = true, message = "Cambios guardados" });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> ToggleUnidad(int carreraId, string unidadId)
+        public async Task<IActionResult> ToggleUnidad(ToggleUnidadCommand command)
         {
-            await _carreraService.ToggleUnidad(carreraId, unidadId);
+            //await _carreraService.ToggleUnidad(carreraId, unidadId);
+            await _mediator.Send(command);
             return Json(new { success = true, message = "Cambios guardados" });
         }
         #endregion
@@ -161,14 +167,14 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Periodos()
         {
-            return PartialView("_Periodos", await _periodoService.BuscarPeriodoConfig());
+            return PartialView("_Periodos", await _mediator.Send(new ObtenerPeriodoConfigQuery()));
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Periodos(PeriodoConfigDTO dto)
+        public async Task<IActionResult> Periodos(EditarPeriodoConfigCommand command)
         {
-            await _periodoService.EditarPeriodoConfig(dto);
+            await _mediator.Send(command);
             return Json(new { success = true, message = "Cambios guardados" });
         }
     }

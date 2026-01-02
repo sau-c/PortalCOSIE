@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PortalCOSIE.Domain.Entities.Tramites;
+using PortalCOSIE.Domain.Entities.Tramites.CTCE;
 
 namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Tramites
 {

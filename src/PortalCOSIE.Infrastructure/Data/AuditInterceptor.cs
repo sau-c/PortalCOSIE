@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using PortalCOSIE.Domain.Entities.Bitacoras;
+using PortalCOSIE.Domain.Entities.EntradaBitacoras;
 using System.Security.Claims;
 using System.Text.Json;
 

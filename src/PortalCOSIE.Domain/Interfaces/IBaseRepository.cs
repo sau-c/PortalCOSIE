@@ -1,4 +1,4 @@
-﻿using PortalCOSIE.Domain.Entities;
+﻿using PortalCOSIE.Domain.SharedKernel;
 
 namespace PortalCOSIE.Domain.Interfaces
 {
@@ -12,7 +12,7 @@ namespace PortalCOSIE.Domain.Interfaces
     public interface IBaseRepository<TEntity, TId> where TEntity : BaseEntity<TId>
     {
         Task<TEntity> GetByIdAsync(TId id);
-        Task<IEnumerable<TEntity>> GetAllAsync(bool filtrarActivos);
+        Task<IEnumerable<TEntity>> GetAllAsync(bool IncluirEliminados = false);
         Task<TEntity> AddAsync(TEntity entity);
         TEntity Delete(TEntity entity);
     }

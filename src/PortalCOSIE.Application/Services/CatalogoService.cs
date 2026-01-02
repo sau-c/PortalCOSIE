@@ -1,6 +1,5 @@
-﻿using PortalCOSIE.Application.Interfaces;
-using PortalCOSIE.Domain.Entities;
-using PortalCOSIE.Domain.Interfaces;
+﻿using PortalCOSIE.Domain.Interfaces;
+using PortalCOSIE.Domain.SharedKernel;
 
 namespace PortalCOSIE.Application.Services
 {
@@ -24,7 +23,7 @@ namespace PortalCOSIE.Application.Services
 
         public async Task<IEnumerable<TEntity>> ListarAsync()
         {
-            return await _catalogoRepo.GetAllAsync(false);
+            return await _catalogoRepo.GetAllAsync();
         }
 
         public async Task ToggleAsync(TId id)

@@ -1,23 +1,23 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Features.Bitacoras.Queries.Listar;
 
 namespace PortalCOSIE.Web.Controllers
 {
     [Authorize(Roles = "Administrador, Personal")]
     public class BitacoraController : Controller
     {
-        private readonly IBitacoraService _bitacoraService;
+        private readonly IMediator _mediator;
 
-        public BitacoraController(IBitacoraService bitacoraService)
+        public BitacoraController(IMediator mediator)
         {
-            _bitacoraService = bitacoraService;
+            _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _bitacoraService.ListarBitacoraAsync());
+            return View(await _mediator.Send(new ListarBitacoraQuery()));
         }
     }
 }

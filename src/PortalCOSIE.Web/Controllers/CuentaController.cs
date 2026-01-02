@@ -1,9 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PortalCOSIE.Application.DTO.Cuenta;
+using PortalCOSIE.Application.Features.Carreras.Queries.Listar;
 using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
+using PortalCOSIE.Application.Features.Usuarios.Commands.RegistrarAlumno;
+using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerPersonal;
+using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerUsuarioPorIdentityId;
 using System.Security.Claims;
+using PortalCOSIE.Application.Features.Usuarios.DTO;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -11,23 +16,16 @@ namespace PortalCOSIE.Web.Controllers
     {
         private readonly ISecurityService _securityService;
         private readonly ICuentaCorreoService _cuentaCorreoService;
-        private readonly IUsuarioService _usuarioService;
-        private readonly ICarreraService _carreraService;
-        private readonly IPeriodosService _catalogoService;
-
+        private readonly IMediator _mediator;
         public CuentaController(
             ISecurityService securityService,
             ICuentaCorreoService cuentaCorreoService,
-            IUsuarioService usuarioService,
-            ICarreraService carreraService,
-            IPeriodosService catalogoService
+            IMediator mediator
             )
         {
             _securityService = securityService;
             _cuentaCorreoService = cuentaCorreoService;
-            _usuarioService = usuarioService;
-            _carreraService = carreraService;
-            _catalogoService = catalogoService;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -43,7 +41,8 @@ namespace PortalCOSIE.Web.Controllers
 
             if (User.IsInRole("Personal"))
             {
-                var personal = await _usuarioService.BuscarPersonal(userId);
+                //var personal = await _usuarioService.BuscarPersonal(userId);
+                var personal = await _mediator.Send(new ObtenerPersonalQuery(userId));
                 return View("_Personal", personal);
             }
 
@@ -105,12 +104,12 @@ namespace PortalCOSIE.Web.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) != null)
+            if (await _mediator.Send(new ObtenerUsuarioPorIdentityIdQuery(userId)) != null)
             {
                 return RedirectToAction("Index", "Calendario");
             }
-            ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
-            ViewBag.Periodos = new SelectList(await _catalogoService.ListarPeriodos(), "Periodo");
+            ViewBag.Carreras = new SelectList(await _mediator.Send(new ListarCarrerasQuery()), "Id", "Nombre");
+            ViewBag.Periodos = new SelectList(await _mediator.Send(new ListarPeriodosQuery()), "Periodo");
             return View();
         }
 
@@ -120,7 +119,17 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Registrar(RegistrarDTO dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _usuarioService.RegistrarAlumno(dto, userId);
+
+            var result = await _mediator.Send(new RegistrarAlumnoCommand(
+                userId,
+                dto.Nombre,
+                dto.ApellidoPaterno,
+                dto.ApellidoMaterno,
+                dto.NumeroBoleta,
+                dto.PeriodoIngreso,
+                dto.CarreraId
+                )
+            );
 
             if (!result.Succeeded)
             {
@@ -149,7 +158,7 @@ namespace PortalCOSIE.Web.Controllers
                 return Json(new { success = false, message = result.Errors });
             }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (await _usuarioService.BuscarUsuarioPorIdentityId(userId) == null && !User.IsInRole("Administrador"))
+            if (await _mediator.Send(new ObtenerUsuarioPorIdentityIdQuery(userId)) == null && !User.IsInRole("Administrador"))
             {
                 return RedirectToAction(nameof(Registrar));
             }
@@ -199,7 +208,7 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CambiarContrasena(CambiarContrasenaDTO dto) 
+        public async Task<IActionResult> CambiarContrasena(CambiarContrasenaDTO dto)
         {
             var result = await _securityService.CambiarContrasena(dto);
             if (!result.Succeeded)

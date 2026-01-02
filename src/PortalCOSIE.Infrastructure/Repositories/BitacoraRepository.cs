@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PortalCOSIE.Domain.Entities.Bitacoras;
+using PortalCOSIE.Domain.Entities.EntradaBitacoras;
 using PortalCOSIE.Infrastructure.Persistence;
 
 namespace PortalCOSIE.Infrastructure.Repositories

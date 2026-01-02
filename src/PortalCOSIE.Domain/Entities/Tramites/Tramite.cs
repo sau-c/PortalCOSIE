@@ -1,5 +1,6 @@
 ﻿using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Usuarios;
+using PortalCOSIE.Domain.SharedKernel;
 
 namespace PortalCOSIE.Domain.Entities.Tramites
 {

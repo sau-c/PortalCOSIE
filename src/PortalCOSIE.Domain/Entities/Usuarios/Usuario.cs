@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using PortalCOSIE.Domain.SharedKernel;
+using System.Text.RegularExpressions;
 
 namespace PortalCOSIE.Domain.Entities.Usuarios
 {

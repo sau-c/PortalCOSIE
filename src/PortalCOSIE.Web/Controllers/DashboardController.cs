@@ -1,31 +1,30 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Features.Carreras.Queries.Listar;
+using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
+using PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerMasReprobadasCTCE;
+using PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerRolesAlumnos;
+using PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerEstadoDocumentosCTCE;
+using PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerSolicitudesPorCarrera;
+using PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerEstadoTramitesCTCE;
 
 namespace PortalCOSIE.Web.Controllers
 {
     [Authorize(Roles = "Administrador, Personal")]
+    [Produces("application/json")]
     public class DashboardController : Controller
     {
-        private readonly IDashboardQueryService _dashboardService;
-        private readonly IPeriodosService _periodoService;
-        private readonly ICarreraService _carreraService;
-
-        public DashboardController(
-            IDashboardQueryService dashboardService,
-            IPeriodosService periodoService,
-            ICarreraService carreraService)
+        private readonly IMediator _mediator;
+        public DashboardController(IMediator mediator)
         {
-            _dashboardService = dashboardService;
-            _periodoService = periodoService;
-            _carreraService = carreraService;
+            _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var periodos = await _periodoService.ListarPeriodos();
+            var periodos = await _mediator.Send(new ListarPeriodosQuery());
             ViewBag.Periodos = periodos
                 .Select(p => new SelectListItem
                 {
@@ -33,42 +32,29 @@ namespace PortalCOSIE.Web.Controllers
                     Value = p
                 })
                 .ToList();
-            ViewBag.Carreras = new SelectList(await _carreraService.ListarActivasAsync(), "Id", "Nombre");
+            ViewBag.Carreras = new SelectList(await _mediator.Send(new ListarCarrerasQuery()), "Id", "Nombre");
+
             return View();
         }
-
+        
         [HttpGet]
-        public async Task<IActionResult> SolicitudesPorCarrera(string periodo)
-        {
-            var datos = await _dashboardService.ObtenerSolicitudesPorCarrera(periodo);
-            return Json(datos);
-        }
-
+        public async Task<IActionResult> SolicitudesPorCarrera(ObtenerSolicitudesPorCarreraQuery query)
+            => Json(await _mediator.Send(query));
+        
         [HttpGet]
-        public async Task<IActionResult> ObtenerEstadoTramitesCTCE(string periodo)
-        {
-            var datos = await _dashboardService.ObtenerEstadoTramitesCTCE(periodo);
-            return Json(datos);
-        }
-
+        public async Task<IActionResult> ObtenerEstadoTramitesCTCE(ObtenerEstadoTramitesCTCEQuery query)
+            => Json(await _mediator.Send(query));
+        
         [HttpGet]
-        public async Task<IActionResult> ObtenerEstadoDocumentosCTCE(string periodo)
-        {
-            var datos = await _dashboardService.ObtenerEstadoDocumentosCTCE(periodo);
-            return Json(datos);
-        }
-
+        public async Task<IActionResult> ObtenerEstadoDocumentosCTCE(ObtenerEstadoDocumentosCTCEQuery query)
+            => Json(await _mediator.Send(query));
+        
         [HttpGet]
         public async Task<IActionResult> ObtenerRolesAlumnos()
-        {
-            var datos = await _dashboardService.ObtenerRolesAlumnos();
-            return Json(datos);
-        }
+            => Json(await _mediator.Send(new ObtenerRolesAlumnosQuery()));
+        
         [HttpGet]
-        public async Task<IActionResult> MasReprobadas(int? carreraId, string periodo)
-        {
-            return Json(await _dashboardService.ObtenerUnidadesMasReprobadasPorCarrera(carreraId, periodo));
-        }
-
+        public async Task<IActionResult> MasReprobadas(ObtenerMasReprobadasQuery query)
+            => Json(await _mediator.Send(query));
     }
 }

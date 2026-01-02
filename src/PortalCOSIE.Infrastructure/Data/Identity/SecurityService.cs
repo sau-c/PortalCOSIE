@@ -1,11 +1,11 @@
 ﻿using PortalCOSIE.Application;
-using PortalCOSIE.Application.DTO.Cuenta;
-using PortalCOSIE.Application.DTO.Usuario;
 using PortalCOSIE.Application.Interfaces;
 using System.Net;
 using Microsoft.AspNetCore.Identity;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
+using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Features.Usuarios.DTO;
 
 namespace PortalCOSIE.Infrastructure.Data.Identity
 {

@@ -1,4 +1,5 @@
 ﻿using PortalCOSIE.Domain.Enums;
+using PortalCOSIE.Domain.SharedKernel;
 using System.Text.RegularExpressions;
 
 namespace PortalCOSIE.Domain.Entities.Carreras

@@ -1,0 +1,10 @@
+﻿namespace PortalCOSIE.Application.Features.Usuarios.DTO
+{
+    public class EditarPersonalDTO
+    {
+        public string IdentityUserId { get; set; }
+        public string Nombre { get; set; }
+        public string ApellidoPaterno { get; set; }
+        public string ApellidoMaterno { get; set; }
+    }
+}

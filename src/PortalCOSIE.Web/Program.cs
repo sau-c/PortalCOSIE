@@ -53,7 +53,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-//MANJEO DE EXCEPCION GLOBAL REVISAR
+
+//MANJEO DE EXCEPCION GLOBAL
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 //using (var scope = app.Services.CreateScope())

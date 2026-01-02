@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PortalCOSIE.Domain.Entities;
 using PortalCOSIE.Domain.Interfaces;
+using PortalCOSIE.Domain.SharedKernel;
 using PortalCOSIE.Infrastructure.Persistence;
 
 namespace PortalCOSIE.Infrastructure.Repositories
@@ -18,12 +18,13 @@ namespace PortalCOSIE.Infrastructure.Repositories
         {
             return await _context.Set<TEntity>().FindAsync(id);
         }
-        public async Task<IEnumerable<TEntity>> GetAllAsync(bool filtrarActivos)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(bool IncluirEliminados = false)
         {
-            return await _context.Set<TEntity>()
-                .Where(e => filtrarActivos ? e.IsDeleted == false : true)
-                .AsNoTracking()
-                .ToListAsync();
+            var query = _context.Set<TEntity>().AsQueryable();
+            if (!IncluirEliminados)
+                query = query.Where(e => !e.IsDeleted);
+
+            return await query.AsNoTracking().ToListAsync();
         }
         public async Task<TEntity> AddAsync(TEntity entity)
         {

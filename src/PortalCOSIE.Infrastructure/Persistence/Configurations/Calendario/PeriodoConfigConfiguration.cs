@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PortalCOSIE.Domain.Entities.Calendario;
+using PortalCOSIE.Domain.Entities.PeriodosConfig;
 
 namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Calendario
 {

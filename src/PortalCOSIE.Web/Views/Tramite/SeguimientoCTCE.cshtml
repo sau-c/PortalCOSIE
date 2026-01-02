@@ -1,4 +1,5 @@
-﻿@model PortalCOSIE.Domain.Entities.Tramites.TramiteCTCE
+﻿@using PortalCOSIE.Domain.Entities.Tramites.CTCE
+@model TramiteCTCE
 @{
     ViewData["Title"] = "Seguimiento dictamen interno (CTCE)";
     var identificacion = Model.Documentos.FirstOrDefault(d => d.TipoDocumentoId == 1);

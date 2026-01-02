@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PortalCOSIE.Domain.Entities.Calendario;
+using PortalCOSIE.Domain.Entities.SesionesCOSIE;
 using PortalCOSIE.Infrastructure.Persistence;
 
 namespace PortalCOSIE.Infrastructure.Repositories
@@ -8,10 +8,13 @@ namespace PortalCOSIE.Infrastructure.Repositories
     {
         public SesionRepository(AppDbContext context) : base(context)
         { }
-        public async Task<IEnumerable<SesionCOSIE>> ListarSesiones(bool filtrarActivos)
+        public async Task<IEnumerable<SesionCOSIE>> ListarSesiones(bool IncluirEliminados = false)
         {
-            return await _context.Set<SesionCOSIE>()
-                .Where(s => filtrarActivos ? s.IsDeleted == false : true)
+            var query = _context.Set<SesionCOSIE>().AsQueryable();
+            if (!IncluirEliminados)
+                query = query.Where(e => !e.IsDeleted);
+
+            return await query
                 .Include(s => s.FechasRecepcion)
                 .AsNoTracking()
                 .ToListAsync();

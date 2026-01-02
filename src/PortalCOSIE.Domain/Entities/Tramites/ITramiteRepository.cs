@@ -1,4 +1,5 @@
-﻿using PortalCOSIE.Domain.Interfaces;
+﻿using PortalCOSIE.Domain.Entities.Tramites.CTCE;
+using PortalCOSIE.Domain.Interfaces;
 
 namespace PortalCOSIE.Domain.Entities.Tramites
 {

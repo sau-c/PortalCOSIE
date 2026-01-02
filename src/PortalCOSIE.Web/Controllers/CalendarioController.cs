@@ -1,54 +1,52 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PortalCOSIE.Application.Interfaces;
+using PortalCOSIE.Application.Features.SesionesCOSIE.Commands.Crear;
+using PortalCOSIE.Application.Features.SesionesCOSIE.Commands.Editar;
+using PortalCOSIE.Application.Features.SesionesCOSIE.Commands.Toggle;
+using PortalCOSIE.Application.Features.SesionesCOSIE.Queries.ListarDetalle;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class CalendarioController : Controller
     {
-        private readonly IPeriodosService _catalogoService;
+        private readonly IMediator _mediator;
 
-        public CalendarioController(
-            IPeriodosService catalogoService
-            )
+        public CalendarioController(IMediator mediator)
         {
-            _catalogoService = catalogoService;
+            _mediator = mediator;
         }
 
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("Administrador"))
-            {
-                return View(await _catalogoService.ListarSesiones());
-            }
-            return View(await _catalogoService.ListarSesionesActivas());
+            var esAdministrador = User.IsInRole("Administrador");
+            return View(await _mediator.Send(new ListarSesionesCOSIEQuery(esAdministrador)));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> CrearSesionCOSIE(string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
+        public async Task<IActionResult> CrearSesionCOSIE(CrearSesionCOSIECommand command)
         {
-            await _catalogoService.CrearSesion(numeroSesion, fechaSesion, fechasRecepcion);
+            await _mediator.Send(command);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> EditarSesionCOSIE(int id, string numeroSesion, DateTime fechaSesion, List<DateTime> fechasRecepcion)
+        public async Task<IActionResult> EditarSesionCOSIE(EditarSesionCOSIECommand command)
         {
-            await _catalogoService.EditarSesion(id, numeroSesion, fechaSesion, fechasRecepcion);
+            await _mediator.Send(command);
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> ToggleSesionCOSIE(int id)
+        public async Task<IActionResult> ToggleSesionCOSIE(ToggleSesionCOSIECommand command)
         {
-            await _catalogoService.ToggleSesion(id);
+            await _mediator.Send(command);
             return RedirectToAction(nameof(Index));
         }
 
