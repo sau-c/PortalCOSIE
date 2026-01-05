@@ -1,4 +1,4 @@
-﻿<div class="modal fade" id="modalConfirmarAsignacion" tabindex="-1" aria-hidden="true">
+﻿<div class="modal fade" id="modalTomarTramite" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
@@ -29,9 +29,9 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
-        // Variables locales al componente
+        // Variables locales
         let formPendiente = null;
-        const modalElement = document.getElementById('modalConfirmarAsignacion');
+        const modalElement = document.getElementById('modalTomarTramite');
 
         // Verificamos que el elemento exista para evitar errores
         if(!modalElement) return;
@@ -39,7 +39,7 @@
         const modalConfirmacion = new bootstrap.Modal(modalElement);
         const btnConfirmarSi = document.getElementById('btnConfirmarSi');
 
-        // 1. ESCUCHA GLOBAL: Intercepta cualquier formulario que empiece con "formTomar_"
+        // 1. Intercepta cualquier formulario que empiece con "formTomar_"
         document.body.addEventListener('submit', function (e) {
             // Si el elemento que disparó el submit no tiene ID o no es de los nuestros, ignorar
             if (!e.target.id || !e.target.id.startsWith('formTomar_')) return;
@@ -57,9 +57,8 @@
 
             modalConfirmacion.hide();
 
-            // Usamos tus helpers globales (bloqueadorBoton, executeFetch, showGlobalModal)
             const btnSubmitOriginal = formPendiente.querySelector('button[type="submit"]');
-            const control = bloqueadorBoton(btnSubmitOriginal); // Asumo que esta fn es global
+            const control = bloqueadorBoton(btnSubmitOriginal);
 
             control.bloquear();
 

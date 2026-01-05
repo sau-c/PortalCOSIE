@@ -10,18 +10,19 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Documentos
         {
             builder.ToTable("Documento");
 
-            // 1. Configuración del RowGuid (Requisito obligatorio de FILESTREAM)
-            //builder.Property(e => e.RowGuid)
-            //      .HasColumnName("RowGuid")
-            //      .HasDefaultValueSql("NEWID()") // SQL genera el ID automáticamente
-            //      .IsRequired();
-
             builder.Property(d => d.Nombre)
                 .IsRequired()
                 .HasMaxLength(200);
 
             builder.Property(d => d.Observaciones)
                 .HasMaxLength(1000);
+
+            builder.Property(d => d.BlobPath)
+                .IsRequired()
+                .HasMaxLength(300);
+
+            builder.Property(builder => builder.HashOriginal)
+                .IsRequired();
 
             builder.HasOne(d => d.Tramite)
                 .WithMany(t => t.Documentos)

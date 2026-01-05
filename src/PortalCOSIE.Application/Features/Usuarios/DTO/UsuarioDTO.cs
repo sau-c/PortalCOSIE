@@ -8,6 +8,7 @@
         public string ApellidoMaterno { get; set; }
         public string Correo { get; set; }
         public bool CorreoConfirmado { get; set; }
+        public string Celular { get; set; }
         public string Rol { get; set; }
     }
 }

@@ -4,33 +4,32 @@ using PortalCOSIE.Domain.SharedKernel;
 namespace PortalCOSIE.Domain.Entities.Documentos
 {
     /// <summary>
-    /// Representa un documento adjunto a un trámite académico.
+    /// Representa un documento PDF adjunto a un trámite académico.
     /// </summary>
-    /// <remarks>
-    /// El contenido se almacena como binario y debe ser PDF.
-    /// </remarks>
     public class Documento : BaseEntity<int>
     {
         /// <summary>
         /// Representa el tamano maximo
         /// </summary>
-        private const int MAX_FILE_SIZE = 3 * 1024 * 1024;
+        private const int HASH_SIZE_BYTES = 64; // 512 bits
 
         /// <summary>Nombre original del archivo</summary>
         public string Nombre { get; private set; }
-
+        /// <summary> Ruta del archivo en el Blob container</summary>
+        public string BlobPath { get; private set; }
         /// <summary>Comentarios del personal sobre validación o rechazo</summary>
         public string? Observaciones { get; private set; }
-
         /// <summary>Identificador del trámite asociado</summary>
         public int TramiteId { get; private set; }
+        /// <summary> Indica si es identificacion, boleta, etc</summary>
         public int TipoDocumentoId { get; private set; }
 
         /// <summary>Identificador del estado actual del documento</summary>
         public int EstadoDocumentoId { get; private set; }
 
-        /// <summary>Contenido binario del archivo (blob)</summary>
-        public byte[] Contenido { get; private set; }
+        /// <summary>Contenido hash del archivo antes de firmar</summary>
+        public byte[] HashOriginal { get; private set; }
+        /// <summary>Contenido hash del archivo despues de firmar</summary>
 
         // Propiedades de navegación
         public EstadoDocumento EstadoDocumento { get; private set; }
@@ -41,18 +40,20 @@ namespace PortalCOSIE.Domain.Entities.Documentos
 
         public Documento(
             string nombre,
+            string blobPath,
             int tramiteId,
             int tipoDocumentoId,
             int estadoDocumentoId,
-            byte[] contenido,
+            byte[] hashOriginal,
             string observaciones = "")
         {
             SetNombre(nombre);
-            SetObservaciones(observaciones);
+            BlobPath = blobPath ?? throw new DomainException("La ruta del documento no puede ser nula.");
             TramiteId = tramiteId;
             TipoDocumentoId = tipoDocumentoId;
             EstadoDocumentoId = estadoDocumentoId;
-            SetContenido(contenido);
+            SetObservaciones(observaciones);
+            SetHashOriginal(hashOriginal);
         }
 
         public void SetNombre(string nombre)
@@ -87,17 +88,17 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         }
 
         /// <summary>
-        /// Reemplaza el contenido del documento (solo para correcciones o actualizaciones)
+        /// Establece el contenido hash original del documento
         /// </summary>
-        private void SetContenido(byte[] contenido)
+        private void SetHashOriginal(byte[] hashOriginal)
         {
-            if (contenido == null || contenido.Length == 0)
-                throw new DomainException("El contenido del documento no puede estar vacío.");
+            if (hashOriginal == null || hashOriginal.Length == 0)
+                throw new DomainException("El contenido hash no puede estar vacío.");
 
-            if (contenido.Length > MAX_FILE_SIZE)
-                throw new DomainException($"El archivo no puede superar los {MAX_FILE_SIZE / (1024.0 * 1024.0)} MB.");
+            if (hashOriginal.Length != HASH_SIZE_BYTES)
+                throw new DomainException($"El hash debe ser de {HASH_SIZE_BYTES} bytes.");
 
-            Contenido = contenido;
+            HashOriginal = hashOriginal;
         }
     }
 }

@@ -25,9 +25,37 @@
         { }
 
         /// <summary>
-        /// Determina si el trámite en este estado permite ediciones.
+        /// Determina si el estado es final (no permite más transiciones)
         /// </summary>
-        public bool PermiteEdicion() =>
-            this == Solicitado || this == EnRevision;
+        /// <returns></returns>
+        public bool EsFinal()
+            => this == Concluido || this == Cancelado;
+
+        /// <summary>
+        /// Valida si el estado actual puede transicionar al nuevo estado.
+        /// </summary>
+        public bool PuedeTransicionarA(EstadoTramite nuevoEstado)
+        {
+            if (nuevoEstado == null) return false; // Evitar nulls
+            if (this == nuevoEstado) return false; // No se permite transicionar al mismo estado
+            if (EsFinal()) return false;           // No se permite transicionar desde un estado final
+
+            return this switch
+            {
+                _ when this == Solicitado =>
+                    nuevoEstado == EnRevision,
+
+                _ when this == EnRevision =>
+                    nuevoEstado == DocumentosPendientes
+                    || nuevoEstado == Concluido
+                    || nuevoEstado == Cancelado,
+
+                _ when this == DocumentosPendientes =>
+                    nuevoEstado == EnRevision,
+
+                _ => false
+            };
+        }
     }
+
 }

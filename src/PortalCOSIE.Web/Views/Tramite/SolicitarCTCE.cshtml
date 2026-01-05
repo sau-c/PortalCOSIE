@@ -7,7 +7,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h6 class="mb-0 py-1"><i class="fas fa-file me-2"></i>@ViewData["Title"]</h6>
         <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
-            <i class="fas fa-arrow-left me-2"></i>Volver
+            <i class="fas fa-arrow-left"></i><span class="d-none d-sm-inline ms-2">Volver</span>
         </a>
     </div>
 
@@ -125,27 +125,29 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-                    <p class="text-muted small mb-0 fst-italic me-3">
-                        <i class="fas fa-info-circle me-1"></i>
-                        Que enterado bajo protesta de decir la verdad que lo asentado en esta solicitud y sus anexos son
-                        verdad, y que conozco las sanciones reglamentarias a que me hago acreedor en caso de incurrir en alguna falta.
-                    </p>
-                    <button id="btnSubmit" type="submit" class="btn btn-primary px-4">
-                        <i class="fas fa-paper-plane me-2"></i>Enviar solicitud
-                    </button>
-                </div>
             </fieldset>
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                <p class="text-muted small mb-0 fst-italic me-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Que enterado bajo protesta de decir la verdad que lo asentado en esta solicitud y sus anexos son
+                    verdad, y que conozco las sanciones reglamentarias a que me hago acreedor en caso de incurrir en alguna falta.
+                </p>
+                <button id="btnSubmit" type="submit" class="btn btn-primary px-4">
+                    <i class="fas fa-paper-plane me-2"></i>Enviar solicitud
+                </button>
+            </div>
 
         </form>
     </div>
 </div>
 
+<partial name="_ModalConfirmarSolicitud" />
+
 <template id="rowTemplate">
     <tr class="align-middle">
         <input type="hidden" name="UnidadesReprobadas.Index" value="{INDEX}" />
         <td>
-            <select name="UnidadesReprobadas[{INDEX}].UnidadId" class="form-select form-select-sm border-0" required>
+            <select name="UnidadesReprobadas[{INDEX}].UnidadAprendizajeId" class="form-select form-select-sm border-0" required>
                 <option value="">Seleccione...</option>
                 @foreach (var item in (SelectList)ViewBag.Unidades)
                 {
@@ -154,7 +156,7 @@
             </select>
         </td>
         <td>
-            <select name="UnidadesReprobadas[{INDEX}].PeriodoCursado" class="form-select form-select-sm border-0 text-center text-secondary" required>
+            <select name="UnidadesReprobadas[{INDEX}].PeriodoCurso" class="form-select form-select-sm border-0 text-center text-secondary" required>
                 <option value="">- Periodo -</option>
                 @foreach (var item in (SelectList)ViewBag.Periodos)
                 {
@@ -163,7 +165,7 @@
             </select>
         </td>
         <td>
-            <select name="UnidadesReprobadas[{INDEX}].PeriodoRecursado" class="form-select form-select-sm border-0 text-center text-secondary" required>
+            <select name="UnidadesReprobadas[{INDEX}].PeriodoRecurse" class="form-select form-select-sm border-0 text-center text-secondary" required>
                 <option value="">- Periodo -</option>
                 @foreach (var item in (SelectList)ViewBag.Periodos)
                 {
@@ -182,37 +184,6 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            const form = document.getElementById("formSolicitud");
-            const submitBtn = form.querySelector('button[type="submit"]');
-
-            // Si tienes una función global para bloquear botones:
-            // const boton = bloqueadorBoton(submitBtn);
-
-            // Mantenemos la lógica original tuya
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                // boton.bloquear(); // Descomentar si usas tu helper
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
-
-                try {
-                    const url = form.getAttribute("action");
-                    const formData = new FormData(form);
-                    // Asumo que executeFetch y showGlobalModal son tus helpers globales
-                    const data = await executeFetch(url, "POST", formData);
-                    showGlobalModal("success", data.message, {
-                        redirectUrl: '/Tramite',
-                    });
-                } catch (error) {
-                    showGlobalModal("error", error.message, {
-                        onClose: () => {
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Enviar Solicitud';
-                        }
-                    });
-                }
-            });
-
             // === LÓGICA DE TABLA ===
             const btnAgregar = document.getElementById("btnAgregarFila");
             const tbody = document.getElementById("tbody-unidades");

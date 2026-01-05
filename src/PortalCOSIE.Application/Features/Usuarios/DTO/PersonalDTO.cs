@@ -2,7 +2,7 @@
 {
     public class PersonalDTO : UsuarioDTO
     {
-        //public string IdentityUserId { get; set; }
-        //public string Nombre { get; set; }
+        public string IdEmpleado { get; set; }
+        public string Area { get; set; }
     }
 }

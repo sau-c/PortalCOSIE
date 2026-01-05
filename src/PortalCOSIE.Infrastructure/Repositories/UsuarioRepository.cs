@@ -24,19 +24,6 @@ namespace PortalCOSIE.Infrastructure.Repositories
             return await _context.Set<Alumno>()
                 .FirstOrDefaultAsync(u => u.NumeroBoleta == boleta);
         }
-        public async Task<IEnumerable<Alumno>> ListarAlumnoConCarrera()
-        {
-            return await _context.Set<Alumno>()
-                .Include(a => a.Carrera!)
-                .AsNoTracking()
-                .ToListAsync();
-        }
-        public async Task<IEnumerable<Personal>> ListarPersonal()
-        {
-            return await _context.Set<Personal>()
-                .AsNoTracking()
-                .ToListAsync();
-        }
         public async Task<Personal> BuscarPersonal(string identityUserId)
         {
             return await _context.Set<Personal>()

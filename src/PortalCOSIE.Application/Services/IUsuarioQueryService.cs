@@ -1,4 +1,5 @@
 ﻿using PortalCOSIE.Application.Features.Usuarios.DTO;
+using PortalCOSIE.Domain.Entities.Documentos;
 
 namespace PortalCOSIE.Application.Services
 {
@@ -7,6 +8,7 @@ namespace PortalCOSIE.Application.Services
         Task<IEnumerable<AlumnoDTO>> ListarAlumnosCompletos();
         Task<IEnumerable<PersonalDTO>> ListarPersonalCompletos();
         Task<int> ObtenerCarreraAlumnoPorId(string identityUserId);
-        Task<AlumnoDTO> ObtenerAlumnoCompletoPorId(string identityUserId);
+        Task<UsuarioDTO> ObtenerUsuarioCompletoPorId(string identityUserId);
+        Task<Documento> ObtenerDatosDocumentoPorId(int id);
     }
 }

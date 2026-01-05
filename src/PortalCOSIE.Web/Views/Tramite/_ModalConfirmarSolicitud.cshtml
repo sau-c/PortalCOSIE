@@ -1,0 +1,75 @@
+﻿<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">
+                    <i class="fas fa-question-circle me-2"></i>Confirmar acción
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3 text-primary bg-primary bg-opacity-10 d-inline-block p-3 rounded-circle">
+                    <i class="fas fa-paper-plane fa-2x"></i>
+                </div>
+                <h5 class="fw-bold mb-2">¿Confirmas el envío de tu solicitud?</h5>
+                <p class="text-muted small mb-0">
+                    Verifique que todos los documentos y datos sean correctos.
+                </p>
+                <br>Esta acción no se puede deshacer.</p>
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnConfirmarEnvio" class="btn btn-primary">
+                    <i class="fas fa-check me-2"></i>Sí, enviar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1. Identificamos los elementos (El formulario está en la vista padre)
+        const formPrincipal = document.getElementById("formSolicitud");
+        const modalElement = document.getElementById('modalConfirmacion');
+        const btnConfirmar = document.getElementById('btnConfirmarEnvio');
+
+        // Instancia de Bootstrap y Bloqueador
+        const bsModal = new bootstrap.Modal(modalElement);
+        const control = bloqueadorBoton(btnConfirmar);
+
+        // 2. Interceptamos el SUBMIT del formulario principal
+        // Esto permite que las validaciones (required) funcionen antes de abrir el modal
+        if (formPrincipal) {
+            formPrincipal.addEventListener("submit", function (e) {
+                e.preventDefault(); // Detenemos el envío directo
+                e.stopPropagation();
+
+                // Abrimos modal
+                bsModal.show();
+            });
+        }
+
+        // 3. Lógica del botón "SI, enviar"
+        btnConfirmar.addEventListener("click", async function () {
+            control.bloquear();
+
+            try {
+                const url = formPrincipal.getAttribute("action");
+                const formData = new FormData(formPrincipal);
+                const data = await executeFetch(url, "POST", formData);
+
+                showGlobalModal("success", data.message, {
+                    redirectUrl: '/Tramite',
+                });
+
+            } catch (error) {
+                showGlobalModal("error", error.message, {
+                    onClose: () => control.restaurar()
+                });
+            }
+        });
+    });
+</script>

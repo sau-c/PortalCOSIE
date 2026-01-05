@@ -5,7 +5,6 @@ using System.Security.Claims;
 using PortalCOSIE.Application.Features.Carreras.Queries.Listar;
 using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
 using PortalCOSIE.Application.Features.Usuarios.Commands.RegistrarAlumno;
-using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerPersonal;
 using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerUsuarioPorIdentityId;
 using PortalCOSIE.Application.Features.Usuarios.DTO;
 using PortalCOSIE.Application.Services;
@@ -31,24 +30,7 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (User.IsInRole("Administrador"))
-            {
-                var admin = await _mediator.Send(new ObtenerPersonalQuery(userId));//dummy
-                return View("_Admin", admin);
-            }
-
-            if (User.IsInRole("Personal"))
-            {
-                var personal = await _mediator.Send(new ObtenerPersonalQuery(userId));
-                return View("_Personal", personal);
-            }
-
-            if (User.IsInRole("Alumno"))
-            {
-                var alumno = await _mediator.Send(new ObtenerAlumnoCompletoQuery(userId));
-                return View("MisDatosAlumno", alumno);
-            }
-            return Json(new { success = false, message = "No tienes un rol valido" });
+            return View(await _mediator.Send(new ObtenerUsuarioCompletoQuery(userId)));
         }
 
         [HttpGet]

@@ -70,6 +70,12 @@ namespace PortalCOSIE.Domain.Entities.Tramites
             EstadoTramiteId = EstadoTramite.EnRevision.Id;
         }
 
+        public bool PerteneceAAlumno(int alumnoId)
+            => AlumnoId == alumnoId;
+
+        public bool PuedeSerAtendidoPor(int personalId)
+            => PersonalId == personalId;
+
         /// <summary>Agrega un documento al trámite</summary>
         public void AgregarDocumento(Documento documento)
         {
@@ -81,16 +87,21 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         public void CambiarEstado(EstadoTramite nuevoEstado)
         {
             if (nuevoEstado == null) throw new DomainException("El nuevo estado no puede ser nulo.");
-            EstadoTramite = nuevoEstado;
+
+            if (!EstadoTramite.PuedeTransicionarA(nuevoEstado))
+                throw new DomainException(
+                    $"No se puede cambiar el estado de '{EstadoTramite.Nombre}' a '{nuevoEstado.Nombre}'.");
+
+            //EstadoTramite = nuevoEstado;
             EstadoTramiteId = nuevoEstado.Id;
+
+            if (nuevoEstado.EsFinal())
+                FechaConclusion = DateTime.Now;
         }
 
-        /// <summary>Marca el trámite como concluido y registra la fecha de conclusión</summary>
-        public void Concluir()
+        public void AgregarObservaciones(string observaciones)
         {
-            if (FechaConclusion != null) throw new DomainException("El trámite ya fue concluido.");
-            FechaConclusion = DateTime.Now;
-            EstadoTramiteId = EstadoTramite.Concluido.Id;
+            Observaciones = observaciones;
         }
     }
 }

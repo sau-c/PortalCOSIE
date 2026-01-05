@@ -1,4 +1,5 @@
 ﻿using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Services;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.PeriodosConfig;
 using PortalCOSIE.Domain.Entities.Tramites;
@@ -13,18 +14,24 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IBaseRepository<PeriodoConfig, int> _periodoRepo;
         private readonly ITramiteRepository _tramiteRepo;
+        private readonly IStorageService _storageService;
+        private readonly ICriptoService _criptoService;
         private readonly IUnitOfWork _unitOfWork;
 
         public SolicitarCTCEHandler(
             IUsuarioRepository usuarioRepo,
             IBaseRepository<PeriodoConfig, int> periodoRepo,
             ITramiteRepository tramiteRepo,
+            IStorageService storageService,
+            ICriptoService criptoService,
             IUnitOfWork unitOfWork
             )
         {
             _usuarioRepo = usuarioRepo;
             _periodoRepo = periodoRepo;
             _tramiteRepo = tramiteRepo;
+            _storageService = storageService;
+            _criptoService = criptoService;
             _unitOfWork = unitOfWork;
         }
 
@@ -38,13 +45,12 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                 string periodo = $"{periodoConfig.AnioActual}/{periodoConfig.PeriodoActual}";
                 var unidadesReprobadasEntities = new List<UnidadReprobada>();
 
-                foreach (var itemDto in command.solicitud.UnidadesReprobadas)
+                foreach (var itemDto in command.UnidadesReprobadas)
                 {
-                    // Validación opcional: verificar si pertenece a la carrera (Nota: esto hace N queries a la BD)
                     var nuevaUnidadEntity = new UnidadReprobada(
-                        itemDto.UnidadId,
-                        itemDto.PeriodoCursado,
-                        itemDto.PeriodoRecursado
+                        itemDto.UnidadAprendizajeId,
+                        itemDto.PeriodoCurso,
+                        itemDto.PeriodoRecurse
                     );
 
                     unidadesReprobadasEntities.Add(nuevaUnidadEntity);
@@ -55,13 +61,13 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                     alumno.Id,
                     TipoTramite.DictamenInterno.Id,
                     periodo,
-                    command.solicitud.Peticion,
-                    command.solicitud.TieneDictamenesAnteriores,
+                    command.Peticion,
+                    command.TieneDictamenesAnteriores,
                     unidadesReprobadasEntities,
-                    ToDocumeto(command.solicitud.Identificacion, TipoDocumento.Identificacion),
-                    ToDocumeto(command.solicitud.BoletaGlobal, TipoDocumento.BoletaGlobal),
-                    ToDocumeto(command.solicitud.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos),
-                    ToDocumeto(command.solicitud.Probatorios, TipoDocumento.Probatorios)
+                    await ProcesarDocumentoAsync(command.Identificacion, TipoDocumento.Identificacion),
+                    await ProcesarDocumentoAsync(command.BoletaGlobal, TipoDocumento.BoletaGlobal),
+                    await ProcesarDocumentoAsync(command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos),
+                    await ProcesarDocumentoAsync(command.Probatorios, TipoDocumento.Probatorios)
                 );
 
                 await _tramiteRepo.AddAsync(tramite);
@@ -76,14 +82,24 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             }
         }
 
-        private Documento ToDocumeto(ArchivoDescargaDTO DocumentoDto, TipoDocumento tipo)
+        private async Task<Documento> ProcesarDocumentoAsync(ArchivoDTO documentoDto, TipoDocumento tipo)
         {
+            // Validar si viene nulo (por seguridad)
+            if (documentoDto == null || documentoDto.Contenido == null)
+                throw new Exception($"El documento {tipo.Nombre} es requerido.");
+
+            // 2. Subir a Azure al container "pruebas" (o el que tenga configurado el servicio)
+            // El servicio debe devolver el nombre único o la ruta (ej: "guid-archivo.pdf")
+            string blobPath = await _storageService.UploadAsync(documentoDto.Contenido, documentoDto.Nombre);
+
+            // 3. Crear la Entidad
             return new Documento(
-                    DocumentoDto.Nombre,
-                    0, // Se pone 0, EF Core asignará el ID real al guardar
+                    documentoDto.Nombre,
+                    blobPath,
+                    0,
                     tipo.Id,
                     EstadoDocumento.EnRevision.Id,
-                    DocumentoDto.Contenido
+                    _criptoService.CalcularHash(documentoDto.Contenido)
                 );
         }
     }

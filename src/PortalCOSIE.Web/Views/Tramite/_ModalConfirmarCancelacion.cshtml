@@ -1,0 +1,110 @@
+﻿<!-- Modal Cancelar Trámite -->
+<div class="modal fade" id="modalCancelarTramite" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+
+            <form id="formCancelarTramite" asp-action="CancelarTramite" method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" id="hdnIdTramite" name="tramiteId" value="" />
+
+                <div class="modal-header bg-danger text-white">
+                    <h6 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Zona de peligro</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body text-center p-4">
+                    <div class="mb-3 text-danger bg-danger bg-opacity-10 d-inline-block p-3 rounded-circle">
+                        <i class="fas fa-ban fa-2x"></i>
+                    </div>
+
+                    <h5 class="fw-bold mb-2 text-danger">¿Cancelar este trámite?</h5>
+                    <p class="text-muted small mb-3">
+                        Esta acción rechazará la solicitud y es <strong>irreversible</strong>.
+                    </p>
+
+                    <div class="text-start bg-light p-3 rounded border">
+                        <label for="txtMotivoCancelacion" class="form-label small fw-bold text-secondary">
+                            Motivo de cancelación:
+                        </label>
+                        <textarea id="txtMotivoCancelacion" name="observaciones" class="form-control form-control-sm shadow-none"
+                                  rows="2" placeholder="Ej. Documentación ilegible..." required></textarea>
+                        <div id="msgErrorMotivo" class="text-danger small mt-1 d-none">
+                            <i class="fas fa-info-circle me-1"></i>Debes indicar un motivo.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer justify-content-center bg-light">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Regresar</button>
+                    <button type="submit" id="btnConfirmarCancelacion" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash-alt me-2"></i>Sí, cancelar
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modalElement = document.getElementById('modalCancelarTramite');
+        const form = document.getElementById('formCancelarTramite');
+        const txtMotivo = document.getElementById('txtMotivoCancelacion');
+        const msgError = document.getElementById('msgErrorMotivo');
+        const btnConfirmar = document.getElementById('btnConfirmarCancelacion');
+        const hdnId = document.getElementById('hdnIdTramite'); 
+
+        const bsModal = new bootstrap.Modal(modalElement);
+        const boton = (typeof bloqueadorBoton === 'function') ? bloqueadorBoton(btnConfirmar) : { bloquear:()=>{}, restaurar:()=>{} };
+
+        // EVENTO: Al abrir el modal
+        modalElement.addEventListener("show.bs.modal", (event) => {
+            const button = event.relatedTarget;
+            const id = button.getAttribute("data-tramite-id");
+
+            // Esto permite que el FormData lo recoja automáticamente
+            if(hdnId) hdnId.value = id;
+
+            // Resetear campos visuales
+            if(txtMotivo) txtMotivo.value = "";
+            if(msgError) msgError.classList.add('d-none');
+        });
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!txtMotivo.value.trim()) {
+                msgError.classList.remove('d-none');
+                txtMotivo.focus();
+                return;
+            }
+            msgError.classList.add('d-none');
+
+            boton.bloquear();
+
+            try {
+                const formData = new FormData(form);
+                const url = form.action;
+                const data = await executeFetch(url, 'POST', formData);
+
+                bsModal.hide();
+                showGlobalModal('success', data.message, {
+                    redirectUrl: '/Tramite'
+                });
+
+            } catch (error) {
+                console.error(error);
+                showGlobalModal('error', error.message, {
+                    onClose: () => boton.restaurar()
+                });
+            }
+        });
+
+        // Limpieza extra al cerrar
+        modalElement.addEventListener('hidden.bs.modal', () => {
+            form.reset();
+            boton.restaurar();
+        });
+    });
+</script>

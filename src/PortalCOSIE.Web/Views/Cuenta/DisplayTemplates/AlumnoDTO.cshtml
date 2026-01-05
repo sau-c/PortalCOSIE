@@ -1,0 +1,42 @@
+﻿@model PortalCOSIE.Application.Features.Usuarios.DTO.AlumnoDTO
+
+<div class="row mb-3">
+    <div class="col-md-6 mb-3">
+        <div class="p-3 border rounded-3 bg-light">
+            <small class="text-muted">Número de Boleta</small>
+            <h6 class="fw-bold mb-0">@Model.NumeroBoleta</h6>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="p-3 border rounded-3 bg-light">
+            <small class="text-muted">Periodo de Ingreso</small>
+            <h6 class="fw-bold mb-0">@Model.PeriodoIngreso</h6>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="p-3 border rounded-3 bg-light">
+            <small class="text-muted">Carrera</small>
+            <h6 class="fw-bold mb-0">@Model.Carrera.Nombre</h6>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="p-3 border rounded-3 bg-light">
+            <small class="text-muted">Estatus</small>
+            <h6 class="fw-bold mb-0 text-success">Activo</h6>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<h6 class="fw-bold text-secondary mb-3">Opciones</h6>
+
+<div class="d-flex flex-wrap gap-2">
+    <a href="#" class="btn btn-outline-secondary btn-sm disabled">
+        <i class="fas fa-file-alt me-2"></i>
+        Descargar todos mis documentos(próximamente)
+    </a>
+</div>

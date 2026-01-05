@@ -28,7 +28,7 @@ public class GlobalExceptionHandlingMiddleware
                 ApplicationException => (StatusCodes.Status400BadRequest, ex.Message, true),
                 DbUpdateException dbEx when dbEx.InnerException is SqlException sqlEx => MapSqlException(sqlEx),
                 SqlException sqlEx => MapSqlException(sqlEx),
-                _ => (StatusCodes.Status500InternalServerError, "Error interno del servidor", true)
+                _ => (StatusCodes.Status500InternalServerError, $"Error del servidor: {ex.Message}", true)
             };
 
             if (logAsError)

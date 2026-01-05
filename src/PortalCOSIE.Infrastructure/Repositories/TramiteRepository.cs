@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Tramites.CTCE;
 using PortalCOSIE.Infrastructure.Persistence;
@@ -20,7 +19,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 .Include(t => t.Personal)
                 .AsQueryable();
 
-            // 2. Filtro: Si es ALUMNO, filtramos solo sus trámites
+            // 2. Filtro: Si es ALUMNO, filtramos solo sus tramites
             if (alumnoId.HasValue)
             {
                 query = query.Where(t => t.AlumnoId == alumnoId.Value);
@@ -50,14 +49,6 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 .Include(d => d.Documentos)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(d => d.Id == tramiteId);
-        }
-
-        public async Task<int> ObtenerTramiteIdPorDocumentoId(int documentoId)
-        {
-            return await _context.Set<Tramite>()
-                .Where(t => t.Documentos.Any(d => d.Id == documentoId))
-                .Select(t => t.Id)
-                .FirstOrDefaultAsync();
         }
     }
 }

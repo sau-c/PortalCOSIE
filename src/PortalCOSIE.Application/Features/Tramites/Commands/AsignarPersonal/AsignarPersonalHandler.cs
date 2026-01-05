@@ -26,13 +26,15 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.AsignarPersonal
             {
                 await _unitOfWork.BeginTransactionAsync();
                 var personal = await _usuarioRepo.BuscarPersonal(command.IdentityUserId);
+                if (personal == null)
+                    return Result<string>.Failure("El personal no existe."); 
                 var tramite = await _tramiteRepo.GetByIdAsync(command.TramiteId);
                 if (tramite.PersonalId != null)
-                    throw new ApplicationException("El trámite ya tiene personal asignado.");
+                    return Result<string>.Failure("El trámite ya tiene personal asignado.");
                 tramite.AsignarPersonal(personal.Id);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
-                return Result<string>.Success("Personal asignado correctamente.");
+                return Result<string>.Success("Se ha tomado el trámite.");
             }
             catch (Exception)
             {

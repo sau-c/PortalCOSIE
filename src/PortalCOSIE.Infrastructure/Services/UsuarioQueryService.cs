@@ -2,6 +2,7 @@
 using PortalCOSIE.Application.Features.Usuarios.DTO;
 using PortalCOSIE.Application.Services;
 using PortalCOSIE.Domain.Entities.Carreras;
+using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Infrastructure.Persistence;
 
@@ -68,29 +69,96 @@ namespace PortalCOSIE.Infrastructure.QueryService
 
             return await query.AsNoTracking().ToListAsync();
         }
-        public async Task<AlumnoDTO?> ObtenerAlumnoCompletoPorId(string identityUserId)
+        public async Task<UsuarioDTO?> ObtenerUsuarioCompletoPorId(string identityUserId)
         {
-            var query = from alumno in _context.Set<Alumno>()
-                        join user in _context.Users
-                            on alumno.IdentityUserId equals user.Id
+            // 1. Consulta LINQ
+            var query = from user in _context.Users
+                        
+                        // Left Join Alumnos
+                        join alumno in _context.Set<Alumno>()
+                            on user.Id equals alumno.IdentityUserId into alumnoGroup
+                        from al in alumnoGroup.DefaultIfEmpty()
+
+                        // Left Join Carrera (anidado al alumno)
                         join carrera in _context.Set<Carrera>()
-                            on alumno.CarreraId equals carrera.Id
+                            on al.CarreraId equals carrera.Id into carreraGroup
+                        from car in carreraGroup.DefaultIfEmpty()
+
+                        // Left Join Personal
+                        join personal in _context.Set<Personal>()
+                            on user.Id equals personal.IdentityUserId into personalGroup
+                        from per in personalGroup.DefaultIfEmpty()
+
                         where user.Id == identityUserId
-                        select new AlumnoDTO
+
+                        // Proyeccion a objeto anonimo
+                        select new
                         {
-                            IdentityUserId = user.Id,
-                            NumeroBoleta = alumno.NumeroBoleta,
-                            Nombre = alumno.Nombre,
-                            ApellidoPaterno = alumno.ApellidoPaterno,
-                            ApellidoMaterno = alumno.ApellidoMaterno,
-                            Carrera = carrera,
-                            PeriodoIngreso = alumno.PeriodoIngreso,
-                            Correo = user.Email,
-                            CorreoConfirmado = user.EmailConfirmed,
-                            Celular = user.PhoneNumber
+                            Identity = user,
+                            Alumno = al,
+                            Carrera = car,
+                            Personal = per
                         };
 
-            return await query.AsNoTracking().FirstOrDefaultAsync();
+            var data = await query.AsNoTracking().FirstOrDefaultAsync();
+
+            if (data == null) return null;
+
+            // 2. Decidir qué DTO instanciar según los datos encontrados
+
+            // CASO A: Es Alumno
+            if (data.Alumno != null)
+            {
+                return new AlumnoDTO
+                {
+                    // Propiedades Base
+                    IdentityUserId = data.Identity.Id,
+                    Nombre = data.Alumno.Nombre,
+                    ApellidoPaterno = data.Alumno.ApellidoPaterno,
+                    ApellidoMaterno = data.Alumno.ApellidoMaterno,
+                    Correo = data.Identity.Email,
+                    CorreoConfirmado = data.Identity.EmailConfirmed,
+                    Celular = data.Identity.PhoneNumber,
+                    Rol = "Alumno",
+
+                    // Propiedades específicas
+                    NumeroBoleta = data.Alumno.NumeroBoleta,
+                    PeriodoIngreso = data.Alumno.PeriodoIngreso,
+                    Carrera = data.Carrera
+                };
+            }
+
+            // CASO B: Es Personal
+            if (data.Personal != null)
+            {
+                return new PersonalDTO
+                {
+                    // Propiedades Base
+                    IdentityUserId = data.Identity.Id,
+                    Nombre = data.Personal.Nombre,
+                    ApellidoPaterno = data.Personal.ApellidoPaterno,
+                    ApellidoMaterno = data.Personal.ApellidoMaterno,
+                    Correo = data.Identity.Email,
+                    CorreoConfirmado = data.Identity.EmailConfirmed,
+                    Celular = data.Identity.PhoneNumber,
+                    Rol = "Personal",
+
+                    // Propiedades Específicas
+                    IdEmpleado = data.Personal.IdEmpleado,
+                    Area = data.Personal.Area
+                };
+            }
+
+            // CASO C: Usuario Genérico (Admin)
+            return new UsuarioDTO
+            {
+                IdentityUserId = data.Identity.Id,
+                Nombre = "Administrador",
+                Correo = data.Identity.Email,
+                CorreoConfirmado = data.Identity.EmailConfirmed,
+                Celular = data.Identity.PhoneNumber,
+                Rol = "Administrador"
+            };
         }
         public async Task<int> ObtenerCarreraAlumnoPorId(string identityUserId)
         {
@@ -98,6 +166,13 @@ namespace PortalCOSIE.Infrastructure.QueryService
                 .Where(a => a.IdentityUserId == identityUserId)
                 .Select(a => a.CarreraId)
                 .FirstOrDefaultAsync();
+        }
+        public async Task<Documento> ObtenerDatosDocumentoPorId(int id)
+        {
+            return await _context.Set<Documento>()
+                .Include(d => d.Tramite)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
     }
 }

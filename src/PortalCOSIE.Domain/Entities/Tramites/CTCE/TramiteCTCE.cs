@@ -57,7 +57,7 @@ namespace PortalCOSIE.Domain.Entities.Tramites.CTCE
         }
         private void SetDocumentoObligatorio(Documento documento, TipoDocumento tipo)
         {
-            if (documento == null || documento.Contenido.Length == 0)
+            if (documento == null || documento.HashOriginal.Length == 0)
                 throw new DomainException($"El documento {tipo.Nombre} es obligatorio.");
 
             // Usamos el método de la clase base Tramite

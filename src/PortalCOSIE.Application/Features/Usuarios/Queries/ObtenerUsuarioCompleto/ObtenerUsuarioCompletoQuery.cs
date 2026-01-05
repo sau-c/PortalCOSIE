@@ -3,7 +3,7 @@ using PortalCOSIE.Application.Features.Usuarios.DTO;
 
 namespace PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerAlumnoCompleto
 {
-    public sealed record ObtenerAlumnoCompletoQuery(
+    public sealed record ObtenerUsuarioCompletoQuery(
         string identityUserId
-        ) : IRequest<AlumnoDTO>;
+        ) : IRequest<UsuarioDTO>;
 }

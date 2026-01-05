@@ -1,4 +1,5 @@
-﻿@model IEnumerable<PortalCOSIE.Domain.Entities.Tramites.Tramite>
+﻿@using PortalCOSIE.Domain.Entities.Tramites
+@model IEnumerable<PortalCOSIE.Domain.Entities.Tramites.Tramite>
 @{
     ViewData["Title"] = "Trámites";
 }
@@ -69,22 +70,51 @@
                     </td>
 
                     <td class="text-center text-nowrap">
-                        @if (tramite.PersonalId == null && User.IsInRole("Personal"))
+                        @{
+                            bool puedeTomar = tramite.PersonalId == null && User.IsInRole("Personal") && tramite.EstadoTramiteId == EstadoTramite.Solicitado.Id;
+                            bool esConcluido = tramite.EstadoTramiteId == EstadoTramite.Concluido.Id;
+                        }
+
+                        @* Tomar trámite (no coexiste con Ver) *@
+                        @if (puedeTomar)
                         {
                             <form id="formTomar_@tramite.Id" asp-action="TomarTramite" asp-route-tramiteId="@tramite.Id" method="post" class="d-inline">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-success py-0 px-2 shadow-sm" title="Asignarme">
+                                <button type="submit" 
+                                        class="btn btn-sm btn-outline-success border-0 rounded-circle"
+                                        title="Tomar trámite">
                                     <i class="fas fa-hand-paper"></i>
                                 </button>
                             </form>
                         }
                         else
                         {
-                            <a asp-action="SeguimientoCTCE" asp-route-tramiteId="@tramite.Id" class="btn btn-sm btn-outline-primary border-0 rounded-circle">
+                            @* Ver trámite *@
+                            <a asp-action="SeguimientoCTCE"
+                               asp-route-tramiteId="@tramite.Id"
+                               class="btn btn-sm btn-outline-primary border-0 rounded-circle"
+                               title="Ver">
                                 <i class="fas fa-eye"></i>
                             </a>
                         }
+
+                        @* Descargar documentos (puede coexistir con Ver) *@
+                        @if (esConcluido)
+                        {
+                            <form asp-action="DescargarDocumentos"
+                                  asp-route-tramiteId="@tramite.Id"
+                                  method="post"
+                                  class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger border-0 rounded-circle"
+                                        title="Descargar documentos">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </form>
+                        }
                     </td>
+
                 </tr>
             }
         </table>
@@ -92,7 +122,7 @@
     </div>
 </div>
 
-<partial name="_ModalConfirmarAsignacion" />
+<partial name="_ModalTomarTramite" />
 
 @section Scripts {
     <script>

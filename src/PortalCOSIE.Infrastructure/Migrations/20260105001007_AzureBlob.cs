@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AzureDB : Migration
+    public partial class AzureBlob : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -448,11 +448,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    BlobPath = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     Observaciones = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     TramiteId = table.Column<int>(type: "int", nullable: false),
                     TipoDocumentoId = table.Column<int>(type: "int", nullable: false),
                     EstadoDocumentoId = table.Column<int>(type: "int", nullable: false),
-                    Contenido = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    HashOriginal = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -574,7 +575,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "PeriodoConfig",
                 columns: new[] { "Id", "AnioActual", "AnioInicio", "IsDeleted", "PeriodoActual", "PeriodoInicio" },
-                values: new object[] { 1, 2026, 1997, false, 1, 1 });
+                values: new object[] { 1, 2027, 1997, false, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "SesionCOSIE",

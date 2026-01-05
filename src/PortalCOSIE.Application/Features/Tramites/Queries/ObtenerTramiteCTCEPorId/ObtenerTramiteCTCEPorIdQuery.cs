@@ -5,6 +5,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.ObtenerTramiteCTCEPo
 {
     public sealed record ObtenerTramiteCTCEPorIdQuery(
         string IdentityUserId,
+        string Rol,
         int TramiteId
         ) : IRequest<TramiteCTCE>;
 }
