@@ -70,15 +70,15 @@ namespace PortalCOSIE.Domain.Entities.Tramites.CTCE
                 return;
             }
 
-            if (Documentos.All(d => d.EstadoDocumentoId == EstadoDocumento.Validado.Id))
-            {
-                CambiarEstado(EstadoTramite.EsperandoAcuse);
-                return;
-            }
-
             if (Documentos.Any(d => d.TipoDocumentoId == TipoDocumento.DictamenCTCE.Id))
             {
                 CambiarEstado(EstadoTramite.Concluido);
+                return;
+            }
+
+            if (Documentos.All(d => d.EstadoDocumentoId == EstadoDocumento.Validado.Id))
+            {
+                CambiarEstado(EstadoTramite.EsperandoAcuse);
                 return;
             }
         }

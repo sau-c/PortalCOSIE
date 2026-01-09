@@ -64,7 +64,6 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
                     _criptoService.CalcularHash(command.Archivo.Contenido)
                 );
 
-                documento.CambiarEstado(EstadoDocumento.Validado);
                 tramite.AgregarDocumento(documento);
                 tramite.VerificarEstadoTramite();
                 await _unitOfWork.SaveChangesAsync();
