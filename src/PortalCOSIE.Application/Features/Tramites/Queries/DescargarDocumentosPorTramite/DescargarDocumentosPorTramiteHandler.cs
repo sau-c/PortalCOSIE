@@ -25,7 +25,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosP
 
         public async Task<ArchivoDTO> Handle(DescargarDocumentosPorTramiteQuery query)
         {
-            Tramite tramite = await _tramiteRepo.BuscarTramiteCTCEPorId(query.TramiteId);
+            Tramite tramite = await _tramiteRepo.ObtenerTramiteCTCEPorId(query.TramiteId);
 
             if (tramite == null)
                 throw new ApplicationException("Trámite no encontrado.");
@@ -72,7 +72,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosP
 
                 foreach (var documento in documentos)
                 {
-                    using (var fileStream = await _storageService.DownloadAsync(documento.BlobPath))
+                    using (var fileStream = await _storageService.DownloadAsync(documento.Ruta))
                     {
                         // 1. Calculamos nombre único
                         string nombreArchivo = ObtenerNombreUnico(documento, nombresUsados);
@@ -106,7 +106,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosP
             // Intentamos usar el nombre amigable, si no el del blob
             string baseName = !string.IsNullOrWhiteSpace(doc.Nombre)
                 ? doc.Nombre
-                : Path.GetFileName(doc.BlobPath);
+                : Path.GetFileName(doc.Ruta);
 
             // Aseguramos extensión
             if (!Path.HasExtension(baseName)) baseName += ".pdf";

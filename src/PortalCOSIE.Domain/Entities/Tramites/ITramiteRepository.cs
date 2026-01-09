@@ -15,6 +15,8 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         /// </summary>
         /// <returns>Colección de trámites con toda su información relacionada</returns>
         Task<IEnumerable<Tramite>> ListarConDatosCompletos(int? alumnoId = null, int? personalId = null);
-        Task<TramiteCTCE> BuscarTramiteCTCEPorId(int tramiteId);
+        Task<TramiteCTCE> ObtenerTramiteCTCEPorId(int tramiteId);
+        Task<TramiteCTCE> ObtenerTramiteCTCEPorIdParaRevision(int tramiteId);
+
     }
 }

@@ -59,11 +59,12 @@ namespace PortalCOSIE.Infrastructure.QueryService
                         select new PersonalDTO
                         {
                             IdentityUserId = user.Id,
+                            IdEmpleado = personal.IdEmpleado,
                             Nombre = personal.Nombre,
                             ApellidoPaterno = personal.ApellidoPaterno,
                             ApellidoMaterno = personal.ApellidoMaterno,
                             Correo = user.Email,
-                            //Celular = user.PhoneNumber,
+                            Celular = user.PhoneNumber,
                             Rol = role != null ? role.Name : null // puede ser null
                         };
 
@@ -89,6 +90,16 @@ namespace PortalCOSIE.Infrastructure.QueryService
                             on user.Id equals personal.IdentityUserId into personalGroup
                         from per in personalGroup.DefaultIfEmpty()
 
+                            // Left Join UserRoles
+                        join userRole in _context.UserRoles
+                            on user.Id equals userRole.UserId into userRoleGroup
+                        from ur in userRoleGroup.DefaultIfEmpty()
+
+                            // Left Join Roles
+                        join role in _context.Roles
+                            on ur.RoleId equals role.Id into roleGroup
+                        from r in roleGroup.DefaultIfEmpty()
+
                         where user.Id == identityUserId
 
                         // Proyeccion a objeto anonimo
@@ -97,7 +108,8 @@ namespace PortalCOSIE.Infrastructure.QueryService
                             Identity = user,
                             Alumno = al,
                             Carrera = car,
-                            Personal = per
+                            Personal = per,
+                            Rol = r != null ? r.Name : null
                         };
 
             var data = await query.AsNoTracking().FirstOrDefaultAsync();
@@ -119,7 +131,7 @@ namespace PortalCOSIE.Infrastructure.QueryService
                     Correo = data.Identity.Email,
                     CorreoConfirmado = data.Identity.EmailConfirmed,
                     Celular = data.Identity.PhoneNumber,
-                    Rol = "Alumno",
+                    Rol = data.Rol,
 
                     // Propiedades específicas
                     NumeroBoleta = data.Alumno.NumeroBoleta,
@@ -141,11 +153,10 @@ namespace PortalCOSIE.Infrastructure.QueryService
                     Correo = data.Identity.Email,
                     CorreoConfirmado = data.Identity.EmailConfirmed,
                     Celular = data.Identity.PhoneNumber,
-                    Rol = "Personal",
+                    Rol = data.Rol,
 
                     // Propiedades Específicas
                     IdEmpleado = data.Personal.IdEmpleado,
-                    Area = data.Personal.Area
                 };
             }
 
@@ -157,7 +168,7 @@ namespace PortalCOSIE.Infrastructure.QueryService
                 Correo = data.Identity.Email,
                 CorreoConfirmado = data.Identity.EmailConfirmed,
                 Celular = data.Identity.PhoneNumber,
-                Rol = "Administrador"
+                Rol = data.Rol,
             };
         }
         public async Task<int> ObtenerCarreraAlumnoPorId(string identityUserId)

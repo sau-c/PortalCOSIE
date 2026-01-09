@@ -32,4 +32,11 @@ public class AzureStorageService : IStorageService
         var downloadInfo = await blobClient.DownloadAsync();
         return downloadInfo.Value.Content;
     }
+    public async Task DeleteAsync(string blobPath)
+    {
+        BlobClient blobClient = _blobContainerClient.GetBlobClient(blobPath);
+        if (!await blobClient.ExistsAsync())
+            throw new FileNotFoundException("El documento no existe en el almacenamiento de blobs.");
+        await blobClient.DeleteIfExistsAsync();
+    }
 }

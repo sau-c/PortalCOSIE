@@ -32,4 +32,29 @@ public static class EstadoTramiteExtensions
             _ => "fas fa-circle-question"
         };
     }
+
+    public static string ToBadgeClass(this int estado)
+    {
+        return estado switch
+        {
+            1 => "bg-secondary",
+            2 => "bg-success",
+            3 => "bg-danger",
+            4 => "bg-warning text-black",
+            _ => "bg-light text-dark"
+        };
+    }
+
+
+    public static string ToIconClass(this int estado)
+    {
+        return estado switch
+        {
+            1 => "fas fa-eye",
+            2 => "fas fa-flag",
+            3 => "fas fa-circle-xmark",
+            4 => "fas fa-file-circle-exclamation",
+            _ => "fas fa-circle-question"
+        };
+    }
 }

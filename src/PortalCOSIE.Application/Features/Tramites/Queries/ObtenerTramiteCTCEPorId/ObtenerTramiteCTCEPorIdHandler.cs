@@ -19,7 +19,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.ObtenerTramiteCTCEPo
         public async Task<TramiteCTCE?> Handle(ObtenerTramiteCTCEPorIdQuery command)
         {
             // 1. Recuperar
-            var tramite = await _tramiteRepo.BuscarTramiteCTCEPorId(command.TramiteId);
+            var tramite = await _tramiteRepo.ObtenerTramiteCTCEPorId(command.TramiteId);
             if (tramite == null) throw new ApplicationException("Trámite no encontrado");
 
             // 2. Validar según Rol

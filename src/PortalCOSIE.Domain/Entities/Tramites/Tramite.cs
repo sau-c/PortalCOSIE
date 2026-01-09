@@ -90,9 +90,8 @@ namespace PortalCOSIE.Domain.Entities.Tramites
 
             if (!EstadoTramite.PuedeTransicionarA(nuevoEstado))
                 throw new DomainException(
-                    $"No se puede cambiar el estado de '{EstadoTramite.Nombre}' a '{nuevoEstado.Nombre}'.");
+                    $"Trámite no puede cambiar el estado de '{EstadoTramite.Nombre}' a '{nuevoEstado.Nombre}'.");
 
-            //EstadoTramite = nuevoEstado;
             EstadoTramiteId = nuevoEstado.Id;
 
             if (nuevoEstado.EsFinal())

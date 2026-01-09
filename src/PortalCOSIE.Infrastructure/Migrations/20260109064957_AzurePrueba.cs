@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AzureBlob : Migration
+    public partial class AzurePrueba : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -382,8 +382,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    IdEmpleado = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Area = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IdEmpleado = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -448,7 +447,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    BlobPath = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Ruta = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     Observaciones = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     TramiteId = table.Column<int>(type: "int", nullable: false),
                     TipoDocumentoId = table.Column<int>(type: "int", nullable: false),

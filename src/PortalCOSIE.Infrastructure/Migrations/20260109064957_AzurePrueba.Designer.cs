@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Persistence;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260105001007_AzureBlob")]
-    partial class AzureBlob
+    [Migration("20260109064957_AzurePrueba")]
+    partial class AzurePrueba
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4128,11 +4128,6 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BlobPath")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
                     b.Property<int>("EstadoDocumentoId")
                         .HasColumnType("int");
 
@@ -4151,6 +4146,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<string>("Observaciones")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Ruta")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int>("TipoDocumentoId")
                         .HasColumnType("int");
@@ -4731,13 +4731,10 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 {
                     b.HasBaseType("PortalCOSIE.Domain.Entities.Usuarios.Usuario");
 
-                    b.Property<string>("Area")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("IdEmpleado")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.ToTable("Personal", (string)null);
                 });

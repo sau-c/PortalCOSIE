@@ -175,8 +175,8 @@
                 </div>
             }
 
-            <!-- Bitácora: Admin + Personal -->
-            @if (isAdmin || isPersonal)
+            <!-- Bitácora: Admin-->
+            @if (isAdmin)
             {
                 <div class="accordion-item bg-transparent border-0">
                     <a href="@Url.Action("Index", "Bitacora")" class="nav-link text-white" title="Bitácora">

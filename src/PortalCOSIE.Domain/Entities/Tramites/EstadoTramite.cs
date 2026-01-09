@@ -1,4 +1,6 @@
-﻿namespace PortalCOSIE.Domain.Entities.Tramites
+﻿using PortalCOSIE.Domain.Entities.Documentos;
+
+namespace PortalCOSIE.Domain.Entities.Tramites
 {
     /// <summary>
     /// Define los posibles estados de un trámite a lo largo de su ciclo de vida.
@@ -36,26 +38,19 @@
         /// </summary>
         public bool PuedeTransicionarA(EstadoTramite nuevoEstado)
         {
-            if (nuevoEstado == null) return false; // Evitar nulls
-            if (this == nuevoEstado) return false; // No se permite transicionar al mismo estado
-            if (EsFinal()) return false;           // No se permite transicionar desde un estado final
+            if (nuevoEstado == null) return false;
+            if (this.Id == nuevoEstado.Id) return true;
+            if (EsFinal()) return false;
 
-            return this switch
+            return this.Id switch
             {
-                _ when this == Solicitado =>
-                    nuevoEstado == EnRevision,
-
-                _ when this == EnRevision =>
-                    nuevoEstado == DocumentosPendientes
-                    || nuevoEstado == Concluido
-                    || nuevoEstado == Cancelado,
-
-                _ when this == DocumentosPendientes =>
-                    nuevoEstado == EnRevision,
-
+                1 => nuevoEstado.Id == 2, // Solicitado
+                2 => nuevoEstado.Id == 3 || nuevoEstado.Id == 4 || nuevoEstado.Id == 5, // EnRevision
+                3 => nuevoEstado.Id == 2, // DocumentosPendientes
                 _ => false
             };
         }
+        
     }
 
 }

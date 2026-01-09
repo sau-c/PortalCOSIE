@@ -40,23 +40,22 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
+
+                if (command.BoletaGlobal == null || command.Identificacion == null || command.CartaExposicionMotivos == null || command.Probatorios == null)
+                    throw new Exception("Todos los documentos son obligatorios para solicitar.");
+
                 var alumno = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
                 var periodoConfig = await _periodoRepo.GetByIdAsync(1);
                 string periodo = $"{periodoConfig.AnioActual}/{periodoConfig.PeriodoActual}";
-                var unidadesReprobadasEntities = new List<UnidadReprobada>();
 
-                foreach (var itemDto in command.UnidadesReprobadas)
-                {
-                    var nuevaUnidadEntity = new UnidadReprobada(
-                        itemDto.UnidadAprendizajeId,
-                        itemDto.PeriodoCurso,
-                        itemDto.PeriodoRecurse
-                    );
-
-                    unidadesReprobadasEntities.Add(nuevaUnidadEntity);
-                }
+                // 1. Unidades reprobadas - convertir DTOs a entidades
+                var unidadesReprobadasEntities = command.UnidadesReprobadas
+                .Select(u => new UnidadReprobada(u.UnidadAprendizajeId, u.PeriodoCurso, u.PeriodoRecurse))
+                .ToList();
 
                 // 2. Crear el Trámite
+                // Aquí se procesan los documentos para subirlos al storageService
+                // y se crean las entidades Documento asociadas
                 var tramite = new TramiteCTCE(
                     alumno.Id,
                     TipoTramite.DictamenInterno.Id,
@@ -98,7 +97,6 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                     blobPath,
                     0,
                     tipo.Id,
-                    EstadoDocumento.EnRevision.Id,
                     _criptoService.CalcularHash(documentoDto.Contenido)
                 );
         }

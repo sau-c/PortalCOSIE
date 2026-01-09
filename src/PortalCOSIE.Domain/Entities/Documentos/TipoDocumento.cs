@@ -12,7 +12,6 @@
         public static readonly TipoDocumento Probatorios = new (4, "Probatorios");
 
         private TipoDocumento(int id, string nombre) : base(id, nombre)
-        {
-        }
+        { }
     }
 }

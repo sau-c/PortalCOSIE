@@ -1,7 +1,7 @@
 ﻿using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Interfaces;
 
-namespace PortalCOSIE.Application.Features.Tramites.Commands.CancelarTramite
+namespace PortalCOSIE.Application.Features.Tramites.Commands.Cancelar
 {
     public class CancelarTramiteHandler : IRequestHandler<CancelarTramiteCommand, Result<string>>
     {
@@ -18,7 +18,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CancelarTramite
 
         public async Task<Result<string>> Handle(CancelarTramiteCommand command)
         {
-            var tramite = await _tramiteRepo.GetByIdAsync(command.tramiteId);
+            var tramite = await _tramiteRepo.ObtenerTramiteCTCEPorIdParaRevision(command.tramiteId);
             if (tramite is null)
                 return Result<string>.Failure("Trámite no encontrado.");
 

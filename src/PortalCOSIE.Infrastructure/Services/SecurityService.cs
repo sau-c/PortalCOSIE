@@ -144,11 +144,10 @@ namespace PortalCOSIE.Infrastructure.Services
 
                 var usuario = new Personal(
                     userCreado.Id,
-                    "EMP",
+                    dto.IdEmpleado,
                     dto.Nombre,
                     dto.ApellidoPaterno,
-                    dto.ApellidoMaterno,
-                    "Gestion"
+                    dto.ApellidoMaterno
                     );
 
                 await _usuarioRepo.AddAsync(usuario);
@@ -347,10 +346,6 @@ namespace PortalCOSIE.Infrastructure.Services
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return Result<string>.Failure("No se encontró el usuario a editar");
-
-            // Si es el mismo correo -> no hacer nada
-            if (user.NormalizedEmail == _userManager.NormalizeEmail(correo))
-                return Result<string>.Failure("No se detectaron cambios");
 
             // Validar si el correo ya está en uso
             var correoExistente = await _userManager.FindByEmailAsync(correo);

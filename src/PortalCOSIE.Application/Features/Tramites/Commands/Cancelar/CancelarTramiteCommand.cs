@@ -1,6 +1,6 @@
 ﻿using PortalCOSIE.Application.Abstractions;
 
-namespace PortalCOSIE.Application.Features.Tramites.Commands.CancelarTramite
+namespace PortalCOSIE.Application.Features.Tramites.Commands.Cancelar
 {
     public sealed record CancelarTramiteCommand(
         int tramiteId,

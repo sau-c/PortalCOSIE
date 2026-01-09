@@ -57,12 +57,12 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumento
             // 3. Descarga del Stream
             // IMPORTANTE: Aquí NO usamos 'using'. El stream debe devolverse abierto 
             // para que el Controller lo envíe al navegador.
-            var stream = await _storageService.DownloadAsync(documento.BlobPath);
+            var stream = await _storageService.DownloadAsync(documento.Ruta);
 
             // 4. Determinar nombre y tipo
             string nombreArchivo = !string.IsNullOrWhiteSpace(documento.Nombre)
                 ? documento.Nombre
-                : Path.GetFileName(documento.BlobPath);
+                : Path.GetFileName(documento.Ruta);
 
             return new ArchivoDTO
             {

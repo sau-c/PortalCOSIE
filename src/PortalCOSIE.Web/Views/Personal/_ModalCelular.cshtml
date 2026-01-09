@@ -15,7 +15,7 @@
                         <span class="input-group-text">
                             <i class="fas fa-phone"></i>
                         </span>
-                        <input type="text" id="celular" name="celular" class="form-control" required
+                        <input type="text" id="celularCambiar" name="celular" class="form-control" required
                                placeholder="Número de celular"
                                maxlength="10"
                                pattern="\d*"
@@ -42,7 +42,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         const modal = document.getElementById('modalCelular');
         const form = document.getElementById('formCelular');
-        const celular = document.getElementById('celular');
+        const celular = document.getElementById('celularCambiar');
         const hiddenId = document.getElementById('hdnIdCelular');
         const btnSubmit = document.getElementById('btnSubmitCelular');
         const boton = bloqueadorBoton(btnSubmit);

@@ -39,14 +39,22 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
-        public async Task<TramiteCTCE> BuscarTramiteCTCEPorId(int tramiteId)
+        public async Task<TramiteCTCE> ObtenerTramiteCTCEPorId(int tramiteId)
         {
             return await _context.Set<TramiteCTCE>()
-                .Include(d => d.Alumno)
-                .ThenInclude(a => a.Carrera)
-                .Include(d => d.UnidadesReprobadas)
-                .ThenInclude(d => d.UnidadAprendizaje)
-                .Include(d => d.Documentos)
+                .Include(d => d.Alumno).ThenInclude(a => a.Carrera)
+                .Include(d => d.UnidadesReprobadas).ThenInclude(d => d.UnidadAprendizaje)
+                .Include(d => d.Documentos).ThenInclude(d => d.TipoDocumento)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(d => d.Id == tramiteId);
+        }
+
+        public async Task<TramiteCTCE> ObtenerTramiteCTCEPorIdParaRevision(int tramiteId)
+        {
+            return await _context.Set<TramiteCTCE>()
+                .Include(d => d.EstadoTramite)
+                .Include(d => d.Documentos).ThenInclude(d => d.TipoDocumento)
+                .Include(d => d.Documentos).ThenInclude(d => d.EstadoDocumento)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(d => d.Id == tramiteId);
         }

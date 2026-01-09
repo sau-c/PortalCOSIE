@@ -35,19 +35,19 @@ namespace PortalCOSIE.Domain.Entities.Tramites.CTCE
             Documento cartaMotivos,
             Documento boletaGlobal,
             Documento probatorios
-            ) 
+            )
             : base(alumnoId, tipoId, periodoSolicitud)
         {
-            SetPeticion(peticion);
+            EstablecerPeticion(peticion);
             TieneDictamenesAnteriores = tieneDictamenesAnteriores;
             if (unidadesReprobadas != null)
                 _unidadesReprobadas.AddRange(unidadesReprobadas);
-            SetDocumentoObligatorio(identificacion, TipoDocumento.Identificacion);
-            SetDocumentoObligatorio(cartaMotivos, TipoDocumento.CartaExposicionMotivos);
-            SetDocumentoObligatorio(boletaGlobal, TipoDocumento.BoletaGlobal);
-            SetDocumentoObligatorio(probatorios, TipoDocumento.Probatorios);
+            AgregarDocumento(identificacion);
+            AgregarDocumento(cartaMotivos);
+            AgregarDocumento(boletaGlobal);
+            AgregarDocumento(probatorios);
         }
-        private void SetPeticion(string peticion)
+        private void EstablecerPeticion(string peticion)
         {
             if (string.IsNullOrWhiteSpace(peticion))
                 throw new DomainException("El motivo de solicitud no puede estar vacío.");
@@ -55,13 +55,21 @@ namespace PortalCOSIE.Domain.Entities.Tramites.CTCE
                 throw new DomainException("El motivo de solicitud no puede exceder los 1000 caracteres.");
             Peticion = peticion;
         }
-        private void SetDocumentoObligatorio(Documento documento, TipoDocumento tipo)
-        {
-            if (documento == null || documento.HashOriginal.Length == 0)
-                throw new DomainException($"El documento {tipo.Nombre} es obligatorio.");
 
-            // Usamos el método de la clase base Tramite
-            AgregarDocumento(documento);
+        public void VerificarEstadoTramite()
+        {
+            if (Documentos.Any(d => d.EstadoDocumentoId == EstadoDocumento.EnRevision.Id))
+            {
+                CambiarEstado(EstadoTramite.EnRevision);
+                return;
+            }
+
+            //if (Documentos.Any(d => d.EstadoDocumentoId == EstadoDocumento.Incorrecto.Id || d.EstadoDocumentoId == EstadoDocumento.ConErrores.Id))
+            if (Documentos.Any(d => d.PermiteCorreccion()))
+            {
+                CambiarEstado(EstadoTramite.DocumentosPendientes);
+                return;
+            }
         }
     }
 }

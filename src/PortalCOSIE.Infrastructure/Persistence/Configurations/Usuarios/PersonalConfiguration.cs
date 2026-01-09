@@ -10,6 +10,10 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Usuarios
         {
             builder.ToTable("Personal");
 
+            builder.Property(p => p.IdEmpleado)
+                .IsRequired()
+                .HasMaxLength(50);
+
             builder.HasOne<Usuario>()      // Personal tiene un Usuario
                 .WithOne()              // Usuario tiene Alumno
                 .HasForeignKey<Personal>(a => a.Id)  // PK de Personal = FK a Usuario

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
+using PortalCOSIE.Web.Models;
 using PortalCOSIE.Application.Features.Carreras.Queries.ListarUnidades;
 using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
 using PortalCOSIE.Application.Features.Tramites.Commands.AsignarPersonal;
@@ -10,11 +12,10 @@ using PortalCOSIE.Application.Features.Tramites.Queries.ListarEstadosTramite;
 using PortalCOSIE.Application.Features.Tramites.Queries.ListarTramites;
 using PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumento;
 using PortalCOSIE.Application.Features.Tramites.Queries.ObtenerTramiteCTCEPorId;
-using PortalCOSIE.Web.Models;
-using System.Security.Claims;
-using PortalCOSIE.Application.Features.Tramites.Commands.CancelarTramite;
-using PortalCOSIE.Domain.Entities.Tramites.CTCE;
+using PortalCOSIE.Application.Features.Tramites.Commands.Cancelar;
 using PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosPorTramite;
+using PortalCOSIE.Application.Features.Tramites.Commands.Revision;
+using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -52,10 +53,10 @@ namespace PortalCOSIE.Web.Controllers
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // Creamos los DTOs de los archivos directamente con Stream
-            ArchivoDTO carta = ObtenerDocumentoDTO(model.CartaExposicionMotivos);
-            ArchivoDTO identificacion = ObtenerDocumentoDTO(model.Identificacion);
-            ArchivoDTO boleta = ObtenerDocumentoDTO(model.BoletaGlobal);
-            ArchivoDTO probatorios = ObtenerDocumentoDTO(model.Probatorios);
+            ArchivoDTO carta = ObtenerArchivoDTO(model.CartaExposicionMotivos);
+            ArchivoDTO identificacion = ObtenerArchivoDTO(model.Identificacion);
+            ArchivoDTO boleta = ObtenerArchivoDTO(model.BoletaGlobal);
+            ArchivoDTO probatorios = ObtenerArchivoDTO(model.Probatorios);
 
             // Enviamos comando con DTOs desconectados de HTTP
             await _mediator.Send(new SolicitarCTCECommand(
@@ -72,11 +73,37 @@ namespace PortalCOSIE.Web.Controllers
             return Json(new { success = true, message = "Solicitud enviada con éxito." });
         }
 
-        // === Helper: convierte IFormFile a DocumentoDTO con Stream ===
-        private ArchivoDTO ObtenerDocumentoDTO(IFormFile archivo)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Alumno")]
+        public async Task<IActionResult> Corregir(CorregirCtceVM model)
+        {
+            string userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            ArchivoDTO carta = ObtenerArchivoDTO(model.CartaExposicionMotivos);
+            ArchivoDTO identificacion = ObtenerArchivoDTO(model.Identificacion);
+            ArchivoDTO boleta = ObtenerArchivoDTO(model.BoletaGlobal);
+            ArchivoDTO probatorios = ObtenerArchivoDTO(model.Probatorios);
+
+            var result = await _mediator.Send(
+                new CorregirTramiteCommand(
+                    userId,
+                    model.Id,
+                    carta,
+                    identificacion,
+                    boleta,
+                    probatorios
+                ));
+
+            if (result.Succeeded)
+                return Json(new { success = true, message = result.Value });
+            return Json(new { success = false, message = result.Errors.FirstOrDefault() });
+        }
+
+        // === Helper: convierte IFormFile a ArchivoDTO asociado a un TipoDocumento ===
+        private ArchivoDTO ObtenerArchivoDTO(IFormFile archivo)
         {
             if (archivo == null || archivo.Length == 0)
-                throw new ArgumentException("El archivo no puede estar vacío.");
+                return null;
 
             if (archivo.Length > 3 * 1024 * 1024) // 3 MB
                 throw new ArgumentException("El archivo excede el tamaño máximo permitido de 3 MB.");
@@ -88,6 +115,7 @@ namespace PortalCOSIE.Web.Controllers
             };
         }
 
+
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal, Alumno")]
         public async Task<IActionResult> SeguimientoCTCE(int tramiteId)
@@ -97,8 +125,9 @@ namespace PortalCOSIE.Web.Controllers
 
             var tramite = await _mediator.Send(new ObtenerTramiteCTCEPorIdQuery(userId, userRole, tramiteId));
             ViewBag.EstadoDocumento = new SelectList(await _mediator.Send(new ListarEstadoDocumentoQuery()), "Id", "Nombre");
-
-            return View(tramite);
+            if (userRole == "Alumno")
+                return View("SeguimientoCTCE_Alumno", tramite);
+            return View("SeguimientoCTCE_Personal", tramite);
         }
 
         [HttpGet]
@@ -124,7 +153,7 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
-        public async Task<IActionResult> TomarTramite(int tramiteId)
+        public async Task<IActionResult> Tomar(int tramiteId)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _mediator.Send(new AsignarPersonalCommand(userId, tramiteId));
@@ -136,16 +165,19 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
-        public async Task<IActionResult> GuardarValidacion(TramiteCTCE dto)
+        [HttpPost]
+        public async Task<IActionResult> Revisar(int id, List<DocumentoDTO> documentosList, string observaciones)
         {
-            //return await _mediator.Send(new );
-            return (IActionResult)Task.CompletedTask;
+            var result = await _mediator.Send(new RevisarTramiteCommand(id, documentosList, observaciones));
+            if (result.Succeeded)
+                return Json(new { success = true, message = result.Value });
+            return Json(new { success = false, message = result.Errors.FirstOrDefault() });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
-        public async Task<IActionResult> CancelarTramite(int tramiteId, string observaciones)
+        public async Task<IActionResult> Cancelar(int tramiteId, string observaciones)
         {
             var result = await _mediator.Send(new CancelarTramiteCommand(tramiteId, observaciones));
             if (result.Succeeded)

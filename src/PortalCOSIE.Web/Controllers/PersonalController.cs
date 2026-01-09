@@ -68,5 +68,17 @@ namespace PortalCOSIE.Web.Controllers
             }
             return Json(new { success = true, message = result.Value });
         }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ActualizarCelular(string userId, string celular)
+        {
+            var result = await _securityService.ActualizarCelularAsync(userId, celular);
+            if (!result.Succeeded)
+            {
+                return Json(new { success = false, message = result.Errors });
+            }
+            return Json(new { success = true, message = result.Value });
+        }
     }
 }

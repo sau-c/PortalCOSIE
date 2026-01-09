@@ -4,7 +4,7 @@ using PortalCOSIE.Application.Features.Bitacoras.Queries.Listar;
 
 namespace PortalCOSIE.Web.Controllers
 {
-    [Authorize(Roles = "Administrador, Personal")]
+    [Authorize(Roles = "Administrador")]
     public class BitacoraController : Controller
     {
         private readonly IMediator _mediator;

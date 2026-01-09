@@ -25,9 +25,29 @@
             : base(id, nombre) { }
 
         /// <summary>
-        /// Determina si el documento puede ser reemplazado o editado.
+        /// Determina si el estado actual es final y ya no permite edicion (Validado)
         /// </summary>
-        public bool PermiteEdicion() =>
-            this == ConErrores || this == Incorrecto;
+        /// <returns></returns>
+        public bool EsFinal()
+            => this == Validado;
+
+        /// <summary>
+        /// Valida si el estado actual puede transicionar al nuevo estado.
+        /// </summary>
+        public bool PuedeTransicionarA(EstadoDocumento nuevoEstado)
+        {
+            if (nuevoEstado == null) return false;
+            if (this.Id == nuevoEstado.Id) return true;
+            if (EsFinal()) return false;
+
+            return this.Id switch
+            {
+                1 => nuevoEstado.Id == 2 || nuevoEstado.Id == 3 || nuevoEstado.Id == 4, // EnRevision
+                3 => nuevoEstado.Id == 1 , // ConErrores
+                4 => nuevoEstado.Id == 1, // Incorrecto
+                _ => false
+            };
+        }
+
     }
 }

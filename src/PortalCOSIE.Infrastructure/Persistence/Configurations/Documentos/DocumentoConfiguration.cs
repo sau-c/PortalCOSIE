@@ -17,7 +17,7 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Documentos
             builder.Property(d => d.Observaciones)
                 .HasMaxLength(1000);
 
-            builder.Property(d => d.BlobPath)
+            builder.Property(d => d.Ruta)
                 .IsRequired()
                 .HasMaxLength(300);
 

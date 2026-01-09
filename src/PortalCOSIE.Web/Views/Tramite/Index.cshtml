@@ -61,7 +61,7 @@
 
                     <td class="text-center">
                         <span class="badge shadow-sm border border-light @tramite.EstadoTramite.ToBadgeClass()">
-                            <i class="@tramite.EstadoTramite.ToIconClass() me-2"></i>
+                            <i class="@tramite.EstadoTramite.ToIconClass() me-1"></i>
                             @tramite.EstadoTramite.Nombre
                         </span>
                     </td>
@@ -78,7 +78,7 @@
                         @* Tomar trámite (no coexiste con Ver) *@
                         @if (puedeTomar)
                         {
-                            <form id="formTomar_@tramite.Id" asp-action="TomarTramite" asp-route-tramiteId="@tramite.Id" method="post" class="d-inline">
+                            <form id="formTomar_@tramite.Id" asp-action="Tomar" asp-route-tramiteId="@tramite.Id" method="post" class="d-inline">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" 
                                         class="btn btn-sm btn-outline-success border-0 rounded-circle"

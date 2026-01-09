@@ -1,5 +1,4 @@
-﻿@using PortalCOSIE.Application.Features.Usuarios.DTO
-@model IEnumerable<PersonalDTO>
+﻿@model IEnumerable<PortalCOSIE.Application.Features.Usuarios.DTO.PersonalDTO>
 @{
     ViewData["Title"] = "Gestión de personal";
 }
@@ -19,10 +18,12 @@
             <table id="tblPersonal" class="table table-hover">
                 <thead class="table-light table-bordered">
                     <tr class="small">
+                        <th>Id. Empleado</th>
                         <th>Nombre</th>
                         <th>Apellido paterno</th>
                         <th>Apellido materno</th>
                         <th>Correo</th>
+                        <th>Celular</th>
                         <th>Rol</th>
                         <th>Acción</th>
                     </tr>
@@ -31,6 +32,7 @@
                     @foreach (var personal in Model)
                     {
                         <tr class="@(personal.Rol == null ? "table-danger text-muted opacity-75" : "") small">
+                            <td class="fw-bold">@personal.IdEmpleado</td>
                             <td>@personal.Nombre</td>
                             <td>@personal.ApellidoPaterno</td>
                             <td>@personal.ApellidoMaterno</td>
@@ -41,6 +43,14 @@
                                 data-id="@personal.IdentityUserId"
                                 data-correo="@personal.Correo">
                                 @personal.Correo
+                            </td>
+                            <td class="editable-cell"
+                                title="Editar"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalCelular"
+                                data-id="@personal.IdentityUserId"
+                                data-celular="@personal.Celular">
+                                @personal.Celular
                             </td>
                             <td class="text-center">
                                 <button type="button"
@@ -76,13 +86,10 @@
     </div>
 </div>
 
-<!-- Modal para crear personal -->
 <partial name="_ModalCrear" />
-<!-- Modal para editar datos -->
 <partial name="_ModalPersonal" />
-<!-- Modal para editar correo -->
 <partial name="_ModalCorreo" />
-<!-- Modal para Toggle de Rol -->
+<partial name="_ModalCelular" />
 <partial name="_ModalToggle" />
 
 @section Scripts {
@@ -103,84 +110,12 @@
                         width: "1%"
                     },
                     {
-                        targets: 5,
+                        targets: 7,
                         width: "95px",
                         className: "text-center",
                         orderable: false
                     }
                 ]
-            });
-
-            // Manejo del modal de eliminación
-            $('#deleteModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var modal = $(this);
-                modal.find('#modalUserId').val(button.data('user-id'));
-                modal.find('#modalUserName').text(button.data('user-name'));
-                modal.find('#modalUserEmail').text(button.data('user-email'));
-            });
-
-            // Manejo del modal de edición de correo
-            $('#editEmailModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var modal = $(this);
-                modal.find('#emailUserId').val(button.data('user-id'));
-                modal.find('#emailInput').val(button.data('user-email'));
-            });
-
-            // Validación del formulario de correo
-            $('#editEmailForm').on('submit', function() {
-                var email = $('#emailInput').val();
-                if (!email) {
-                    alert('Por favor ingrese un correo electrónico válido');
-                    return false;
-                }
-                return true;
-            });
-
-            // ========== NUEVO: Modal para Toggle de Rol ==========
-            $('#modalToggle').on('show.bs.modal', function (event) {
-                const button = $(event.relatedTarget);
-                const userId = button.data('user-id');
-                const currentRole = button.data('current-role');
-                const roleType = button.data('role-type'); // "Personal"
-
-                // Configurar campos ocultos
-                $('#userId').val(userId);
-                $('#rol').val(roleType);
-
-                // Configurar contenido del modal según el estado actual
-                const isActive = currentRole !== 'Inactivo';
-
-                if (isActive) {
-                    // Usuario está activo, se va a desactivar
-                    $('#modalHeader').removeClass('bg-success').addClass('bg-warning text-dark');
-                    $('#modalIcon').removeClass().addClass('fas fa-user-slash');
-                    $('#modalTitle').text('Desactivar usuario');
-                    $('#modalMessage')
-                        .removeClass('alert-success')
-                        .addClass('alert-warning')
-                        .html(`<strong>¿Desactivar usuario?</strong><br>
-                               El usuario perderá el rol de "<strong>${roleType}</strong>" y su acceso al sistema será revocado.`);
-                    $('#confirmButton')
-                        .removeClass('btn-success')
-                        .addClass('btn-warning')
-                        .html('<i class="fas fa-user-slash me-2"></i>Desactivar');
-                } else {
-                    // Usuario está inactivo, se va a activar
-                    $('#modalHeader').removeClass('bg-warning text-dark').addClass('bg-success text-white');
-                    $('#modalIcon').removeClass().addClass('fas fa-user-check');
-                    $('#modalTitle').text('Activar usuario');
-                    $('#modalMessage')
-                        .removeClass('alert-warning')
-                        .addClass('alert-success')
-                        .html(`<strong>¿Activar usuario?</strong><br>
-                               El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema.`);
-                    $('#confirmButton')
-                        .removeClass('btn-warning')
-                        .addClass('btn-success')
-                        .html('<i class="fas fa-user-check me-2"></i>Activar');
-                }
             });
         });
     </script>
