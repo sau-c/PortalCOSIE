@@ -1,6 +1,4 @@
-﻿using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
-using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Services.Crypto;
+﻿using PortalCOSIE.Application.Services.Crypto;
 using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
@@ -61,6 +59,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
                     command.Archivo.Nombre,
                     blobPath,
                     tramite.Id,
+                    EstadoDocumento.Validado.Id,
                     TipoDocumento.DictamenCTCE.Id,
                     _criptoService.CalcularHash(command.Archivo.Contenido)
                 );

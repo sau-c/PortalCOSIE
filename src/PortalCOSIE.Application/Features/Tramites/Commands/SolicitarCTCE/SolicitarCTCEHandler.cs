@@ -97,6 +97,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                     documentoDto.Nombre,
                     blobPath,
                     0,
+                    EstadoDocumento.EnRevision.Id,
                     tipo.Id,
                     _criptoService.CalcularHash(documentoDto.Contenido)
                 );

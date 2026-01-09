@@ -42,6 +42,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             string nombre,
             string ruta,
             int tramiteId,
+            int estadoDocumentoId,
             int tipoDocumentoId,
             byte[] hashOriginal)
         {
@@ -49,7 +50,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             EstablecerRuta(ruta);
             TramiteId = tramiteId;
             TipoDocumentoId = tipoDocumentoId;
-            EstadoDocumentoId = EstadoDocumento.EnRevision.Id;
+            EstadoDocumentoId = estadoDocumentoId;
             EstablecerHashOriginal(hashOriginal);
         }
 
@@ -102,13 +103,12 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         /// </summary>
         public void CambiarEstado(EstadoDocumento nuevoEstado)
         {
-            if (EstadoDocumento == null)
-                EstadoDocumento = Enumeration.FromValue<EstadoDocumento>(EstadoDocumentoId);
             if (nuevoEstado == null) throw new DomainException("El nuevo estado no puede ser nulo.");
             if (!EstadoDocumento.PuedeTransicionarA(nuevoEstado))
                 throw new DomainException(
                     $"Documento no puede cambiar el estado de '{EstadoDocumento.Nombre}' a '{nuevoEstado.Nombre}'.");
             EstadoDocumentoId = nuevoEstado.Id;
+            EstadoDocumento = nuevoEstado;
         }
 
         public bool PermiteCorreccion()
