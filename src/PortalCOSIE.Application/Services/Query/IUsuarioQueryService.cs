@@ -1,7 +1,7 @@
 ﻿using PortalCOSIE.Application.Features.Usuarios.DTO;
 using PortalCOSIE.Domain.Entities.Documentos;
 
-namespace PortalCOSIE.Application.Services
+namespace PortalCOSIE.Application.Services.Query
 {
     public interface IUsuarioQueryService
     {

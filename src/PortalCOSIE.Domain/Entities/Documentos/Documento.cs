@@ -102,6 +102,8 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         /// </summary>
         public void CambiarEstado(EstadoDocumento nuevoEstado)
         {
+            if (EstadoDocumento == null)
+                EstadoDocumento = Enumeration.FromValue<EstadoDocumento>(EstadoDocumentoId);
             if (nuevoEstado == null) throw new DomainException("El nuevo estado no puede ser nulo.");
             if (!EstadoDocumento.PuedeTransicionarA(nuevoEstado))
                 throw new DomainException(

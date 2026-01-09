@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Application.Features.Dashboard.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Tramites.CTCE;

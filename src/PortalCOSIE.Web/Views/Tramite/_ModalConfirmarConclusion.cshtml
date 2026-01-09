@@ -1,0 +1,128 @@
+﻿<div class="modal fade" id="modalConcluirTramite" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-success">
+
+            <form id="formConcluirTramite" asp-action="Concluir" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" id="hdnIdTramiteConcluir" name="tramiteId" value="" />
+
+                <div class="modal-header bg-success text-white">
+                    <h6 class="modal-title">
+                        <i class="fas fa-check-circle me-2"></i>Concluir trámite
+                    </h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body text-center p-4">
+                    <div class="mb-3 text-success bg-success bg-opacity-10 d-inline-block p-3 rounded-circle">
+                        <i class="fas fa-tasks fa-2x"></i>
+                    </div>
+
+                    <h5 class="fw-bold mb-2">¿Confirmas la conclusión del trámite?</h5>
+
+                    <p class="text-muted small mb-2">
+                        Verifica que los estados y observaciones de los documentos sean correctos.
+                    </p>
+
+                    <div class="text-start bg-light p-3 rounded border">
+                        <label for="fileAcuse" class="form-label small fw-bold text-secondary">
+                            Adjuntar dictamen CTCE:
+                        </label>
+
+                        <input type="file"
+                               id="fileAcuse"
+                               name="archivoAcuse"
+                               class="form-control form-control-sm"
+                               accept=".pdf"
+                               required />
+
+                        <div id="msgErrorArchivo" class="text-danger small mt-1 d-none">
+                            <i class="fas fa-info-circle me-1"></i>Debes adjuntar el dictamen.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer justify-content-center bg-light">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnConfirmarConclusion" class="btn btn-success btn-sm">
+                        <i class="fas fa-check me-2"></i>Sí, enviar y concluir
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const modalElement = document.getElementById('modalConcluirTramite');
+        const form = document.getElementById('formConcluirTramite');
+        const fileInput = document.getElementById('fileAcuse');
+        const msgError = document.getElementById('msgErrorArchivo');
+        const btnConfirmar = document.getElementById('btnConfirmarConclusion');
+        const hdnId = document.getElementById('hdnIdTramiteConcluir');
+
+        if (!form) return;
+
+        const bsModal = new bootstrap.Modal(modalElement);
+        const boton = (typeof bloqueadorBoton === 'function')
+            ? bloqueadorBoton(btnConfirmar)
+            : { bloquear:()=>{}, restaurar:()=>{} };
+
+        // Al abrir el modal
+        modalElement.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget;
+            const tramiteId = button.getAttribute("data-tramite-id");
+
+            hdnId.value = tramiteId;
+            fileInput.value = "";
+            msgError.classList.add("d-none");
+        });
+
+        // Submit del formulario
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            // Validación extra (por consistencia con Cancelar)
+            if (!fileInput.files || fileInput.files.length === 0) {
+                msgError.classList.remove("d-none");
+                fileInput.focus();
+                return;
+            }
+            msgError.classList.add("d-none");
+
+            boton.bloquear();
+
+            try {
+                const formData = new FormData(form);
+                const url = form.action;
+
+                const data = await executeFetch(url, "POST", formData);
+
+                bsModal.hide();
+                showGlobalModal("success", data.message, {
+                    redirectUrl: "/Tramite"
+                });
+
+            } catch (error) {
+                showGlobalModal("error", error.message, {
+                    onClose: () => boton.restaurar()
+                });
+            }
+        });
+
+        // Limpieza al cerrar
+        modalElement.addEventListener("hidden.bs.modal", function () {
+            form.reset();
+            boton.restaurar();
+        });
+
+    });
+</script>

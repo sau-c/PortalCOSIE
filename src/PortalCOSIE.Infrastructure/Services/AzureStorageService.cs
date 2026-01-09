@@ -1,5 +1,5 @@
 ﻿using Azure.Storage.Blobs;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Storage;
 
 public class AzureStorageService : IStorageService
 {

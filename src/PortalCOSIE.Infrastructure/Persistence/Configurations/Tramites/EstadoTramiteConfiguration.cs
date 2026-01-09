@@ -22,7 +22,8 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Tramites
                new { EstadoTramite.EnRevision.Id, EstadoTramite.EnRevision.Nombre, IsDeleted = false },
                new { EstadoTramite.DocumentosPendientes.Id, EstadoTramite.DocumentosPendientes.Nombre, IsDeleted = false },
                new { EstadoTramite.Concluido.Id, EstadoTramite.Concluido.Nombre, IsDeleted = false },
-               new { EstadoTramite.Cancelado.Id, EstadoTramite.Cancelado.Nombre, IsDeleted = false }
+               new { EstadoTramite.Cancelado.Id, EstadoTramite.Cancelado.Nombre, IsDeleted = false },
+               new { EstadoTramite.EsperandoAcuse.Id, EstadoTramite.EsperandoAcuse.Nombre, IsDeleted = false }
            );
         }
     }

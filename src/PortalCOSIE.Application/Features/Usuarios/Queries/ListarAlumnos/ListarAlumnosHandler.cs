@@ -1,5 +1,5 @@
 ﻿using PortalCOSIE.Application.Features.Usuarios.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Usuarios.Queries.ListarAlumnos
 {

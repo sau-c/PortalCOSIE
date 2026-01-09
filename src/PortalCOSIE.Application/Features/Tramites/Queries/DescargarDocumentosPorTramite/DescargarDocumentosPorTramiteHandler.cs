@@ -1,5 +1,5 @@
 ﻿using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;

@@ -1,4 +1,4 @@
-﻿using PortalCOSIE.Application.Services;
+﻿using PortalCOSIE.Application.Services.Crypto;
 using System.Security.Cryptography;
 
 namespace PortalCOSIE.Infrastructure.Services

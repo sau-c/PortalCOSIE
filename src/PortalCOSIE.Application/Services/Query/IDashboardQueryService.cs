@@ -1,6 +1,6 @@
 ﻿using PortalCOSIE.Application.Features.Dashboard.DTO;
 
-namespace PortalCOSIE.Application.Services
+namespace PortalCOSIE.Application.Services.Query
 {
     public interface IDashboardQueryService
     {

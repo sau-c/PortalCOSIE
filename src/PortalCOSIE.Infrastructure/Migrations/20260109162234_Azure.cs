@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AzurePrueba : Migration
+    public partial class Azure : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -568,7 +568,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     { 2, false, "En revision" },
                     { 3, false, "Documentos pendientes" },
                     { 4, false, "Concluido" },
-                    { 5, false, "Cancelado" }
+                    { 5, false, "Cancelado" },
+                    { 6, false, "Esperando acuse" }
                 });
 
             migrationBuilder.InsertData(
@@ -594,7 +595,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     { 1, false, "Identificación" },
                     { 2, false, "Boleta global" },
                     { 3, false, "Carta exposición de motivos" },
-                    { 4, false, "Probatorios" }
+                    { 4, false, "Probatorios" },
+                    { 5, false, "Dictamen CTCE" }
                 });
 
             migrationBuilder.InsertData(

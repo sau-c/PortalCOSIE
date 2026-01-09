@@ -1,4 +1,4 @@
-﻿using PortalCOSIE.Application.Services;
+﻿using PortalCOSIE.Application.Services.Query;
 using PortalCOSIE.Domain.Entities.Carreras;
 
 namespace PortalCOSIE.Application.Features.Carreras.Queries.ListarUnidades

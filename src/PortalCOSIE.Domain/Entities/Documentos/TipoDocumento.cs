@@ -10,6 +10,7 @@
         public static readonly TipoDocumento BoletaGlobal = new (2, "Boleta global");
         public static readonly TipoDocumento CartaExposicionMotivos = new (3, "Carta exposición de motivos");
         public static readonly TipoDocumento Probatorios = new (4, "Probatorios");
+        public static readonly TipoDocumento DictamenCTCE = new(5, "Dictamen CTCE");
 
         private TipoDocumento(int id, string nombre) : base(id, nombre)
         { }

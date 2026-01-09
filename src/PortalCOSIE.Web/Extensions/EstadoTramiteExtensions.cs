@@ -14,6 +14,7 @@ public static class EstadoTramiteExtensions
             _ when estado.Equals(EstadoTramite.DocumentosPendientes) => "bg-warning text-black",
             _ when estado.Equals(EstadoTramite.Concluido) => "bg-success",
             _ when estado.Equals(EstadoTramite.Cancelado) => "bg-danger",
+            _ when estado.Equals(EstadoTramite.EsperandoAcuse) => "bg-info",
             _ => "bg-light text-dark"
         };
     }
@@ -29,6 +30,7 @@ public static class EstadoTramiteExtensions
             _ when estado.Equals(EstadoTramite.DocumentosPendientes) => "fas fa-file-circle-exclamation",
             _ when estado.Equals(EstadoTramite.Cancelado) => "fas fa-circle-xmark",
             _ when estado.Equals(EstadoTramite.Concluido) => "fas fa-flag",
+            _ when estado.Equals(EstadoTramite.EsperandoAcuse) => "fas fa-clock",
             _ => "fas fa-circle-question"
         };
     }

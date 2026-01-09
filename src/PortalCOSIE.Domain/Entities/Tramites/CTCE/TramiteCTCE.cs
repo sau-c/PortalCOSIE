@@ -64,10 +64,21 @@ namespace PortalCOSIE.Domain.Entities.Tramites.CTCE
                 return;
             }
 
-            //if (Documentos.Any(d => d.EstadoDocumentoId == EstadoDocumento.Incorrecto.Id || d.EstadoDocumentoId == EstadoDocumento.ConErrores.Id))
             if (Documentos.Any(d => d.PermiteCorreccion()))
             {
                 CambiarEstado(EstadoTramite.DocumentosPendientes);
+                return;
+            }
+
+            if (Documentos.All(d => d.EstadoDocumentoId == EstadoDocumento.Validado.Id))
+            {
+                CambiarEstado(EstadoTramite.EsperandoAcuse);
+                return;
+            }
+
+            if (Documentos.Any(d => d.TipoDocumentoId == TipoDocumento.DictamenCTCE.Id))
+            {
+                CambiarEstado(EstadoTramite.Concluido);
                 return;
             }
         }

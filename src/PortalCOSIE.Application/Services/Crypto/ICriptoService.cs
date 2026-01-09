@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Application.Services
+﻿namespace PortalCOSIE.Application.Services.Crypto
 {
     public interface ICriptoService
     {

@@ -1,6 +1,4 @@
-﻿using PortalCOSIE.Domain.Entities.Documentos;
-
-namespace PortalCOSIE.Application.Services
+﻿namespace PortalCOSIE.Application.Services.Storage
 {
     public interface IStorageService
     {

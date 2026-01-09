@@ -11,13 +11,10 @@
     {
         /// <summary>Estado inicial cuando el documento ha sido cargado y está pendiente de revisión</summary>
         public static readonly EstadoDocumento EnRevision = new(1, "En revisión");
-
         /// <summary>Estado cuando el documento cumple con todos los requisitos establecidos</summary>
         public static readonly EstadoDocumento Validado = new(2, "Validado");
-
         /// <summary>Estado cuando el documento presenta problemas corregibles (firmas, sellos, fechas)</summary>
         public static readonly EstadoDocumento ConErrores = new(3, "Con errores");
-
         /// <summary>Estado cuando el documento no es el solicitado</summary>
         public static readonly EstadoDocumento Incorrecto = new(4, "Documento incorrecto");
 
@@ -37,8 +34,8 @@
         public bool PuedeTransicionarA(EstadoDocumento nuevoEstado)
         {
             if (nuevoEstado == null) return false;
-            if (this.Id == nuevoEstado.Id) return true;
             if (EsFinal()) return false;
+            if (this.Id == nuevoEstado.Id) return false; //No se permite la redundancia
 
             return this.Id switch
             {

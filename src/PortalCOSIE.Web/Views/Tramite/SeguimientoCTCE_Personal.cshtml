@@ -5,6 +5,7 @@
     ViewData["Title"] = "Seguimiento dictamen interno (CTCE)";
     var documentosList = Model.Documentos.ToList();
     bool puedeRevisar = User.IsInRole("Personal") && Model.EstadoTramiteId == EstadoTramite.EnRevision.Id;
+    bool puedeConcluir = User.IsInRole("Personal") && Model.EstadoTramiteId == EstadoTramite.EsperandoAcuse.Id;
     string? disabledAttr = puedeRevisar ? null : "disabled";
 }
 
@@ -16,121 +17,131 @@
         </a>
     </div>
 
-    <form id="formRevision" asp-action="Revisar" method="post" class="h-100 d-flex flex-column">
-        <input type="hidden" asp-for="Id" />
-
-        <div class="card-body bg-light bg-opacity-25 overflow-auto px-4" style="height: calc(100vh - 164px);">
-
-            <div class="row g-4 mb-4">
-
-                <div class="col-lg-6">
-                    <div class="card border h-100 shadow-sm">
-                        <div class="card-header bg-white border-bottom fw-bold text-primary">
-                            <i class="fas fa-user-graduate me-2"></i>Datos del solicitante
-                            <span class="float-end badge bg-success fw-normal">
-                                Solicitado: @Model.FechaSolicitud.ToString("dd/MMM/yyyy")
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3 text-primary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                    <i class="fas fa-user fs-5"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0">
-                                        @Model.Alumno.Nombre @Model.Alumno.ApellidoPaterno @Model.Alumno.ApellidoMaterno
-                                    </h6>
-                                    <span class="badge bg-primary">@Model.Alumno.NumeroBoleta</span>
-                                    <small class="text-muted ms-1">@Model.Alumno.Carrera.Nombre</small>
-                                </div>
-                            </div>
-
-                            <div class="row g-2 mb-3 small">
-                                <div class="col-6">
-                                    <div class="p-2 border rounded bg-light">
-                                        <span class="d-block text-muted fw-bold" style="font-size: 0.7rem;">DICTÁMENES PREVIOS</span>
-                                        @if (Model.TieneDictamenesAnteriores)
-                                        {
-                                            <span class="text-warning fw-bold"><i class="fas fa-exclamation-circle me-1"></i>Sí tiene</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>No tiene</span>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="p-2 border rounded bg-light">
-                                        <span class="d-block text-muted fw-bold" style="font-size: 0.7rem;">INGRESO</span>
-                                        <span class="text-dark fw-bold">@Model.Alumno.PeriodoIngreso</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <label class="small fw-bold text-secondary mb-1">Petición del alumno:</label>
-                            <div class="p-2 border rounded bg-light text-secondary small fst-italic" style="max-height: 80px; overflow-y: auto;">
-                                "@Model.Peticion"
-                            </div>
-                        </div>
+    <div class="card-body bg-light bg-opacity-25 overflow-auto px-4" style="height: calc(100vh - 164px);">
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="card border h-100 shadow-sm">
+                    <div class="card-header bg-white border-bottom fw-bold text-primary">
+                        <i class="fas fa-user-graduate me-2"></i>Datos del solicitante
+                        <span class="float-end badge bg-success fw-normal">
+                            Solicitado: @Model.FechaSolicitud.ToString("dd/MMM/yyyy")
+                        </span>
                     </div>
-                </div>
-
-                <div class="col-lg-6">
-                    <div class="card border h-100 shadow-sm">
-                        <div class="card-header bg-white border-bottom fw-bold text-primary d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-book-open me-2"></i>Unidades de aprendizaje reprobadas</span>
-                            <span class="badge bg-primary rounded-pill">@(Model.UnidadesReprobadas?.Count() ?? 0)</span>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive" style="max-height: 300px;">
-                                <table class="table table-sm table-hover align-middle mb-0 small">
-                                    <thead class="bg-light sticky-top text-secondary">
-                                        <tr>
-                                            <th class="ps-3 py-2">Unidad</th>
-                                            <th class="text-center py-2">Cursó</th>
-                                            <th class="text-center py-2">Recursó</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="border-top-0">
-                                        @if (Model.UnidadesReprobadas != null && Model.UnidadesReprobadas.Any())
-                                        {
-                                            foreach (var unidad in Model.UnidadesReprobadas)
-                                            {
-                                                <tr>
-                                                    <td class="ps-3 py-2 border-bottom">
-                                                        <span class="fw-bold d-block">@(unidad.UnidadAprendizaje?.Nombre ?? "Sin nombre")</span>
-                                                        <small class="text-muted">ID: @unidad.UnidadAprendizajeId</small>
-                                                    </td>
-                                                    <td class="text-center py-2 border-bottom">
-                                                        <span class="badge bg-light text-dark border">@unidad.PeriodoCurso</span>
-                                                    </td>
-                                                    <td class="text-center py-2 border-bottom">
-                                                        <span class="badge bg-light text-dark border">@unidad.PeriodoRecurse</span>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <tr>
-                                                <td colspan="3" class="text-center py-4 text-muted">
-                                                    Sin materias registradas
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3 text-primary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="fas fa-user fs-5"></i>
                             </div>
+                            <div>
+                                <h6 class="mb-0">
+                                    @Model.Alumno.Nombre @Model.Alumno.ApellidoPaterno @Model.Alumno.ApellidoMaterno
+                                </h6>
+                                <span class="badge bg-primary">@Model.Alumno.NumeroBoleta</span>
+                                <small class="text-muted ms-1">@Model.Alumno.Carrera.Nombre</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3 small">
+                            <div class="col-6">
+                                <div class="p-2 border rounded bg-light">
+                                    <span class="d-block text-muted fw-bold" style="font-size: 0.7rem;">DICTÁMENES PREVIOS</span>
+                                    @if (Model.TieneDictamenesAnteriores)
+                                    {
+                                        <span class="text-warning fw-bold"><i class="fas fa-exclamation-circle me-1"></i>Sí tiene</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>No tiene</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 border rounded bg-light">
+                                    <span class="d-block text-muted fw-bold" style="font-size: 0.7rem;">INGRESO</span>
+                                    <span class="text-dark fw-bold">@Model.Alumno.PeriodoIngreso</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <label class="small fw-bold text-secondary mb-1">Petición del alumno:</label>
+                        <div class="p-2 border rounded bg-light text-secondary small fst-italic" style="max-height: 80px; overflow-y: auto;">
+                            "@Model.Peticion"
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card border shadow-sm mb-2">
-                <div class="card-header bg-white pt-3 pb-2 border-bottom">
-                    <h6 class="fw-bold text-primary mb-0"><i class="fas fa-tasks me-2"></i>Validación de documentos</h6>
+            <div class="col-lg-6">
+                <div class="card border h-100 shadow-sm">
+                    <div class="card-header bg-white border-bottom fw-bold text-primary d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-book-open me-2"></i>Unidades de aprendizaje reprobadas</span>
+                        <span class="badge bg-primary rounded-pill">@(Model.UnidadesReprobadas?.Count() ?? 0)</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 300px;">
+                            <table class="table table-sm table-hover align-middle mb-0 small">
+                                <thead class="bg-light sticky-top text-secondary">
+                                    <tr>
+                                        <th class="ps-3 py-2">Unidad</th>
+                                        <th class="text-center py-2">Cursó</th>
+                                        <th class="text-center py-2">Recursó</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="border-top-0">
+                                    @if (Model.UnidadesReprobadas != null && Model.UnidadesReprobadas.Any())
+                                    {
+                                        foreach (var unidad in Model.UnidadesReprobadas)
+                                        {
+                                            <tr>
+                                                <td class="ps-3 py-2 border-bottom">
+                                                    <span class="fw-bold d-block">@(unidad.UnidadAprendizaje?.Nombre ?? "Sin nombre")</span>
+                                                    <small class="text-muted">ID: @unidad.UnidadAprendizajeId</small>
+                                                </td>
+                                                <td class="text-center py-2 border-bottom">
+                                                    <span class="badge bg-light text-dark border">@unidad.PeriodoCurso</span>
+                                                </td>
+                                                <td class="text-center py-2 border-bottom">
+                                                    <span class="badge bg-light text-dark border">@unidad.PeriodoRecurse</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="3" class="text-center py-4 text-muted">
+                                                Sin materias registradas
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
 
+        <div class="card border shadow-sm mb-2">
+            <div class="card-header bg-white pb-2 border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-primary mb-0"><i class="fas fa-tasks me-2"></i>Documentos</h6>
+                @if (puedeConcluir)
+                {
+                    <div>
+                        <button type="button"
+                                class="btn btn-sm btn-success"
+                                id="btnConcluirTramite"
+                                title="Cargar dictamen"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalConcluirTramite"
+                                data-tramite-id="@Model.Id">
+                            <i class="fas fa-upload"></i><span class="d-none d-sm-inline ms-2">Cargar dictamen</span>
+                        </button>
+                    </div>
+                }
+            </div>
+            <form id="formRevision" asp-action="Revisar" method="post" class="h-100 d-flex flex-column">
+                <input type="hidden" asp-for="Id" />
                 <div class="card-body bg-light">
                     <div class="row g-3">
                         @for (int i = 0; i < documentosList.Count; i++)
@@ -211,30 +222,32 @@
                                 </button>
                             </div>
                         }
-
                     </div>
                 </div>
-            </div>
-            @if (puedeRevisar)
-            {
-                <div class="d-flex justify-content-center mt-2">
-                    <button type="button"
-                            class="btn btn-link text-danger small p-0"
-                            id="btnCancelarTramite"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalCancelarTramite"
-                            data-tramite-id="@Model.Id">
-                        Cancelar
-                    </button>
-                </div>
-            }
-
+            </form>
         </div>
-    </form>
+        @if (puedeRevisar)
+        {
+            <div class="d-flex justify-content-center">
+                <button type="button"
+                        class="btn btn-link text-danger small p-0"
+                        id="btnCancelarTramite"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalCancelarTramite"
+                        data-tramite-id="@Model.Id">
+                    Cancelar
+                </button>
+            </div>
+        }
+    </div>
 </div>
 
 @if (puedeRevisar)
 {
     <partial name="_ModalConfirmarCancelacion" />
     <partial name="_ModalConfirmarRevision" />
+}
+@if (puedeConcluir)
+{
+    <partial name="_ModalConfirmarConclusion" />
 }

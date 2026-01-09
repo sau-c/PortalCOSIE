@@ -16,13 +16,13 @@ using PortalCOSIE.Application.Features.Tramites.Commands.Cancelar;
 using PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosPorTramite;
 using PortalCOSIE.Application.Features.Tramites.Commands.Revision;
 using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
+using PortalCOSIE.Application.Features.Tramites.Commands.Concluir;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class TramiteController : Controller
     {
         private readonly IMediator _mediator;
-
         public TramiteController(IMediator mediator)
             => _mediator = mediator;
 
@@ -115,7 +115,6 @@ namespace PortalCOSIE.Web.Controllers
             };
         }
 
-
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal, Alumno")]
         public async Task<IActionResult> SeguimientoCTCE(int tramiteId)
@@ -180,6 +179,20 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Cancelar(int tramiteId, string observaciones)
         {
             var result = await _mediator.Send(new CancelarTramiteCommand(tramiteId, observaciones));
+            if (result.Succeeded)
+                return Json(new { success = true, message = result.Value });
+            return Json(new { success = false, message = result.Errors.FirstOrDefault() });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Personal")]
+        public async Task<IActionResult> Concluir(int tramiteId, IFormFile archivoAcuse)
+        {
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            ArchivoDTO acuse = ObtenerArchivoDTO(archivoAcuse);
+
+            var result = await _mediator.Send(new ConcluirTramiteCommand(userId, tramiteId, acuse));
             if (result.Succeeded)
                 return Json(new { success = true, message = result.Value });
             return Json(new { success = false, message = result.Errors.FirstOrDefault() });

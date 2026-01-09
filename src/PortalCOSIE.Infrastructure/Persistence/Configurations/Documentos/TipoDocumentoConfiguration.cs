@@ -21,7 +21,8 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Documentos
                new { TipoDocumento.Identificacion.Id, TipoDocumento.Identificacion.Nombre, IsDeleted = false },
                new { TipoDocumento.BoletaGlobal.Id, TipoDocumento.BoletaGlobal.Nombre, IsDeleted = false },
                new { TipoDocumento.CartaExposicionMotivos.Id, TipoDocumento.CartaExposicionMotivos.Nombre, IsDeleted = false },
-               new { TipoDocumento.Probatorios.Id, TipoDocumento.Probatorios.Nombre, IsDeleted = false }
+               new { TipoDocumento.Probatorios.Id, TipoDocumento.Probatorios.Nombre, IsDeleted = false },
+               new { TipoDocumento.DictamenCTCE.Id, TipoDocumento.DictamenCTCE.Nombre, IsDeleted = false }
             );
         }
     }

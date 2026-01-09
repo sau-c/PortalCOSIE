@@ -1,5 +1,4 @@
-﻿<!-- Modal Cancelar Trámite -->
-<div class="modal fade" id="modalCancelarTramite" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+﻿<div class="modal fade" id="modalCancelarTramite" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-danger">
 
@@ -52,11 +51,11 @@
         const form = document.getElementById('formCancelarTramite');
         const txtMotivo = document.getElementById('txtMotivoCancelacion');
         const msgError = document.getElementById('msgErrorMotivo');
-        const btnConfirmar = document.getElementById('btnConfirmarCancelacion');
+        const btnConfirmarCancelacion = document.getElementById('btnConfirmarCancelacion');
         const hdnId = document.getElementById('hdnIdTramite'); 
 
         const bsModal = new bootstrap.Modal(modalElement);
-        const boton = (typeof bloqueadorBoton === 'function') ? bloqueadorBoton(btnConfirmar) : { bloquear:()=>{}, restaurar:()=>{} };
+        const boton = (typeof bloqueadorBoton === 'function') ? bloqueadorBoton(btnConfirmarCancelacion) : { bloquear:()=>{}, restaurar:()=>{} };
 
         // EVENTO: Al abrir el modal
         modalElement.addEventListener("show.bs.modal", (event) => {

@@ -4263,6 +4263,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             Id = 4,
                             IsDeleted = false,
                             Nombre = "Probatorios"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsDeleted = false,
+                            Nombre = "Dictamen CTCE"
                         });
                 });
 
@@ -4553,6 +4559,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             Id = 5,
                             IsDeleted = false,
                             Nombre = "Cancelado"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IsDeleted = false,
+                            Nombre = "Esperando acuse"
                         });
                 });
 
