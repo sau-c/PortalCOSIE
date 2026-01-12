@@ -88,21 +88,35 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             if (documentoDto == null || documentoDto.Contenido == null)
                 throw new Exception($"El documento {tipo.Nombre} es requerido.");
 
-            var firma = _criptoService.FirmarDocumento(documentoDto.Contenido, cer, key, pass);
+            byte[] archivoBytes;
+            using (var ms = new MemoryStream())
+            {
+                await documentoDto.Contenido.CopyToAsync(ms);
+                archivoBytes = ms.ToArray();
+            }
 
-            // 2. Subir a Azure al container
-            // El servicio debe devolver el nombre único o la ruta (ej: "guid-archivo.pdf")
-            string blobPath = await _storageService.UploadAsync(documentoDto.Contenido, documentoDto.Nombre);
+            // Firmar con MemoryStream
+            byte[] firma;
+            using (var streamFirma = new MemoryStream(archivoBytes))
+            {
+                firma = _criptoService.FirmarDocumento(streamFirma, cer, key, pass);
+            }
 
-            // 3. Crear la Entidad
-            return new Documento(
-                    documentoDto.Nombre,
-                    blobPath,
-                    0,
-                    EstadoDocumento.EnRevision.Id,
-                    tipo.Id,
-                    firma
-                );
+            // Subir a Azure con otro MemoryStream
+            string nuevoBlobPath;
+            using (var streamSubida = new MemoryStream(archivoBytes))
+            {
+                var blobPath = await _storageService.UploadAsync(streamSubida, documentoDto.Nombre);
+                // 3. Crear la Entidad
+                return new Documento(
+                        documentoDto.Nombre,
+                        blobPath,
+                        0,
+                        EstadoDocumento.EnRevision.Id,
+                        tipo.Id,
+                        firma
+                    );
+            }
         }
     }
 }
