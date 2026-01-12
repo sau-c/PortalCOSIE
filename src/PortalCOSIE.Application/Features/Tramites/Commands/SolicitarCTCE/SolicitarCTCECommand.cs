@@ -11,6 +11,9 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
         ArchivoDTO CartaExposicionMotivos,
         ArchivoDTO Identificacion,
         ArchivoDTO BoletaGlobal,
-        ArchivoDTO Probatorios
+        ArchivoDTO Probatorios,
+        Stream LlaveKey,
+        Stream CertificadoCer,
+        string PasswordKey
         ) : IRequest<Result<string>>;
 }

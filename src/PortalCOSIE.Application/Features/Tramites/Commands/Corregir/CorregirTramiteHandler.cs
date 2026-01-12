@@ -35,29 +35,39 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
 
         public async Task<Result<string>> Handle(CorregirTramiteCommand command)
         {
+            // 1. Recuperar el trámite existente (incluyendo sus documentos)
+            TramiteCTCE tramite = await _tramiteRepo.ObtenerTramiteCTCEPorIdParaRevision(command.TramiteId);
+            if (tramite == null)
+                return Result<string>.Failure("El trámite especificado no existe.");
+            if (tramite.EstadoTramiteId != EstadoTramite.DocumentosPendientes.Id)
+                return Result<string>.Failure("El estado actual del trámite no permite corrección.");
+
+            // Validar que el trámite pertenezca al alumno (seguridad básica)
+            Usuario usuario = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
+            if (!tramite.PerteneceAAlumno(usuario.Id))
+                return Result<string>.Failure("No tienes permisos para corregir este trámite.");
+
+            // Validar que los documentos con estado ConErrores o Incorrecto no vengan vacios del command:
+            if (tramite.Documentos.Any(d =>
+                (d.EstadoDocumentoId == EstadoDocumento.ConErrores.Id ||
+                 d.EstadoDocumentoId == EstadoDocumento.Incorrecto.Id) &&
+                ((d.TipoDocumentoId == TipoDocumento.Identificacion.Id && (command.Identificacion == null || command.Identificacion.Contenido == null || command.Identificacion.Contenido.Length == 0)) ||
+                 (d.TipoDocumentoId == TipoDocumento.BoletaGlobal.Id && (command.BoletaGlobal == null || command.BoletaGlobal.Contenido == null || command.BoletaGlobal.Contenido.Length == 0)) ||
+                 (d.TipoDocumentoId == TipoDocumento.CartaExposicionMotivos.Id && (command.CartaExposicionMotivos == null || command.CartaExposicionMotivos.Contenido == null || command.CartaExposicionMotivos.Contenido.Length == 0)) ||
+                 (d.TipoDocumentoId == TipoDocumento.Probatorios.Id && (command.Probatorios == null || command.Probatorios.Contenido == null || command.Probatorios.Contenido.Length == 0))
+                )))
+                return Result<string>.Failure("Debes proporcionar los archivos para todos los documentos que requieren corrección.");
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-
-                // 1. Recuperar el trámite existente (incluyendo sus documentos)
-                TramiteCTCE tramite = await _tramiteRepo.ObtenerTramiteCTCEPorIdParaRevision(command.TramiteId);
-                if (tramite == null)
-                    return Result<string>.Failure("El trámite especificado no existe.");
-                if (tramite.EstadoTramiteId != EstadoTramite.DocumentosPendientes.Id)
-                    return Result<string>.Failure("El estado actual del trámite no permite corrección.");
-
-                // Validar que el trámite pertenezca al alumno (seguridad básica)
-                Usuario usuario = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
-                if (!tramite.PerteneceAAlumno(usuario.Id))
-                    return Result<string>.Failure("No tienes permisos para corregir este trámite.");
-
                 // 2. Reemplazar Documentos
                 // Solo procesamos los documentos que NO vengan nulos en el comando.
                 // Si son nulos, conservamos los que ya tenía el trámite.
-                await ProcesarReemplazoAsync(tramite, command.Identificacion, TipoDocumento.Identificacion);
-                await ProcesarReemplazoAsync(tramite, command.BoletaGlobal, TipoDocumento.BoletaGlobal);
-                await ProcesarReemplazoAsync(tramite, command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos);
-                await ProcesarReemplazoAsync(tramite, command.Probatorios, TipoDocumento.Probatorios);
+                await ProcesarReemplazoAsync(tramite, command.Identificacion, TipoDocumento.Identificacion, command.LlaveKey, command.CertificadoCer, command.PasswordKey);
+                await ProcesarReemplazoAsync(tramite, command.BoletaGlobal, TipoDocumento.BoletaGlobal, command.LlaveKey, command.CertificadoCer, command.PasswordKey);
+                await ProcesarReemplazoAsync(tramite, command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos, command.LlaveKey, command.CertificadoCer, command.PasswordKey);
+                await ProcesarReemplazoAsync(tramite, command.Probatorios, TipoDocumento.Probatorios, command.LlaveKey, command.CertificadoCer, command.PasswordKey);
 
                 // 4. Cambiar estado
                 tramite.VerificarEstadoTramite();
@@ -74,7 +84,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
             }
         }
 
-        private async Task ProcesarReemplazoAsync(TramiteCTCE tramite, ArchivoDTO? nuevoArchivo, TipoDocumento tipo)
+        private async Task ProcesarReemplazoAsync(TramiteCTCE tramite, ArchivoDTO? nuevoArchivo, TipoDocumento tipo, Stream key, Stream cer, string pass)
         {
             // Si el DTO es nulo o no tiene contenido, significa que el usuario NO cambió este archivo.
             // No hacemos nada y conservamos el anterior.
@@ -85,16 +95,33 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
             var documentoExistente = tramite.Documentos.FirstOrDefault(d => d.TipoDocumentoId == tipo.Id);
 
             if (!documentoExistente.PermiteCorreccion())
-                // Seguridad extra: Solo se pueden reemplazar documentos que estén en estado "Rechazado"
+                // Seguridad extra: Solo se pueden reemplazar documentos que estén en estado invalido
                 throw new ApplicationException($"El documento {documentoExistente.Nombre} no está en estado " +
                     $"{EstadoDocumento.ConErrores.Nombre} o {EstadoDocumento.Incorrecto.Nombre} y no puede ser corregido.");
-            
-            // 2. Subir el NUEVO archivo a Azure
-            string nuevoBlobPath = await _storageService.UploadAsync(nuevoArchivo.Contenido, nuevoArchivo.Nombre);
-            byte[]? nuevoHash = _criptoService.CalcularHash(nuevoArchivo.Contenido);
 
+            // Copiar a memoria para poder usarlo varias veces
+            byte[] archivoBytes;
+            using (var ms = new MemoryStream())
+            {
+                await nuevoArchivo.Contenido.CopyToAsync(ms);
+                archivoBytes = ms.ToArray();
+            }
+
+            // Firmar con MemoryStream
+            byte[] firma;
+            using (var streamFirma = new MemoryStream(archivoBytes))
+            {
+                firma = _criptoService.FirmarDocumento(streamFirma, cer, key, pass);
+            }
+
+            // Subir a Azure con otro MemoryStream
+            string nuevoBlobPath;
+            using (var streamSubida = new MemoryStream(archivoBytes))
+            {
+                nuevoBlobPath = await _storageService.UploadAsync(streamSubida, nuevoArchivo.Nombre);
+            }
             // 3. Actualizar la entidad Documento existente
-            documentoExistente.ActualizarDocumento(nuevoArchivo.Nombre, nuevoBlobPath, nuevoHash);
+            documentoExistente.ActualizarDocumento(nuevoArchivo.Nombre, nuevoBlobPath, firma);
         }
     }
 }

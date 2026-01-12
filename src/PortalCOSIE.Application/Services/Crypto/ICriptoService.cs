@@ -2,6 +2,7 @@
 {
     public interface ICriptoService
     {
-        public byte[] CalcularHash(Stream archivo);
+        public byte[] FirmarDocumento(Stream contenido, Stream certPath, Stream keyPath, string password);
+        public bool VerificarFirma(Stream contenido, Stream firma, Stream certificadoStream);
     }
 }

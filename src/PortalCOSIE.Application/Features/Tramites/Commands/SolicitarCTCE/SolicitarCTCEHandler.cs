@@ -64,10 +64,10 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                     command.Peticion,
                     command.TieneDictamenesAnteriores,
                     unidadesReprobadasEntities,
-                    await ProcesarDocumentoAsync(command.Identificacion, TipoDocumento.Identificacion),
-                    await ProcesarDocumentoAsync(command.BoletaGlobal, TipoDocumento.BoletaGlobal),
-                    await ProcesarDocumentoAsync(command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos),
-                    await ProcesarDocumentoAsync(command.Probatorios, TipoDocumento.Probatorios)
+                    await ProcesarDocumentoAsync(command.Identificacion, TipoDocumento.Identificacion, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
+                    await ProcesarDocumentoAsync(command.BoletaGlobal, TipoDocumento.BoletaGlobal, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
+                    await ProcesarDocumentoAsync(command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
+                    await ProcesarDocumentoAsync(command.Probatorios, TipoDocumento.Probatorios, command.LlaveKey, command.CertificadoCer, command.PasswordKey)
                 );
 
                 await _tramiteRepo.AddAsync(tramite);
@@ -82,13 +82,15 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             }
         }
 
-        private async Task<Documento> ProcesarDocumentoAsync(ArchivoDTO documentoDto, TipoDocumento tipo)
+        private async Task<Documento> ProcesarDocumentoAsync(ArchivoDTO documentoDto, TipoDocumento tipo, Stream key, Stream cer, string pass)
         {
             // Validar si viene nulo (por seguridad)
             if (documentoDto == null || documentoDto.Contenido == null)
                 throw new Exception($"El documento {tipo.Nombre} es requerido.");
 
-            // 2. Subir a Azure al container "pruebas" (o el que tenga configurado el servicio)
+            var firma = _criptoService.FirmarDocumento(documentoDto.Contenido, cer, key, pass);
+
+            // 2. Subir a Azure al container
             // El servicio debe devolver el nombre único o la ruta (ej: "guid-archivo.pdf")
             string blobPath = await _storageService.UploadAsync(documentoDto.Contenido, documentoDto.Nombre);
 
@@ -99,7 +101,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                     0,
                     EstadoDocumento.EnRevision.Id,
                     tipo.Id,
-                    _criptoService.CalcularHash(documentoDto.Contenido)
+                    firma
                 );
         }
     }

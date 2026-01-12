@@ -30,12 +30,51 @@
                             Adjuntar dictamen CTCE:
                         </label>
 
-                        <input type="file"
-                               id="fileAcuse"
-                               name="archivoAcuse"
-                               class="form-control form-control-sm"
-                               accept=".pdf"
-                               required />
+                        <div class="row g-3 mb-2">
+                            <input type="file"
+                                   id="fileAcuse"
+                                   name="Acuse"
+                                   class="form-control form-control-sm"
+                                   accept=".pdf"
+                                   required />
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Certificado -->
+                            <div class="col-lg-12">
+                                <label class="form-label fw-semibold">
+                                    Certificado (.cer)
+                                </label>
+                                <input type="file"
+                                       name="CertificadoCer"
+                                       class="form-control form-control-sm"
+                                       accept=".cer,application/x-x509-ca-cert"
+                                       required />
+                            </div>
+
+                            <!-- Llave privada -->
+                            <div class="col-lg-12">
+                                <label class="form-label fw-semibold">
+                                    Llave privada (.key)
+                                </label>
+                                <input type="file"
+                                       name="LlaveKey"
+                                       class="form-control form-control-sm"
+                                       accept=".key"
+                                       required />
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div class="col-lg-12">
+                                <label class="form-label fw-semibold">
+                                    Contraseña de la llave
+                                </label>
+                                <input type="password"
+                                       name="PasswordKey"
+                                       class="form-control form-control-sm"
+                                       required />
+                            </div>
+                        </div>
 
                         <div id="msgErrorArchivo" class="text-danger small mt-1 d-none">
                             <i class="fas fa-info-circle me-1"></i>Debes adjuntar el dictamen.
@@ -97,13 +136,11 @@
                 return;
             }
             msgError.classList.add("d-none");
-
             boton.bloquear();
 
             try {
                 const formData = new FormData(form);
                 const url = form.action;
-
                 const data = await executeFetch(url, "POST", formData);
 
                 bsModal.hide();

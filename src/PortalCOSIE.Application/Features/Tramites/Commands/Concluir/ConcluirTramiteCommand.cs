@@ -6,6 +6,9 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
     public sealed record ConcluirTramiteCommand(
         string IdentityUserId,
         int TramiteId,
-        ArchivoDTO Archivo
+        ArchivoDTO Archivo,
+        Stream LlaveKey,
+        Stream CertificadoCer,
+        string PasswordKey
         ) : IRequest<Result<string>>;
 }

@@ -1,4 +1,5 @@
-﻿using PortalCOSIE.Domain.Entities.Tramites;
+﻿using PortalCOSIE.Domain.Entities.Documentos;
+using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Interfaces;
 
 namespace PortalCOSIE.Application.Features.Tramites.Commands.Cancelar
@@ -24,7 +25,11 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Cancelar
 
             tramite.AgregarObservaciones(command.observaciones);
             tramite.CambiarEstado(EstadoTramite.Cancelado);
-
+            foreach(var documento in tramite.Documentos)
+            {
+                if (!documento.EstadoDocumento.EsFinal())
+                    documento.CambiarEstado(EstadoDocumento.Validado);
+            }
             await _unitOfWork.SaveChangesAsync();
             return Result<string>.Success("Trámite cancelado.");
         }

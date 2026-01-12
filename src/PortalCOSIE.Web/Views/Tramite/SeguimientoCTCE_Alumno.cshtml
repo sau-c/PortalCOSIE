@@ -129,7 +129,7 @@
                 </div>
 
                 <div class="card-body bg-light">
-                    <div class="row g-3">
+                    <div class="row g-3 mb-2">
                         @for (int i = 0; i < documentosList.Count; i++)
                         {
                             var item = documentosList[i];
@@ -186,34 +186,41 @@
 
                                             @if (item.EstadoDocumentoId == EstadoDocumento.Incorrecto.Id || item.EstadoDocumentoId == EstadoDocumento.ConErrores.Id)
                                             {
+                                                <span class="text-danger small">
+                                                    <i class="fas fa-warning me-1"></i>Subir correccion
+                                                </span>
                                                 @switch (item.TipoDocumento?.Id)
                                                 {
                                                     case 1:
                                                         <input type="file"
                                                                name="Identificacion"
-                                                               class="form-control form-control-sm"
-                                                               accept=".pdf" />
+                                                               class="form-control form-control-sm border border-danger"
+                                                               accept=".pdf"
+                                                               required />
                                                         break;
 
                                                     case 2:
                                                         <input type="file"
                                                                name="BoletaGlobal"
-                                                               class="form-control form-control-sm"
-                                                               accept=".pdf" />
+                                                               class="form-control form-control-sm border border-danger"
+                                                               accept=".pdf"
+                                                               required />
                                                         break;
 
                                                     case 3:
                                                         <input type="file"
                                                                name="CartaExposicionMotivos"
-                                                               class="form-control form-control-sm"
-                                                               accept=".pdf" />
+                                                               class="form-control form-control-sm border border-danger"
+                                                               accept=".pdf"
+                                                               required />
                                                         break;
 
                                                     case 4:
                                                         <input type="file"
                                                                name="Probatorios"
-                                                               class="form-control form-control-sm"
-                                                               accept=".pdf" />
+                                                               class="form-control form-control-sm border border-danger"
+                                                               accept=".pdf"
+                                                               required />
                                                         break;
                                                 }
                                             }
@@ -223,6 +230,45 @@
                             }
                         }
                     </div>
+                    @if (puedeCorregir)
+                    {
+                        <div class="row g-3">
+                            <!-- Certificado -->
+                            <div class="col-lg-4 col-md-6">
+                                <label class="form-label fw-semibold">
+                                    Certificado (.cer)
+                                </label>
+                                <input type="file"
+                                       name="CertificadoCer"
+                                       class="form-control form-control-sm"
+                                       accept=".cer,application/x-x509-ca-cert"
+                                       required />
+                            </div>
+
+                            <!-- Llave privada -->
+                            <div class="col-lg-4 col-md-6">
+                                <label class="form-label fw-semibold">
+                                    Llave privada (.key)
+                                </label>
+                                <input type="file"
+                                       name="LlaveKey"
+                                       class="form-control form-control-sm"
+                                       accept=".key"
+                                       required />
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div class="col-lg-4 col-md-6">
+                                <label class="form-label fw-semibold">
+                                    Contraseña de la llave
+                                </label>
+                                <input type="password"
+                                       name="PasswordKey"
+                                       class="form-control form-control-sm"
+                                       required />
+                            </div>
+                        </div>
+                    }
                 </div>
 
                 <div class="card-footer bg-white border-top p-3">

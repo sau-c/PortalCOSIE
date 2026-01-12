@@ -49,22 +49,48 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                
-                string blobPath = await _storageService.UploadAsync(
-                    command.Archivo.Contenido,
-                    command.Archivo.Nombre
+
+                // 1️ Leer todo a memoria
+                byte[] archivoBytes;
+                using (var ms = new MemoryStream())
+                {
+                    await command.Archivo.Contenido.CopyToAsync(ms);
+                    archivoBytes = ms.ToArray();
+                }
+
+                // 2️ Firmar usando MemoryStream
+                byte[] firma;
+                using (var streamFirma = new MemoryStream(archivoBytes))
+                {
+                    firma = _criptoService.FirmarDocumento(
+                        streamFirma,
+                        command.CertificadoCer,
+                        command.LlaveKey,
+                        command.PasswordKey
+                    );
+                }
+
+                // 3️ Subir a Azure usando otro MemoryStream
+                using (var streamSubida = new MemoryStream(archivoBytes))
+                {
+                    string blobPath = await _storageService.UploadAsync(
+                        streamSubida,
+                        command.Archivo.Nombre
                     );
 
-                var documento = new Documento(
-                    command.Archivo.Nombre,
-                    blobPath,
-                    tramite.Id,
-                    EstadoDocumento.Validado.Id,
-                    TipoDocumento.DictamenCTCE.Id,
-                    _criptoService.CalcularHash(command.Archivo.Contenido)
-                );
+                    // Guardar documento y firmar en la BD
+                    var documento = new Documento(
+                        command.Archivo.Nombre,
+                        blobPath,
+                        tramite.Id,
+                        EstadoDocumento.Validado.Id,
+                        TipoDocumento.DictamenCTCE.Id,
+                        firma
+                    );
 
-                tramite.AgregarDocumento(documento);
+                    tramite.AgregarDocumento(documento);
+                }
+
                 tramite.VerificarEstadoTramite();
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();

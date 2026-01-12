@@ -67,7 +67,10 @@ namespace PortalCOSIE.Web.Controllers
                 carta,
                 identificacion,
                 boleta,
-                probatorios
+                probatorios,
+                model.LlaveKey.OpenReadStream(),
+                model.CertificadoCer.OpenReadStream(),
+                model.PasswordKey
             ));
 
             return Json(new { success = true, message = "Solicitud enviada con éxito." });
@@ -91,7 +94,10 @@ namespace PortalCOSIE.Web.Controllers
                     carta,
                     identificacion,
                     boleta,
-                    probatorios
+                    probatorios,
+                    model.LlaveKey.OpenReadStream(),
+                    model.CertificadoCer.OpenReadStream(),
+                    model.PasswordKey
                 ));
 
             if (result.Succeeded)
@@ -187,12 +193,19 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
-        public async Task<IActionResult> Concluir(int tramiteId, IFormFile archivoAcuse)
+        public async Task<IActionResult> Concluir(ConcluirVM model)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            ArchivoDTO acuse = ObtenerArchivoDTO(archivoAcuse);
+            var command = new ConcluirTramiteCommand(
+                userId,
+                model.TramiteId,
+                ObtenerArchivoDTO(model.Acuse),
+                model.LlaveKey.OpenReadStream(),
+                model.CertificadoCer.OpenReadStream(),
+                model.PasswordKey
+                );
 
-            var result = await _mediator.Send(new ConcluirTramiteCommand(userId, tramiteId, acuse));
+            var result = await _mediator.Send(command);
             if (result.Succeeded)
                 return Json(new { success = true, message = result.Value });
             return Json(new { success = false, message = result.Errors.FirstOrDefault() });

@@ -1,0 +1,69 @@
++---Features
+|   +---Bitacoras
+|   |   \---Queries
+|   |       \---Listar
+|   +---Carreras
+|   |   +---Commands
+|   |   |   +---AgregarUnidad
+|   |   |   +---Crear
+|   |   |   +---Editar
+|   |   |   +---EditarUnidad
+|   |   |   +---Toggle
+|   |   |   \---ToggleUnidad
+|   |   \---Queries
+|   |       +---Listar
+|   |       +---ListarUnidades
+|   |       \---ObtenerDetalle
+|   +---Dashboard
+|   |   +---DTO
+|   |   \---Queries
+|   |       +---ObtenerEstadoDocumentosCTCE
+|   |       +---ObtenerEstadoTramitesCTCE
+|   |       +---ObtenerMasReprobadasCTCE
+|   |       +---ObtenerRolesAlumnos
+|   |       \---ObtenerSolicitudesPorCarrera
+|   +---PeriodosConfig
+|   |   +---Commands
+|   |   |   \---EditarPeriodoConfig
+|   |   +---DTO
+|   |   \---Queries
+|   |       +---ListarPeriodos
+|   |       \---ObtenerPeriodoConfig
+|   +---Security
+|   +---SesionesCOSIE
+|   |   +---Commands
+|   |   |   +---Crear
+|   |   |   +---Editar
+|   |   |   \---Toggle
+|   |   \---Queries
+|   |       \---ListarDetalle
+|   +---Tramites
+|   |   +---Commands
+|   |   |   +---AsignarPersonal
+|   |   |   +---Cancelar
+|   |   |   +---Concluir
+|   |   |   +---Corregir
+|   |   |   +---Revision
+|   |   |   \---SolicitarCTCE
+|   |   +---DTO
+|   |   \---Queries
+|   |       +---DescargarDocumento
+|   |       +---DescargarDocumentosPorTramite
+|   |       +---ListarCatalogos
+|   |       +---ListarTramites
+|   |       \---ObtenerTramiteCTCEPorId
+|   \---Usuarios
+|       +---Commands
+|       |   +---EditarAlumno
+|       |   +---EditarPersonal
+|       |   \---RegistrarAlumno
+|       +---DTO
+|       \---Queries
+|           +---ListarAlumnos
+|           +---ListarPersonal
+|           +---ObtenerUsuarioCompleto
+|           \---ObtenerUsuarioPorIdentityId
+\---Services
+    +---Crypto
+    +---Query
+    \---Storage

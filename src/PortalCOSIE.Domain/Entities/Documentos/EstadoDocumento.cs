@@ -26,7 +26,7 @@
         /// </summary>
         /// <returns></returns>
         public bool EsFinal()
-            => this == Validado;
+            => this.Id == Validado.Id;
 
         /// <summary>
         /// Valida si el estado actual puede transicionar al nuevo estado.

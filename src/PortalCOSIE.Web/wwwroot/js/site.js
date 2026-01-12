@@ -91,7 +91,7 @@ function bloqueadorBoton(button) {
     return { bloquear, restaurar };
 }
 
-function limitarArchivos({ maxMB = 3, tiposPermitidos = ["application/pdf"] } = {}) {
+function limitarArchivos({ maxMB = 3, tiposPermitidos = ["application/pdf", "application/x-x509-ca-cert", "application/pkix-cert", "application/octet-stream"], extensionesPermitidas = ["pdf", "cer", "key"] } = {}) {
 
     const MAX_BYTES = maxMB * 1024 * 1024;
 
@@ -100,19 +100,23 @@ function limitarArchivos({ maxMB = 3, tiposPermitidos = ["application/pdf"] } = 
             const file = input.files[0];
             if (!file) return;
 
+            // Verifica tamaño
             if (file.size > MAX_BYTES) {
                 showGlobalModal("error", `Tamaño máximo permitido: ${maxMB} MB`);
                 input.value = "";
                 return;
             }
 
-            if (!tiposPermitidos.includes(file.type)) {
-                showGlobalModal("error", `Tipo de archivo no permitido. Solo: ${tiposPermitidos.join(", ")}`);
+            // Verifica tipo MIME o extensión
+            const extension = file.name.split('.').pop().toLowerCase();
+            if (!tiposPermitidos.includes(file.type) && !extensionesPermitidas.includes(extension)) {
+                showGlobalModal("error", `Tipo de archivo no permitido. Solo: ${extensionesPermitidas.join(", ")}`);
                 input.value = "";
             }
         });
     });
 }
+
 
 
 /**

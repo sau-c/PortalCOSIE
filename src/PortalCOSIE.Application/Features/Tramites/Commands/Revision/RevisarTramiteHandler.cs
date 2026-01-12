@@ -47,7 +47,6 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Revision
             tramite.VerificarEstadoTramite();
 
             await _unitOfWork.SaveChangesAsync();
-
             return Result<string>.Success("Revisión guardada correctamente.");
         }
     }

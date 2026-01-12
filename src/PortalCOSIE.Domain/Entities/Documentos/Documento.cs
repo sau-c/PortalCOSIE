@@ -8,11 +8,6 @@ namespace PortalCOSIE.Domain.Entities.Documentos
     /// </summary>
     public class Documento : BaseEntity<int>
     {
-        /// <summary>
-        /// Representa el tamano maximo
-        /// </summary>
-        private const int HASH_SIZE_BYTES = 64; // 512 bits
-
         /// <summary>Nombre original del archivo</summary>
         public string Nombre { get; private set; }
         /// <summary> Ruta fisica del archivo </summary>
@@ -84,8 +79,6 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         {
             if (hashOriginal == null || hashOriginal.Length == 0)
                 throw new DomainException("El contenido hash no puede estar vacío.");
-            if (hashOriginal.Length != HASH_SIZE_BYTES)
-                throw new DomainException($"El hash debe ser de {HASH_SIZE_BYTES} bytes.");
             HashOriginal = hashOriginal;
         }
         /// <summary>
