@@ -37,9 +37,8 @@ namespace PortalCOSIE.Web.Controllers
         public IActionResult Crear()
         {
             if (User?.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
+
             return View();
         }
 
@@ -47,12 +46,10 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(CrearCuentaDTO dto)
         {
-            var result = await _securityService.CrearUsuarioAsync(dto);
-
+            var result = await _securityService.CrearUsuario(dto);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -60,11 +57,10 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Confirmar(string correo, string token)
         {
             if (User?.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
 
-            var result = await _securityService.ConfirmarCorreoAsync(correo, token);
+
+            var result = await _securityService.ConfirmarCorreo(correo, token);
 
             if (!result.Succeeded)
             {
@@ -84,9 +80,8 @@ namespace PortalCOSIE.Web.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (await _mediator.Send(new ObtenerUsuarioPorIdentityIdQuery(userId)) != null)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
+
             ViewBag.Carreras = new SelectList(await _mediator.Send(new ListarCarrerasQuery()), "Id", "Nombre");
             ViewBag.Periodos = new SelectList(await _mediator.Send(new ListarPeriodosQuery()), "Periodo");
             return View();
@@ -111,9 +106,8 @@ namespace PortalCOSIE.Web.Controllers
             );
 
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -121,9 +115,8 @@ namespace PortalCOSIE.Web.Controllers
         public IActionResult Ingresar()
         {
             if (User?.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
+
             return View();
         }
 
@@ -133,32 +126,26 @@ namespace PortalCOSIE.Web.Controllers
         {
             var result = await _securityService.IngresarUsuarioAsync(dto);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (await _mediator.Send(new ObtenerUsuarioPorIdentityIdQuery(userId)) == null && !User.IsInRole("Administrador"))
-            {
                 return RedirectToAction(nameof(Registrar));
-            }
+
             return RedirectToAction("Index", "Calendario");
         }
 
         [HttpGet]
-        public IActionResult Recuperar()
-        {
-            return View();
-        }
+        public IActionResult Recuperar() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Recuperar(string correo)
         {
-            var result = await _securityService.RecuperarContrasenaAsync(correo);
+            var result = await _securityService.RecuperarContrasena(correo);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -176,11 +163,10 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restablecer(RestablecerDTO dto)
         {
-            var result = await _securityService.RestablecerContrasenaAsync(dto);
+            var result = await _securityService.RestablecerContrasena(dto);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -191,9 +177,8 @@ namespace PortalCOSIE.Web.Controllers
         {
             var result = await _securityService.CambiarContrasena(dto);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -201,11 +186,9 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> ActualizarCorreo(string id, string correo, string token)
         {
             if (User?.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
 
-            var result = await _securityService.ActualizarCorreoAsync(id, correo, token);
+            var result = await _securityService.ActualizarCorreo(id, correo, token);
             if (!result.Succeeded)
             {
                 TempData["MessageType"] = "error";
@@ -228,9 +211,6 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Denegado()
-        {
-            return View();
-        }
+        public IActionResult Denegado() => View();
     }
 }

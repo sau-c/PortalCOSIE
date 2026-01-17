@@ -114,20 +114,5 @@ namespace PortalCOSIE.Infrastructure.Services
                 return memoryStream.ToArray();
             }
         }
-
-        /// <summary>
-        /// Helper para proporcionar contraseña a PemReader
-        /// </summary>
-        //private class PasswordFinder : IPasswordFinder
-        //{
-        //    private readonly string _password;
-        //    public PasswordFinder(string password)
-        //        => _password = password;
-
-        //    public char[] GetPassword()
-        //    {
-        //        return _password.ToCharArray();
-        //    }
-        //}
     }
 }

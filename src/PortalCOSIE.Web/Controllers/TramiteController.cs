@@ -170,7 +170,6 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
-        [HttpPost]
         public async Task<IActionResult> Revisar(int id, List<DocumentoDTO> documentosList, string observaciones)
         {
             var result = await _mediator.Send(new RevisarTramiteCommand(id, documentosList, observaciones));
@@ -231,6 +230,16 @@ namespace PortalCOSIE.Web.Controllers
             // 2. Retornar el archivo SIN pasar el nombre como tercer parámetro
             // Al no pasar el nombre aquí, ASP.NET respeta la cabecera que acabamos de crear arriba
             return File(resultado.Contenido, resultado.ContentType);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> VerificarDocumento(int id)
+        {
+            Task.Delay(500); // Simular retardo para mostrar spinner
+            //terminar lógica de verificación aquí
+            return Json(new { success = true, message = "El documento ha sido verificado correctamente." });
         }
     }
 }

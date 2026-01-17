@@ -56,7 +56,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ActualizarCelular(string userId, string celular)
         {
-            var result = await _securityService.ActualizarCelularAsync(userId, celular);
+            var result = await _securityService.ActualizarCelular(userId, celular);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });
@@ -68,7 +68,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerificarCorreo(string userId, string correo)
         {
-            var result = await _securityService.VerificarCorreoAsync(userId, correo);
+            var result = await _securityService.VerificarCorreo(userId, correo);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });

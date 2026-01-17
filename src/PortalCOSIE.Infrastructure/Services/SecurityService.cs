@@ -36,15 +36,11 @@ namespace PortalCOSIE.Infrastructure.Services
             var user = await _userManager.FindByEmailAsync(dto.Correo);
 
             if (user == null)
-            {
-                throw new ApplicationException("Usuario no encontrado.");
-            }
+                return Result<string>.Failure("Usuario no encontrado.");
 
             if (!user.EmailConfirmed)
-            {
                 //En caso de que el ususario borre el email de confirmacion que?
                 return Result<string>.Failure("Revisa tu correo electrónico para confirmar tu cuenta.");
-            }
 
             //RememberMe false para mayor seguridad
             var login = await _signInManager.PasswordSignInAsync(user, dto.Contrasena, false, lockoutOnFailure: true);
@@ -65,9 +61,7 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Failure($"Cuenta bloqueada por múltiples intentos fallidos. Intenta de nuevo en {tiempo}.");
             }
             if (login.IsNotAllowed)
-            {
                 return Result<string>.Failure("Ingreso no permitido");
-            }
 
             return login.Succeeded
                 ? Result<string>.Success("Inicio de sesión exitoso.")
@@ -77,7 +71,7 @@ namespace PortalCOSIE.Infrastructure.Services
         {
             await _signInManager.SignOutAsync();
         }
-        public async Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto)
+        public async Task<Result<string>> CrearUsuario(CrearCuentaDTO dto)
         {
             if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Contrasena) || string.IsNullOrEmpty(dto.ConfirmarContrasena))
                 throw new ApplicationException("Datos incompletos para restablecer la contraseña.");
@@ -115,7 +109,7 @@ namespace PortalCOSIE.Infrastructure.Services
             }
             return Result<string>.Success("Se ha enviado un enlace a tu correo para confirmar tu cuenta. No olvides revisar tu carpeta de spam.");
         }
-        public async Task<Result<string>> CrearPersonalAsync(CrearPersonalDTO dto)
+        public async Task<Result<string>> CrearPersonal(CrearPersonalDTO dto)
         {
             try
             {
@@ -132,7 +126,7 @@ namespace PortalCOSIE.Infrastructure.Services
                     ConfirmarContrasena = dto.ConfirmarContrasena
                 };
 
-                var resultado = await CrearUsuarioAsync(cuentaDto);
+                var resultado = await CrearUsuario(cuentaDto);
                 var userCreado = await _userManager.FindByEmailAsync(dto.Correo);
 
                 var rolResult = await _userManager.AddToRoleAsync(userCreado, "Personal");
@@ -161,7 +155,7 @@ namespace PortalCOSIE.Infrastructure.Services
                 throw;
             }
         }
-        public async Task<Result<string>> RecuperarContrasenaAsync(string correo)
+        public async Task<Result<string>> RecuperarContrasena(string correo)
         {
             if (string.IsNullOrEmpty(correo))
                 throw new ApplicationException("El correo no puede ser nulo");
@@ -181,7 +175,7 @@ namespace PortalCOSIE.Infrastructure.Services
 
             return Result<string>.Success("Se ha enviado un enlace para restablecer tu contraseña.");
         }
-        public async Task<Result<string>> RestablecerContrasenaAsync(RestablecerDTO dto)
+        public async Task<Result<string>> RestablecerContrasena(RestablecerDTO dto)
         {
             if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Token) || string.IsNullOrEmpty(dto.NuevaContrasena))
                 throw new ApplicationException("Datos incompletos para restablecer la contraseña.");
@@ -233,7 +227,7 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Failure("No se pudo enviar el correo de aviso.");
             return Result<string>.Success("Contraseña restablecida con éxito.");
         }
-        public async Task<Result<string>> ActualizarCelularAsync(string userId, string celular)
+        public async Task<Result<string>> ActualizarCelular(string userId, string celular)
         {
             if (string.IsNullOrEmpty(userId))
                 throw new ApplicationException("El id no puede ser nulo o vacio");
@@ -317,7 +311,7 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Success($"Rol {rol} asignado correctamente");
             }
         }
-        public async Task<Result<string>> ConfirmarCorreoAsync(string correo, string token)
+        public async Task<Result<string>> ConfirmarCorreo(string correo, string token)
         {
             var user = await _userManager.FindByEmailAsync(correo);
             if (user == null)
@@ -334,7 +328,7 @@ namespace PortalCOSIE.Infrastructure.Services
             }
             return Result<string>.Success("Correo confirmado");
         }
-        public async Task<Result<string>> VerificarCorreoAsync(string userId, string correo)
+        public async Task<Result<string>> VerificarCorreo(string userId, string correo)
         {
             // Validaciones básicas
             if (string.IsNullOrWhiteSpace(userId))
@@ -361,7 +355,7 @@ namespace PortalCOSIE.Infrastructure.Services
 
             return Result<string>.Success($"Se envió una verificación a {correo}");
         }
-        public async Task<Result<string>> ActualizarCorreoAsync(string id, string correo, string token)
+        public async Task<Result<string>> ActualizarCorreo(string id, string correo, string token)
         {
             // 1. Validaciones
             if (string.IsNullOrEmpty(correo))
