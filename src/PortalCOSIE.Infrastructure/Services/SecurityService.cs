@@ -100,7 +100,8 @@ namespace PortalCOSIE.Infrastructure.Services
             var correo = await _emailSender.SendEmailAsync(
                 dto.Correo,
                 "Confirma tu cuenta",
-                HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken));
+                HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken)
+                );
 
             if (!correo.Succeeded)
             {

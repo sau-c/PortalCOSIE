@@ -5,12 +5,8 @@ public class AzureStorageService : IStorageService
 {
     private readonly BlobContainerClient _blobContainerClient;
 
-    public AzureStorageService(
-        BlobContainerClient blobContainerClient
-        )
-    {
-        _blobContainerClient = blobContainerClient;
-    }
+    public AzureStorageService(BlobContainerClient blobContainerClient)
+        => _blobContainerClient = blobContainerClient;
 
     public async Task<string> UploadAsync(Stream contenido, string nombre)
     {

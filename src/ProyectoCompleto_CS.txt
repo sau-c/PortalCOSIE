@@ -440,7 +440,7 @@ namespace PortalCOSIE.Application.Features.Carreras.Queries.Listar
 
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Carreras\Queries\ListarUnidades\ListarUnidadesHandler.cs ---
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 using PortalCOSIE.Domain.Entities.Carreras;
 
 namespace PortalCOSIE.Application.Features.Carreras.Queries.ListarUnidades
@@ -528,7 +528,7 @@ namespace PortalCOSIE.Application.Features.Dashboard.DTO
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Dashboard\Queries\ObtenerEstadoDocumentosCTCE\ObtenerEstadoDocumentosCTCEHandler.cs ---
 using PortalCOSIE.Application.Features.Dashboard.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerEstadoDocumentosCTCE
 {
@@ -561,7 +561,7 @@ namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerEstadoDocume
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Dashboard\Queries\ObtenerEstadoTramitesCTCE\ObtenerEstadoTramitesCTCEHandler.cs ---
 using PortalCOSIE.Application.Features.Dashboard.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerEstadoTramitesCTCE
 {
@@ -594,7 +594,7 @@ namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerEstadoTramit
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Dashboard\Queries\ObtenerMasReprobadasCTCE\ObtenerMasReprobadasHandler.cs ---
 using PortalCOSIE.Application.Features.Dashboard.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerMasReprobadasCTCE
 {
@@ -630,7 +630,7 @@ namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerMasReprobada
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Dashboard\Queries\ObtenerRolesAlumnos\ObtenerRolesAlumnosHandler.cs ---
 using PortalCOSIE.Application.Features.Dashboard.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerRolesAlumnos
 {
@@ -663,7 +663,7 @@ namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerRolesAlumnos
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Dashboard\Queries\ObtenerSolicitudesPorCarrera\ObtenerSolicitudesPorCarreraHandler.cs ---
 using PortalCOSIE.Application.Features.Dashboard.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Dashboard.Queries.ObtenerSolicitudesPorCarrera
 {
@@ -1093,6 +1093,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Cancelar
 
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Tramites\Commands\Cancelar\CancelarTramiteHandler.cs ---
+using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Interfaces;
 
@@ -1119,10 +1120,143 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Cancelar
 
             tramite.AgregarObservaciones(command.observaciones);
             tramite.CambiarEstado(EstadoTramite.Cancelado);
-
+            foreach(var documento in tramite.Documentos)
+            {
+                if (!documento.EstadoDocumento.EsFinal())
+                    documento.CambiarEstado(EstadoDocumento.Validado);
+            }
             await _unitOfWork.SaveChangesAsync();
             return Result<string>.Success("Trámite cancelado.");
         }
+    }
+}
+
+
+
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Tramites\Commands\Concluir\ConcluirTramiteCommand.cs ---
+using PortalCOSIE.Application.Abstractions;
+using PortalCOSIE.Application.Features.Tramites.DTO;
+
+namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
+{
+    public sealed record ConcluirTramiteCommand(
+        string IdentityUserId,
+        int TramiteId,
+        ArchivoDTO Archivo,
+        Stream LlaveKey,
+        Stream CertificadoCer,
+        string PasswordKey
+        ) : IRequest<Result<string>>;
+}
+
+
+
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Tramites\Commands\Concluir\ConcluirTramiteHandler.cs ---
+using PortalCOSIE.Application.Services.Crypto;
+using PortalCOSIE.Application.Services.Storage;
+using PortalCOSIE.Domain.Entities.Documentos;
+using PortalCOSIE.Domain.Entities.Tramites;
+using PortalCOSIE.Domain.Entities.Tramites.CTCE;
+using PortalCOSIE.Domain.Entities.Usuarios;
+using PortalCOSIE.Domain.Interfaces;
+
+namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
+{
+    public class ConcluirTramiteHandler : IRequestHandler<ConcluirTramiteCommand, Result<string>>
+    {
+        private readonly ITramiteRepository _tramiteRepo;
+        private readonly IUsuarioRepository _usuarioRepo;
+        private readonly IStorageService _storageService;
+        private readonly ICriptoService _criptoService;
+        private readonly IUnitOfWork _unitOfWork;
+
+        public ConcluirTramiteHandler(
+            ITramiteRepository tramiteRepo,
+            IUsuarioRepository usuarioRepo,
+            IStorageService storageService,
+            ICriptoService criptoService,
+            IUnitOfWork unitOfWork)
+        {
+            _tramiteRepo = tramiteRepo;
+            _usuarioRepo = usuarioRepo;
+            _storageService = storageService;
+            _criptoService = criptoService;
+            _unitOfWork = unitOfWork;
+        }
+        public async Task<Result<string>> Handle(ConcluirTramiteCommand command)
+        {
+            if (command.Archivo == null || command.Archivo.Contenido == null || command.Archivo.Contenido.Length == 0)
+                return Result<string>.Failure("El acuse es obligatorio para concluir el trámite.");
+            
+            TramiteCTCE tramite = await _tramiteRepo.ObtenerTramiteCTCEPorIdParaRevision(command.TramiteId);
+            if (tramite is null)
+                return Result<string>.Failure("Trámite no encontrado.");
+            if (tramite.EstadoTramiteId != EstadoTramite.EsperandoAcuse.Id)
+                return Result<string>.Failure("El trámite no se encuentra en un estado válido para ser concluido.");
+
+            var usuario = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
+            if (usuario is null)
+                return Result<string>.Failure("Usuario no encontrado.");
+            if (!tramite.PuedeSerAtendidoPor(usuario.Id))
+                return Result<string>.Failure("El usuario no tiene permisos para atender este trámite.");
+            
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                // 1️ Leer todo a memoria
+                byte[] archivoBytes;
+                using (var ms = new MemoryStream())
+                {
+                    await command.Archivo.Contenido.CopyToAsync(ms);
+                    archivoBytes = ms.ToArray();
+                }
+
+                // 2️ Firmar usando MemoryStream
+                byte[] firma;
+                using (var streamFirma = new MemoryStream(archivoBytes))
+                {
+                    firma = _criptoService.FirmarDocumento(
+                        streamFirma,
+                        command.CertificadoCer,
+                        command.LlaveKey,
+                        command.PasswordKey
+                    );
+                }
+
+                // 3️ Subir a Azure usando otro MemoryStream
+                using (var streamSubida = new MemoryStream(archivoBytes))
+                {
+                    string blobPath = await _storageService.UploadAsync(
+                        streamSubida,
+                        command.Archivo.Nombre
+                    );
+
+                    // Guardar documento y firmar en la BD
+                    var documento = new Documento(
+                        command.Archivo.Nombre,
+                        blobPath,
+                        tramite.Id,
+                        EstadoDocumento.Validado.Id,
+                        TipoDocumento.DictamenCTCE.Id,
+                        firma
+                    );
+
+                    tramite.AgregarDocumento(documento);
+                }
+
+                tramite.VerificarEstadoTramite();
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                return Result<string>.Success("Trámite concluido exitosamente.");
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+        }
+
     }
 }
 
@@ -1140,7 +1274,10 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Corregir
         ArchivoDTO CartaExposicionMotivos,
         ArchivoDTO Identificacion,
         ArchivoDTO BoletaGlobal,
-        ArchivoDTO Probatorios
+        ArchivoDTO Probatorios,
+        Stream LlaveKey,
+        Stream CertificadoCer,
+        string PasswordKey
         ) : IRequest<Result<string>>;
 }
 
@@ -1149,7 +1286,8 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Corregir
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Tramites\Commands\Corregir\CorregirTramiteHandler.cs ---
 using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
 using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Crypto;
+using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Tramites.CTCE;
@@ -1183,29 +1321,39 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
 
         public async Task<Result<string>> Handle(CorregirTramiteCommand command)
         {
+            // 1. Recuperar el trámite existente (incluyendo sus documentos)
+            TramiteCTCE tramite = await _tramiteRepo.ObtenerTramiteCTCEPorIdParaRevision(command.TramiteId);
+            if (tramite == null)
+                return Result<string>.Failure("El trámite especificado no existe.");
+            if (tramite.EstadoTramiteId != EstadoTramite.DocumentosPendientes.Id)
+                return Result<string>.Failure("El estado actual del trámite no permite corrección.");
+
+            // Validar que el trámite pertenezca al alumno (seguridad básica)
+            Usuario usuario = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
+            if (!tramite.PerteneceAAlumno(usuario.Id))
+                return Result<string>.Failure("No tienes permisos para corregir este trámite.");
+
+            // Validar que los documentos con estado ConErrores o Incorrecto no vengan vacios del command:
+            if (tramite.Documentos.Any(d =>
+                (d.EstadoDocumentoId == EstadoDocumento.ConErrores.Id ||
+                 d.EstadoDocumentoId == EstadoDocumento.Incorrecto.Id) &&
+                ((d.TipoDocumentoId == TipoDocumento.Identificacion.Id && (command.Identificacion == null || command.Identificacion.Contenido == null || command.Identificacion.Contenido.Length == 0)) ||
+                 (d.TipoDocumentoId == TipoDocumento.BoletaGlobal.Id && (command.BoletaGlobal == null || command.BoletaGlobal.Contenido == null || command.BoletaGlobal.Contenido.Length == 0)) ||
+                 (d.TipoDocumentoId == TipoDocumento.CartaExposicionMotivos.Id && (command.CartaExposicionMotivos == null || command.CartaExposicionMotivos.Contenido == null || command.CartaExposicionMotivos.Contenido.Length == 0)) ||
+                 (d.TipoDocumentoId == TipoDocumento.Probatorios.Id && (command.Probatorios == null || command.Probatorios.Contenido == null || command.Probatorios.Contenido.Length == 0))
+                )))
+                return Result<string>.Failure("Debes proporcionar los archivos para todos los documentos que requieren corrección.");
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-
-                // 1. Recuperar el trámite existente (incluyendo sus documentos)
-                TramiteCTCE tramite = await _tramiteRepo.ObtenerTramiteCTCEPorIdParaRevision(command.TramiteId);
-                if (tramite == null)
-                    return Result<string>.Failure("El trámite especificado no existe.");
-                if (tramite.EstadoTramiteId != EstadoTramite.DocumentosPendientes.Id)
-                    return Result<string>.Failure("El estado actual del trámite no permite corrección.");
-
-                // Validar que el trámite pertenezca al alumno (seguridad básica)
-                Usuario usuario = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
-                if (!tramite.PerteneceAAlumno(usuario.Id))
-                    return Result<string>.Failure("No tienes permisos para corregir este trámite.");
-
                 // 2. Reemplazar Documentos
                 // Solo procesamos los documentos que NO vengan nulos en el comando.
                 // Si son nulos, conservamos los que ya tenía el trámite.
-                await ProcesarReemplazoAsync(tramite, command.Identificacion, TipoDocumento.Identificacion);
-                await ProcesarReemplazoAsync(tramite, command.BoletaGlobal, TipoDocumento.BoletaGlobal);
-                await ProcesarReemplazoAsync(tramite, command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos);
-                await ProcesarReemplazoAsync(tramite, command.Probatorios, TipoDocumento.Probatorios);
+                await ProcesarReemplazoAsync(tramite, command.Identificacion, TipoDocumento.Identificacion, command.LlaveKey, command.CertificadoCer, command.PasswordKey);
+                await ProcesarReemplazoAsync(tramite, command.BoletaGlobal, TipoDocumento.BoletaGlobal, command.LlaveKey, command.CertificadoCer, command.PasswordKey);
+                await ProcesarReemplazoAsync(tramite, command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos, command.LlaveKey, command.CertificadoCer, command.PasswordKey);
+                await ProcesarReemplazoAsync(tramite, command.Probatorios, TipoDocumento.Probatorios, command.LlaveKey, command.CertificadoCer, command.PasswordKey);
 
                 // 4. Cambiar estado
                 tramite.VerificarEstadoTramite();
@@ -1222,7 +1370,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
             }
         }
 
-        private async Task ProcesarReemplazoAsync(TramiteCTCE tramite, ArchivoDTO? nuevoArchivo, TipoDocumento tipo)
+        private async Task ProcesarReemplazoAsync(TramiteCTCE tramite, ArchivoDTO? nuevoArchivo, TipoDocumento tipo, Stream key, Stream cer, string pass)
         {
             // Si el DTO es nulo o no tiene contenido, significa que el usuario NO cambió este archivo.
             // No hacemos nada y conservamos el anterior.
@@ -1233,16 +1381,33 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
             var documentoExistente = tramite.Documentos.FirstOrDefault(d => d.TipoDocumentoId == tipo.Id);
 
             if (!documentoExistente.PermiteCorreccion())
-                // Seguridad extra: Solo se pueden reemplazar documentos que estén en estado "Rechazado"
+                // Seguridad extra: Solo se pueden reemplazar documentos que estén en estado invalido
                 throw new ApplicationException($"El documento {documentoExistente.Nombre} no está en estado " +
                     $"{EstadoDocumento.ConErrores.Nombre} o {EstadoDocumento.Incorrecto.Nombre} y no puede ser corregido.");
-            
-            // 2. Subir el NUEVO archivo a Azure
-            string nuevoBlobPath = await _storageService.UploadAsync(nuevoArchivo.Contenido, nuevoArchivo.Nombre);
-            byte[]? nuevoHash = _criptoService.CalcularHash(nuevoArchivo.Contenido);
 
+            // Copiar a memoria para poder usarlo varias veces
+            byte[] archivoBytes;
+            using (var ms = new MemoryStream())
+            {
+                await nuevoArchivo.Contenido.CopyToAsync(ms);
+                archivoBytes = ms.ToArray();
+            }
+
+            // Firmar con MemoryStream
+            byte[] firma;
+            using (var streamFirma = new MemoryStream(archivoBytes))
+            {
+                firma = _criptoService.FirmarDocumento(streamFirma, cer, key, pass);
+            }
+
+            // Subir a Azure con otro MemoryStream
+            string nuevoBlobPath;
+            using (var streamSubida = new MemoryStream(archivoBytes))
+            {
+                nuevoBlobPath = await _storageService.UploadAsync(streamSubida, nuevoArchivo.Nombre);
+            }
             // 3. Actualizar la entidad Documento existente
-            documentoExistente.ActualizarDocumento(nuevoArchivo.Nombre, nuevoBlobPath, nuevoHash);
+            documentoExistente.ActualizarDocumento(nuevoArchivo.Nombre, nuevoBlobPath, firma);
         }
     }
 }
@@ -1314,7 +1479,6 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Revision
             tramite.VerificarEstadoTramite();
 
             await _unitOfWork.SaveChangesAsync();
-
             return Result<string>.Success("Revisión guardada correctamente.");
         }
     }
@@ -1336,7 +1500,10 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
         ArchivoDTO CartaExposicionMotivos,
         ArchivoDTO Identificacion,
         ArchivoDTO BoletaGlobal,
-        ArchivoDTO Probatorios
+        ArchivoDTO Probatorios,
+        Stream LlaveKey,
+        Stream CertificadoCer,
+        string PasswordKey
         ) : IRequest<Result<string>>;
 }
 
@@ -1344,7 +1511,8 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Tramites\Commands\SolicitarCTCE\SolicitarCTCEHandler.cs ---
 using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Crypto;
+using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.PeriodosConfig;
 using PortalCOSIE.Domain.Entities.Tramites;
@@ -1408,10 +1576,10 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                     command.Peticion,
                     command.TieneDictamenesAnteriores,
                     unidadesReprobadasEntities,
-                    await ProcesarDocumentoAsync(command.Identificacion, TipoDocumento.Identificacion),
-                    await ProcesarDocumentoAsync(command.BoletaGlobal, TipoDocumento.BoletaGlobal),
-                    await ProcesarDocumentoAsync(command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos),
-                    await ProcesarDocumentoAsync(command.Probatorios, TipoDocumento.Probatorios)
+                    await ProcesarDocumentoAsync(command.Identificacion, TipoDocumento.Identificacion, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
+                    await ProcesarDocumentoAsync(command.BoletaGlobal, TipoDocumento.BoletaGlobal, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
+                    await ProcesarDocumentoAsync(command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
+                    await ProcesarDocumentoAsync(command.Probatorios, TipoDocumento.Probatorios, command.LlaveKey, command.CertificadoCer, command.PasswordKey)
                 );
 
                 await _tramiteRepo.AddAsync(tramite);
@@ -1426,24 +1594,41 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             }
         }
 
-        private async Task<Documento> ProcesarDocumentoAsync(ArchivoDTO documentoDto, TipoDocumento tipo)
+        private async Task<Documento> ProcesarDocumentoAsync(ArchivoDTO documentoDto, TipoDocumento tipo, Stream key, Stream cer, string pass)
         {
             // Validar si viene nulo (por seguridad)
             if (documentoDto == null || documentoDto.Contenido == null)
                 throw new Exception($"El documento {tipo.Nombre} es requerido.");
 
-            // 2. Subir a Azure al container "pruebas" (o el que tenga configurado el servicio)
-            // El servicio debe devolver el nombre único o la ruta (ej: "guid-archivo.pdf")
-            string blobPath = await _storageService.UploadAsync(documentoDto.Contenido, documentoDto.Nombre);
+            byte[] archivoBytes;
+            using (var ms = new MemoryStream())
+            {
+                await documentoDto.Contenido.CopyToAsync(ms);
+                archivoBytes = ms.ToArray();
+            }
 
-            // 3. Crear la Entidad
-            return new Documento(
-                    documentoDto.Nombre,
-                    blobPath,
-                    0,
-                    tipo.Id,
-                    _criptoService.CalcularHash(documentoDto.Contenido)
-                );
+            // Firmar con MemoryStream
+            byte[] firma;
+            using (var streamFirma = new MemoryStream(archivoBytes))
+            {
+                firma = _criptoService.FirmarDocumento(streamFirma, cer, key, pass);
+            }
+
+            // Subir a Azure con otro MemoryStream
+            string nuevoBlobPath;
+            using (var streamSubida = new MemoryStream(archivoBytes))
+            {
+                var blobPath = await _storageService.UploadAsync(streamSubida, documentoDto.Nombre);
+                // 3. Crear la Entidad
+                return new Documento(
+                        documentoDto.Nombre,
+                        blobPath,
+                        0,
+                        EstadoDocumento.EnRevision.Id,
+                        tipo.Id,
+                        firma
+                    );
+            }
         }
     }
 }
@@ -1493,7 +1678,8 @@ namespace PortalCOSIE.Application.Features.Tramites.DTO
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Tramites\Queries\DescargarDocumento\DescargarDocumentoHandler.cs ---
 using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
+using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Usuarios;
 
@@ -1587,7 +1773,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumento
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Tramites\Queries\DescargarDocumentosPorTramite\DescargarDocumentosPorTramiteHandler.cs ---
 using PortalCOSIE.Application.Features.Tramites.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;
@@ -2307,7 +2493,7 @@ namespace PortalCOSIE.Application.Features.Usuarios.DTO
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Usuarios\Queries\ListarAlumnos\ListarAlumnosHandler.cs ---
 using PortalCOSIE.Application.Features.Usuarios.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Usuarios.Queries.ListarAlumnos
 {
@@ -2337,7 +2523,7 @@ namespace PortalCOSIE.Application.Features.Usuarios.Queries.ListarAlumnos
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Usuarios\Queries\ListarPersonal\ListarPersonalHandler.cs ---
 using PortalCOSIE.Application.Features.Usuarios.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Usuarios.Queries.ListarPersonal
 {
@@ -2367,7 +2553,7 @@ namespace PortalCOSIE.Application.Features.Usuarios.Queries.ListarPersonal
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Features\Usuarios\Queries\ObtenerUsuarioCompleto\ObtenerUsuarioCompletoHandler.cs ---
 using PortalCOSIE.Application.Features.Usuarios.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 
 namespace PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerAlumnoCompleto
 {
@@ -2429,34 +2615,6 @@ namespace PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerUsuarioPorIde
 
 
 
---- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\ICriptoService.cs ---
-namespace PortalCOSIE.Application.Services
-{
-    public interface ICriptoService
-    {
-        public byte[] CalcularHash(Stream archivo);
-    }
-}
-
-
-
---- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\IDashboardQueryService.cs ---
-using PortalCOSIE.Application.Features.Dashboard.DTO;
-
-namespace PortalCOSIE.Application.Services
-{
-    public interface IDashboardQueryService
-    {
-        Task<ChartDTO> ObtenerEstadoTramitesCTCE(string periodo);
-        Task<ChartDTO> ObtenerEstadoDocumentosCTCE(string periodo);
-        Task<ChartDTO> ObtenerRolesAlumnos();
-        Task<ChartDTO> ObtenerSolicitudesPorCarrera(string periodo);
-        Task<ChartDTO> ObtenerUnidadesMasReprobadasPorCarrera(int? carreraId, string periodo);
-    }
-}
-
-
-
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\IEmailSender.cs ---
 namespace PortalCOSIE.Application.Services
 {
@@ -2477,42 +2635,56 @@ namespace PortalCOSIE.Application.Services
     {
         Task<Result<string>> IngresarUsuarioAsync(IngresarDTO dto);
         Task CerrarSesionAsync();
-        Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto);
-        Task<Result<string>> CrearPersonalAsync(CrearPersonalDTO dto);
-        Task<Result<string>> RecuperarContrasenaAsync(string correo);
-        Task<Result<string>> RestablecerContrasenaAsync(RestablecerDTO dto);
+        Task<Result<string>> CrearUsuario(CrearCuentaDTO dto);
+        Task<Result<string>> CrearPersonal(CrearPersonalDTO dto);
+        Task<Result<string>> RecuperarContrasena(string correo);
+        Task<Result<string>> RestablecerContrasena(RestablecerDTO dto);
         Task<Result<string>> CambiarContrasena(CambiarContrasenaDTO dto);
         Task<Result<string>> ToggleRol(string userId, string rol);
-        Task<Result<string>> ActualizarCelularAsync(string userId, string celular);
+        Task<Result<string>> ActualizarCelular(string userId, string celular);
 
-        Task<Result<string>> ConfirmarCorreoAsync(string correo, string token);
-        Task<Result<string>> VerificarCorreoAsync(string userId, string correo);
-        Task<Result<string>> ActualizarCorreoAsync(string id, string correo, string token);
+        Task<Result<string>> ConfirmarCorreo(string correo, string token);
+        Task<Result<string>> VerificarCorreo(string userId, string correo);
+        Task<Result<string>> ActualizarCorreo(string id, string correo, string token);
     }
 }
 
 
 
---- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\IStorageService.cs ---
-using PortalCOSIE.Domain.Entities.Documentos;
-
-namespace PortalCOSIE.Application.Services
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\Crypto\ICriptoService.cs ---
+namespace PortalCOSIE.Application.Services.Crypto
 {
-    public interface IStorageService
+    public interface ICriptoService
     {
-        Task<string> UploadAsync(Stream contenido, string nombre);
-        Task<Stream> DownloadAsync(string ruta);
-        Task DeleteAsync(string ruta);
+        public byte[] FirmarDocumento(Stream contenido, Stream certPath, Stream keyPath, string password);
+        public bool VerificarFirma(Stream contenido, Stream firma, Stream certificadoStream);
     }
 }
 
 
 
---- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\IUsuarioQueryService.cs ---
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\Query\IDashboardQueryService.cs ---
+using PortalCOSIE.Application.Features.Dashboard.DTO;
+
+namespace PortalCOSIE.Application.Services.Query
+{
+    public interface IDashboardQueryService
+    {
+        Task<ChartDTO> ObtenerEstadoTramitesCTCE(string periodo);
+        Task<ChartDTO> ObtenerEstadoDocumentosCTCE(string periodo);
+        Task<ChartDTO> ObtenerRolesAlumnos();
+        Task<ChartDTO> ObtenerSolicitudesPorCarrera(string periodo);
+        Task<ChartDTO> ObtenerUnidadesMasReprobadasPorCarrera(int? carreraId, string periodo);
+    }
+}
+
+
+
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\Query\IUsuarioQueryService.cs ---
 using PortalCOSIE.Application.Features.Usuarios.DTO;
 using PortalCOSIE.Domain.Entities.Documentos;
 
-namespace PortalCOSIE.Application.Services
+namespace PortalCOSIE.Application.Services.Query
 {
     public interface IUsuarioQueryService
     {
@@ -2521,6 +2693,19 @@ namespace PortalCOSIE.Application.Services
         Task<int> ObtenerCarreraAlumnoPorId(string identityUserId);
         Task<UsuarioDTO> ObtenerUsuarioCompletoPorId(string identityUserId);
         Task<Documento> ObtenerDatosDocumentoPorId(int id);
+    }
+}
+
+
+
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Application\Services\Storage\IStorageService.cs ---
+namespace PortalCOSIE.Application.Services.Storage
+{
+    public interface IStorageService
+    {
+        Task<string> UploadAsync(Stream contenido, string nombre);
+        Task<Stream> DownloadAsync(string ruta);
+        Task DeleteAsync(string ruta);
     }
 }
 
@@ -2726,11 +2911,6 @@ namespace PortalCOSIE.Domain.Entities.Documentos
     /// </summary>
     public class Documento : BaseEntity<int>
     {
-        /// <summary>
-        /// Representa el tamano maximo
-        /// </summary>
-        private const int HASH_SIZE_BYTES = 64; // 512 bits
-
         /// <summary>Nombre original del archivo</summary>
         public string Nombre { get; private set; }
         /// <summary> Ruta fisica del archivo </summary>
@@ -2760,6 +2940,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             string nombre,
             string ruta,
             int tramiteId,
+            int estadoDocumentoId,
             int tipoDocumentoId,
             byte[] hashOriginal)
         {
@@ -2767,7 +2948,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             EstablecerRuta(ruta);
             TramiteId = tramiteId;
             TipoDocumentoId = tipoDocumentoId;
-            EstadoDocumentoId = EstadoDocumento.EnRevision.Id;
+            EstadoDocumentoId = estadoDocumentoId;
             EstablecerHashOriginal(hashOriginal);
         }
 
@@ -2801,8 +2982,6 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         {
             if (hashOriginal == null || hashOriginal.Length == 0)
                 throw new DomainException("El contenido hash no puede estar vacío.");
-            if (hashOriginal.Length != HASH_SIZE_BYTES)
-                throw new DomainException($"El hash debe ser de {HASH_SIZE_BYTES} bytes.");
             HashOriginal = hashOriginal;
         }
         /// <summary>
@@ -2825,6 +3004,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
                 throw new DomainException(
                     $"Documento no puede cambiar el estado de '{EstadoDocumento.Nombre}' a '{nuevoEstado.Nombre}'.");
             EstadoDocumentoId = nuevoEstado.Id;
+            EstadoDocumento = nuevoEstado;
         }
 
         public bool PermiteCorreccion()
@@ -2867,13 +3047,10 @@ namespace PortalCOSIE.Domain.Entities.Documentos
     {
         /// <summary>Estado inicial cuando el documento ha sido cargado y está pendiente de revisión</summary>
         public static readonly EstadoDocumento EnRevision = new(1, "En revisión");
-
         /// <summary>Estado cuando el documento cumple con todos los requisitos establecidos</summary>
         public static readonly EstadoDocumento Validado = new(2, "Validado");
-
         /// <summary>Estado cuando el documento presenta problemas corregibles (firmas, sellos, fechas)</summary>
         public static readonly EstadoDocumento ConErrores = new(3, "Con errores");
-
         /// <summary>Estado cuando el documento no es el solicitado</summary>
         public static readonly EstadoDocumento Incorrecto = new(4, "Documento incorrecto");
 
@@ -2885,7 +3062,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         /// </summary>
         /// <returns></returns>
         public bool EsFinal()
-            => this == Validado;
+            => this.Id == Validado.Id;
 
         /// <summary>
         /// Valida si el estado actual puede transicionar al nuevo estado.
@@ -2893,8 +3070,8 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         public bool PuedeTransicionarA(EstadoDocumento nuevoEstado)
         {
             if (nuevoEstado == null) return false;
-            if (this.Id == nuevoEstado.Id) return true;
             if (EsFinal()) return false;
+            if (this.Id == nuevoEstado.Id) return false; //No se permite la redundancia
 
             return this.Id switch
             {
@@ -2923,6 +3100,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         public static readonly TipoDocumento BoletaGlobal = new (2, "Boleta global");
         public static readonly TipoDocumento CartaExposicionMotivos = new (3, "Carta exposición de motivos");
         public static readonly TipoDocumento Probatorios = new (4, "Probatorios");
+        public static readonly TipoDocumento DictamenCTCE = new(5, "Dictamen CTCE");
 
         private TipoDocumento(int id, string nombre) : base(id, nombre)
         { }
@@ -3233,8 +3411,6 @@ namespace PortalCOSIE.Domain.Entities.SesionesCOSIE
 
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Domain\Entities\Tramites\EstadoTramite.cs ---
-using PortalCOSIE.Domain.Entities.Documentos;
-
 namespace PortalCOSIE.Domain.Entities.Tramites
 {
     /// <summary>
@@ -3245,18 +3421,16 @@ namespace PortalCOSIE.Domain.Entities.Tramites
     {
         /// <summary>Estado inicial cuando el alumno solicita el trámite</summary>
         public static readonly EstadoTramite Solicitado = new(1, "Solicitado");
-
         /// <summary>Estado cuando el personal asignado está revisando el trámite</summary>
         public static readonly EstadoTramite EnRevision = new(2, "En revision");
-
         /// <summary>Estado cuando el alumno tinene que corregir documentos</summary>
         public static readonly EstadoTramite DocumentosPendientes = new(3, "Documentos pendientes");
-
         /// <summary>Estado final cuando el trámite ha sido procesado</summary>
         public static readonly EstadoTramite Concluido = new(4, "Concluido");
-
         /// <summary>Estado cuando el trámite ha sido cancelado</summary>
         public static readonly EstadoTramite Cancelado = new(5, "Cancelado");
+        /// <summary> Estado cuando el tramite esperando </summary>
+        public static readonly EstadoTramite EsperandoAcuse = new(6, "Esperando acuse");
 
         private EstadoTramite(int id, string nombre) : base(id, nombre)
         { }
@@ -3274,14 +3448,18 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         public bool PuedeTransicionarA(EstadoTramite nuevoEstado)
         {
             if (nuevoEstado == null) return false;
-            if (this.Id == nuevoEstado.Id) return true;
             if (EsFinal()) return false;
+            if (this.Id == nuevoEstado.Id) return true;
 
             return this.Id switch
             {
-                1 => nuevoEstado.Id == 2, // Solicitado
-                2 => nuevoEstado.Id == 3 || nuevoEstado.Id == 4 || nuevoEstado.Id == 5, // EnRevision
-                3 => nuevoEstado.Id == 2, // DocumentosPendientes
+                // Solicitado
+                1 => nuevoEstado.Id == 2,
+                // EnRevision
+                2 => nuevoEstado.Id == 3 || nuevoEstado.Id == 5 || nuevoEstado.Id == 6,
+                // DocumentosPendientes
+                3 => nuevoEstado.Id == 2,
+                6 => nuevoEstado.Id == 4,
                 _ => false
             };
         }
@@ -3518,10 +3696,21 @@ namespace PortalCOSIE.Domain.Entities.Tramites.CTCE
                 return;
             }
 
-            //if (Documentos.Any(d => d.EstadoDocumentoId == EstadoDocumento.Incorrecto.Id || d.EstadoDocumentoId == EstadoDocumento.ConErrores.Id))
             if (Documentos.Any(d => d.PermiteCorreccion()))
             {
                 CambiarEstado(EstadoTramite.DocumentosPendientes);
+                return;
+            }
+
+            if (Documentos.Any(d => d.TipoDocumentoId == TipoDocumento.DictamenCTCE.Id))
+            {
+                CambiarEstado(EstadoTramite.Concluido);
+                return;
+            }
+
+            if (Documentos.All(d => d.EstadoDocumentoId == EstadoDocumento.Validado.Id))
+            {
+                CambiarEstado(EstadoTramite.EsperandoAcuse);
                 return;
             }
         }
@@ -4429,6 +4618,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Crypto;
+using PortalCOSIE.Application.Services.Query;
+using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Carreras;
 using PortalCOSIE.Domain.Entities.EntradaBitacoras;
 using PortalCOSIE.Domain.Entities.SesionesCOSIE;
@@ -4504,7 +4696,7 @@ namespace PortalCOSIE.Infrastructure.IoC
 
 
 
---- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Infrastructure\Migrations\20260109064957_AzurePrueba.cs ---
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Infrastructure\Migrations\20260109162234_Azure.cs ---
 using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -4515,7 +4707,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AzurePrueba : Migration
+    public partial class Azure : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -5075,7 +5267,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     { 2, false, "En revision" },
                     { 3, false, "Documentos pendientes" },
                     { 4, false, "Concluido" },
-                    { 5, false, "Cancelado" }
+                    { 5, false, "Cancelado" },
+                    { 6, false, "Esperando acuse" }
                 });
 
             migrationBuilder.InsertData(
@@ -5101,7 +5294,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     { 1, false, "Identificación" },
                     { 2, false, "Boleta global" },
                     { 3, false, "Carta exposición de motivos" },
-                    { 4, false, "Probatorios" }
+                    { 4, false, "Probatorios" },
+                    { 5, false, "Dictamen CTCE" }
                 });
 
             migrationBuilder.InsertData(
@@ -5839,7 +6033,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
 
 
---- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Infrastructure\Migrations\20260109064957_AzurePrueba.Designer.cs ---
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Infrastructure\Migrations\20260109162234_Azure.Designer.cs ---
 // <auto-generated />
 using System;
 using Microsoft.EntityFrameworkCore;
@@ -5854,8 +6048,8 @@ using PortalCOSIE.Infrastructure.Persistence;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260109064957_AzurePrueba")]
-    partial class AzurePrueba
+    [Migration("20260109162234_Azure")]
+    partial class Azure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -10108,6 +10302,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             Id = 4,
                             IsDeleted = false,
                             Nombre = "Probatorios"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsDeleted = false,
+                            Nombre = "Dictamen CTCE"
                         });
                 });
 
@@ -10398,6 +10598,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             Id = 5,
                             IsDeleted = false,
                             Nombre = "Cancelado"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IsDeleted = false,
+                            Nombre = "Esperando acuse"
                         });
                 });
 
@@ -15077,6 +15283,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             Id = 4,
                             IsDeleted = false,
                             Nombre = "Probatorios"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsDeleted = false,
+                            Nombre = "Dictamen CTCE"
                         });
                 });
 
@@ -15367,6 +15579,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             Id = 5,
                             IsDeleted = false,
                             Nombre = "Cancelado"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IsDeleted = false,
+                            Nombre = "Esperando acuse"
                         });
                 });
 
@@ -16876,7 +17094,8 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Documentos
                new { TipoDocumento.Identificacion.Id, TipoDocumento.Identificacion.Nombre, IsDeleted = false },
                new { TipoDocumento.BoletaGlobal.Id, TipoDocumento.BoletaGlobal.Nombre, IsDeleted = false },
                new { TipoDocumento.CartaExposicionMotivos.Id, TipoDocumento.CartaExposicionMotivos.Nombre, IsDeleted = false },
-               new { TipoDocumento.Probatorios.Id, TipoDocumento.Probatorios.Nombre, IsDeleted = false }
+               new { TipoDocumento.Probatorios.Id, TipoDocumento.Probatorios.Nombre, IsDeleted = false },
+               new { TipoDocumento.DictamenCTCE.Id, TipoDocumento.DictamenCTCE.Nombre, IsDeleted = false }
             );
         }
     }
@@ -16949,7 +17168,8 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Tramites
                new { EstadoTramite.EnRevision.Id, EstadoTramite.EnRevision.Nombre, IsDeleted = false },
                new { EstadoTramite.DocumentosPendientes.Id, EstadoTramite.DocumentosPendientes.Nombre, IsDeleted = false },
                new { EstadoTramite.Concluido.Id, EstadoTramite.Concluido.Nombre, IsDeleted = false },
-               new { EstadoTramite.Cancelado.Id, EstadoTramite.Cancelado.Nombre, IsDeleted = false }
+               new { EstadoTramite.Cancelado.Id, EstadoTramite.Cancelado.Nombre, IsDeleted = false },
+               new { EstadoTramite.EsperandoAcuse.Id, EstadoTramite.EsperandoAcuse.Nombre, IsDeleted = false }
            );
         }
     }
@@ -17460,7 +17680,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Infrastructure\Services\AzureStorageService.cs ---
 using Azure.Storage.Blobs;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Storage;
 
 public class AzureStorageService : IStorageService
 {
@@ -17469,9 +17689,7 @@ public class AzureStorageService : IStorageService
     public AzureStorageService(
         BlobContainerClient blobContainerClient
         )
-    {
-        _blobContainerClient = blobContainerClient;
-    }
+        => _blobContainerClient = blobContainerClient;
 
     public async Task<string> UploadAsync(Stream contenido, string nombre)
     {
@@ -17505,24 +17723,120 @@ public class AzureStorageService : IStorageService
 
 
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Infrastructure\Services\CriptoService.cs ---
-using PortalCOSIE.Application.Services;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
+using PortalCOSIE.Application.Services.Crypto;
 using System.Security.Cryptography;
 
 namespace PortalCOSIE.Infrastructure.Services
 {
     public class CriptoService : ICriptoService
     {
-        public byte[] CalcularHash(Stream archivo)
+        /// <summary>
+        /// Firma un documento usando certificado y llave privada desde streams
+        /// </summary>
+        public byte[] FirmarDocumento(Stream contenido, Stream certificadoStream, Stream llavePrivadaStream, string password)
         {
-            if (archivo == null) return null;
+            // 1. Cargar la llave privada desde stream
+            AsymmetricKeyParameter privateKey = LoadPrivateKeyFromStream(llavePrivadaStream, password);
+            // 2. Cargar el certificado desde stream
+            X509Certificate certificate = LoadCertificateFromStream(certificadoStream);
+            // 3. Leer el contenido completo del documento
+            byte[] contenidoBytes = ReadStreamToBytes(contenido);
+            // 4. Crear el firmante con SHA256withRSA
+            ISigner signer = SignerUtilities.GetSigner("SHA256withRSA");
+            signer.Init(true, privateKey);
+            // 5. Procesar el documento
+            signer.BlockUpdate(contenidoBytes, 0, contenidoBytes.Length);
+            // 6. Generar la firma
+            byte[] signature = signer.GenerateSignature();
+            return signature;
+        }
 
-            using (var sha512 = SHA512.Create())
+        /// <summary>
+        /// Verifica la firma de un documento usando streams
+        /// </summary>
+        public bool VerificarFirma(Stream contenido, Stream firma, Stream certificadoStream)
+        {
+            // 1. Cargar el certificado desde stream
+            X509Certificate certificate = LoadCertificateFromStream(certificadoStream);
+            // 2. Obtener la llave pública del certificado
+            AsymmetricKeyParameter publicKey = certificate.GetPublicKey();
+            // 3. Leer contenido y firma
+            byte[] contenidoBytes = ReadStreamToBytes(contenido);
+            byte[] firmaBytes = ReadStreamToBytes(firma);
+            // 4. Crear el verificador
+            ISigner verifier = SignerUtilities.GetSigner("SHA256withRSA");
+            verifier.Init(false, publicKey);
+            // 5. Procesar el documento
+            verifier.BlockUpdate(contenidoBytes, 0, contenidoBytes.Length);
+            // 6. Verificar la firma
+            return verifier.VerifySignature(firmaBytes);
+        }
+
+        /// <summary>
+        /// Carga la llave privada desde un stream
+        /// </summary>
+        private AsymmetricKeyParameter LoadPrivateKeyFromStream(Stream keyStream, string password)
+        {
+            if (keyStream == null)
+                throw new ArgumentNullException(nameof(keyStream));
+
+            if (keyStream.CanSeek)
+                keyStream.Position = 0;
+
+            byte[] keyBytes;
+            using (var ms = new MemoryStream())
             {
-                // Asegúrate de posicionar el stream al inicio
-                if (archivo.CanSeek)
-                    archivo.Position = 0;
+                keyStream.CopyTo(ms);
+                keyBytes = ms.ToArray();
+            }
 
-                return sha512.ComputeHash(archivo);;
+            try
+            {
+                // Desencripta la llave privada con la contraseña
+                return PrivateKeyFactory.DecryptKey(password.ToCharArray(), keyBytes);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se pudo cargar la llave privada. Verifica el formato y la contraseña.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Carga el certificado desde un stream
+        /// </summary>
+        private X509Certificate LoadCertificateFromStream(Stream certStream)
+        {
+            if (certStream == null)
+                throw new ArgumentNullException(nameof(certStream));
+
+            // Posicionar al inicio si es posible
+            if (certStream.CanSeek)
+                certStream.Position = 0;
+
+            var parser = new X509CertificateParser();
+            return parser.ReadCertificate(certStream);
+        }
+
+        /// <summary>
+        /// Lee un stream completo y lo convierte a array de bytes
+        /// </summary>
+        private byte[] ReadStreamToBytes(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            // Posicionar al inicio si es posible
+            if (stream.CanSeek)
+                stream.Position = 0;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
             }
         }
     }
@@ -17533,7 +17847,7 @@ namespace PortalCOSIE.Infrastructure.Services
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Infrastructure\Services\DashboardQueryService.cs ---
 using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Application.Features.Dashboard.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Tramites.CTCE;
@@ -17711,15 +18025,11 @@ namespace PortalCOSIE.Infrastructure.Services
             var user = await _userManager.FindByEmailAsync(dto.Correo);
 
             if (user == null)
-            {
-                throw new ApplicationException("Usuario no encontrado.");
-            }
+                return Result<string>.Failure("Usuario no encontrado.");
 
             if (!user.EmailConfirmed)
-            {
                 //En caso de que el ususario borre el email de confirmacion que?
                 return Result<string>.Failure("Revisa tu correo electrónico para confirmar tu cuenta.");
-            }
 
             //RememberMe false para mayor seguridad
             var login = await _signInManager.PasswordSignInAsync(user, dto.Contrasena, false, lockoutOnFailure: true);
@@ -17740,9 +18050,7 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Failure($"Cuenta bloqueada por múltiples intentos fallidos. Intenta de nuevo en {tiempo}.");
             }
             if (login.IsNotAllowed)
-            {
                 return Result<string>.Failure("Ingreso no permitido");
-            }
 
             return login.Succeeded
                 ? Result<string>.Success("Inicio de sesión exitoso.")
@@ -17752,7 +18060,7 @@ namespace PortalCOSIE.Infrastructure.Services
         {
             await _signInManager.SignOutAsync();
         }
-        public async Task<Result<string>> CrearUsuarioAsync(CrearCuentaDTO dto)
+        public async Task<Result<string>> CrearUsuario(CrearCuentaDTO dto)
         {
             if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Contrasena) || string.IsNullOrEmpty(dto.ConfirmarContrasena))
                 throw new ApplicationException("Datos incompletos para restablecer la contraseña.");
@@ -17790,7 +18098,7 @@ namespace PortalCOSIE.Infrastructure.Services
             }
             return Result<string>.Success("Se ha enviado un enlace a tu correo para confirmar tu cuenta. No olvides revisar tu carpeta de spam.");
         }
-        public async Task<Result<string>> CrearPersonalAsync(CrearPersonalDTO dto)
+        public async Task<Result<string>> CrearPersonal(CrearPersonalDTO dto)
         {
             try
             {
@@ -17807,7 +18115,7 @@ namespace PortalCOSIE.Infrastructure.Services
                     ConfirmarContrasena = dto.ConfirmarContrasena
                 };
 
-                var resultado = await CrearUsuarioAsync(cuentaDto);
+                var resultado = await CrearUsuario(cuentaDto);
                 var userCreado = await _userManager.FindByEmailAsync(dto.Correo);
 
                 var rolResult = await _userManager.AddToRoleAsync(userCreado, "Personal");
@@ -17836,7 +18144,7 @@ namespace PortalCOSIE.Infrastructure.Services
                 throw;
             }
         }
-        public async Task<Result<string>> RecuperarContrasenaAsync(string correo)
+        public async Task<Result<string>> RecuperarContrasena(string correo)
         {
             if (string.IsNullOrEmpty(correo))
                 throw new ApplicationException("El correo no puede ser nulo");
@@ -17856,7 +18164,7 @@ namespace PortalCOSIE.Infrastructure.Services
 
             return Result<string>.Success("Se ha enviado un enlace para restablecer tu contraseña.");
         }
-        public async Task<Result<string>> RestablecerContrasenaAsync(RestablecerDTO dto)
+        public async Task<Result<string>> RestablecerContrasena(RestablecerDTO dto)
         {
             if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Token) || string.IsNullOrEmpty(dto.NuevaContrasena))
                 throw new ApplicationException("Datos incompletos para restablecer la contraseña.");
@@ -17908,7 +18216,7 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Failure("No se pudo enviar el correo de aviso.");
             return Result<string>.Success("Contraseña restablecida con éxito.");
         }
-        public async Task<Result<string>> ActualizarCelularAsync(string userId, string celular)
+        public async Task<Result<string>> ActualizarCelular(string userId, string celular)
         {
             if (string.IsNullOrEmpty(userId))
                 throw new ApplicationException("El id no puede ser nulo o vacio");
@@ -17992,7 +18300,7 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Success($"Rol {rol} asignado correctamente");
             }
         }
-        public async Task<Result<string>> ConfirmarCorreoAsync(string correo, string token)
+        public async Task<Result<string>> ConfirmarCorreo(string correo, string token)
         {
             var user = await _userManager.FindByEmailAsync(correo);
             if (user == null)
@@ -18009,7 +18317,7 @@ namespace PortalCOSIE.Infrastructure.Services
             }
             return Result<string>.Success("Correo confirmado");
         }
-        public async Task<Result<string>> VerificarCorreoAsync(string userId, string correo)
+        public async Task<Result<string>> VerificarCorreo(string userId, string correo)
         {
             // Validaciones básicas
             if (string.IsNullOrWhiteSpace(userId))
@@ -18036,7 +18344,7 @@ namespace PortalCOSIE.Infrastructure.Services
 
             return Result<string>.Success($"Se envió una verificación a {correo}");
         }
-        public async Task<Result<string>> ActualizarCorreoAsync(string id, string correo, string token)
+        public async Task<Result<string>> ActualizarCorreo(string id, string correo, string token)
         {
             // 1. Validaciones
             if (string.IsNullOrEmpty(correo))
@@ -18126,7 +18434,7 @@ namespace PortalCOSIE.Infrastructure.QueryService
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Infrastructure\Services\UsuarioQueryService.cs ---
 using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Application.Features.Usuarios.DTO;
-using PortalCOSIE.Application.Services;
+using PortalCOSIE.Application.Services.Query;
 using PortalCOSIE.Domain.Entities.Carreras;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Usuarios;
@@ -18460,7 +18768,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ActualizarCelular(string userId, string celular)
         {
-            var result = await _securityService.ActualizarCelularAsync(userId, celular);
+            var result = await _securityService.ActualizarCelular(userId, celular);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });
@@ -18472,7 +18780,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerificarCorreo(string userId, string correo)
         {
-            var result = await _securityService.VerificarCorreoAsync(userId, correo);
+            var result = await _securityService.VerificarCorreo(userId, correo);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });
@@ -18733,9 +19041,8 @@ namespace PortalCOSIE.Web.Controllers
         public IActionResult Crear()
         {
             if (User?.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
+
             return View();
         }
 
@@ -18743,12 +19050,10 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(CrearCuentaDTO dto)
         {
-            var result = await _securityService.CrearUsuarioAsync(dto);
-
+            var result = await _securityService.CrearUsuario(dto);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -18756,11 +19061,10 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Confirmar(string correo, string token)
         {
             if (User?.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
 
-            var result = await _securityService.ConfirmarCorreoAsync(correo, token);
+
+            var result = await _securityService.ConfirmarCorreo(correo, token);
 
             if (!result.Succeeded)
             {
@@ -18780,9 +19084,8 @@ namespace PortalCOSIE.Web.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (await _mediator.Send(new ObtenerUsuarioPorIdentityIdQuery(userId)) != null)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
+
             ViewBag.Carreras = new SelectList(await _mediator.Send(new ListarCarrerasQuery()), "Id", "Nombre");
             ViewBag.Periodos = new SelectList(await _mediator.Send(new ListarPeriodosQuery()), "Periodo");
             return View();
@@ -18807,9 +19110,8 @@ namespace PortalCOSIE.Web.Controllers
             );
 
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -18817,9 +19119,8 @@ namespace PortalCOSIE.Web.Controllers
         public IActionResult Ingresar()
         {
             if (User?.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
+
             return View();
         }
 
@@ -18829,32 +19130,26 @@ namespace PortalCOSIE.Web.Controllers
         {
             var result = await _securityService.IngresarUsuarioAsync(dto);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (await _mediator.Send(new ObtenerUsuarioPorIdentityIdQuery(userId)) == null && !User.IsInRole("Administrador"))
-            {
                 return RedirectToAction(nameof(Registrar));
-            }
+
             return RedirectToAction("Index", "Calendario");
         }
 
         [HttpGet]
-        public IActionResult Recuperar()
-        {
-            return View();
-        }
+        public IActionResult Recuperar() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Recuperar(string correo)
         {
-            var result = await _securityService.RecuperarContrasenaAsync(correo);
+            var result = await _securityService.RecuperarContrasena(correo);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -18872,11 +19167,10 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restablecer(RestablecerDTO dto)
         {
-            var result = await _securityService.RestablecerContrasenaAsync(dto);
+            var result = await _securityService.RestablecerContrasena(dto);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -18887,9 +19181,8 @@ namespace PortalCOSIE.Web.Controllers
         {
             var result = await _securityService.CambiarContrasena(dto);
             if (!result.Succeeded)
-            {
                 return Json(new { success = false, message = result.Errors });
-            }
+
             return Json(new { success = true, message = result.Value });
         }
 
@@ -18897,11 +19190,9 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> ActualizarCorreo(string id, string correo, string token)
         {
             if (User?.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Calendario");
-            }
 
-            var result = await _securityService.ActualizarCorreoAsync(id, correo, token);
+            var result = await _securityService.ActualizarCorreo(id, correo, token);
             if (!result.Succeeded)
             {
                 TempData["MessageType"] = "error";
@@ -18924,10 +19215,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Denegado()
-        {
-            return View();
-        }
+        public IActionResult Denegado() => View();
     }
 }
 
@@ -19030,7 +19318,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(CrearPersonalDTO dto)
         {
-            var result = await _securityService.CrearPersonalAsync(dto);
+            var result = await _securityService.CrearPersonal(dto);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });
@@ -19061,7 +19349,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerificarCorreo(string userId, string correo)
         {
-            var result = await _securityService.VerificarCorreoAsync(userId, correo);
+            var result = await _securityService.VerificarCorreo(userId, correo);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });
@@ -19073,7 +19361,7 @@ namespace PortalCOSIE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ActualizarCelular(string userId, string celular)
         {
-            var result = await _securityService.ActualizarCelularAsync(userId, celular);
+            var result = await _securityService.ActualizarCelular(userId, celular);
             if (!result.Succeeded)
             {
                 return Json(new { success = false, message = result.Errors });
@@ -19104,13 +19392,13 @@ using PortalCOSIE.Application.Features.Tramites.Commands.Cancelar;
 using PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosPorTramite;
 using PortalCOSIE.Application.Features.Tramites.Commands.Revision;
 using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
+using PortalCOSIE.Application.Features.Tramites.Commands.Concluir;
 
 namespace PortalCOSIE.Web.Controllers
 {
     public class TramiteController : Controller
     {
         private readonly IMediator _mediator;
-
         public TramiteController(IMediator mediator)
             => _mediator = mediator;
 
@@ -19155,7 +19443,10 @@ namespace PortalCOSIE.Web.Controllers
                 carta,
                 identificacion,
                 boleta,
-                probatorios
+                probatorios,
+                model.LlaveKey.OpenReadStream(),
+                model.CertificadoCer.OpenReadStream(),
+                model.PasswordKey
             ));
 
             return Json(new { success = true, message = "Solicitud enviada con éxito." });
@@ -19179,7 +19470,10 @@ namespace PortalCOSIE.Web.Controllers
                     carta,
                     identificacion,
                     boleta,
-                    probatorios
+                    probatorios,
+                    model.LlaveKey.OpenReadStream(),
+                    model.CertificadoCer.OpenReadStream(),
+                    model.PasswordKey
                 ));
 
             if (result.Succeeded)
@@ -19202,7 +19496,6 @@ namespace PortalCOSIE.Web.Controllers
                 Contenido = archivo.OpenReadStream()
             };
         }
-
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal, Alumno")]
@@ -19253,7 +19546,6 @@ namespace PortalCOSIE.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
-        [HttpPost]
         public async Task<IActionResult> Revisar(int id, List<DocumentoDTO> documentosList, string observaciones)
         {
             var result = await _mediator.Send(new RevisarTramiteCommand(id, documentosList, observaciones));
@@ -19268,6 +19560,27 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Cancelar(int tramiteId, string observaciones)
         {
             var result = await _mediator.Send(new CancelarTramiteCommand(tramiteId, observaciones));
+            if (result.Succeeded)
+                return Json(new { success = true, message = result.Value });
+            return Json(new { success = false, message = result.Errors.FirstOrDefault() });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Personal")]
+        public async Task<IActionResult> Concluir(ConcluirVM model)
+        {
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var command = new ConcluirTramiteCommand(
+                userId,
+                model.TramiteId,
+                ObtenerArchivoDTO(model.Acuse),
+                model.LlaveKey.OpenReadStream(),
+                model.CertificadoCer.OpenReadStream(),
+                model.PasswordKey
+                );
+
+            var result = await _mediator.Send(command);
             if (result.Succeeded)
                 return Json(new { success = true, message = result.Value });
             return Json(new { success = false, message = result.Errors.FirstOrDefault() });
@@ -19294,6 +19607,16 @@ namespace PortalCOSIE.Web.Controllers
             // Al no pasar el nombre aquí, ASP.NET respeta la cabecera que acabamos de crear arriba
             return File(resultado.Contenido, resultado.ContentType);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> VerificarDocumento(int id)
+        {
+            Task.Delay(500); // Simular retardo para mostrar spinner
+            //terminar lógica de verificación aquí
+            return Json(new { success = true, message = "El documento ha sido verificado correctamente." });
+        }
     }
 }
 
@@ -19316,6 +19639,7 @@ public static class EstadoTramiteExtensions
             _ when estado.Equals(EstadoTramite.DocumentosPendientes) => "bg-warning text-black",
             _ when estado.Equals(EstadoTramite.Concluido) => "bg-success",
             _ when estado.Equals(EstadoTramite.Cancelado) => "bg-danger",
+            _ when estado.Equals(EstadoTramite.EsperandoAcuse) => "bg-info",
             _ => "bg-light text-dark"
         };
     }
@@ -19331,6 +19655,7 @@ public static class EstadoTramiteExtensions
             _ when estado.Equals(EstadoTramite.DocumentosPendientes) => "fas fa-file-circle-exclamation",
             _ when estado.Equals(EstadoTramite.Cancelado) => "fas fa-circle-xmark",
             _ when estado.Equals(EstadoTramite.Concluido) => "fas fa-flag",
+            _ when estado.Equals(EstadoTramite.EsperandoAcuse) => "fas fa-clock",
             _ => "fas fa-circle-question"
         };
     }
@@ -19463,6 +19788,21 @@ public class GlobalExceptionHandlingMiddleware
 
 
 
+--- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Web\Models\ConcluirVM.cs ---
+namespace PortalCOSIE.Web.Models
+{
+    public class ConcluirVM
+    {
+        public int TramiteId { get; set; }
+        public IFormFile Acuse { get; set; }
+        public IFormFile LlaveKey { get; set; }
+        public IFormFile CertificadoCer { get; set; }
+        public string PasswordKey { get; set; }
+    }
+}
+
+
+
 --- Archivo: C:\Users\sauc0\Documents\Proyectos de programacion\PortalCOSIE\src\PortalCOSIE.Web\Models\CorregirVM.cs ---
 namespace PortalCOSIE.Web.Models
 {
@@ -19474,6 +19814,9 @@ namespace PortalCOSIE.Web.Models
         public IFormFile? Identificacion { get; set; }
         public IFormFile? BoletaGlobal { get; set; }
         public IFormFile? Probatorios { get; set; }
+        public IFormFile LlaveKey { get; set; }
+        public IFormFile CertificadoCer { get; set; }
+        public string PasswordKey { get; set; }
     }
 }
 
@@ -19493,6 +19836,9 @@ namespace PortalCOSIE.Web.Models
         public IFormFile Identificacion { get; set; }
         public IFormFile BoletaGlobal { get; set; }
         public IFormFile Probatorios { get; set; }
+        public IFormFile LlaveKey { get; set; }
+        public IFormFile CertificadoCer { get; set; }
+        public string PasswordKey { get; set; }
     }
 }
 
