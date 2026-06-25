@@ -74,11 +74,11 @@ namespace PortalCOSIE.Infrastructure.Services
         public async Task<Result<string>> CrearUsuario(CrearCuentaDTO dto)
         {
             if (string.IsNullOrEmpty(dto.Correo) || string.IsNullOrEmpty(dto.Contrasena) || string.IsNullOrEmpty(dto.ConfirmarContrasena))
-                throw new ApplicationException("Datos incompletos para restablecer la contraseña.");
+                return Result<string>.Failure("Datos incompletos");
             if (await _userManager.FindByEmailAsync(dto.Correo) != null)
-                throw new ApplicationException("Ya existe este usuario.");
-            if (dto.ConfirmarContrasena != dto.ConfirmarContrasena)
-                return Result<string>.Failure("Las contraseñas no coinciden.");
+                return Result<string>.Failure("Ya existe este usuario");
+            if (dto.Contrasena != dto.ConfirmarContrasena)
+                return Result<string>.Failure("Las contraseñas no coinciden");
 
             var user = new IdentityUser
             {

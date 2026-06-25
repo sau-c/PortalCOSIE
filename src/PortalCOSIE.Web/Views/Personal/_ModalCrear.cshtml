@@ -139,7 +139,7 @@
 
             if (pass !== confirm) {
                 // Usamos showGlobalModal para consistencia
-                showGlobalModal('warning', 'Las contraseñas no coinciden. Por favor verifique.', {
+                showGlobalModal('error', 'Las contraseñas no coinciden. Por favor verifique.', {
                     autoClose: true
                 });
                 return; // Detenemos la ejecución
