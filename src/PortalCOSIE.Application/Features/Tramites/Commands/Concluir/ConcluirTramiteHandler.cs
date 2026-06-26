@@ -44,7 +44,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
             if (usuario is null)
                 return Result<string>.Failure("Usuario no encontrado.");
             if (!tramite.PuedeSerAtendidoPor(usuario.Id))
-                return Result<string>.Failure("El usuario no tiene permisos para atender este trámite.");
+                return Result<string>.Failure("No tienes permisos para atender este trámite.");
             
             try
             {

@@ -4,6 +4,7 @@ using PortalCOSIE.Application.Features.Tramites.DTO;
 namespace PortalCOSIE.Application.Features.Tramites.Commands.Revision
 {
     public sealed record RevisarTramiteCommand(
+        string IdentityUserId,
         int TramiteId,
         List<DocumentoDTO> Documentos,
         string Observaciones

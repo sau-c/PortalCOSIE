@@ -172,7 +172,8 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Personal")]
         public async Task<IActionResult> Revisar(int id, List<DocumentoDTO> documentosList, string observaciones)
         {
-            var result = await _mediator.Send(new RevisarTramiteCommand(id, documentosList, observaciones));
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _mediator.Send(new RevisarTramiteCommand(userId, id, documentosList, observaciones));
             if (result.Succeeded)
                 return Json(new { success = true, message = result.Value });
             return Json(new { success = false, message = result.Errors.FirstOrDefault() });
@@ -183,7 +184,8 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize(Roles = "Personal")]
         public async Task<IActionResult> Cancelar(int tramiteId, string observaciones)
         {
-            var result = await _mediator.Send(new CancelarTramiteCommand(tramiteId, observaciones));
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _mediator.Send(new CancelarTramiteCommand(userId, tramiteId, observaciones));
             if (result.Succeeded)
                 return Json(new { success = true, message = result.Value });
             return Json(new { success = false, message = result.Errors.FirstOrDefault() });

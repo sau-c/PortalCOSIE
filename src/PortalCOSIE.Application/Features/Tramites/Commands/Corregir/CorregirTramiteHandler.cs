@@ -42,10 +42,9 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
             if (tramite.EstadoTramiteId != EstadoTramite.DocumentosPendientes.Id)
                 return Result<string>.Failure("El estado actual del trámite no permite corrección.");
 
-            // Validar que el trámite pertenezca al alumno (seguridad básica)
             Usuario usuario = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
             if (!tramite.PerteneceAAlumno(usuario.Id))
-                return Result<string>.Failure("No tienes permisos para corregir este trámite.");
+                return Result<string>.Failure("No tienes permisos para atender este trámite.");
 
             // Validar que los documentos con estado ConErrores o Incorrecto no vengan vacios del command:
             if (tramite.Documentos.Any(d =>
