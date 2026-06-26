@@ -12,13 +12,24 @@ public class AzureStorageService : IStorageService
     {
         // Generamos un nombre único para evitar colisiones
         var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(nombre)}";
-        var blobClient = _blobContainerClient.GetBlobClient(uniqueName);
+        BlobClient blobClient = _blobContainerClient.GetBlobClient(uniqueName);
 
-        // Subimos a Azure
-        await blobClient.UploadAsync(contenido, overwrite: true);
+        await blobClient.UploadAsync(contenido, overwrite: false);
 
         return uniqueName;
     }
+    public async Task<string> ReplaceAsync(Stream contenido, string rutaExistente)
+    {
+        BlobClient blobClient = _blobContainerClient.GetBlobClient(rutaExistente);
+
+        if (!await blobClient.ExistsAsync())
+            throw new FileNotFoundException("El documento que se intenta reemplazar no existe.");
+
+        await blobClient.UploadAsync(contenido, overwrite: true);
+
+        return rutaExistente;
+    }
+
     public async Task<Stream> DownloadAsync(string ruta)
     {
         BlobClient blobClient = _blobContainerClient.GetBlobClient(ruta);

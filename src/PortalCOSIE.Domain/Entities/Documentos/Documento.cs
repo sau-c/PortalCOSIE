@@ -111,16 +111,14 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         /// Actualiza el documento con un nuevo archivo para corrección
         /// </summary>
         /// <param name="nombre"></param>
-        /// <param name="ruta"></param>
         /// <param name="hashOriginal"></param>
         /// <exception cref="DomainException"></exception>
-        public void ActualizarDocumento(string nombre, string ruta, byte[] hashOriginal)
+        public void ActualizarDocumento(string nombre, byte[] hashOriginal)
         {
             if (!PermiteCorreccion())
                 throw new DomainException($"El documento '{Nombre}' no se puede corregir porque su estado es '{EstadoDocumento.Nombre}'. Solo se corrigen documentos incorrectos o con errores.");
 
             EstablecerNombre(nombre);
-            EstablecerRuta(ruta);
             EstablecerHashOriginal(hashOriginal);
             CambiarEstado(EstadoDocumento.EnRevision);
             AgregarObservaciones(null);

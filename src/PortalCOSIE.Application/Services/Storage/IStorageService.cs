@@ -3,6 +3,7 @@
     public interface IStorageService
     {
         Task<string> UploadAsync(Stream contenido, string nombre);
+        Task<string> ReplaceAsync(Stream contenido, string rutaExistente);
         Task<Stream> DownloadAsync(string ruta);
         Task DeleteAsync(string ruta);
     }

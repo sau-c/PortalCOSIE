@@ -118,10 +118,10 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
             string nuevoBlobPath;
             using (var streamSubida = new MemoryStream(archivoBytes))
             {
-                nuevoBlobPath = await _storageService.UploadAsync(streamSubida, nuevoArchivo.Nombre);
+                nuevoBlobPath = await _storageService.ReplaceAsync(streamSubida, documentoExistente.Ruta);
             }
             // 3. Actualizar la entidad Documento existente
-            documentoExistente.ActualizarDocumento(nuevoArchivo.Nombre, nuevoBlobPath, firma);
+            documentoExistente.ActualizarDocumento(nuevoArchivo.Nombre, firma);
         }
     }
 }
