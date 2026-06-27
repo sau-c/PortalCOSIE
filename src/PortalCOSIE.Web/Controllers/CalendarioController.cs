@@ -25,7 +25,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> CrearSesionCOSIE(CrearSesionCOSIECommand command)
         {
@@ -34,15 +33,14 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EditarSesionCOSIE(EditarSesionCOSIECommand command)
         {
             await _mediator.Send(command);
             return RedirectToAction(nameof(Index));
         }
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ToggleSesionCOSIE(ToggleSesionCOSIECommand command)
         {

@@ -36,10 +36,9 @@ namespace PortalCOSIE.Infrastructure.Services
             var user = await _userManager.FindByEmailAsync(dto.Correo);
 
             if (user == null)
-                return Result<string>.Failure("Usuario no encontrado.");
+                return Result<string>.Failure("Credenciales invalidas");
 
             if (!user.EmailConfirmed)
-                //En caso de que el ususario borre el email de confirmacion que?
                 return Result<string>.Failure("Revisa tu correo electrónico para confirmar tu cuenta.");
 
             //RememberMe false para mayor seguridad
@@ -65,7 +64,7 @@ namespace PortalCOSIE.Infrastructure.Services
 
             return login.Succeeded
                 ? Result<string>.Success("Inicio de sesión exitoso.")
-                : Result<string>.Failure("Contraseña incorrecta.");
+                : Result<string>.Failure("Credenciales invalidas.");
         }
         public async Task CerrarSesionAsync()
         {

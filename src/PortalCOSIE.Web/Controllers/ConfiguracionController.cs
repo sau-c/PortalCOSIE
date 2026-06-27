@@ -30,7 +30,6 @@ namespace PortalCOSIE.Web.Controllers
             => PartialView("_Carreras", await _mediator.Send(new ListarCarrerasQuery(true)));
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Carreras(CrearCarreraCommand command)
         {
             await _mediator.Send(command);
@@ -38,7 +37,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditarCarrera(int id, string nombre)
         {
             await _mediator.Send(new EditarCarreraCommand(id, nombre));
@@ -46,7 +44,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleCarrera(int id)
         {
             await _mediator.Send(new ToggleCarreraCommand(id));
@@ -58,21 +55,20 @@ namespace PortalCOSIE.Web.Controllers
             => View(await _mediator.Send(new ObtenerCarreraDetalleQuery(carreraId)));
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unidades(AgregarUnidadCommand command)
         {
             await _mediator.Send(command);
             return Json(new { success = true, message = "Cambios guardados" });
         }
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditarUnidad(EditarUnidadCommand command)
         {
             await _mediator.Send(command);
             return Json(new { success = true, message = "Cambios guardados" });
         }
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleUnidad(ToggleUnidadCommand command)
         {
             await _mediator.Send(command);

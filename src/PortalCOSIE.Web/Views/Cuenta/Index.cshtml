@@ -108,8 +108,8 @@
             </div>
 
             <form id="formContrasena" asp-action="CambiarContrasena" method="post">
+                @Html.AntiForgeryToken()
                 <div class="modal-body px-4">
-                    @Html.AntiForgeryToken()
                     <input type="hidden" asp-for=@Model.IdentityUserId />
                     <!-- Contraseña actual -->
                     <div class="mb-3">

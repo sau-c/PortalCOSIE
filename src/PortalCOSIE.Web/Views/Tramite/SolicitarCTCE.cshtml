@@ -13,7 +13,7 @@
 
     <div class="card-body overflow-auto p-4" style="height: calc(100vh - 164px);">
         <form id="formSolicitud" asp-action="SolicitarCTCE" enctype="multipart/form-data" method="post">
-
+            @Html.AntiForgeryToken()
             <div class="row g-4 mb-4">
 
                 <div class="col-lg-6 d-flex flex-column">

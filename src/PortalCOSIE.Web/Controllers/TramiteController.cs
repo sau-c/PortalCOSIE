@@ -46,7 +46,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Alumno")]
         public async Task<IActionResult> SolicitarCTCE(SolicitudCtceVM model)
         {
@@ -77,7 +76,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Alumno")]
         public async Task<IActionResult> Corregir(CorregirCtceVM model)
         {
@@ -156,7 +154,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
         public async Task<IActionResult> Tomar(int tramiteId)
         {
@@ -168,7 +165,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
         public async Task<IActionResult> Revisar(int id, List<DocumentoDTO> documentosList, string observaciones)
         {
@@ -180,7 +176,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
         public async Task<IActionResult> Cancelar(int tramiteId, string observaciones)
         {
@@ -192,7 +187,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Personal")]
         public async Task<IActionResult> Concluir(ConcluirVM model)
         {
@@ -213,7 +207,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> DescargarDocumentos(int tramiteId)
         {
@@ -235,7 +228,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> VerificarDocumento(int id)
         {

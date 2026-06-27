@@ -1,6 +1,4 @@
-﻿@using PortalCOSIE.Application.Features.Usuarios
-@using PortalCOSIE.Application.Features.Usuarios.DTO
-@model CrearCuentaDTO
+﻿@model PortalCOSIE.Application.Features.Usuarios.DTO.CrearCuentaDTO
 @{
     ViewData["Title"] = "Crear cuenta";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
@@ -14,6 +12,7 @@
         </div>
 
         <form id="formCrear" asp-action="Crear" method="post">
+            @Html.AntiForgeryToken()
             <div class="row mb-3">
                 <div class="col">
                     <div class="input-group">

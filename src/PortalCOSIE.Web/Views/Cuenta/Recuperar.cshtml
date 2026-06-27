@@ -11,6 +11,7 @@
         </div>
 
         <form id="formRecuperar" asp-action="Recuperar" method="post">
+            @Html.AntiForgeryToken()
             <div class="input-group">
                 <span class="input-group-text"><i class="fa fa-envelope"></i></span>
                 <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo electrónico" required/>

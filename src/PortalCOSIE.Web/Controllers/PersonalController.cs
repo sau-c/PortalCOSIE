@@ -25,9 +25,8 @@ namespace PortalCOSIE.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
             => View(await _mediator.Send(new ListarPersonalQuery()));
-
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(CrearPersonalDTO dto)
         {
             var result = await _securityService.CrearPersonal(dto);
@@ -37,9 +36,8 @@ namespace PortalCOSIE.Web.Controllers
             }
             return Json(new { success = true, message = result.Value });
         }
-
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(EditarPersonalCommand command)
         {
             var result = await _mediator.Send(command);
@@ -51,14 +49,13 @@ namespace PortalCOSIE.Web.Controllers
         }
         
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ActualizarRol(string userId, string rol)
         {
             var result = await _securityService.ToggleRol(userId, rol);
             return RedirectToAction(nameof(Index));
         }
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerificarCorreo(string userId, string correo)
         {
             var result = await _securityService.VerificarCorreo(userId, correo);
@@ -70,7 +67,6 @@ namespace PortalCOSIE.Web.Controllers
         }
         
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ActualizarCelular(string userId, string celular)
         {
             var result = await _securityService.ActualizarCelular(userId, celular);

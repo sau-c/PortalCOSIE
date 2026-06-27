@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalCOSIE.Infrastructure.IoC;
 using PortalCOSIE.Infrastructure.Persistence;
@@ -34,7 +35,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromMinutes(5); //Duracion de sesion
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
 
 var app = builder.Build();
 
@@ -46,6 +50,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+//MANJEO DE EXCEPCION GLOBAL
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -53,9 +60,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-//MANJEO DE EXCEPCION GLOBAL
-app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 //using (var scope = app.Services.CreateScope())
 //{

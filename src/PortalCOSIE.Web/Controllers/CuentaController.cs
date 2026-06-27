@@ -43,7 +43,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(CrearCuentaDTO dto)
         {
             var result = await _securityService.CrearUsuario(dto);
@@ -88,7 +87,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Registrar(RegistrarDTO dto)
         {
@@ -121,7 +119,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Ingresar(IngresarDTO dto)
         {
             var result = await _securityService.IngresarUsuarioAsync(dto);
@@ -139,7 +136,6 @@ namespace PortalCOSIE.Web.Controllers
         public IActionResult Recuperar() => View();
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Recuperar(string correo)
         {
             var result = await _securityService.RecuperarContrasena(correo);
@@ -160,7 +156,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restablecer(RestablecerDTO dto)
         {
             var result = await _securityService.RestablecerContrasena(dto);
@@ -172,7 +167,7 @@ namespace PortalCOSIE.Web.Controllers
 
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> CambiarContrasena(CambiarContrasenaDTO dto)
         {
             var result = await _securityService.CambiarContrasena(dto);
@@ -201,7 +196,6 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Salir()
         {

@@ -1,6 +1,4 @@
-﻿@using PortalCOSIE.Application.Features.Usuarios.Commands.RegistrarAlumno
-@model RegistrarAlumnoCommand
-
+﻿@model PortalCOSIE.Application.Features.Usuarios.Commands.RegistrarAlumno.RegistrarAlumnoCommand
 @{
     ViewData["Title"] = "Registrar cuenta";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
@@ -14,6 +12,7 @@
         </div>
 
         <form id="formRegistrar" asp-action="Registrar" method="post">
+            @Html.AntiForgeryToken()
             <div class="row mb-3">
                 <div class="col-lg-6 col-md-6 col-sm-6">
                     <input type="text" asp-for="Nombre" class="form-control"

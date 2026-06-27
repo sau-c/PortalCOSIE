@@ -1,6 +1,4 @@
-﻿@using PortalCOSIE.Application.Features.Usuarios
-@using PortalCOSIE.Application.Features.Usuarios.DTO
-@model IngresarDTO
+﻿@model PortalCOSIE.Application.Features.Usuarios.DTO.IngresarDTO
 @{
     ViewData["Title"] = "Ingresar";
     Layout = "~/Views/Shared/_LayoutPublic.cshtml";
@@ -13,6 +11,7 @@
             <p class="text-muted">Accede a tu cuenta</p>
         </div>
         <form id="formIngresar" asp-action="Ingresar" method="post">
+            @Html.AntiForgeryToken()
             <div class="input-group">
                 <span class="input-group-text"><i class="fa fa-envelope"></i></span>
                 <input asp-for="Correo" type="email" class="form-control" placeholder="Correo" required />
