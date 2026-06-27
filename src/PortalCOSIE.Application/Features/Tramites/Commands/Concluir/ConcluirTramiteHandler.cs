@@ -1,4 +1,6 @@
-﻿using PortalCOSIE.Application.Services.Crypto;
+﻿using PortalCOSIE.Application.Notifications;
+using PortalCOSIE.Application.Services.Crypto;
+using PortalCOSIE.Application.Services.Notificacion;
 using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
@@ -15,19 +17,22 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
         private readonly IStorageService _storageService;
         private readonly ICriptoService _criptoService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITramiteNotificationService _notificaciones;
 
         public ConcluirTramiteHandler(
             ITramiteRepository tramiteRepo,
             IUsuarioRepository usuarioRepo,
             IStorageService storageService,
             ICriptoService criptoService,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ITramiteNotificationService notificaciones)
         {
             _tramiteRepo = tramiteRepo;
             _usuarioRepo = usuarioRepo;
             _storageService = storageService;
             _criptoService = criptoService;
             _unitOfWork = unitOfWork;
+            _notificaciones = notificaciones;
         }
         public async Task<Result<string>> Handle(ConcluirTramiteCommand command)
         {
@@ -46,6 +51,8 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
             if (!tramite.PuedeSerAtendidoPor(usuario.Id))
                 return Result<string>.Failure("No tienes permisos para atender este trámite.");
             
+            var estado = TramiteEstadoSnapshot.Desde(tramite);
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
@@ -94,6 +101,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Concluir
                 tramite.VerificarEstadoTramite();
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
+                await estado.NotificarSiCambioAsync(_notificaciones, tramite);
                 return Result<string>.Success("Trámite concluido exitosamente.");
             }
             catch (Exception)

@@ -1,5 +1,7 @@
 ﻿using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Notifications;
 using PortalCOSIE.Application.Services.Crypto;
+using PortalCOSIE.Application.Services.Notificacion;
 using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.PeriodosConfig;
@@ -18,6 +20,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
         private readonly IStorageService _storageService;
         private readonly ICriptoService _criptoService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITramiteNotificationService _notificaciones;
 
         public SolicitarCTCEHandler(
             IUsuarioRepository usuarioRepo,
@@ -25,7 +28,8 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             ITramiteRepository tramiteRepo,
             IStorageService storageService,
             ICriptoService criptoService,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            ITramiteNotificationService notificaciones
             )
         {
             _usuarioRepo = usuarioRepo;
@@ -34,6 +38,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             _storageService = storageService;
             _criptoService = criptoService;
             _unitOfWork = unitOfWork;
+            _notificaciones = notificaciones;
         }
 
         public async Task<Result<string>> Handle(SolicitarCTCECommand command)
@@ -73,6 +78,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                 await _tramiteRepo.AddAsync(tramite);
                 await _unitOfWork.SaveChangesAsync(); // Ahora tramite.Id tiene valor
                 await _unitOfWork.CommitTransactionAsync();
+                await TramiteEstadoSnapshot.Inicial().NotificarSiCambioAsync(_notificaciones, tramite);
                 return Result<string>.Success("Solicitud enviada con éxito.");
             }
             catch (Exception)

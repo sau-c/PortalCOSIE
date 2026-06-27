@@ -5,7 +5,7 @@ using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Application.Services;
 using PortalCOSIE.Application.Features.Usuarios.DTO;
-using PortalCOSIE.Infrastructure.Email;
+using PortalCOSIE.Application.Services.Notificacion;
 
 namespace PortalCOSIE.Infrastructure.Services
 {
@@ -15,20 +15,20 @@ namespace PortalCOSIE.Infrastructure.Services
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IEmailSender _emailSender;
+        private readonly INotificationService _email;
 
         public SecurityService(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             IUsuarioRepository usuarioRepo,
             IUnitOfWork unitOfWork,
-            IEmailSender emailSender)
+            INotificationService email)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _usuarioRepo = usuarioRepo;
             _unitOfWork = unitOfWork;
-            _emailSender = emailSender;
+            _email = email;
         }
 
         public async Task<Result<string>> IngresarUsuarioAsync(IngresarDTO dto)
@@ -96,11 +96,10 @@ namespace PortalCOSIE.Infrastructure.Services
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
 
-            var correo = await _emailSender.SendEmailAsync(
+            var correo = await _email.EnviarAsync(
                 dto.Correo,
                 "Confirma tu cuenta",
-                HtmlTemplates.ConfirmarCorreoHtml(dto.Correo, encodedToken)
-                );
+                p => p.ConfirmarCorreo(dto.Correo, encodedToken));
 
             if (!correo.Succeeded)
             {
@@ -164,11 +163,10 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Failure("No se puede recuperar la contraseña. Verifica que el correo sea correcto y esté confirmado.");
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
-            var envio = await _emailSender.SendEmailAsync(
+            var envio = await _email.EnviarAsync(
                 correo,
                 "Recupera tu contraseña",
-                HtmlTemplates.RecuperarContrasenaHtml(correo, encodedToken)
-            );
+                p => p.RecuperarContrasena(correo, encodedToken));
 
             if (!envio.Succeeded)
                 return Result<string>.Failure("No se pudo enviar el correo de recuperación.");
@@ -194,11 +192,10 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Failure(errors);
             }
 
-            var envio = await _emailSender.SendEmailAsync(
+            var envio = await _email.EnviarAsync(
                 dto.Correo,
                 "Contraseña restablecida con éxito",
-                HtmlTemplates.ContrasenaRestablecidaHtml()
-            );
+                p => p.ContrasenaRestablecida());
 
             if (!envio.Succeeded)
                 return Result<string>.Failure("No se pudo enviar el correo de aviso.");
@@ -218,11 +215,10 @@ namespace PortalCOSIE.Infrastructure.Services
                 var errors = resultado.Errors.Select(e => e.Description);
                 return Result<string>.Failure(errors);
             }
-            var envio = await _emailSender.SendEmailAsync(
+            var envio = await _email.EnviarAsync(
                 user.Email,
                 "Contraseña cambiada con éxito",
-                HtmlTemplates.ContrasenaCambiadaHtml()
-            );
+                p => p.ContrasenaCambiada());
             if (!envio.Succeeded)
                 return Result<string>.Failure("No se pudo enviar el correo de aviso.");
             return Result<string>.Success("Contraseña restablecida con éxito.");
@@ -244,7 +240,7 @@ namespace PortalCOSIE.Infrastructure.Services
             var result = await _userManager.ChangePhoneNumberAsync(user, celular, token);
             if (!result.Succeeded)
                 return Result<string>.Failure($"Error al actualizar celular: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-            var envio = await _emailSender.SendEmailAsync(user.Email, "Celular actualizado", HtmlTemplates.CelularActualizadoHtml(celular));
+            var envio = await _email.EnviarAsync(user.Email, "Celular actualizado", p => p.CelularActualizado(celular));
             if (!envio.Succeeded)
                 return Result<string>.Failure("No se pudo enviar el correo.");
             return Result<string>.Success("Celular actualizado con éxito");
@@ -280,7 +276,7 @@ namespace PortalCOSIE.Infrastructure.Services
                     return Result<string>.Failure($"Error al desactivar usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                 }
 
-                await _emailSender.SendEmailAsync(user.Email, "Acceso restringido", HtmlTemplates.RestringirAccesoHtml(rol));
+                await _email.EnviarAsync(user.Email, "Acceso restringido", p => p.RestringirAcceso(rol));
                 return Result<string>.Success("Usuario marcado como Inactivo correctamente");
             }
             else
@@ -307,7 +303,7 @@ namespace PortalCOSIE.Infrastructure.Services
                     return Result<string>.Failure($"Error al asignar rol: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                 }
 
-                await _emailSender.SendEmailAsync(user.Email, "Acceso activado", HtmlTemplates.ActivarAccesoHtml(rol));
+                await _email.EnviarAsync(user.Email, "Acceso activado", p => p.ActivarAcceso(rol));
                 return Result<string>.Success($"Rol {rol} asignado correctamente");
             }
         }
@@ -349,7 +345,7 @@ namespace PortalCOSIE.Infrastructure.Services
             // 2. Envio correo
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, correo);
             var encodedToken = WebUtility.UrlEncode(token);
-            var envio = await _emailSender.SendEmailAsync(correo, "Cambio de correo", HtmlTemplates.VerificarCorreoHtml(userId, correo, encodedToken));
+            var envio = await _email.EnviarAsync(correo, "Cambio de correo", p => p.VerificarCorreo(userId, correo, encodedToken));
             if (!envio.Succeeded)
                 return Result<string>.Failure("No se pudo enviar el correo.");
 
@@ -373,7 +369,7 @@ namespace PortalCOSIE.Infrastructure.Services
             if (!nameResult.Succeeded)
                 return Result<string>.Failure($"Error al actualizar nombre de usuario: {string.Join(", ", nameResult.Errors.Select(e => e.Description))}");
 
-            var envio = await _emailSender.SendEmailAsync(correoViejo, "Correo actualizado", HtmlTemplates.CorreoActualizadoHtml(correo));
+            var envio = await _email.EnviarAsync(correoViejo, "Correo actualizado", p => p.CorreoActualizado(correo));
             if (!envio.Succeeded)
                 return Result<string>.Failure("No se pudo enviar el correo.");
 

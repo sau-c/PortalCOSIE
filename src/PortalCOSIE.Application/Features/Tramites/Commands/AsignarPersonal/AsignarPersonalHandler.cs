@@ -1,4 +1,6 @@
-﻿using PortalCOSIE.Domain.Entities.Tramites;
+﻿using PortalCOSIE.Application.Notifications;
+using PortalCOSIE.Application.Services.Notificacion;
+using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
 
@@ -9,16 +11,19 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.AsignarPersonal
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly ITramiteRepository _tramiteRepo;
+        private readonly ITramiteNotificationService _notificaciones;
 
         public AsignarPersonalHandler(
             IUsuarioRepository usuarioRepo,
             ITramiteRepository tramiteRepo,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            ITramiteNotificationService notificaciones
             )
         {
             _usuarioRepo = usuarioRepo;
             _tramiteRepo = tramiteRepo;
             _unitOfWork = unitOfWork;
+            _notificaciones = notificaciones;
         }
         public async Task<Result<string>> Handle(AsignarPersonalCommand command)
         {
@@ -31,9 +36,11 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.AsignarPersonal
                 var tramite = await _tramiteRepo.GetByIdAsync(command.TramiteId);
                 if (tramite.PersonalId != null)
                     return Result<string>.Failure("El trámite ya tiene personal asignado.");
+                var estado = TramiteEstadoSnapshot.Desde(tramite);
                 tramite.AsignarPersonal(personal.Id);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
+                await estado.NotificarSiCambioAsync(_notificaciones, tramite);
                 return Result<string>.Success("Se ha tomado el trámite.");
             }
             catch (Exception)

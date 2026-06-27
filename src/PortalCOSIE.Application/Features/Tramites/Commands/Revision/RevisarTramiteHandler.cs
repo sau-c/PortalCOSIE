@@ -1,4 +1,6 @@
-﻿using PortalCOSIE.Domain.Entities.Documentos;
+﻿using PortalCOSIE.Application.Notifications;
+using PortalCOSIE.Application.Services.Notificacion;
+using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
@@ -10,14 +12,17 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Revision
         private readonly ITramiteRepository _tramiteRepo;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITramiteNotificationService _notificaciones;
         public RevisarTramiteHandler(
             ITramiteRepository tramiteRepo,
             IUsuarioRepository usuarioRepo,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ITramiteNotificationService notificaciones)
         {
             _tramiteRepo = tramiteRepo;
             _usuarioRepo = usuarioRepo;
             _unitOfWork = unitOfWork;
+            _notificaciones = notificaciones;
         }
 
         public async Task<Result<string>> Handle(RevisarTramiteCommand command)
@@ -34,6 +39,8 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Revision
                 return Result<string>.Failure("Usuario no encontrado.");
             if (!tramite.PuedeSerAtendidoPor(usuario.Id))
                 return Result<string>.Failure("No tienes permisos para atender este trámite.");
+
+            var estado = TramiteEstadoSnapshot.Desde(tramite);
 
             foreach (var docDto in command.Documentos)
             {
@@ -57,6 +64,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Revision
             tramite.VerificarEstadoTramite();
 
             await _unitOfWork.SaveChangesAsync();
+            await estado.NotificarSiCambioAsync(_notificaciones, tramite, command.Observaciones);
             return Result<string>.Success("Revisión guardada correctamente.");
         }
     }

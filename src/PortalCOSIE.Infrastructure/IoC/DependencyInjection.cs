@@ -13,10 +13,12 @@ using PortalCOSIE.Domain.Entities.Tramites;
 using PortalCOSIE.Domain.Entities.Usuarios;
 using PortalCOSIE.Domain.Interfaces;
 using PortalCOSIE.Infrastructure.Persistence;
+using PortalCOSIE.Infrastructure.Email;
 using PortalCOSIE.Infrastructure.QueryHandlers;
 using PortalCOSIE.Infrastructure.QueryService;
 using PortalCOSIE.Infrastructure.Repositories;
 using PortalCOSIE.Infrastructure.Services;
+using PortalCOSIE.Application.Services.Notificacion;
 
 namespace PortalCOSIE.Infrastructure.IoC
 {
@@ -62,6 +64,9 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IStorageService, AzureStorageService>();
             services.AddScoped<IUsuarioQueryService, UsuarioQueryService>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
+            services.AddScoped<IMessageTemplateService, EmailTemplateService>();
+            services.AddScoped<INotificationService, EmailNotificationService>();
+            services.AddScoped<ITramiteNotificationService, TramiteNotificationService>();
             services.AddScoped<ICriptoService, CriptoService>();
 
             //Repositorios

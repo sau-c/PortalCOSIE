@@ -1,4 +1,4 @@
-﻿namespace PortalCOSIE.Application.Services
+﻿namespace PortalCOSIE.Application.Services.Notificacion
 {
     public interface IEmailSender
     {

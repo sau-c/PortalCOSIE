@@ -9,6 +9,7 @@ namespace PortalCOSIE.Application.Services.Query
         Task<IEnumerable<PersonalDTO>> ListarPersonalCompletos();
         Task<int> ObtenerCarreraAlumnoPorId(string identityUserId);
         Task<UsuarioDTO> ObtenerUsuarioCompletoPorId(string identityUserId);
+        Task<AlumnoContactoDTO?> ObtenerContactoAlumnoPorId(int alumnoId);
         Task<Documento> ObtenerDatosDocumentoPorId(int id);
     }
 }

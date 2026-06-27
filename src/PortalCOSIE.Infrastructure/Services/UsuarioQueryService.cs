@@ -178,6 +178,23 @@ namespace PortalCOSIE.Infrastructure.QueryService
                 .Select(a => a.CarreraId)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<AlumnoContactoDTO?> ObtenerContactoAlumnoPorId(int alumnoId)
+        {
+            var datos = await (
+                from alumno in _context.Set<Alumno>()
+                join user in _context.Users on alumno.IdentityUserId equals user.Id
+                where alumno.Id == alumnoId
+                select new { user.Email, alumno.Nombre, alumno.ApellidoPaterno, alumno.ApellidoMaterno }
+            ).AsNoTracking().FirstOrDefaultAsync();
+
+            if (string.IsNullOrWhiteSpace(datos?.Email))
+                return null;
+
+            return new AlumnoContactoDTO(
+                datos.Email,
+                $"{datos.Nombre} {datos.ApellidoPaterno} {datos.ApellidoMaterno}".Trim());
+        }
         public async Task<Documento> ObtenerDatosDocumentoPorId(int id)
         {
             return await _context.Set<Documento>()

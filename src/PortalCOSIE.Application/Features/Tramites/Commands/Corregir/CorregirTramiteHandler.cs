@@ -1,6 +1,8 @@
 ﻿using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
 using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Notifications;
 using PortalCOSIE.Application.Services.Crypto;
+using PortalCOSIE.Application.Services.Notificacion;
 using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
@@ -17,13 +19,15 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
         private readonly IStorageService _storageService;
         private readonly ICriptoService _criptoService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITramiteNotificationService _notificaciones;
 
         public CorregirTramiteCTCEHandler(
             ITramiteRepository tramiteRepo,
             IUsuarioRepository usuarioRepo,
             IStorageService storageService,
             ICriptoService criptoService,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            ITramiteNotificationService notificaciones
             )
         {
             _tramiteRepo = tramiteRepo;
@@ -31,6 +35,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
             _storageService = storageService;
             _criptoService = criptoService;
             _unitOfWork = unitOfWork;
+            _notificaciones = notificaciones;
         }
 
         public async Task<Result<string>> Handle(CorregirTramiteCommand command)
@@ -57,6 +62,8 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
                 )))
                 return Result<string>.Failure("Debes proporcionar los archivos para todos los documentos que requieren corrección.");
 
+            var estado = TramiteEstadoSnapshot.Desde(tramite);
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
@@ -73,6 +80,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.CorregirCTCE
 
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
+                await estado.NotificarSiCambioAsync(_notificaciones, tramite);
 
                 return Result<string>.Success("La corrección se ha enviado con éxito.");
             }
