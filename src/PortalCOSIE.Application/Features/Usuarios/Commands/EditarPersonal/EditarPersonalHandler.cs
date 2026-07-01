@@ -24,9 +24,9 @@ namespace PortalCOSIE.Application.Features.Usuarios.Commands.EditarPersonal
                 if (usuario == null)
                     throw new ApplicationException("Usuario no encontrado");
 
-                usuario.SetNombre(command.Nombre);
-                usuario.SetApellidoPaterno(command.ApellidoPaterno);
-                usuario.SetApellidoMaterno(command.ApellidoMaterno);
+                usuario.EstablecerNombre(command.Nombre);
+                usuario.EstablecerApellidoPaterno(command.ApellidoPaterno);
+                usuario.EstablecerApellidoMaterno(command.ApellidoMaterno);
 
                 var cambios = await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();

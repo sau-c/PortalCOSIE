@@ -1,4 +1,4 @@
-﻿using PortalCOSIE.Application.Abstractions;
+using PortalCOSIE.Application.Abstractions;
 using PortalCOSIE.Application.Features.Tramites.DTO;
 
 namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
@@ -8,12 +8,9 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
         bool TieneDictamenesAnteriores,
         string Peticion,
         List<UnidadReprobadaDTO> UnidadesReprobadas,
-        ArchivoDTO CartaExposicionMotivos,
-        ArchivoDTO Identificacion,
-        ArchivoDTO BoletaGlobal,
-        ArchivoDTO Probatorios,
-        Stream LlaveKey,
-        Stream CertificadoCer,
-        string PasswordKey
+        DocumentoFirmadoDTO CartaExposicionMotivos,
+        DocumentoFirmadoDTO Identificacion,
+        DocumentoFirmadoDTO BoletaGlobal,
+        DocumentoFirmadoDTO Probatorios
         ) : IRequest<Result<string>>;
 }

@@ -13,6 +13,12 @@ namespace PortalCOSIE.Infrastructure.Repositories
         {
             return await _context.Set<Usuario>().FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
         }
+        public async Task<Usuario?> BuscarUsuarioConCertificado(string identityUserId)
+        {
+            return await _context.Set<Usuario>()
+                .Include(u => u.Certificado)
+                .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId);
+        }
         public async Task<Alumno> BuscarAlumnoConCarrera(string identityUserId)
         {
             return await _context.Set<Alumno>()

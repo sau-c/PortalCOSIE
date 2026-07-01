@@ -23,9 +23,9 @@ namespace PortalCOSIE.Application.Features.Usuarios.Commands.EditarAlumno
                     throw new ApplicationException("El número de boleta ya existe");
                 var alumno = await _usuarioRepo.BuscarAlumnoConCarrera(command.IdentityUserId);
 
-                alumno.SetNombre(command.Nombre);
-                alumno.SetApellidoPaterno(command.ApellidoPaterno);
-                alumno.SetApellidoMaterno(command.ApellidoMaterno);
+                alumno.EstablecerNombre(command.Nombre);
+                alumno.EstablecerApellidoPaterno(command.ApellidoPaterno);
+                alumno.EstablecerApellidoMaterno(command.ApellidoMaterno);
                 alumno.SetNumeroBoleta(command.NumeroBoleta);
                 alumno.SetPeriodoIngreso(command.PeriodoIngreso);
                 alumno.SetCarrera(command.CarreraId);

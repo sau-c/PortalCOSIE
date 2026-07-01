@@ -21,15 +21,15 @@ namespace PortalCOSIE.Domain.Entities.Documentos
 
         /// <summary>Identificador del estado actual del documento</summary>
         public int EstadoDocumentoId { get; private set; }
-
-        /// <summary>Contenido hash del archivo antes de firmar</summary>
-        public byte[] HashOriginal { get; private set; }
-        /// <summary>Contenido hash del archivo despues de firmar</summary>
+        /// <summary>Identificador de la firma electrónica asociada</summary>
+        public int FirmaElectronicaId { get; private set; }
 
         // Propiedades de navegación
         public EstadoDocumento EstadoDocumento { get; private set; }
         public Tramite Tramite { get; private set; }
         public TipoDocumento TipoDocumento { get; private set; }
+        public FirmaElectronica? FirmaElectronica { get; private set; }
+
         /// <summary>Constructor privado para migraciones</summary>
         private Documento() { }
 
@@ -39,14 +39,14 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             int tramiteId,
             int estadoDocumentoId,
             int tipoDocumentoId,
-            byte[] hashOriginal)
+            FirmaElectronica firmaElectronica)
         {
             EstablecerNombre(nombre);
             EstablecerRuta(ruta);
             TramiteId = tramiteId;
             TipoDocumentoId = tipoDocumentoId;
             EstadoDocumentoId = estadoDocumentoId;
-            EstablecerHashOriginal(hashOriginal);
+            EstablecerFirmaElectronica(firmaElectronica);
         }
 
         /// <summary>
@@ -64,23 +64,19 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         /// <summary>
         /// Establece la ruta física del documento
         /// </summary>
-        /// <param name="ruta"></param>
-        /// <exception cref="DomainException"></exception>
         public void EstablecerRuta(string ruta)
         {
             if (string.IsNullOrWhiteSpace(ruta))
                 throw new DomainException("La ruta del documento no puede estar vacía.");
             Ruta = ruta.Trim();
         }
-        /// <summary>
-        /// Establece el contenido hash original del documento
-        /// </summary>
-        private void EstablecerHashOriginal(byte[] hashOriginal)
+
+        private void EstablecerFirmaElectronica(FirmaElectronica firmaElectronica)
         {
-            if (hashOriginal == null || hashOriginal.Length == 0)
-                throw new DomainException("El contenido hash no puede estar vacío.");
-            HashOriginal = hashOriginal;
+            FirmaElectronica = firmaElectronica
+                ?? throw new DomainException("La firma electrónica es obligatoria.");
         }
+
         /// <summary>
         /// El revisor establece observaciones sobre el estado del documento
         /// </summary>
@@ -110,16 +106,13 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         /// <summary>
         /// Actualiza el documento con un nuevo archivo para corrección
         /// </summary>
-        /// <param name="nombre"></param>
-        /// <param name="hashOriginal"></param>
-        /// <exception cref="DomainException"></exception>
-        public void ActualizarDocumento(string nombre, byte[] hashOriginal)
+        public void ActualizarDocumento(string nombre, FirmaElectronica firmaElectronica)
         {
             if (!PermiteCorreccion())
                 throw new DomainException($"El documento '{Nombre}' no se puede corregir porque su estado es '{EstadoDocumento.Nombre}'. Solo se corrigen documentos incorrectos o con errores.");
 
             EstablecerNombre(nombre);
-            EstablecerHashOriginal(hashOriginal);
+            EstablecerFirmaElectronica(firmaElectronica);
             CambiarEstado(EstadoDocumento.EnRevision);
             AgregarObservaciones(null);
         }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PortalCOSIE.Domain.Entities.Usuarios;
+using System.Reflection.Emit;
 
 namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Usuarios
 {
@@ -29,15 +30,18 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Usuarios
             .WithMany()
             .HasForeignKey(a => a.IdentityUserId);
 
-            //builder.HasOne<Alumno>()
-            //    .HasForeignKey<Alumno>(a => a.Id)
-            //    .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(u => u.CertificadoId)
+                .HasMaxLength(64);
 
-            //builder.HasOne(u => u.Personal)
-            //    .WithOne(p => p.Usuario)
-            //    .HasForeignKey<Personal>(p => p.Id)
-            //    .OnDelete(DeleteBehavior.Cascade);
-            //;
+            builder.HasOne(u => u.Certificado)
+                .WithOne()
+                .HasForeignKey<Usuario>(u => u.CertificadoId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(u => u.CertificadoId)
+                .IsUnique()
+                .HasFilter("[CertificadoId] IS NOT NULL");
         }
     }
 }

@@ -17,6 +17,8 @@ using PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosPorTr
 using PortalCOSIE.Application.Features.Tramites.Commands.Revision;
 using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
 using PortalCOSIE.Application.Features.Tramites.Commands.Concluir;
+using PortalCOSIE.Application.Features.Tramites.Queries.VerificarDocumento;
+using PortalCOSIE.Web.Extensions;
 
 namespace PortalCOSIE.Web.Controllers
 {
@@ -51,28 +53,21 @@ namespace PortalCOSIE.Web.Controllers
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Creamos los DTOs de los archivos directamente con Stream
-            ArchivoDTO carta = ObtenerArchivoDTO(model.CartaExposicionMotivos);
-            ArchivoDTO identificacion = ObtenerArchivoDTO(model.Identificacion);
-            ArchivoDTO boleta = ObtenerArchivoDTO(model.BoletaGlobal);
-            ArchivoDTO probatorios = ObtenerArchivoDTO(model.Probatorios);
-
-            // Enviamos comando con DTOs desconectados de HTTP
-            await _mediator.Send(new SolicitarCTCECommand(
+            var result = await _mediator.Send(new SolicitarCTCECommand(
                 userId,
                 model.TieneDictamenesAnteriores,
                 model.Peticion,
                 model.UnidadesReprobadas,
-                carta,
-                identificacion,
-                boleta,
-                probatorios,
-                model.LlaveKey.OpenReadStream(),
-                model.CertificadoCer.OpenReadStream(),
-                model.PasswordKey
+                model.CartaExposicionMotivos.ToDocumentoFirmado(model.FirmaCartaExposicionMotivos)!,
+                model.Identificacion.ToDocumentoFirmado(model.FirmaIdentificacion)!,
+                model.BoletaGlobal.ToDocumentoFirmado(model.FirmaBoletaGlobal)!,
+                model.Probatorios.ToDocumentoFirmado(model.FirmaProbatorios)!
             ));
 
-            return Json(new { success = true, message = "Solicitud enviada con éxito." });
+            if (!result.Succeeded)
+                return Json(new { success = false, message = result.Errors.FirstOrDefault() });
+
+            return Json(new { success = true, message = "Solicitud enviada con ï¿½xito." });
         }
 
         [HttpPost]
@@ -80,22 +75,14 @@ namespace PortalCOSIE.Web.Controllers
         public async Task<IActionResult> Corregir(CorregirCtceVM model)
         {
             string userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            ArchivoDTO carta = ObtenerArchivoDTO(model.CartaExposicionMotivos);
-            ArchivoDTO identificacion = ObtenerArchivoDTO(model.Identificacion);
-            ArchivoDTO boleta = ObtenerArchivoDTO(model.BoletaGlobal);
-            ArchivoDTO probatorios = ObtenerArchivoDTO(model.Probatorios);
-
             var result = await _mediator.Send(
                 new CorregirTramiteCommand(
                     userId,
                     model.Id,
-                    carta,
-                    identificacion,
-                    boleta,
-                    probatorios,
-                    model.LlaveKey.OpenReadStream(),
-                    model.CertificadoCer.OpenReadStream(),
-                    model.PasswordKey
+                    model.CartaExposicionMotivos.ToDocumentoFirmado(model.FirmaCartaExposicionMotivos),
+                    model.Identificacion.ToDocumentoFirmado(model.FirmaIdentificacion),
+                    model.BoletaGlobal.ToDocumentoFirmado(model.FirmaBoletaGlobal),
+                    model.Probatorios.ToDocumentoFirmado(model.FirmaProbatorios)
                 ));
 
             if (result.Succeeded)
@@ -110,7 +97,7 @@ namespace PortalCOSIE.Web.Controllers
                 return null;
 
             if (archivo.Length > 3 * 1024 * 1024) // 3 MB
-                throw new ArgumentException("El archivo excede el tamaño máximo permitido de 3 MB.");
+                throw new ArgumentException("El archivo excede el tamaï¿½o mï¿½ximo permitido de 3 MB.");
 
             return new ArchivoDTO
             {
@@ -149,7 +136,7 @@ namespace PortalCOSIE.Web.Controllers
 
             Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
 
-            // Al no pasar el nombre aquí, ASP.NET respeta la cabecera que acabamos de crear arriba
+            // Al no pasar el nombre aquï¿½, ASP.NET respeta la cabecera que acabamos de crear arriba
             return File(resultado.Contenido, resultado.ContentType);
         }
 
@@ -194,11 +181,8 @@ namespace PortalCOSIE.Web.Controllers
             var command = new ConcluirTramiteCommand(
                 userId,
                 model.TramiteId,
-                ObtenerArchivoDTO(model.Acuse),
-                model.LlaveKey.OpenReadStream(),
-                model.CertificadoCer.OpenReadStream(),
-                model.PasswordKey
-                );
+                model.Acuse.ToDocumentoFirmado(model.FirmaAcuse)!
+            );
 
             var result = await _mediator.Send(command);
             if (result.Succeeded)
@@ -222,8 +206,8 @@ namespace PortalCOSIE.Web.Controllers
 
             Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
 
-            // 2. Retornar el archivo SIN pasar el nombre como tercer parámetro
-            // Al no pasar el nombre aquí, ASP.NET respeta la cabecera que acabamos de crear arriba
+            // 2. Retornar el archivo SIN pasar el nombre como tercer parï¿½metro
+            // Al no pasar el nombre aquï¿½, ASP.NET respeta la cabecera que acabamos de crear arriba
             return File(resultado.Contenido, resultado.ContentType);
         }
 
@@ -231,9 +215,13 @@ namespace PortalCOSIE.Web.Controllers
         [Authorize]
         public async Task<IActionResult> VerificarDocumento(int id)
         {
-            Task.Delay(500); // Simular retardo para mostrar spinner
-            //terminar lógica de verificación aquí
-            return Json(new { success = true, message = "El documento ha sido verificado correctamente." });
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var rol = User?.FindFirstValue(ClaimTypes.Role);
+            var result = await _mediator.Send(new VerificarDocumentoQuery(userId, rol, id));
+
+            if (result.Succeeded)
+                return Json(new { success = true, message = result.Value });
+            return Json(new { success = false, message = result.Errors.FirstOrDefault() });
         }
     }
 }

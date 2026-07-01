@@ -21,13 +21,18 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Documentos
                 .IsRequired()
                 .HasMaxLength(300);
 
-            builder.Property(builder => builder.HashOriginal)
-                .IsRequired();
-
             builder.HasOne(d => d.Tramite)
                 .WithMany(t => t.Documentos)
                 .HasForeignKey(d => d.TramiteId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(d => d.FirmaElectronica)
+                .WithOne(f => f.Documento)
+                .HasForeignKey<Documento>(d => d.FirmaElectronicaId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(d => d.FirmaElectronicaId)
+                .IsUnique();
         }
     }
 }

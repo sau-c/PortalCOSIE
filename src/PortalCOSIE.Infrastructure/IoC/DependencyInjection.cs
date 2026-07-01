@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PortalCOSIE.Application.Features.Tramites.Services;
 using PortalCOSIE.Application.Services;
 using PortalCOSIE.Application.Services.Crypto;
 using PortalCOSIE.Application.Services.Query;
@@ -67,7 +68,8 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<IMessageTemplateService, EmailTemplateService>();
             services.AddScoped<INotificationService, EmailNotificationService>();
             services.AddScoped<ITramiteNotificationService, TramiteNotificationService>();
-            services.AddScoped<ICriptoService, CriptoService>();
+            services.AddScoped<IFirmaVerificacionService, FirmaVerificacionService>();
+            services.AddScoped<ProcesadorDocumentoFirmado>();
 
             //Repositorios
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));

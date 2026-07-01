@@ -1,8 +1,6 @@
-﻿using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Features.Tramites.Services;
 using PortalCOSIE.Application.Notifications;
-using PortalCOSIE.Application.Services.Crypto;
 using PortalCOSIE.Application.Services.Notificacion;
-using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.PeriodosConfig;
 using PortalCOSIE.Domain.Entities.Tramites;
@@ -17,8 +15,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IBaseRepository<PeriodoConfig, int> _periodoRepo;
         private readonly ITramiteRepository _tramiteRepo;
-        private readonly IStorageService _storageService;
-        private readonly ICriptoService _criptoService;
+        private readonly ProcesadorDocumentoFirmado _procesadorDocumento;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ITramiteNotificationService _notificaciones;
 
@@ -26,17 +23,14 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             IUsuarioRepository usuarioRepo,
             IBaseRepository<PeriodoConfig, int> periodoRepo,
             ITramiteRepository tramiteRepo,
-            IStorageService storageService,
-            ICriptoService criptoService,
+            ProcesadorDocumentoFirmado procesadorDocumento,
             IUnitOfWork unitOfWork,
-            ITramiteNotificationService notificaciones
-            )
+            ITramiteNotificationService notificaciones)
         {
             _usuarioRepo = usuarioRepo;
             _periodoRepo = periodoRepo;
             _tramiteRepo = tramiteRepo;
-            _storageService = storageService;
-            _criptoService = criptoService;
+            _procesadorDocumento = procesadorDocumento;
             _unitOfWork = unitOfWork;
             _notificaciones = notificaciones;
         }
@@ -47,21 +41,22 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                if (command.BoletaGlobal == null || command.Identificacion == null || command.CartaExposicionMotivos == null || command.Probatorios == null)
-                    throw new Exception("Todos los documentos son obligatorios para solicitar.");
+                if (command.BoletaGlobal == null || command.Identificacion == null
+                    || command.CartaExposicionMotivos == null || command.Probatorios == null)
+                    return Result<string>.Failure("Todos los documentos son obligatorios para solicitar.");
 
-                var alumno = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
+                var alumno = await _usuarioRepo.BuscarUsuarioConCertificado(command.IdentityUserId);
+                if (alumno?.Certificado == null)
+                    return Result<string>.Failure("No tienes un certificado registrado para firmar documentos.");
+
                 var periodoConfig = await _periodoRepo.GetByIdAsync(1);
                 string periodo = $"{periodoConfig.AnioActual}/{periodoConfig.PeriodoActual}";
 
-                // 1. Unidades reprobadas - convertir DTOs a entidades
                 var unidadesReprobadasEntities = command.UnidadesReprobadas
-                .Select(u => new UnidadReprobada(u.UnidadAprendizajeId, u.PeriodoCurso, u.PeriodoRecurse))
-                .ToList();
+                    .Select(u => new UnidadReprobada(u.UnidadAprendizajeId, u.PeriodoCurso, u.PeriodoRecurse))
+                    .ToList();
 
-                // 2. Crear el Trámite
-                // Aquí se procesan los documentos para subirlos al storageService
-                // y se crean las entidades Documento asociadas
+                var certificado = alumno.Certificado;
                 var tramite = new TramiteCTCE(
                     alumno.Id,
                     TipoTramite.DictamenInterno.Id,
@@ -69,59 +64,22 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.SolicitarCTCE
                     command.Peticion,
                     command.TieneDictamenesAnteriores,
                     unidadesReprobadasEntities,
-                    await ProcesarDocumentoAsync(command.Identificacion, TipoDocumento.Identificacion, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
-                    await ProcesarDocumentoAsync(command.BoletaGlobal, TipoDocumento.BoletaGlobal, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
-                    await ProcesarDocumentoAsync(command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos, command.LlaveKey, command.CertificadoCer, command.PasswordKey),
-                    await ProcesarDocumentoAsync(command.Probatorios, TipoDocumento.Probatorios, command.LlaveKey, command.CertificadoCer, command.PasswordKey)
+                    await _procesadorDocumento.CrearAsync(command.Identificacion, TipoDocumento.Identificacion, 0, EstadoDocumento.EnRevision.Id, certificado),
+                    await _procesadorDocumento.CrearAsync(command.BoletaGlobal, TipoDocumento.BoletaGlobal, 0, EstadoDocumento.EnRevision.Id, certificado),
+                    await _procesadorDocumento.CrearAsync(command.CartaExposicionMotivos, TipoDocumento.CartaExposicionMotivos, 0, EstadoDocumento.EnRevision.Id, certificado),
+                    await _procesadorDocumento.CrearAsync(command.Probatorios, TipoDocumento.Probatorios, 0, EstadoDocumento.EnRevision.Id, certificado)
                 );
 
                 await _tramiteRepo.AddAsync(tramite);
-                await _unitOfWork.SaveChangesAsync(); // Ahora tramite.Id tiene valor
+                await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
                 await TramiteEstadoSnapshot.Inicial().NotificarSiCambioAsync(_notificaciones, tramite);
                 return Result<string>.Success("Solicitud enviada con éxito.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
-                throw;
-            }
-        }
-
-        private async Task<Documento> ProcesarDocumentoAsync(ArchivoDTO documentoDto, TipoDocumento tipo, Stream key, Stream cer, string pass)
-        {
-            // Validar si viene nulo (por seguridad)
-            if (documentoDto == null || documentoDto.Contenido == null)
-                throw new Exception($"El documento {tipo.Nombre} es requerido.");
-
-            byte[] archivoBytes;
-            using (var ms = new MemoryStream())
-            {
-                await documentoDto.Contenido.CopyToAsync(ms);
-                archivoBytes = ms.ToArray();
-            }
-
-            // Firmar con MemoryStream
-            byte[] firma;
-            using (var streamFirma = new MemoryStream(archivoBytes))
-            {
-                firma = _criptoService.FirmarDocumento(streamFirma, cer, key, pass);
-            }
-
-            // Subir a Azure con otro MemoryStream
-            string nuevoBlobPath;
-            using (var streamSubida = new MemoryStream(archivoBytes))
-            {
-                var blobPath = await _storageService.UploadAsync(streamSubida, documentoDto.Nombre);
-                // 3. Crear la Entidad
-                return new Documento(
-                        documentoDto.Nombre,
-                        blobPath,
-                        0,
-                        EstadoDocumento.EnRevision.Id,
-                        tipo.Id,
-                        firma
-                    );
+                return Result<string>.Failure(ex.Message);
             }
         }
     }

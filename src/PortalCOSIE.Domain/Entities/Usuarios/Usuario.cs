@@ -9,6 +9,9 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
         public string Nombre { get; private set; }
         public string ApellidoPaterno { get; private set; }
         public string ApellidoMaterno { get; private set; }
+        public string? CertificadoId { get; private set; }
+
+        public Certificado Certificado { get; private set; }
 
         // Constantes de validación
         private const int LongitudMaxima = 100;
@@ -18,37 +21,49 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
         // Constructor privado para EF
         protected Usuario() { }
 
-        protected Usuario(string identityUserId, string nombre, string apellidoPaterno, string apellidoMaterno)
+        protected Usuario(
+            string identityUserId,
+            string nombre,
+            string apellidoPaterno,
+            string apellidoMaterno)
         {
-            SetIdentityUserId(identityUserId);
-            SetNombre(nombre);
-            SetApellidoPaterno(apellidoPaterno);
-            SetApellidoMaterno(apellidoMaterno);
+            EstablecerIdentityUserId(identityUserId);
+            EstablecerNombre(nombre);
+            EstablecerApellidoPaterno(apellidoPaterno);
+            EstablecerApellidoMaterno(apellidoMaterno);
         }
 
-        public void SetIdentityUserId(string identityUserId)
+        public void EstablecerIdentityUserId(string identityUserId)
         {
             if (string.IsNullOrWhiteSpace(identityUserId))
                 throw new DomainException("El identificador de usuario no puede estar vacío.");
             IdentityUserId = identityUserId.Trim();
         }
 
-        public void SetNombre(string nombre)
+        public void EstablecerNombre(string nombre)
         {
             ValidarTexto(nombre, nameof(Nombre));
             Nombre = nombre;
         }
 
-        public void SetApellidoPaterno(string apellido)
+        public void EstablecerApellidoPaterno(string apellido)
         {
             ValidarTexto(apellido, nameof(ApellidoPaterno));
             ApellidoPaterno = apellido;
         }
 
-        public void SetApellidoMaterno(string apellido)
+        public void EstablecerApellidoMaterno(string apellido)
         {
             ValidarTexto(apellido, nameof(ApellidoMaterno));
             ApellidoMaterno = apellido;
+        }
+
+        public void AsignarCertificado(Certificado certificado)
+        {
+            if (certificado == null)
+                throw new DomainException("El certificado no puede ser nulo.");
+            Certificado = certificado;
+            CertificadoId = certificado.Id;
         }
 
         // Método privado reutilizable

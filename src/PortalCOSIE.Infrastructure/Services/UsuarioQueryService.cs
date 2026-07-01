@@ -199,6 +199,8 @@ namespace PortalCOSIE.Infrastructure.QueryService
         {
             return await _context.Set<Documento>()
                 .Include(d => d.Tramite)
+                .Include(d => d.FirmaElectronica!)
+                    .ThenInclude(f => f.Certificado)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
