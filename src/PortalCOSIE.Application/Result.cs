@@ -1,5 +1,4 @@
-﻿
-namespace PortalCOSIE.Application
+﻿namespace PortalCOSIE.Application
 {
     public class Result<T>
     {
