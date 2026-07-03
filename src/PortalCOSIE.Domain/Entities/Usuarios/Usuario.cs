@@ -66,6 +66,12 @@ namespace PortalCOSIE.Domain.Entities.Usuarios
             CertificadoId = certificado.Id;
         }
 
+        public void RemoverCertificado()
+        {
+            Certificado = null;
+            CertificadoId = null;
+        }
+
         // Método privado reutilizable
         private static void ValidarTexto(string valor, string campo)
         {

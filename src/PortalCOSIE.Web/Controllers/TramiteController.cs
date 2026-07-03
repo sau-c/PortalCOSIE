@@ -18,6 +18,7 @@ using PortalCOSIE.Application.Features.Tramites.Commands.Revision;
 using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
 using PortalCOSIE.Application.Features.Tramites.Commands.Concluir;
 using PortalCOSIE.Application.Features.Tramites.Queries.VerificarDocumento;
+using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerCertificadoFirma;
 using PortalCOSIE.Web.Extensions;
 
 namespace PortalCOSIE.Web.Controllers
@@ -44,6 +45,7 @@ namespace PortalCOSIE.Web.Controllers
             string userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewBag.Unidades = new SelectList(await _mediator.Send(new ListarUnidadesQuery(userId)), "Id", "Nombre");
             ViewBag.Periodos = new SelectList(await _mediator.Send(new ListarPeriodosQuery()), "Periodo");
+            await CargarCertificadoFirmaAsync(userId);
             return View();
         }
 
@@ -115,6 +117,7 @@ namespace PortalCOSIE.Web.Controllers
 
             var tramite = await _mediator.Send(new ObtenerTramiteCTCEPorIdQuery(userId, userRole, tramiteId));
             ViewBag.EstadoDocumento = new SelectList(await _mediator.Send(new ListarEstadoDocumentoQuery()), "Id", "Nombre");
+            await CargarCertificadoFirmaAsync(userId);
             if (userRole == "Alumno")
                 return View("SeguimientoCTCE_Alumno", tramite);
             return View("SeguimientoCTCE_Personal", tramite);
@@ -211,6 +214,20 @@ namespace PortalCOSIE.Web.Controllers
             return File(resultado.Contenido, resultado.ContentType);
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> CertificadoFirma()
+        {
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cert = await _mediator.Send(new ObtenerCertificadoFirmaQuery(userId));
+            if (cert == null)
+                return Json(new { success = false, message = "No tienes un certificado registrado." });
+            if (!cert.EsValidoParaFirma)
+                return Json(new { success = false, message = "El certificado registrado no es válido. El administrador debe cargar el archivo .cer correcto en la base de datos." });
+
+            return Json(new { success = true, certificadoDerBase64 = cert.CertificadoDerBase64 });
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> VerificarDocumento(int id)
@@ -222,6 +239,17 @@ namespace PortalCOSIE.Web.Controllers
             if (result.Succeeded)
                 return Json(new { success = true, message = result.Value });
             return Json(new { success = false, message = result.Errors.FirstOrDefault() });
+        }
+
+        private async Task CargarCertificadoFirmaAsync(string? userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                ViewBag.CertificadoFirma = null;
+                return;
+            }
+
+            ViewBag.CertificadoFirma = await _mediator.Send(new ObtenerCertificadoFirmaQuery(userId));
         }
     }
 }

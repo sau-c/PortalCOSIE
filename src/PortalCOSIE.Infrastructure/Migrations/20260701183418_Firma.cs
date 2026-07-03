@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Azure : Migration
+    public partial class Firma : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,6 +64,23 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Carrera", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Certificado",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    Sujeto = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    NumeroSerie = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    VigenteDesde = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VigenteHasta = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CertificadoDer = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Certificado", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -287,29 +304,6 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Usuario",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Usuario", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Usuario_AspNetUsers_IdentityUserId",
-                        column: x => x.IdentityUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UnidadAprendizaje",
                 columns: table => new
                 {
@@ -328,6 +322,58 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         principalTable: "Carrera",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FirmaElectronica",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CertificadoId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    FirmaCms = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    Algoritmo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    FechaFirmaUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FirmaElectronica", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FirmaElectronica_Certificado_CertificadoId",
+                        column: x => x.CertificadoId,
+                        principalTable: "Certificado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Usuario",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CertificadoId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Usuario", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Usuario_AspNetUsers_IdentityUserId",
+                        column: x => x.IdentityUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Usuario_Certificado_CertificadoId",
+                        column: x => x.CertificadoId,
+                        principalTable: "Certificado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -452,7 +498,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     TramiteId = table.Column<int>(type: "int", nullable: false),
                     TipoDocumentoId = table.Column<int>(type: "int", nullable: false),
                     EstadoDocumentoId = table.Column<int>(type: "int", nullable: false),
-                    HashOriginal = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    FirmaElectronicaId = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -462,6 +508,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         name: "FK_Documento_EstadoDocumento_EstadoDocumentoId",
                         column: x => x.EstadoDocumentoId,
                         principalTable: "EstadoDocumento",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Documento_FirmaElectronica_FirmaElectronicaId",
+                        column: x => x.FirmaElectronicaId,
+                        principalTable: "FirmaElectronica",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -1169,6 +1221,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 column: "EstadoDocumentoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Documento_FirmaElectronicaId",
+                table: "Documento",
+                column: "FirmaElectronicaId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Documento_TipoDocumentoId",
                 table: "Documento",
                 column: "TipoDocumentoId");
@@ -1194,6 +1252,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "IX_FechaRecepcion_SesionId",
                 table: "FechaRecepcion",
                 column: "SesionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FirmaElectronica_CertificadoId",
+                table: "FirmaElectronica",
+                column: "CertificadoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SesionCOSIE_NumeroSesion",
@@ -1249,6 +1312,13 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 column: "UnidadAprendizajeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Usuario_CertificadoId",
+                table: "Usuario",
+                column: "CertificadoId",
+                unique: true,
+                filter: "[CertificadoId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Usuario_IdentityUserId",
                 table: "Usuario",
                 column: "IdentityUserId");
@@ -1294,6 +1364,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "EstadoDocumento");
 
             migrationBuilder.DropTable(
+                name: "FirmaElectronica");
+
+            migrationBuilder.DropTable(
                 name: "TipoDocumento");
 
             migrationBuilder.DropTable(
@@ -1328,6 +1401,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Certificado");
         }
     }
 }

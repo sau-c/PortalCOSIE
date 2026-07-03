@@ -245,6 +245,15 @@ namespace PortalCOSIE.Infrastructure.Services
                 return Result<string>.Failure("No se pudo enviar el correo.");
             return Result<string>.Success("Celular actualizado con éxito");
         }
+        public async Task<bool> TieneRolAsync(string userId, string rol)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(rol))
+                return false;
+
+            var user = await _userManager.FindByIdAsync(userId);
+            return user != null && await _userManager.IsInRoleAsync(user, rol);
+        }
+
         public async Task<Result<string>> ToggleRol(string userId, string rol)
         {
             if (string.IsNullOrWhiteSpace(userId))

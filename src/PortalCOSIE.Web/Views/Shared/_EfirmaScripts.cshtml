@@ -1,0 +1,11 @@
+@{
+    var certificadoFirmaUrl = Url.Action("CertificadoFirma", "Tramite");
+}
+
+<script>
+    window.efirmaCertificadoUrl = "@certificadoFirmaUrl";
+</script>
+<script src="https://cdn.jsdelivr.net/npm/node-forge@1.3.1/dist/forge.min.js"></script>
+<script src="~/js/efirma/key-loader.js" asp-append-version="true"></script>
+<script src="~/js/efirma/cms-signer.js" asp-append-version="true"></script>
+<script src="~/js/efirma/signing-workflow.js" asp-append-version="true"></script>

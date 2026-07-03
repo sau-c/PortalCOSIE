@@ -16,7 +16,7 @@
                 <p class="text-muted small mb-0">
                     Verifica que los documentos y observaciones de los documentos sean correctos.
                 </p>
-                <p class="text-muted small mt-2">Esta acción guardará la corrección y no se puede deshacer.</p>
+                <p class="text-muted small mt-2">Los archivos nuevos se firmarán con tu e.firma antes de enviarse.</p>
             </div>
 
             <div class="modal-footer justify-content-center">
@@ -40,33 +40,25 @@
         const bsModal = new bootstrap.Modal(modalElement);
         const control = bloqueadorBoton(btnConfirmar);
 
-        // Interceptar submit del formulario
         formCorreccion.addEventListener("submit", function (e) {
             e.preventDefault();
             e.stopPropagation();
-
-            // Abrir modal de confirmación
             bsModal.show();
         });
 
-        // Botón "Sí, guardar corrección"
-        btnConfirmar.addEventListener("click", async function () {
-            control.bloquear();
-
-            try {
-                const url = formCorreccion.getAttribute("action");
-                const formData = new FormData(formCorreccion);
-                const data = await executeFetch(url, "POST", formData);
-
-                showGlobalModal("success", data.message, {
-                    redirectUrl: '/Tramite',
-                });
-
-            } catch (error) {
-                showGlobalModal("error", error.message, {
-                    onClose: () => control.restaurar()
-                });
-            }
+        btnConfirmar.addEventListener("click", function () {
+            enviarFormularioFirmado(formCorreccion, documentosCorreccionCtce, {
+                boton: control,
+                onSuccess: (data) => {
+                    bsModal.hide();
+                    showGlobalModal("success", data.message, { redirectUrl: '/Tramite' });
+                },
+                onError: (error) => {
+                    showGlobalModal("error", error.message, {
+                        onClose: () => control.restaurar()
+                    });
+                }
+            });
         });
     });
 </script>

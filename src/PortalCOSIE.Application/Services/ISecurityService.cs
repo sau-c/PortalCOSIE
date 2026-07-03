@@ -11,6 +11,7 @@ namespace PortalCOSIE.Application.Services
         Task<Result<string>> RecuperarContrasena(string correo);
         Task<Result<string>> RestablecerContrasena(RestablecerDTO dto);
         Task<Result<string>> CambiarContrasena(CambiarContrasenaDTO dto);
+        Task<bool> TieneRolAsync(string userId, string rol);
         Task<Result<string>> ToggleRol(string userId, string rol);
         Task<Result<string>> ActualizarCelular(string userId, string celular);
 

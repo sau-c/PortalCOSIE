@@ -35,12 +35,6 @@ namespace PortalCOSIE.Application.Features.Usuarios.Commands.EditarAlumno
                 if (cambios < 0)
                     Result<string>.Success("No se detectaron cambios para guardar");
 
-                //var identityUser = await _userManager.FindByIdAsync(dto.IdentityUserId);
-                //var envio = await _emailSender.SendEmailAsync(
-                //    identityUser.Email,
-                //    "Actualizamos tu información",
-                //    HtmlTemplates.ActualizamosTuInformacion()
-                //    );
                 return Result<string>.Success("Usuario actualizado con éxito");
             }
             catch (Exception)

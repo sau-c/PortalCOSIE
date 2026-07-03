@@ -9,10 +9,13 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Usuarios
         public void Configure(EntityTypeBuilder<Certificado> builder)
         {
             builder.ToTable("Certificado");
-
+            
             builder.Property(c => c.Id)
                 .HasMaxLength(64)
                 .IsRequired();
+
+            //builder.HasIndex("Id")
+            //    .IsUnique();
 
             builder.Property(c => c.Sujeto)
                 .IsRequired()

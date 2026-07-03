@@ -23,6 +23,9 @@ async function executeFetch(url, metodo = 'GET', datos = null, tipoRespuesta = '
     if (datos) {
         // Si los datos son FormData, no se pone Content-Type manualmente
         if (datos instanceof FormData) {
+            if (tokenInput && !datos.has('__RequestVerificationToken')) {
+                datos.append('__RequestVerificationToken', tokenInput.value);
+            }
             opciones.body = datos;
         } else {
             // Tipo JSON

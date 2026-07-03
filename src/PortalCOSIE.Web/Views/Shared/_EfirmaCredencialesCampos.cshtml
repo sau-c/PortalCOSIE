@@ -1,0 +1,18 @@
+@model string
+
+<div class="@Model">
+    <label class="form-label fw-semibold">Llave privada (.key)</label>
+    <input type="file"
+           name="LlaveKey"
+           class="form-control form-control-sm"
+           accept=".key"
+           required />
+</div>
+
+<div class="@Model">
+    <label class="form-label fw-semibold">Contraseña de la llave</label>
+    <input type="password"
+           name="PasswordKey"
+           class="form-control form-control-sm"
+           required />
+</div>

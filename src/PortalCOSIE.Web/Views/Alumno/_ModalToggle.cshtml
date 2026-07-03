@@ -1,7 +1,7 @@
 ﻿<div class="modal fade" id="modalToggle" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="toggleRoleForm" asp-action="ActualizarRol" method="post">
+            <form id="toggleRoleForm" asp-action="ActualizarRol" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <div class="modal-header" id="modalHeader">
                     <h6 class="modal-title">
@@ -14,8 +14,24 @@
                     <div class="text-center">
                         <div id="modalMessage" class="alert" role="alert"></div>
                     </div>
-                    <div class="form-text text-muted">
-                        <i class="fas fa-info-circle me-1"></i>Se enviará un correo de aviso al usuario
+
+                    <div id="certificadoSection" class="d-none">
+                        <label for="certificadoCer" class="form-label fw-semibold small">
+                            Certificado público (.cer)
+                        </label>
+                        <input type="file"
+                               id="certificadoCer"
+                               name="certificadoCer"
+                               class="form-control form-control-sm"
+                               accept=".cer,application/x-x509-ca-cert" />
+                        <div class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Carga el archivo .cer del alumno. Se usará para firmar documentos en el portal.
+                        </div>
+                    </div>
+
+                    <div class="form-text text-muted mt-2">
+                        <i class="fas fa-envelope me-1"></i>Se enviará un correo de aviso al usuario
                     </div>
                     <input type="hidden" id="userId" name="userId" />
                     <input type="hidden" id="rol" name="rol" />
@@ -24,7 +40,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancelar
                     </button>
-                    <button type="submit" id="confirmButton" class="btn">
+                    <button type="button" id="confirmButton" class="btn">
                         <i id="confirmIcon" class="me-2"></i>
                         <span id="confirmText">Confirmar</span>
                     </button>
@@ -36,58 +52,78 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        $('#modalToggle').on('show.bs.modal', function (event) {
-            const button = $(event.relatedTarget);
-            const userId = button.data('user-id');
-            const currentRole = button.data('current-role');
-            const roleType = button.data('role-type'); // "Alumno"
+        const modal = document.getElementById("modalToggle");
+        const form = document.getElementById("toggleRoleForm");
+        const certificadoSection = document.getElementById("certificadoSection");
+        const certificadoInput = document.getElementById("certificadoCer");
+        const btnConfirmar = document.getElementById("confirmButton");
+        const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
+        const control = bloqueadorBoton(btnConfirmar);
+        let activando = false;
 
-            // Configurar campos ocultos
-            $('#userId').val(userId);
-            $('#rol').val(roleType);
+        modal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute("data-user-id");
+            const currentRole = button.getAttribute("data-current-role");
+            const roleType = button.getAttribute("data-role-type");
 
-            // Configurar contenido del modal según el estado actual
-            const isActive = currentRole !== 'Inactivo';
+            document.getElementById("userId").value = userId;
+            document.getElementById("rol").value = roleType;
+            certificadoInput.value = "";
+            control.restaurar();
+
+            const isActive = currentRole !== "Inactivo";
+            activando = !isActive;
 
             if (isActive) {
-                // Usuario está activo, se va a desactivar
-                $('#modalHeader').removeClass('bg-success text-white').addClass('bg-warning text-dark');
-                $('#modalIcon').removeClass().addClass('fas fa-user-slash');
-                $('#modalTitle').text('Desactivar usuario');
-                $('#modalMessage')
-                    .removeClass('alert-success')
-                    .addClass('alert-warning')
-                    .html(`<strong>¿Desactivar usuario?</strong><br>
-                            El usuario perderá el rol de "<strong>${roleType}</strong>" y solo vera el calendario al ingresar.`);
-                $('#confirmButton')
-                    .removeClass('btn-success')
-                    .addClass('btn-warning');
-                $('#confirmIcon').removeClass().addClass('fas fa-user-slash');
-                $('#confirmText').text('Desactivar');
+                document.getElementById("modalHeader").className = "modal-header bg-warning text-dark";
+                document.getElementById("modalIcon").className = "fas fa-user-slash";
+                document.getElementById("modalTitle").textContent = "Desactivar usuario";
+                document.getElementById("modalMessage").className = "alert alert-warning";
+                document.getElementById("modalMessage").innerHTML =
+                    `<strong>¿Desactivar usuario?</strong><br>
+                     El usuario perderá el rol de "<strong>${roleType}</strong>", se eliminará su certificado .cer y solo verá el calendario al ingresar.`;
+                btnConfirmar.className = "btn btn-warning";
+                document.getElementById("confirmIcon").className = "fas fa-user-slash";
+                document.getElementById("confirmText").textContent = "Desactivar";
+                certificadoSection.classList.add("d-none");
+                certificadoInput.removeAttribute("required");
             } else {
-                // Usuario está inactivo, se va a activar
-                $('#modalHeader').removeClass('bg-warning text-dark').addClass('bg-success text-white');
-                $('#modalIcon').removeClass().addClass('fas fa-user-check');
-                $('#modalTitle').text('Activar usuario');
-                $('#modalMessage')
-                    .removeClass('alert-warning')
-                    .addClass('alert-success')
-                    .html(`<strong>¿Activar usuario?</strong><br>
-                            El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema.
-                            <strong>Verifica que los datos sean correctos con su credencial</strong>`);
-                $('#confirmButton')
-                    .removeClass('btn-warning')
-                    .addClass('btn-success');
-                $('#confirmIcon').removeClass().addClass('fas fa-user-check');
-                $('#confirmText').text('Activar');
+                document.getElementById("modalHeader").className = "modal-header bg-success text-white";
+                document.getElementById("modalIcon").className = "fas fa-user-check";
+                document.getElementById("modalTitle").textContent = "Activar usuario";
+                document.getElementById("modalMessage").className = "alert alert-success";
+                document.getElementById("modalMessage").innerHTML =
+                    `<strong>¿Activar usuario?</strong><br>
+                     El usuario obtendrá el rol de "<strong>${roleType}</strong>" y tendrá acceso al sistema.
+                     <strong>Verifica que los datos sean correctos con su credencial.</strong>`;
+                btnConfirmar.className = "btn btn-success";
+                document.getElementById("confirmIcon").className = "fas fa-user-check";
+                document.getElementById("confirmText").textContent = "Activar";
+                certificadoSection.classList.remove("d-none");
+                certificadoInput.setAttribute("required", "required");
             }
         });
 
-        // Deshabilitar botón al enviar el formulario
-        $('#toggleRoleForm').one('submit', function () {
-            $("#confirmButton").prop('disabled', true);
-            $('#confirmIcon').removeClass().addClass('fas fa-spinner fa-spin');
-            $('#confirmText').text('Cargando...');
+        btnConfirmar.addEventListener("click", async function () {
+            if (activando && (!certificadoInput.files || certificadoInput.files.length === 0)) {
+                showGlobalModal("error", "Debes cargar el certificado .cer del alumno.");
+                return;
+            }
+
+            control.bloquear();
+
+            try {
+                const formData = new FormData(form);
+                const data = await executeFetch(form.action, "POST", formData);
+
+                bsModal.hide();
+                showGlobalModal("success", data.message);
+            } catch (error) {
+                showGlobalModal("error", error.message, {
+                    onClose: () => control.restaurar()
+                });
+            }
         });
     });
 </script>

@@ -12,8 +12,8 @@ using PortalCOSIE.Infrastructure.Persistence;
 namespace PortalCOSIE.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260109162234_Azure")]
-    partial class Azure
+    [Migration("20260701183418_Firma")]
+    partial class Firma
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4131,9 +4131,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<int>("EstadoDocumentoId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("HashOriginal")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                    b.Property<int>("FirmaElectronicaId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -4161,6 +4160,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EstadoDocumentoId");
+
+                    b.HasIndex("FirmaElectronicaId")
+                        .IsUnique();
 
                     b.HasIndex("TipoDocumentoId");
 
@@ -4217,6 +4219,38 @@ namespace PortalCOSIE.Infrastructure.Migrations
                             IsDeleted = false,
                             Nombre = "Documento incorrecto"
                         });
+                });
+
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Documentos.FirmaElectronica", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Algoritmo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CertificadoId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("FechaFirmaUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("FirmaCms")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CertificadoId");
+
+                    b.ToTable("FirmaElectronica", (string)null);
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Documentos.TipoDocumento", b =>
@@ -4660,6 +4694,40 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.UseTptMappingStrategy();
                 });
 
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Usuarios.Certificado", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<byte[]>("CertificadoDer")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NumeroSerie")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Sujeto")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("VigenteDesde")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("VigenteHasta")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Certificado", (string)null);
+                });
+
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Usuarios.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -4678,6 +4746,10 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("CertificadoId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<string>("IdentityUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -4691,6 +4763,10 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CertificadoId")
+                        .IsUnique()
+                        .HasFilter("[CertificadoId] IS NOT NULL");
 
                     b.HasIndex("IdentityUserId");
 
@@ -4821,6 +4897,12 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PortalCOSIE.Domain.Entities.Documentos.FirmaElectronica", "FirmaElectronica")
+                        .WithOne("Documento")
+                        .HasForeignKey("PortalCOSIE.Domain.Entities.Documentos.Documento", "FirmaElectronicaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PortalCOSIE.Domain.Entities.Documentos.TipoDocumento", "TipoDocumento")
                         .WithMany()
                         .HasForeignKey("TipoDocumentoId")
@@ -4835,9 +4917,22 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
                     b.Navigation("EstadoDocumento");
 
+                    b.Navigation("FirmaElectronica");
+
                     b.Navigation("TipoDocumento");
 
                     b.Navigation("Tramite");
+                });
+
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Documentos.FirmaElectronica", b =>
+                {
+                    b.HasOne("PortalCOSIE.Domain.Entities.Usuarios.Certificado", "Certificado")
+                        .WithMany()
+                        .HasForeignKey("CertificadoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Certificado");
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.EntradaBitacoras.EntradaBitacora", b =>
@@ -4913,11 +5008,18 @@ namespace PortalCOSIE.Infrastructure.Migrations
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Usuarios.Usuario", b =>
                 {
+                    b.HasOne("PortalCOSIE.Domain.Entities.Usuarios.Certificado", "Certificado")
+                        .WithOne()
+                        .HasForeignKey("PortalCOSIE.Domain.Entities.Usuarios.Usuario", "CertificadoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("IdentityUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Certificado");
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Tramites.CTCE.TramiteCTCE", b =>
@@ -4958,6 +5060,11 @@ namespace PortalCOSIE.Infrastructure.Migrations
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.Carreras.Carrera", b =>
                 {
                     b.Navigation("UnidadesAprendizaje");
+                });
+
+            modelBuilder.Entity("PortalCOSIE.Domain.Entities.Documentos.FirmaElectronica", b =>
+                {
+                    b.Navigation("Documento");
                 });
 
             modelBuilder.Entity("PortalCOSIE.Domain.Entities.SesionesCOSIE.SesionCOSIE", b =>

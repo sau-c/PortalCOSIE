@@ -158,7 +158,15 @@
                                                        title="Ver archivo">
                                                         <small><i class="fas fa-eye"></i></small>
                                                     </a>
-                                                    @* Aqui puede ir un button para reemplazar el input file*@
+                                                    @if (item.FirmaElectronicaId > 0)
+                                                    {
+                                                        <button type="button"
+                                                                class="btn btn-outline-success btn-sm px-2 py-0 btn-verificar-firma"
+                                                                title="Verificar firma"
+                                                                data-documento-id="@item.Id">
+                                                            <small><i class="fas fa-shield-alt"></i></small>
+                                                        </button>
+                                                    }
                                                 </div>
                                             </div>
 
@@ -232,42 +240,7 @@
                     </div>
                     @if (puedeCorregir)
                     {
-                        <div class="row g-3">
-                            <!-- Certificado -->
-                            <div class="col-lg-4 col-md-6">
-                                <label class="form-label fw-semibold">
-                                    Certificado (.cer)
-                                </label>
-                                <input type="file"
-                                       name="CertificadoCer"
-                                       class="form-control form-control-sm"
-                                       accept=".cer,application/x-x509-ca-cert"
-                                       required />
-                            </div>
-
-                            <!-- Llave privada -->
-                            <div class="col-lg-4 col-md-6">
-                                <label class="form-label fw-semibold">
-                                    Llave privada (.key)
-                                </label>
-                                <input type="file"
-                                       name="LlaveKey"
-                                       class="form-control form-control-sm"
-                                       accept=".key"
-                                       required />
-                            </div>
-
-                            <!-- Contraseña -->
-                            <div class="col-lg-4 col-md-6">
-                                <label class="form-label fw-semibold">
-                                    Contraseña de la llave
-                                </label>
-                                <input type="password"
-                                       name="PasswordKey"
-                                       class="form-control form-control-sm"
-                                       required />
-                            </div>
-                        </div>
+                        <partial name="_EfirmaCredenciales" />
                     }
                 </div>
 
@@ -308,4 +281,12 @@
 @if (puedeCorregir)
 {
     <partial name="_ModalConfirmarCorreccion" />
+}
+
+@section Scripts {
+    <partial name="_VerificarDocumentoScript" />
+    @if (puedeCorregir)
+    {
+        <partial name="_EfirmaScripts" />
+    }
 }

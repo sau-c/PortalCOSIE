@@ -1,0 +1,30 @@
+@{
+    var columnClass = ViewData["EfirmaColumnClass"] as string ?? "col-lg-4 col-md-6";
+    var showLegend = ViewData["EfirmaShowLegend"] as bool? ?? false;
+}
+
+@if (showLegend)
+{
+    <fieldset class="border rounded p-3 bg-white">
+        <legend class="float-none w-auto px-2 text-primary fs-6 fw-bold">
+            <i class="fas fa-shield me-2"></i>Firma electrónica (en tu equipo)
+        </legend>
+        <partial name="_EfirmaCertificadoInfo" model="ViewBag.CertificadoFirma" />
+        <p class="text-muted small mb-3">
+            La llave privada y la contraseña se usan solo en tu navegador. No se envían al servidor.
+        </p>
+        <div class="row g-3">
+            <partial name="_EfirmaCredencialesCampos" model="columnClass" />
+        </div>
+    </fieldset>
+}
+else
+{
+    <partial name="_EfirmaCertificadoInfo" model="ViewBag.CertificadoFirma" />
+    <p class="text-muted small mb-3">
+        La llave privada y la contraseña se usan solo en tu navegador. No se envían al servidor.
+    </p>
+    <div class="row g-3">
+        <partial name="_EfirmaCredencialesCampos" model="columnClass" />
+    </div>
+}

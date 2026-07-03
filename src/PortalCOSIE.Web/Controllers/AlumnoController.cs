@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PortalCOSIE.Application.Features.Carreras.Queries.Listar;
 using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
 using PortalCOSIE.Application.Features.Usuarios.Commands.EditarAlumno;
+using PortalCOSIE.Application.Features.Usuarios.Commands.ToggleAlumnoRol;
 using PortalCOSIE.Application.Features.Usuarios.Queries.ListarAlumnos;
 using PortalCOSIE.Application.Services;
 
@@ -44,10 +45,17 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ActualizarRol(string userId, string rol)
+        public async Task<IActionResult> ActualizarRol(string userId, string rol, IFormFile? certificadoCer)
         {
-            var result = await _securityService.ToggleRol(userId, rol);
-            return RedirectToAction(nameof(Index));
+            Stream? certificadoStream = certificadoCer is { Length: > 0 }
+                ? certificadoCer.OpenReadStream()
+                : null;
+
+            var result = await _mediator.Send(new ToggleAlumnoRolCommand(userId, rol, certificadoStream));
+            if (!result.Succeeded)
+                return Json(new { success = false, message = result.Errors.FirstOrDefault() });
+
+            return Json(new { success = true, message = result.Value });
         }
 
         [HttpPost]

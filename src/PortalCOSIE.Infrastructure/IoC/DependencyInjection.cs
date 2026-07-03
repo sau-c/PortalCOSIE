@@ -69,6 +69,8 @@ namespace PortalCOSIE.Infrastructure.IoC
             services.AddScoped<INotificationService, EmailNotificationService>();
             services.AddScoped<ITramiteNotificationService, TramiteNotificationService>();
             services.AddScoped<IFirmaVerificacionService, FirmaVerificacionService>();
+            services.AddScoped<ICertificadoParserService, CertificadoParserService>();
+            services.AddScoped<ICertificadoAlumnoService, CertificadoAlumnoService>();
             services.AddScoped<ProcesadorDocumentoFirmado>();
 
             //Repositorios

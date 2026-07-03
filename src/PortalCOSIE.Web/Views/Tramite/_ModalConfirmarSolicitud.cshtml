@@ -16,7 +16,7 @@
                 <p class="text-muted small mb-0">
                     Verifique que todos los documentos y datos sean correctos.
                 </p>
-                <br>Esta acción no se puede deshacer.</p>
+                <p class="text-muted small mt-2">Los documentos se firmarán con tu e.firma antes de enviarse.</p>
             </div>
 
             <div class="modal-footer justify-content-center">
@@ -31,45 +31,34 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // 1. Identificamos los elementos (El formulario está en la vista padre)
         const formPrincipal = document.getElementById("formSolicitud");
         const modalElement = document.getElementById('modalConfirmacion');
         const btnConfirmar = document.getElementById('btnConfirmarEnvio');
 
-        // Instancia de Bootstrap y Bloqueador
+        if (!formPrincipal) return;
+
         const bsModal = new bootstrap.Modal(modalElement);
         const control = bloqueadorBoton(btnConfirmar);
 
-        // 2. Interceptamos el SUBMIT del formulario principal
-        // Esto permite que las validaciones (required) funcionen antes de abrir el modal
-        if (formPrincipal) {
-            formPrincipal.addEventListener("submit", function (e) {
-                e.preventDefault(); // Detenemos el envío directo
-                e.stopPropagation();
+        formPrincipal.addEventListener("submit", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            bsModal.show();
+        });
 
-                // Abrimos modal
-                bsModal.show();
+        btnConfirmar.addEventListener("click", function () {
+            enviarFormularioFirmado(formPrincipal, documentosSolicitudCtce, {
+                boton: control,
+                onSuccess: (data) => {
+                    bsModal.hide();
+                    showGlobalModal("success", data.message, { redirectUrl: '/Tramite' });
+                },
+                onError: (error) => {
+                    showGlobalModal("error", error.message, {
+                        onClose: () => control.restaurar()
+                    });
+                }
             });
-        }
-
-        // 3. Lógica del botón "SI, enviar"
-        btnConfirmar.addEventListener("click", async function () {
-            control.bloquear();
-
-            try {
-                const url = formPrincipal.getAttribute("action");
-                const formData = new FormData(formPrincipal);
-                const data = await executeFetch(url, "POST", formData);
-
-                showGlobalModal("success", data.message, {
-                    redirectUrl: '/Tramite',
-                });
-
-            } catch (error) {
-                showGlobalModal("error", error.message, {
-                    onClose: () => control.restaurar()
-                });
-            }
         });
     });
 </script>

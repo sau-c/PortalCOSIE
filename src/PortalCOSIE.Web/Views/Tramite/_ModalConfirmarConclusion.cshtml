@@ -39,42 +39,10 @@
                                    required />
                         </div>
 
-                        <div class="row g-3">
-                            <!-- Certificado -->
-                            <div class="col-lg-12">
-                                <label class="form-label fw-semibold">
-                                    Certificado (.cer)
-                                </label>
-                                <input type="file"
-                                       name="CertificadoCer"
-                                       class="form-control form-control-sm"
-                                       accept=".cer,application/x-x509-ca-cert"
-                                       required />
-                            </div>
-
-                            <!-- Llave privada -->
-                            <div class="col-lg-12">
-                                <label class="form-label fw-semibold">
-                                    Llave privada (.key)
-                                </label>
-                                <input type="file"
-                                       name="LlaveKey"
-                                       class="form-control form-control-sm"
-                                       accept=".key"
-                                       required />
-                            </div>
-
-                            <!-- Contraseña -->
-                            <div class="col-lg-12">
-                                <label class="form-label fw-semibold">
-                                    Contraseña de la llave
-                                </label>
-                                <input type="password"
-                                       name="PasswordKey"
-                                       class="form-control form-control-sm"
-                                       required />
-                            </div>
-                        </div>
+                        @{
+                            ViewData["EfirmaColumnClass"] = "col-lg-12";
+                        }
+                        <partial name="_EfirmaCredenciales" />
 
                         <div id="msgErrorArchivo" class="text-danger small mt-1 d-none">
                             <i class="fas fa-info-circle me-1"></i>Debes adjuntar el dictamen.
@@ -113,9 +81,8 @@
         const bsModal = new bootstrap.Modal(modalElement);
         const boton = (typeof bloqueadorBoton === 'function')
             ? bloqueadorBoton(btnConfirmar)
-            : { bloquear:()=>{}, restaurar:()=>{} };
+            : { bloquear: () => {}, restaurar: () => {} };
 
-        // Al abrir el modal
         modalElement.addEventListener("show.bs.modal", function (event) {
             const button = event.relatedTarget;
             const tramiteId = button.getAttribute("data-tramite-id");
@@ -125,37 +92,30 @@
             msgError.classList.add("d-none");
         });
 
-        // Submit del formulario
-        form.addEventListener("submit", async function (e) {
+        form.addEventListener("submit", function (e) {
             e.preventDefault();
 
-            // Validación extra (por consistencia con Cancelar)
             if (!fileInput.files || fileInput.files.length === 0) {
                 msgError.classList.remove("d-none");
                 fileInput.focus();
                 return;
             }
             msgError.classList.add("d-none");
-            boton.bloquear();
 
-            try {
-                const formData = new FormData(form);
-                const url = form.action;
-                const data = await executeFetch(url, "POST", formData);
-
-                bsModal.hide();
-                showGlobalModal("success", data.message, {
-                    redirectUrl: "/Tramite"
-                });
-
-            } catch (error) {
-                showGlobalModal("error", error.message, {
-                    onClose: () => boton.restaurar()
-                });
-            }
+            enviarFormularioFirmado(form, documentosConclusionCtce, {
+                boton: boton,
+                onSuccess: (data) => {
+                    bsModal.hide();
+                    showGlobalModal("success", data.message, { redirectUrl: "/Tramite" });
+                },
+                onError: (error) => {
+                    showGlobalModal("error", error.message, {
+                        onClose: () => boton.restaurar()
+                    });
+                }
+            });
         });
 
-        // Limpieza al cerrar
         modalElement.addEventListener("hidden.bs.modal", function () {
             form.reset();
             boton.restaurar();

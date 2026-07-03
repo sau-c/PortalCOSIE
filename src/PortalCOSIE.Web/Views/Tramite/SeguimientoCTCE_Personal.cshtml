@@ -170,14 +170,15 @@
                                                         </small>
                                                     </a>
 
-                                                    <button type="button"
-                                                            class="btn btn-outline-danger btn-sm px-1 py-0"
-                                                            title="Verificar"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modalVerificarDocumento"
-                                                            data-documento-id="@item.Id">
-                                                        <small><i class="fas fa-shield"></i></small>
-                                                    </button>
+                                                    @if (item.FirmaElectronicaId > 0)
+                                                    {
+                                                        <button type="button"
+                                                                class="btn btn-outline-success btn-sm px-1 py-0 btn-verificar-firma"
+                                                                title="Verificar firma"
+                                                                data-documento-id="@item.Id">
+                                                            <small><i class="fas fa-shield-alt"></i></small>
+                                                        </button>
+                                                    }
                                                 </div>
                                             </div>
 
@@ -263,32 +264,11 @@
     <partial name="_ModalConfirmarConclusion" />
 }
 
-<!-- Modal para verificar documento -->
-<div class="modal fade" id="modalVerificarDocumento" tabindex="-1" aria-labelledby="modalVerificarDocumentoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h6 class="modal-title" id="modalVerificarDocumentoLabel"><i class="fas fa-shield-check me-2"></i>Verificación de documento</h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <div id="verificarCargando" class="text-center py-3">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                    <p class="mt-2">Verificando documento...</p>
-                </div>
-
-                <div id="verificarResultado" class="d-none text-center">
-                    <div id="verificarIcono" class="mb-3 fs-1"></div>
-                    <h5 id="verificarMensaje"></h5>
-                    <p id="verificarDetalles" class="small text-muted"></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
+@section Scripts {
+    <partial name="_VerificarDocumentoScript" />
+    @if (puedeConcluir)
+    {
+        <partial name="_EfirmaScripts" />
+    }
+}
 

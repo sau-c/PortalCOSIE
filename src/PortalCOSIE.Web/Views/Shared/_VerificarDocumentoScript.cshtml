@@ -1,0 +1,37 @@
+@{
+    var verificarUrl = Url.Action("VerificarDocumento", "Tramite");
+}
+
+<script>
+    document.body.addEventListener("click", async function (e) {
+        const btn = e.target.closest(".btn-verificar-firma");
+        if (!btn) return;
+
+        const documentoId = btn.getAttribute("data-documento-id");
+        if (!documentoId) return;
+
+        const control = bloqueadorBoton(btn);
+        control.bloquear();
+
+        try {
+            const formData = new FormData();
+            formData.append("id", documentoId);
+
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (tokenInput) {
+                formData.append("__RequestVerificationToken", tokenInput.value);
+            }
+
+            const data = await executeFetch("@verificarUrl", "POST", formData);
+            const mensaje = (data.message || "Firma válida").replace(/\n/g, "<br>");
+            showGlobalModal("success", mensaje, { autoClose: false });
+        } catch (error) {
+            showGlobalModal("error", error.message, {
+                onClose: () => control.restaurar()
+            });
+            return;
+        }
+
+        control.restaurar();
+    });
+</script>
