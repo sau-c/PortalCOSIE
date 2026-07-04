@@ -57,6 +57,8 @@ namespace PortalCOSIE.Domain.Entities.SesionesCOSIE
         /// </remarks>
         public void SetFechasRecepcion(List<DateTime> fechasRecepcion)
         {
+            if (fechasRecepcion == null)
+                throw new DomainException("No se establecieron fechas de recepción");
             if (FechaSesion.HasValue)
             {
                 foreach (var fecha in fechasRecepcion)

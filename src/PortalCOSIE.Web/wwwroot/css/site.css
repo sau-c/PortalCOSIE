@@ -186,7 +186,7 @@ footer {
     transition: margin-left var(--transition-time);
 }
 
-/* Botón de toggle */
+/* Botï¿½n de toggle */
 .sidebar-toggle {
     position: fixed;
     bottom: 20px;
@@ -210,7 +210,7 @@ footer {
     transform: rotate(180deg);
 }
 
-/* Para pantallas pequeñas */
+/* Para pantallas pequeï¿½as */
 @media (max-width: 991.98px) {
     .sidebar {
         transform: translateX(-100%);
@@ -265,4 +265,14 @@ footer {
 
 .badge-role {
     transition: all 0.2s;
+}
+
+/* BitÃ¡cora */
+.audit-detail-table td {
+    vertical-align: top;
+    word-break: break-word;
+}
+
+#tblBitacora .btn-ver-cambios {
+    white-space: nowrap;
 }

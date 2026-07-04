@@ -13,8 +13,9 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Bitacoras
 
             //Conexion con IdentityUser desacoplada de la tabla Usuario
             builder.HasOne<IdentityUser>()
-            .WithMany()
-            .HasForeignKey(a => a.IdentityUserId);
+                .WithMany()
+                .HasForeignKey(a => a.IdentityUserId)
+                .IsRequired(false);
         }
     }
 }

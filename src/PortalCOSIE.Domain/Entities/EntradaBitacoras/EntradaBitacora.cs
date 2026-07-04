@@ -43,13 +43,13 @@ namespace PortalCOSIE.Domain.Entities.EntradaBitacoras
         /// Constructor principal para crear un nuevo registro de bitácora
         /// </summary>
         public EntradaBitacora(string accion, string entidad, string entidadId, string valorNuevo,
-            string identityUserId, string ipAddress, string userAgent)
+            string? identityUserId, string ipAddress, string userAgent)
         {
             Accion = accion;
             Entidad = entidad;
             EntidadId = entidadId;
             ValorNuevo = valorNuevo;
-            IdentityUserId = identityUserId;
+            IdentityUserId = string.IsNullOrWhiteSpace(identityUserId) ? null : identityUserId;
             IpAddress = ipAddress;
             UserAgent = userAgent;
             FechaRegistro = DateTime.Now;

@@ -1,0 +1,26 @@
+<div class="modal fade" id="modalDetalleBitacora" tabindex="-1" aria-labelledby="modalDetalleBitacoraLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white py-2">
+                <h6 class="modal-title" id="modalDetalleBitacoraLabel">
+                    <i class="fas fa-list-ul me-2"></i>Detalle del registro
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-0">
+                <table class="table table-sm table-striped mb-0 audit-detail-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="small ps-3" style="width:35%">Campo</th>
+                            <th class="small">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditDetailBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
