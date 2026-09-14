@@ -3,12 +3,13 @@ using Org.BouncyCastle.X509;
 using PortalCOSIE.Application;
 using PortalCOSIE.Application.Services.Crypto;
 using PortalCOSIE.Domain.Entities.Usuarios;
+using PortalCOSIE.Domain.Enums;
 
 namespace PortalCOSIE.Infrastructure.Services
 {
     public class CertificadoParserService : ICertificadoParserService
     {
-        public Result<Certificado> ParseCer(Stream cerStream)
+        public Result<Certificado> ParseCer(Stream cerStream, TipoCertificado tipo = TipoCertificado.Alumno)
         {
             if (cerStream == null)
                 return Result<Certificado>.Failure("El archivo .cer es obligatorio.");
@@ -27,6 +28,7 @@ namespace PortalCOSIE.Infrastructure.Services
 
                 var certificado = new Certificado(
                     thumbprint,
+                    tipo,
                     x509.SubjectDN.ToString(),
                     x509.SerialNumber.ToString(),
                     x509.NotBefore,

@@ -14,6 +14,9 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Usuarios
                 .HasMaxLength(64)
                 .IsRequired();
 
+            builder.Property(c => c.Tipo)
+                .IsRequired();
+
             //builder.HasIndex("Id")
             //    .IsUnique();
 

@@ -5,7 +5,7 @@
     ViewData["Title"] = "Seguimiento dictamen interno (CTCE)";
     var documentosList = Model.Documentos.ToList();
     bool puedeRevisar = User.IsInRole("Personal") && Model.EstadoTramiteId == EstadoTramite.EnRevision.Id;
-    bool puedeConcluir = User.IsInRole("Personal") && Model.EstadoTramiteId == EstadoTramite.EsperandoAcuse.Id;
+    bool puedeConcluir = User.IsInRole("Administrador") && Model.EstadoTramiteId == EstadoTramite.EsperandoAcuse.Id;
     string? disabledAttr = puedeRevisar ? null : "disabled";
 }
 

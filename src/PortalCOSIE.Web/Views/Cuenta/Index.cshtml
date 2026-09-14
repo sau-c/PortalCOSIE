@@ -1,6 +1,10 @@
-﻿@model PortalCOSIE.Application.Features.Usuarios.DTO.UsuarioDTO
+﻿@using PortalCOSIE.Application.Features.Certificados.DTO
+@model PortalCOSIE.Application.Features.Usuarios.DTO.UsuarioDTO
 @{
     ViewData["Title"] = "Mi cuenta";
+    var caCertificado = ViewData["CaCertificado"] as CertificadoResumenDTO;
+    var miCertificado = ViewData["MiCertificado"] as CertificadoResumenDTO;
+    var certificadoAcuse = ViewData["CertificadoAcuse"] as CertificadoResumenDTO;
 }
 
 <div class="card shadow">
@@ -8,9 +12,7 @@
         <h6 class="mb-0 py-1"><i class="fas fa-user me-2"></i>@ViewData["Title"]</h6>
     </div>
     <div class="card-body p-4 overflow-auto" style="height: calc(100vh - 164px);">
-        <!-- Información general -->
-        <div class="row g-4">
-
+        <div class="row mb-3">
             <!-- Datos personales -->
             <div class="col-lg-5">
                 <div class="card shadow-sm h-100">
@@ -93,6 +95,15 @@
             </div>
 
         </div>
+        @if (User.IsInRole("Administrador"))
+        {
+            <partial name="_CaCertificado" model="caCertificado" />
+            <partial name="_CertificadoAcuse" model="certificadoAcuse" />
+        }
+        @if (User.IsInRole("Alumno"))
+        {
+            <partial name="_MiCertificado" model="miCertificado" />
+        }
     </div>
 </div>
 
@@ -165,6 +176,22 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const formCa = document.getElementById('formCaCertificado');
+        if (formCa) {
+            const btnCa = document.getElementById('btnRegistrarCa');
+            const botonCa = bloqueadorBoton(btnCa);
+            formCa.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                botonCa.bloquear();
+                try {
+                    const data = await executeFetch(formCa.action, 'POST', new FormData(formCa));
+                    showGlobalModal('success', data.message, { onClose: () => location.reload() });
+                } catch (error) {
+                    showGlobalModal('error', error.message, { onClose: () => botonCa.restaurar() });
+                }
+            });
+        }
+
         const modal = document.getElementById('modalContrasena');
         const form = document.getElementById('formContrasena');
         const btnSubmit = document.getElementById('btnSubmitContrasena');

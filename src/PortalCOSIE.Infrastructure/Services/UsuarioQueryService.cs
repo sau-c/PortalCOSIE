@@ -160,15 +160,17 @@ namespace PortalCOSIE.Infrastructure.QueryService
                 };
             }
 
-            // CASO C: Usuario Genérico (Admin)
+            // CASO C: Usuario Genérico (Admin u otro rol sin registro en Usuario)
             return new UsuarioDTO
             {
                 IdentityUserId = data.Identity.Id,
                 Nombre = "Administrador",
-                Correo = data.Identity.Email,
+                ApellidoPaterno = string.Empty,
+                ApellidoMaterno = string.Empty,
+                Correo = data.Identity.Email ?? string.Empty,
                 CorreoConfirmado = data.Identity.EmailConfirmed,
-                Celular = data.Identity.PhoneNumber,
-                Rol = data.Rol,
+                Celular = data.Identity.PhoneNumber ?? string.Empty,
+                Rol = data.Rol ?? "Administrador",
             };
         }
         public async Task<int> ObtenerCarreraAlumnoPorId(string identityUserId)
@@ -199,10 +201,23 @@ namespace PortalCOSIE.Infrastructure.QueryService
         {
             return await _context.Set<Documento>()
                 .Include(d => d.Tramite)
+                    .ThenInclude(t => t.Alumno)
                 .Include(d => d.FirmaElectronica!)
                     .ThenInclude(f => f.Certificado)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.Id == id);
+        }
+
+        public async Task<FirmaElectronica?> ObtenerFirmaAcusePorTokenAsync(string token)
+        {
+            return await _context.Set<FirmaElectronica>()
+                .AsNoTracking()
+                .Include(f => f.Certificado)
+                .Include(f => f.Documento!)
+                    .ThenInclude(d => d.Tramite)
+                    .ThenInclude(t => t.Alumno)
+                    .ThenInclude(a => a.Carrera)
+                .FirstOrDefaultAsync(f => f.TokenVerificacion == token);
         }
     }
 }

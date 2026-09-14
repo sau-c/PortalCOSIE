@@ -1,8 +1,10 @@
-namespace PortalCOSIE.Application.Services
+using PortalCOSIE.Application.Features.Certificados.DTO;
+
+namespace PortalCOSIE.Application.Services;
+
+public interface ICertificadoAlumnoService
 {
-    public interface ICertificadoAlumnoService
-    {
-        Task<Result<string>> AsignarCertificadoAsync(string identityUserId, Stream certificadoCer);
-        Task<Result<string>> RemoverCertificadoAsync(string identityUserId);
-    }
+    Task<Result<string>> EmitirDesdeCsrAsync(string identityUserId, byte[] csrDer);
+    Task<CertificadoResumenDTO?> ObtenerResumenAsync(string identityUserId);
+    Task<Result<string>> RemoverCertificadoAsync(string identityUserId);
 }

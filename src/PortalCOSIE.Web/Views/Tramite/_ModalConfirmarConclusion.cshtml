@@ -6,6 +6,7 @@
                 @Html.AntiForgeryToken()
 
                 <input type="hidden" id="hdnIdTramiteConcluir" name="tramiteId" value="" />
+                <input type="hidden" id="hdnTokenAcuse" name="TokenAcuse" value="" />
 
                 <div class="modal-header bg-success text-white">
                     <h6 class="modal-title">
@@ -75,8 +76,18 @@
         const msgError = document.getElementById('msgErrorArchivo');
         const btnConfirmar = document.getElementById('btnConfirmarConclusion');
         const hdnId = document.getElementById('hdnIdTramiteConcluir');
+        const hdnToken = document.getElementById('hdnTokenAcuse');
 
         if (!form) return;
+
+        function base64ToUint8Array(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes;
+        }
 
         const bsModal = new bootstrap.Modal(modalElement);
         const boton = (typeof bloqueadorBoton === 'function')
@@ -88,11 +99,12 @@
             const tramiteId = button.getAttribute("data-tramite-id");
 
             hdnId.value = tramiteId;
+            hdnToken.value = "";
             fileInput.value = "";
             msgError.classList.add("d-none");
         });
 
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -101,19 +113,44 @@
                 return;
             }
             msgError.classList.add("d-none");
+            boton.bloquear();
 
-            enviarFormularioFirmado(form, documentosConclusionCtce, {
-                boton: boton,
-                onSuccess: (data) => {
-                    bsModal.hide();
-                    showGlobalModal("success", data.message, { redirectUrl: "/Tramite" });
-                },
-                onError: (error) => {
-                    showGlobalModal("error", error.message, {
-                        onClose: () => boton.restaurar()
-                    });
-                }
-            });
+            try {
+                const prepForm = new FormData();
+                prepForm.append('tramiteId', hdnId.value);
+                prepForm.append('Acuse', fileInput.files[0]);
+                const prep = await executeFetch('@Url.Action("PrepararAcuse", "Tramite")', 'POST', prepForm);
+
+                const preparedBytes = base64ToUint8Array(prep.data.pdfBase64);
+                const preparedFile = new File(
+                    [preparedBytes],
+                    prep.data.nombreArchivo || fileInput.files[0].name,
+                    { type: 'application/pdf' }
+                );
+
+                hdnToken.value = prep.data.token;
+
+                const llaveKey = form.querySelector('[name="LlaveKey"]')?.files?.[0];
+                const password = form.querySelector('[name="PasswordKey"]')?.value ?? '';
+                const certificadoDerBase64 = await obtenerCertificadoDerBase64();
+                const material = await cargarMaterialFirma(llaveKey, password, certificadoDerBase64);
+                const firmaBase64 = await firmarArchivoCmsConMaterial(preparedFile, material);
+
+                const concludeForm = new FormData(form);
+                concludeForm.set('Acuse', preparedFile, preparedFile.name);
+                concludeForm.set('FirmaAcuse', firmaBase64);
+                concludeForm.set('TokenAcuse', prep.data.token);
+                concludeForm.delete('LlaveKey');
+                concludeForm.delete('PasswordKey');
+
+                const data = await executeFetch(form.getAttribute('action'), 'POST', concludeForm);
+                bsModal.hide();
+                showGlobalModal("success", data.message, { redirectUrl: "/Tramite" });
+            } catch (error) {
+                showGlobalModal("error", error.message, {
+                    onClose: () => boton.restaurar()
+                });
+            }
         });
 
         modalElement.addEventListener("hidden.bs.modal", function () {

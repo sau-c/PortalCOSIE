@@ -14,6 +14,7 @@ namespace PortalCOSIE.Domain.Entities.Documentos
         public byte[] FirmaCms { get; private set; }
         public string Algoritmo { get; private set; }
         public DateTime FechaFirmaUtc { get; private set; }
+        public string? TokenVerificacion { get; private set; }
 
         public Documento? Documento { get; private set; }
         public Certificado Certificado { get; private set; }
@@ -47,6 +48,16 @@ namespace PortalCOSIE.Domain.Entities.Documentos
             if (algoritmo.Length > 100)
                 throw new DomainException("El algoritmo de firma no puede exceder 100 caracteres.");
             Algoritmo = algoritmo.Trim();
+        }
+
+        public void AsignarTokenVerificacion(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new DomainException("El token de verificación no puede estar vacío.");
+            token = token.Trim();
+            if (token.Length > 64)
+                throw new DomainException("El token de verificación no puede exceder 64 caracteres.");
+            TokenVerificacion = token;
         }
     }
 }

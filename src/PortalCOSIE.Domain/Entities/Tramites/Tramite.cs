@@ -31,6 +31,8 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         public DateTime? FechaConclusion { get; private set; }
         /// <summary>Comentario generico del trámite</summary>
         public string? Observaciones { get; private set; }
+        /// <summary>Token temporal para preparar el acuse con QR antes de firmar</summary>
+        public string? TokenAcusePendiente { get; private set; }
         // Propiedades de navegación
         public EstadoTramite EstadoTramite { get; private set; }
         public TipoTramite TipoTramite { get; private set; }
@@ -102,5 +104,22 @@ namespace PortalCOSIE.Domain.Entities.Tramites
         {
             Observaciones = observaciones;
         }
+
+        public void EstablecerTokenAcusePendiente(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new DomainException("El token de acuse no puede estar vacío.");
+            token = token.Trim();
+            if (token.Length > 64)
+                throw new DomainException("El token de acuse no puede exceder 64 caracteres.");
+            TokenAcusePendiente = token;
+        }
+
+        public bool TieneTokenAcusePendiente(string token)
+            => !string.IsNullOrWhiteSpace(TokenAcusePendiente)
+            && string.Equals(TokenAcusePendiente, token.Trim(), StringComparison.Ordinal);
+
+        public void ConsumirTokenAcusePendiente()
+            => TokenAcusePendiente = null;
     }
 }

@@ -1,3 +1,4 @@
+using PortalCOSIE.Application.Services;
 using PortalCOSIE.Application.Services.Crypto;
 using PortalCOSIE.Application.Services.Query;
 using PortalCOSIE.Application.Services.Storage;
@@ -12,17 +13,20 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.VerificarDocumento
         private readonly IUsuarioQueryService _usuarioQueryService;
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IFirmaVerificacionService _firmaVerificacionService;
+        private readonly ICertificadoCaService _certificadoCa;
 
         public VerificarDocumentoHandler(
             IStorageService storageService,
             IUsuarioQueryService usuarioQueryService,
             IUsuarioRepository usuarioRepo,
-            IFirmaVerificacionService firmaVerificacionService)
+            IFirmaVerificacionService firmaVerificacionService,
+            ICertificadoCaService certificadoCa)
         {
             _storageService = storageService;
             _usuarioQueryService = usuarioQueryService;
             _usuarioRepo = usuarioRepo;
             _firmaVerificacionService = firmaVerificacionService;
+            _certificadoCa = certificadoCa;
         }
 
         public async Task<Result<string>> Handle(VerificarDocumentoQuery query)
@@ -42,19 +46,29 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.VerificarDocumento
             if (!vigencia.Succeeded)
                 return Result<string>.Failure(vigencia.Errors.FirstOrDefault() ?? "El certificado no está vigente.");
 
-            await using var contenido = await _storageService.DownloadAsync(documento.Ruta);
+            var caDer = await _certificadoCa.ObtenerCaCertificadoDerAsync();
             using var certificadoStream = new MemoryStream(certificado.CertificadoDer);
 
-            var verificacion = _firmaVerificacionService.VerificarFirmaCms(
-                contenido,
-                documento.FirmaElectronica.FirmaCms,
-                certificadoStream);
+            var verificacion = await VerificarConDocumentoAsync(documento, caDer, certificadoStream);
 
             if (!verificacion.Succeeded)
                 return Result<string>.Failure(verificacion.Errors.FirstOrDefault() ?? "La firma no es válida.");
 
             return Result<string>.Success(
                 $"Firma válida.\n\nFirmante: {certificado.Sujeto}.\n\nVigente hasta {certificado.VigenteHasta:dd/MM/yyyy}.");
+        }
+
+        private async Task<Result<bool>> VerificarConDocumentoAsync(
+            Documento documento,
+            byte[]? caDer,
+            MemoryStream certificadoStream)
+        {
+            await using var contenido = await _storageService.DownloadAsync(documento.Ruta);
+            return _firmaVerificacionService.VerificarFirmaCms(
+                contenido,
+                documento.FirmaElectronica!.FirmaCms,
+                certificadoStream,
+                caDer);
         }
 
         private async Task<bool> TieneAccesoAsync(VerificarDocumentoQuery query, Documento documento)

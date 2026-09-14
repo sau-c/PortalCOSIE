@@ -1,4 +1,5 @@
-﻿using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Features.Tramites.Services;
 using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
 using PortalCOSIE.Domain.Entities.Tramites;
@@ -12,15 +13,18 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosP
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly ITramiteRepository _tramiteRepo;
         private readonly IStorageService _storageService;
+        private readonly AcusePdfPublicacionService _acusePublicacion;
 
         public DescargarDocumentosPorTramiteHandler(
             IUsuarioRepository usuarioRepo,
             IStorageService storageService,
-            ITramiteRepository tramiteRepo)
+            ITramiteRepository tramiteRepo,
+            AcusePdfPublicacionService acusePublicacion)
         {
             _usuarioRepo = usuarioRepo;
             _storageService = storageService;
             _tramiteRepo = tramiteRepo;
+            _acusePublicacion = acusePublicacion;
         }
 
         public async Task<ArchivoDTO> Handle(DescargarDocumentosPorTramiteQuery query)
@@ -30,7 +34,6 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosP
             if (tramite == null)
                 throw new ApplicationException("Trámite no encontrado.");
 
-            // 1. Validación de permisos
             bool tieneAcceso = false;
 
             if (query.Rol == "Administrador")
@@ -53,62 +56,74 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosP
             if (!tieneAcceso)
                 throw new ApplicationException("No tienes acceso a este trámite.");
 
-            // 2. Verificamos si hay documentos antes de intentar descargar
             if (tramite.Documentos == null || !tramite.Documentos.Any())
                 throw new ApplicationException("El trámite no tiene documentos adjuntos.");
 
-            // 3. Pasamos la lista de documentos del trámite
-            return await Descargar(tramite.Documentos.ToList());
+            return await Descargar(tramite, query.BaseUrl);
         }
 
-        private async Task<ArchivoDTO> Descargar(List<Documento> documentos)
+        private async Task<ArchivoDTO> Descargar(Tramite tramite, string baseUrl)
         {
             var zipStream = new MemoryStream();
 
             using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, leaveOpen: true))
             {
-                // HashSet para evitar nombres duplicados dentro del ZIP
                 var nombresUsados = new HashSet<string>();
 
-                foreach (var documento in documentos)
+                foreach (var documento in tramite.Documentos)
                 {
-                    using (var fileStream = await _storageService.DownloadAsync(documento.Ruta))
+                    await using var fileStream = await _storageService.DownloadAsync(documento.Ruta);
+                    byte[] contenido;
+
+                    if (AcusePdfPublicacionService.RequierePanelPublico(documento))
                     {
-                        // 1. Calculamos nombre único
-                        string nombreArchivo = ObtenerNombreUnico(documento, nombresUsados);
-                        nombresUsados.Add(nombreArchivo);
-
-                        // 2. Creamos la entrada en el ZIP
-                        var entry = archive.CreateEntry(nombreArchivo, CompressionLevel.Fastest);
-
-                        // 3. Copiamos el stream de Azure al stream del ZIP
-                        using (var entryStream = entry.Open())
-                        {
-                            await fileStream.CopyToAsync(entryStream);
-                        }
+                        var pdfOriginal = await LeerBytesAsync(fileStream);
+                        contenido = await _acusePublicacion.AplicarPanelPublicoAsync(
+                            documento,
+                            pdfOriginal,
+                            baseUrl,
+                            tramite);
                     }
+                    else
+                    {
+                        contenido = await LeerBytesAsync(fileStream);
+                    }
+
+                    string nombreArchivo = ObtenerNombreUnico(documento, nombresUsados);
+                    nombresUsados.Add(nombreArchivo);
+
+                    var entry = archive.CreateEntry(nombreArchivo, CompressionLevel.Fastest);
+                    await using var entryStream = entry.Open();
+                    await entryStream.WriteAsync(contenido);
                 }
             }
 
-            // 6. Rebobinamos el stream del ZIP para que el controlador pueda leerlo desde el principio
             zipStream.Position = 0;
 
             return new ArchivoDTO
             {
                 Nombre = $"Expediente_{DateTime.Now:yyyyMMdd_HHmm}.zip",
                 Contenido = zipStream,
-                ContentType = "application/zip" // Es buena práctica devolver el ContentType
+                ContentType = "application/zip"
             };
+        }
+
+        private static async Task<byte[]> LeerBytesAsync(Stream stream)
+        {
+            if (stream.CanSeek)
+                stream.Position = 0;
+
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
         }
 
         private string ObtenerNombreUnico(Documento doc, HashSet<string> usados)
         {
-            // Intentamos usar el nombre amigable, si no el del blob
             string baseName = !string.IsNullOrWhiteSpace(doc.Nombre)
                 ? doc.Nombre
                 : Path.GetFileName(doc.Ruta);
 
-            // Aseguramos extensión
             if (!Path.HasExtension(baseName)) baseName += ".pdf";
 
             string nombreFinal = baseName;

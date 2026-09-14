@@ -6,6 +6,7 @@ namespace PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumento
     public sealed record DescargarDocumentoQuery(
         string IdentityUserId,
         string Rol,
-        int DocumentoId
+        int DocumentoId,
+        string BaseUrl
         ) : IRequest<ArchivoDTO>;
 }

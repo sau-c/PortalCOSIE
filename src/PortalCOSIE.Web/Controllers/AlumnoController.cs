@@ -38,13 +38,9 @@ public class AlumnoController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> ActualizarRol(string userId, string rol, IFormFile? certificadoCer)
+    public async Task<IActionResult> ActualizarRol(string userId, string rol)
     {
-        Stream? certificadoStream = certificadoCer is { Length: > 0 }
-            ? certificadoCer.OpenReadStream()
-            : null;
-
-        var result = await _mediator.Send(new ToggleAlumnoRolCommand(userId, rol, certificadoStream));
+        var result = await _mediator.Send(new ToggleAlumnoRolCommand(userId, rol));
         if (!result.Succeeded)
             return Json(new { success = false, message = result.Errors.FirstOrDefault() });
 

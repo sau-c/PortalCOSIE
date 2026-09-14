@@ -45,6 +45,8 @@ namespace PortalCOSIE.Infrastructure.Repositories
                 .Include(d => d.Alumno).ThenInclude(a => a.Carrera)
                 .Include(d => d.UnidadesReprobadas).ThenInclude(d => d.UnidadAprendizaje)
                 .Include(d => d.Documentos).ThenInclude(d => d.TipoDocumento)
+                .Include(d => d.Documentos).ThenInclude(d => d.FirmaElectronica!)
+                    .ThenInclude(f => f.Certificado)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(d => d.Id == tramiteId);
         }
@@ -53,6 +55,7 @@ namespace PortalCOSIE.Infrastructure.Repositories
         {
             return await _context.Set<TramiteCTCE>()
                 .Include(d => d.EstadoTramite)
+                .Include(d => d.Alumno).ThenInclude(a => a.Carrera)
                 .Include(d => d.Documentos).ThenInclude(d => d.TipoDocumento)
                 .Include(d => d.Documentos).ThenInclude(d => d.EstadoDocumento)
                 .AsSplitQuery()

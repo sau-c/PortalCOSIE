@@ -17,6 +17,9 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Tramites
             builder.Property(t => t.FechaSolicitud)
                 .IsRequired();
 
+            builder.Property(t => t.TokenAcusePendiente)
+                .HasMaxLength(64);
+
             builder.HasOne(t => t.Alumno)
                 .WithMany()
                 .HasForeignKey(t => t.AlumnoId)

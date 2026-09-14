@@ -30,6 +30,13 @@ namespace PortalCOSIE.Infrastructure.Persistence.Configurations.Documentos
             builder.Property(f => f.FechaFirmaUtc)
                 .IsRequired();
 
+            builder.Property(f => f.TokenVerificacion)
+                .HasMaxLength(64);
+
+            builder.HasIndex(f => f.TokenVerificacion)
+                .IsUnique()
+                .HasFilter("[TokenVerificacion] IS NOT NULL");
+
             builder.HasOne(f => f.Certificado)
                 .WithMany()
                 .HasForeignKey(f => f.CertificadoId)

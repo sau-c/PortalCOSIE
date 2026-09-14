@@ -71,6 +71,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    Tipo = table.Column<int>(type: "int", nullable: false),
                     Sujeto = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     NumeroSerie = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     VigenteDesde = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -333,7 +334,8 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     CertificadoId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     FirmaCms = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     Algoritmo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    FechaFirmaUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    FechaFirmaUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TokenVerificacion = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -455,6 +457,7 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     PeriodoSolicitud = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FechaConclusion = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TokenAcusePendiente = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -1257,6 +1260,13 @@ namespace PortalCOSIE.Infrastructure.Migrations
                 name: "IX_FirmaElectronica_CertificadoId",
                 table: "FirmaElectronica",
                 column: "CertificadoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FirmaElectronica_TokenVerificacion",
+                table: "FirmaElectronica",
+                column: "TokenVerificacion",
+                unique: true,
+                filter: "[TokenVerificacion] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SesionCOSIE_NumeroSesion",

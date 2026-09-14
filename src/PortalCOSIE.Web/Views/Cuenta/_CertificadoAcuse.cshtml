@@ -1,0 +1,91 @@
+@model PortalCOSIE.Application.Features.Certificados.DTO.CertificadoResumenDTO
+
+<div class="card shadow-sm mb-4" id="panelCertificadoAcuse">
+    <div class="card-header">
+        <h6 class="mb-0">
+            <i class="fas fa-stamp me-2"></i>
+            Firma institucional (acuse)
+        </h6>
+    </div>
+    <div class="card-body p-4">
+        @if (Model is not null)
+        {
+            <div class="small mb-3">
+                <div class="mb-1"><strong>Sujeto:</strong> @Model.Sujeto</div>
+                <div class="mb-1"><strong>Serie:</strong> @Model.NumeroSerie</div>
+                <div class="mb-1">
+                    <strong>Vigencia:</strong>
+                    @Model.VigenteDesde.ToString("dd/MM/yyyy") — @Model.VigenteHasta.ToString("dd/MM/yyyy")
+                    <span class="badge ms-1 @(Model.Vigente ? "bg-success" : "bg-danger")">
+                        @(Model.Vigente ? "Vigente" : "Vencido")
+                    </span>
+                </div>
+                <div class="text-break"><strong>Thumbprint:</strong> @Model.Thumbprint</div>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted small mb-3">
+                Certificado único para firmar acuses finales. Solo tú como administrador lo generas y custodias la <strong>.key</strong>.
+            </p>
+        }
+
+        <div class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small">Contraseña para tu .key</label>
+                <input type="password" id="acuseContrasena" class="form-control form-control-sm" minlength="8" autocomplete="new-password" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small">Confirmar contraseña</label>
+                <input type="password" id="acuseContrasenaConfirm" class="form-control form-control-sm" minlength="8" autocomplete="new-password" />
+            </div>
+        </div>
+
+        <button type="button" id="btnGenerarCertificadoAcuse" class="btn btn-primary btn-sm mt-3">
+            <i class="fas fa-key me-1"></i>@(Model is null ? "Generar certificado de acuse" : "Re-emitir certificado")
+        </button>
+
+        <p class="text-muted small mt-3 mb-0">
+            <i class="fas fa-info-circle me-1"></i>
+            Este certificado representa a PortalCOSIE al concluir trámites. El .cer queda en el sistema; solo descargas la .key cifrada.
+        </p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/node-forge@1.3.1/dist/forge.min.js"></script>
+<script src="~/js/efirma/cert-enrollment.js" asp-append-version="true"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('btnGenerarCertificadoAcuse');
+        if (!btn) return;
+
+        const boton = bloqueadorBoton(btn);
+        btn.addEventListener('click', async () => {
+            const pass = document.getElementById('acuseContrasena')?.value ?? '';
+            const confirm = document.getElementById('acuseContrasenaConfirm')?.value ?? '';
+
+            if (pass.length < 8) {
+                showGlobalModal('error', 'La contraseña debe tener al menos 8 caracteres.');
+                return;
+            }
+            if (pass !== confirm) {
+                showGlobalModal('error', 'Las contraseñas no coinciden.');
+                return;
+            }
+
+            boton.bloquear();
+            try {
+                await enrolarCertificado({
+                    contrasena: pass,
+                    url: '@Url.Action("SolicitarCertificadoAcuse", "Cuenta")',
+                    cn: 'PortalCOSIE Firma Acuse'
+                });
+                showGlobalModal('success', 'Certificado de acuse emitido. Guarda tu archivo .key.', {
+                    onClose: () => location.reload()
+                });
+            } catch (error) {
+                showGlobalModal('error', error.message, { onClose: () => boton.restaurar() });
+            }
+        });
+    });
+</script>

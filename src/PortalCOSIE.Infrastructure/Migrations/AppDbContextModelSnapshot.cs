@@ -4243,9 +4243,17 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("TokenVerificacion")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CertificadoId");
+
+                    b.HasIndex("TokenVerificacion")
+                        .IsUnique()
+                        .HasFilter("[TokenVerificacion] IS NOT NULL");
 
                     b.ToTable("FirmaElectronica", (string)null);
                 });
@@ -4676,6 +4684,10 @@ namespace PortalCOSIE.Infrastructure.Migrations
                     b.Property<int>("TipoTramiteId")
                         .HasColumnType("int");
 
+                    b.Property<string>("TokenAcusePendiente")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AlumnoId");
@@ -4713,6 +4725,9 @@ namespace PortalCOSIE.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("VigenteDesde")
                         .HasColumnType("datetime2");

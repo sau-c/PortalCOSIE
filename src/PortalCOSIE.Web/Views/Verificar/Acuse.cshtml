@@ -1,0 +1,51 @@
+@model PortalCOSIE.Application.Features.Tramites.DTO.AcuseVerificacionPublicaDTO
+@{
+    Layout = "_LayoutPublic";
+    ViewData["Title"] = "Verificación de acuse";
+}
+
+<div class="container py-4" style="max-width: 720px;">
+    <div class="card shadow border-0">
+        <div class="card-header text-white @(Model.FirmaValida ? "bg-success" : "bg-danger")">
+            <h5 class="mb-0">
+                <i class="fas @(Model.FirmaValida ? "fa-check-circle" : "fa-times-circle") me-2"></i>
+                Verificación de acuse CTCE
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="alert @(Model.FirmaValida ? "alert-success" : "alert-danger") mb-4">
+                @Model.Mensaje
+            </div>
+
+            <div class="row g-3 small">
+                <div class="col-md-6">
+                    <div class="border rounded p-3 bg-light h-100">
+                        <div class="text-muted fw-bold mb-1">TRÁMITE</div>
+                        <div class="fw-semibold">#@Model.TramiteId</div>
+                        <div class="text-muted">@Model.PeriodoSolicitud</div>
+                        <div class="text-muted">Solicitado: @Model.FechaSolicitud.ToString("dd/MM/yyyy")</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 bg-light h-100">
+                        <div class="text-muted fw-bold mb-1">ALUMNO</div>
+                        <div class="fw-semibold">@Model.AlumnoNombre</div>
+                        <div class="text-muted">@Model.NumeroBoleta</div>
+                        <div class="text-muted">@Model.Carrera</div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="border rounded p-3 bg-light">
+                        <div class="text-muted fw-bold mb-1">FIRMA INSTITUCIONAL</div>
+                        <div class="fw-semibold">@Model.Firmante</div>
+                        <div class="text-muted">Firmado: @Model.FechaFirmaUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                        <div class="text-muted">Certificado vigente hasta: @Model.VigenteHasta.ToString("dd/MM/yyyy")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-white text-center small text-muted">
+            PortalCOSIE — Consejo Técnico Consultivo Escolar
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
 using PortalCOSIE.Application.Features.Tramites.DTO;
+using PortalCOSIE.Application.Services;
 using PortalCOSIE.Application.Services.Crypto;
 using PortalCOSIE.Application.Services.Storage;
 using PortalCOSIE.Domain.Entities.Documentos;
@@ -10,13 +11,16 @@ namespace PortalCOSIE.Application.Features.Tramites.Services
     {
         private readonly IFirmaVerificacionService _firmaVerificacionService;
         private readonly IStorageService _storageService;
+        private readonly ICertificadoCaService _certificadoCa;
 
         public ProcesadorDocumentoFirmado(
             IFirmaVerificacionService firmaVerificacionService,
-            IStorageService storageService)
+            IStorageService storageService,
+            ICertificadoCaService certificadoCa)
         {
             _firmaVerificacionService = firmaVerificacionService;
             _storageService = storageService;
+            _certificadoCa = certificadoCa;
         }
 
         public async Task<Documento> CrearAsync(
@@ -30,7 +34,11 @@ namespace PortalCOSIE.Application.Features.Tramites.Services
             ValidarCertificado(certificado);
 
             byte[] archivoBytes = await LeerArchivoAsync(documento);
-            var firmaElectronica = VerificarYCrearFirma(archivoBytes, documento.FirmaCms, certificado);
+            var firmaElectronica = await VerificarYCrearFirmaAsync(
+                archivoBytes,
+                documento.FirmaCms,
+                certificado,
+                IFirmaVerificacionService.AlgoritmoCmsPkcs7);
 
             string blobPath;
             using (var streamSubida = new MemoryStream(archivoBytes))
@@ -47,6 +55,38 @@ namespace PortalCOSIE.Application.Features.Tramites.Services
                 firmaElectronica);
         }
 
+        public async Task<Documento> CrearAcusePadesAsync(
+            DocumentoFirmadoDTO documento,
+            int tramiteId,
+            Certificado certificado,
+            string tokenVerificacion)
+        {
+            ValidarEntrada(documento, TipoDocumento.DictamenCTCE);
+            ValidarCertificado(certificado);
+
+            byte[] archivoBytes = await LeerArchivoAsync(documento);
+            var firmaElectronica = await VerificarYCrearFirmaAsync(
+                archivoBytes,
+                documento.FirmaCms,
+                certificado,
+                IFirmaVerificacionService.AlgoritmoPadesBes);
+            firmaElectronica.AsignarTokenVerificacion(tokenVerificacion);
+
+            string blobPath;
+            using (var streamSubida = new MemoryStream(archivoBytes))
+            {
+                blobPath = await _storageService.UploadAsync(streamSubida, documento.Nombre);
+            }
+
+            return new Documento(
+                documento.Nombre,
+                blobPath,
+                tramiteId,
+                EstadoDocumento.Validado.Id,
+                TipoDocumento.DictamenCTCE.Id,
+                firmaElectronica);
+        }
+
         public async Task ReemplazarAsync(
             Documento documentoExistente,
             DocumentoFirmadoDTO documento,
@@ -57,7 +97,11 @@ namespace PortalCOSIE.Application.Features.Tramites.Services
             ValidarCertificado(certificado);
 
             byte[] archivoBytes = await LeerArchivoAsync(documento);
-            var firmaElectronica = VerificarYCrearFirma(archivoBytes, documento.FirmaCms, certificado);
+            var firmaElectronica = await VerificarYCrearFirmaAsync(
+                archivoBytes,
+                documento.FirmaCms,
+                certificado,
+                IFirmaVerificacionService.AlgoritmoCmsPkcs7);
 
             using (var streamSubida = new MemoryStream(archivoBytes))
             {
@@ -67,24 +111,30 @@ namespace PortalCOSIE.Application.Features.Tramites.Services
             documentoExistente.ActualizarDocumento(documento.Nombre, firmaElectronica);
         }
 
-        private FirmaElectronica VerificarYCrearFirma(byte[] archivoBytes, byte[] firmaCms, Certificado certificado)
+        private async Task<FirmaElectronica> VerificarYCrearFirmaAsync(
+            byte[] archivoBytes,
+            byte[] firmaCms,
+            Certificado certificado,
+            string algoritmo)
         {
+            var caDer = await _certificadoCa.ObtenerCaCertificadoDerAsync();
+
             using var streamDocumento = new MemoryStream(archivoBytes);
             using var streamCertificado = new MemoryStream(certificado.CertificadoDer);
 
             var verificacion = _firmaVerificacionService.VerificarFirmaCms(
                 streamDocumento,
                 firmaCms,
-                streamCertificado);
+                streamCertificado,
+                caDer);
 
             if (!verificacion.Succeeded)
+            {
                 throw new InvalidOperationException(
                     verificacion.Errors.FirstOrDefault() ?? "No se pudo verificar la firma del documento.");
+            }
 
-            return new FirmaElectronica(
-                firmaCms,
-                IFirmaVerificacionService.AlgoritmoCmsPkcs7,
-                certificado);
+            return new FirmaElectronica(firmaCms, algoritmo, certificado);
         }
 
         private void ValidarCertificado(Certificado certificado)

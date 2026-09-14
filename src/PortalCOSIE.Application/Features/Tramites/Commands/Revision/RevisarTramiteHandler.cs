@@ -31,6 +31,8 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Revision
 
             if (tramite == null)
                 return Result<string>.Failure("Trámite no encontrado.");
+            if (tramite.EstadoTramite.EsFinal())
+                return Result<string>.Failure("El trámite ya se encuentra concluido o cancelado.");
             if (tramite.EstadoTramiteId != EstadoTramite.EnRevision.Id)
                 return Result<string>.Failure("El estado actual del trámite no permite revisión.");
 

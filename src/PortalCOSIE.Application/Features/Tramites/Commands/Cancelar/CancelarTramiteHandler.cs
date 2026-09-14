@@ -31,6 +31,10 @@ namespace PortalCOSIE.Application.Features.Tramites.Commands.Cancelar
             var tramite = await _tramiteRepo.ObtenerTramiteCTCEPorIdParaRevision(command.tramiteId);
             if (tramite is null)
                 return Result<string>.Failure("Trámite no encontrado.");
+            if (tramite.EstadoTramite.EsFinal())
+                return Result<string>.Failure("El trámite ya se encuentra concluido o cancelado.");
+            if (tramite.EstadoTramiteId != EstadoTramite.EnRevision.Id)
+                return Result<string>.Failure("El trámite no se encuentra en un estado válido para cancelar.");
 
             var usuario = await _usuarioRepo.BuscarUsuario(command.IdentityUserId);
             if (usuario is null)

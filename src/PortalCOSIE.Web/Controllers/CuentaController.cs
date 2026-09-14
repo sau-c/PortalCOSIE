@@ -1,6 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PortalCOSIE.Application.Features.Certificados.Commands.RegistrarCa;
+using PortalCOSIE.Application.Features.Certificados.Commands.SolicitarAcuse;
+using PortalCOSIE.Application.Features.Certificados.Commands.SolicitarAlumno;
+using PortalCOSIE.Application.Features.Certificados.Queries.ObtenerCa;
+using PortalCOSIE.Application.Features.Certificados.Queries.ObtenerCertificadoAcuse;
+using PortalCOSIE.Application.Features.Certificados.Queries.ObtenerMiCertificado;
 using PortalCOSIE.Application.Features.Carreras.Queries.Listar;
 using PortalCOSIE.Application.Features.PeriodosConfig.Queries.ListarPeriodos;
 using PortalCOSIE.Application.Features.Security.Commands.ActualizarCorreo;
@@ -15,6 +21,7 @@ using PortalCOSIE.Application.Features.Usuarios.Commands.RegistrarAlumno;
 using PortalCOSIE.Application.Features.Usuarios.DTO;
 using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerAlumnoCompleto;
 using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerUsuarioPorIdentityId;
+using PortalCOSIE.Web.Models;
 using System.Security.Claims;
 
 namespace PortalCOSIE.Web.Controllers;
@@ -31,7 +38,80 @@ public class CuentaController : Controller
     public async Task<IActionResult> Index()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return View(await _mediator.Send(new ObtenerUsuarioCompletoQuery(userId)));
+        if (string.IsNullOrWhiteSpace(userId))
+            return RedirectToAction(nameof(Ingresar));
+
+        if (User.IsInRole("Administrador"))
+        {
+            ViewData["CaCertificado"] = await _mediator.Send(new ObtenerCaQuery());
+            ViewData["CertificadoAcuse"] = await _mediator.Send(new ObtenerCertificadoAcuseQuery());
+        }
+        if (User.IsInRole("Alumno"))
+            ViewData["MiCertificado"] = await _mediator.Send(new ObtenerMiCertificadoQuery(userId));
+
+        var usuario = await _mediator.Send(new ObtenerUsuarioCompletoQuery(userId));
+        if (usuario == null)
+        {
+            usuario = new UsuarioDTO
+            {
+                IdentityUserId = userId,
+                Nombre = User.IsInRole("Administrador") ? "Administrador" : (User.Identity?.Name ?? "Usuario"),
+                ApellidoPaterno = string.Empty,
+                ApellidoMaterno = string.Empty,
+                Correo = User.Identity?.Name ?? string.Empty,
+                CorreoConfirmado = true,
+                Celular = string.Empty,
+                Rol = User.IsInRole("Administrador") ? "Administrador" : User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? string.Empty
+            };
+        }
+
+        return View(usuario);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Alumno")]
+    public async Task<IActionResult> SolicitarCertificado([FromBody] SolicitarCertificadoRequest request)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(request.CsrBase64))
+            return Json(new { success = false, message = "La solicitud CSR es obligatoria." });
+
+        var result = await _mediator.Send(new SolicitarCertificadoAlumnoCommand(userId!, request.CsrBase64));
+        if (!result.Succeeded)
+            return Json(new { success = false, message = string.Join(", ", result.Errors) });
+
+        return Json(new { success = true, message = result.Value });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> SolicitarCertificadoAcuse([FromBody] SolicitarCertificadoRequest request)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(request.CsrBase64))
+            return Json(new { success = false, message = "La solicitud CSR es obligatoria." });
+
+        var result = await _mediator.Send(new SolicitarCertificadoAcuseCommand(userId!, request.CsrBase64));
+        if (!result.Succeeded)
+            return Json(new { success = false, message = string.Join(", ", result.Errors) });
+
+        return Json(new { success = true, message = result.Value });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> RegistrarCa(IFormFile certificadoCa)
+    {
+        if (certificadoCa == null || certificadoCa.Length == 0)
+            return Json(new { success = false, message = "El archivo .cer de la CA es obligatorio." });
+
+        await using var stream = certificadoCa.OpenReadStream();
+        var result = await _mediator.Send(new RegistrarCaCommand(stream));
+
+        if (!result.Succeeded)
+            return Json(new { success = false, message = result.Errors });
+
+        return Json(new { success = true, message = result.Value });
     }
 
     [HttpGet]

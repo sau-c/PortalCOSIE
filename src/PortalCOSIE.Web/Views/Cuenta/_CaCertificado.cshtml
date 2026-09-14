@@ -1,0 +1,57 @@
+@model PortalCOSIE.Application.Features.Certificados.DTO.CertificadoResumenDTO
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <h6 class="mb-0">
+            <i class="fas fa-shield-alt me-2"></i>
+            Autoridad certificadora (CA)
+        </h6>
+    </div>
+    <div class="card-body p-4">
+        @if (Model is not null)
+        {
+            <div class="small mb-3">
+                <div class="mb-1"><strong>Sujeto:</strong> @Model.Sujeto</div>
+                <div class="mb-1"><strong>Serie:</strong> @Model.NumeroSerie</div>
+                <div class="mb-1">
+                    <strong>Vigencia:</strong>
+                    @Model.VigenteDesde.ToString("dd/MM/yyyy") — @Model.VigenteHasta.ToString("dd/MM/yyyy")
+                    <span class="badge ms-1 @(Model.Vigente ? "bg-success" : "bg-danger")">
+                        @(Model.Vigente ? "Vigente" : "Vencido")
+                    </span>
+                </div>
+                <div class="mb-1 text-break"><strong>Thumbprint:</strong> @Model.Thumbprint</div>
+                <div>
+                    <strong>Emisión de certificados:</strong>
+                    <span class="badge @(Model.PuedeEmitir ? "bg-success" : "bg-warning text-dark")">
+                        @(Model.PuedeEmitir ? "Lista" : "Falta llave cifrada o contraseña en servidor")
+                    </span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted small mb-3">
+                Registra el certificado público de la CA que firmará los certificados de alumnos y del acuse final.
+            </p>
+        }
+
+        <form id="formCaCertificado" asp-action="RegistrarCa" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label class="form-label fw-semibold small">Archivo .cer de la CA</label>
+                <input type="file" name="certificadoCa" class="form-control form-control-sm" accept=".cer" @(Model is null ? "required" : null) />
+            </div>
+            <button type="submit" id="btnRegistrarCa" class="btn btn-primary btn-sm">
+                <i class="fas fa-upload me-1"></i>@(Model is null ? "Registrar CA" : "Actualizar CA")
+            </button>
+        </form>
+
+        <p class="text-muted small mt-3 mb-0">
+            <i class="fas fa-info-circle me-1"></i>
+            La llave privada cifrada de la CA se configura en el servidor
+            (<code>Ca:PrivateKeyPem</code> y <code>Ca:PrivateKeyPassword</code>), nunca en el portal.
+            Use User Secrets en desarrollo.
+        </p>
+    </div>
+</div>

@@ -5,14 +5,14 @@
 {
     <div class="alert alert-warning small mb-3">
         <i class="fas fa-exclamation-triangle me-1"></i>
-        No tienes un certificado registrado. No podrás firmar hasta que un administrador asigne uno a tu cuenta.
+        No tienes un certificado registrado. Genera uno en <strong>Mi cuenta</strong>@(User.IsInRole("Administrador") ? " (sección Firma institucional)" : "") antes de firmar.
     </div>
 }
 else if (!Model.EsValidoParaFirma)
 {
     <div class="alert alert-danger small mb-3">
         <i class="fas fa-exclamation-triangle me-1"></i>
-        El certificado asignado no es válido para firmar. El administrador debe cargar el archivo <strong>.cer</strong> real en la base de datos.
+        El certificado registrado no es válido para firmar. Re-emítelo desde <strong>Mi cuenta</strong>.
         <span class="text-muted d-block mt-1">Registrado: @Model.Sujeto</span>
     </div>
 }

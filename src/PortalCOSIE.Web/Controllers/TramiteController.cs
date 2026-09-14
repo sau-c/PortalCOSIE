@@ -17,6 +17,7 @@ using PortalCOSIE.Application.Features.Tramites.Queries.DescargarDocumentosPorTr
 using PortalCOSIE.Application.Features.Tramites.Commands.Revision;
 using PortalCOSIE.Application.Features.Tramites.Commands.Corregir;
 using PortalCOSIE.Application.Features.Tramites.Commands.Concluir;
+using PortalCOSIE.Application.Features.Tramites.Commands.PrepararAcuse;
 using PortalCOSIE.Application.Features.Tramites.Queries.VerificarDocumento;
 using PortalCOSIE.Application.Features.Usuarios.Queries.ObtenerCertificadoFirma;
 using PortalCOSIE.Web.Extensions;
@@ -26,8 +27,13 @@ namespace PortalCOSIE.Web.Controllers
     public class TramiteController : Controller
     {
         private readonly IMediator _mediator;
-        public TramiteController(IMediator mediator)
-            => _mediator = mediator;
+        private readonly IConfiguration _configuration;
+
+        public TramiteController(IMediator mediator, IConfiguration configuration)
+        {
+            _mediator = mediator;
+            _configuration = configuration;
+        }
 
         [HttpGet]
         [Authorize(Roles = "Administrador, Personal, Alumno")]
@@ -129,7 +135,8 @@ namespace PortalCOSIE.Web.Controllers
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var rol = User?.FindFirstValue(ClaimTypes.Role);
-            var resultado = await _mediator.Send(new DescargarDocumentoQuery(userId, rol, Id));
+            var baseUrl = _configuration["App:BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}";
+            var resultado = await _mediator.Send(new DescargarDocumentoQuery(userId, rol, Id, baseUrl));
             // 1. Usamos System.Net.Mime.ContentDisposition para formatear correctamente la cabecera
             var contentDisposition = new System.Net.Mime.ContentDisposition
             {
@@ -177,13 +184,37 @@ namespace PortalCOSIE.Web.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Personal")]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> PrepararAcuse(ConcluirVM model)
+        {
+            var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var archivo = model.Acuse?.ToDocumentoFirmado(null, requiereFirma: false);
+            if (archivo == null)
+                return Json(new { success = false, message = "El dictamen es obligatorio." });
+
+            var baseUrl = _configuration["App:BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}";
+            var result = await _mediator.Send(new PrepararAcuseCommand(userId, model.TramiteId, archivo, baseUrl));
+            if (!result.Succeeded)
+                return Json(new { success = false, message = result.Errors.FirstOrDefault() });
+
+            return Json(new
+            {
+                success = true,
+                token = result.Value.Token,
+                nombreArchivo = result.Value.NombreArchivo,
+                pdfBase64 = result.Value.PdfBase64
+            });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Concluir(ConcluirVM model)
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var command = new ConcluirTramiteCommand(
                 userId,
                 model.TramiteId,
+                model.TokenAcuse,
                 model.Acuse.ToDocumentoFirmado(model.FirmaAcuse)!
             );
 
@@ -199,7 +230,8 @@ namespace PortalCOSIE.Web.Controllers
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var rol = User?.FindFirstValue(ClaimTypes.Role);
-            var resultado = await _mediator.Send(new DescargarDocumentosPorTramiteQuery(userId, rol, tramiteId));
+            var baseUrl = _configuration["App:BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}";
+            var resultado = await _mediator.Send(new DescargarDocumentosPorTramiteQuery(userId, rol, tramiteId, baseUrl));
             // 1. Usamos System.Net.Mime.ContentDisposition para formatear correctamente la cabecera
             var contentDisposition = new System.Net.Mime.ContentDisposition
             {

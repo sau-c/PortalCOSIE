@@ -11,5 +11,6 @@ namespace PortalCOSIE.Application.Services.Query
         Task<UsuarioDTO> ObtenerUsuarioCompletoPorId(string identityUserId);
         Task<AlumnoContactoDTO?> ObtenerContactoAlumnoPorId(int alumnoId);
         Task<Documento> ObtenerDatosDocumentoPorId(int id);
+        Task<FirmaElectronica?> ObtenerFirmaAcusePorTokenAsync(string token);
     }
 }

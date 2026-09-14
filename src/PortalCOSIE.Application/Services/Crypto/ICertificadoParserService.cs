@@ -1,9 +1,9 @@
 using PortalCOSIE.Domain.Entities.Usuarios;
+using PortalCOSIE.Domain.Enums;
 
-namespace PortalCOSIE.Application.Services.Crypto
+namespace PortalCOSIE.Application.Services.Crypto;
+
+public interface ICertificadoParserService
 {
-    public interface ICertificadoParserService
-    {
-        Result<Certificado> ParseCer(Stream cerStream);
-    }
+    Result<Certificado> ParseCer(Stream cerStream, TipoCertificado tipo = TipoCertificado.Alumno);
 }
