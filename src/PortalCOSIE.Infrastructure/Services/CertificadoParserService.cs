@@ -31,8 +31,8 @@ namespace PortalCOSIE.Infrastructure.Services
                     tipo,
                     x509.SubjectDN.ToString(),
                     x509.SerialNumber.ToString(),
-                    x509.NotBefore,
-                    x509.NotAfter,
+                    x509.NotBefore.Date,
+                    x509.NotAfter.Date,
                     certificadoDer);
 
                 return Result<Certificado>.Success(certificado);
