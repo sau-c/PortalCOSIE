@@ -110,8 +110,8 @@ public class CaEmisionService : ICaEmisionService
                 tipo,
                 cert.SubjectDN.ToString(),
                 cert.SerialNumber.ToString(),
-                cert.NotBefore,
-                cert.NotAfter,
+                cert.NotBefore.Date,
+                cert.NotAfter.Date,
                 certDer);
 
             return Result<Certificado>.Success(emitido);
